@@ -1,11 +1,24 @@
-import { useCallback } from 'react';
 import { Route, Routes, Link } from 'react-router-dom';
-import api from '../api';
-
+import { useAppState } from './app.state';
+import { Unauthorized } from './unauthorized/unauthorized';
+import { useTheme } from '@heroui/use-theme';
+import { useEffect } from 'react';
 export function App() {
-  const login = useCallback(async (username, password) => {
-    api.auth.authControllerPostSession({})
-  }, []);
+  const auth = useAppState((state) => state.auth);
+  const { setTheme } = useTheme();
+
+  // set theme based on system preference of browser
+  useEffect(() => {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+      .matches
+      ? 'dark'
+      : 'light';
+    setTheme(systemTheme);
+  }, [setTheme]);
+
+  if (!auth) {
+    return <Unauthorized />;
+  }
 
   return (
     <div>
