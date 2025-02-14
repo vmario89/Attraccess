@@ -1,0 +1,16 @@
+export default {
+  title: 'Willkommen zurück, Maker!',
+  subtitle:
+    'Bereit, dein nächstes Projekt umzusetzen? Melde dich an, um Maschinen zu buchen und loszulegen.',
+  noAccount: 'Neu hier?',
+  signUpButton: "Hier geht's los",
+  username: 'Benutzername',
+  password: 'Passwort',
+  rememberMe: 'Angemeldet bleiben',
+  forgotPassword: 'Passwort vergessen?',
+  signInButton: "Los geht's",
+  error: {
+    title: 'Hoppla! Kleines Anmeldeproblem',
+    generic: 'Bitte überprüfe deine Anmeldedaten und versuche es erneut',
+  },
+};

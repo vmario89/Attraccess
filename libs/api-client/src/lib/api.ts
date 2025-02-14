@@ -10,20 +10,42 @@
  */
 
 export interface CreateLocalUserDto {
+  username: string;
   strategy: 'password';
   password: string;
+}
+
+export type SystemPermissions = object;
+
+export interface User {
+  id: number;
+  username: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  systemPermissions: SystemPermissions;
+}
+
+export interface CreateSessionResponse {
+  user: User;
+  authToken: string;
 }
 
 export type AppControllerGetPingData = any;
 
 export type UsersControllerCreateUserData = any;
 
-export interface UsersControllerGetUsersParams {
-  page: number;
-  limit: number;
+export interface AuthControllerPostSessionPayload {
+  /** The username for authentication */
+  username: string;
+  /** The password for authentication */
+  password: string;
 }
 
-export type AuthControllerPostSessionData = any;
+export type AuthControllerPostSessionData = CreateSessionResponse;
+
+export type AuthControllerDeleteSessionData = any;
 
 export namespace App {
   /**
@@ -65,10 +87,7 @@ export namespace Users {
    */
   export namespace UsersControllerGetUsers {
     export type RequestParams = {};
-    export type RequestQuery = {
-      page: number;
-      limit: number;
-    };
+    export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = any;
@@ -102,7 +121,7 @@ export namespace Auth {
   export namespace AuthControllerPostSession {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = AuthControllerPostSessionPayload;
     export type RequestHeaders = {};
     export type ResponseBody = AuthControllerPostSessionData;
   }
@@ -119,7 +138,7 @@ export namespace Auth {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = any;
+    export type ResponseBody = AuthControllerDeleteSessionData;
   }
 }
 
@@ -381,11 +400,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/users
      * @secure
      */
-    usersControllerGetUsers: (query: UsersControllerGetUsersParams, params: RequestParams = {}) =>
+    usersControllerGetUsers: (params: RequestParams = {}) =>
       this.request<any, void>({
         path: `/api/users`,
         method: 'GET',
-        query: query,
         secure: true,
         ...params,
       }),
@@ -414,10 +432,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name AuthControllerPostSession
      * @request POST:/api/auth/session/local
      */
-    authControllerPostSession: (params: RequestParams = {}) =>
+    authControllerPostSession: (data: AuthControllerPostSessionPayload, params: RequestParams = {}) =>
       this.request<AuthControllerPostSessionData, any>({
         path: `/api/auth/session/local`,
         method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
 
@@ -430,7 +451,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     authControllerDeleteSession: (params: RequestParams = {}) =>
-      this.request<any, void>({
+      this.request<AuthControllerDeleteSessionData, void>({
         path: `/api/auth/session`,
         method: 'DELETE',
         secure: true,
