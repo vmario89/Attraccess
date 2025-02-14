@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   UseGuards,
   applyDecorators,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
@@ -29,6 +30,8 @@ export function Auth(...permissions: SystemPermission[]) {
 
 @Injectable()
 export class SystemPermissionsGuard implements CanActivate {
+  private readonly logger = new Logger(SystemPermissionsGuard.name);
+
   constructor(private reflector: Reflector) {}
 
   canActivate(
@@ -47,7 +50,7 @@ export class SystemPermissionsGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      console.warn('No user found in request');
+      this.logger.warn('No user found in request');
       throw new UnauthorizedException();
     }
 

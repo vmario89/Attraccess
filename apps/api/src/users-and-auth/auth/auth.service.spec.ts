@@ -5,18 +5,28 @@ import {
   AuthenticationDetail,
   AuthenticationType,
   User,
+  RevokedToken,
 } from '../../database/entities';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
+import { EmailService } from '../../email/email.service';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt', () => ({
+  compare: jest.fn(),
+}));
 
 const AuthenticationDetailRepository = getRepositoryToken(AuthenticationDetail);
+const RevokedTokenRepository = getRepositoryToken(RevokedToken);
 
 describe('AuthService', () => {
   let authService: AuthService;
   let usersService: UsersService;
   let authenticationDetailRepository: Repository<AuthenticationDetail>;
+  let revokedTokenRepository: Repository<RevokedToken>;
   let jwtService: JwtService;
+  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,6 +51,19 @@ describe('AuthService', () => {
             sign: jest.fn(),
           },
         },
+        {
+          provide: EmailService,
+          useValue: {
+            sendVerificationEmail: jest.fn(),
+          },
+        },
+        {
+          provide: RevokedTokenRepository,
+          useValue: {
+            save: jest.fn(),
+            findOne: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -49,7 +72,14 @@ describe('AuthService', () => {
     authenticationDetailRepository = module.get<
       typeof authenticationDetailRepository
     >(AuthenticationDetailRepository);
+    revokedTokenRepository = module.get<typeof revokedTokenRepository>(
+      RevokedTokenRepository
+    );
     jwtService = module.get<JwtService>(JwtService);
+    emailService = module.get<EmailService>(EmailService);
+
+    // Reset all mocks before each test
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -57,49 +87,75 @@ describe('AuthService', () => {
   });
 
   it('should authenticate user with correct credentials', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
+    const user: Partial<User> = {
+      id: 1,
+      username: 'testuser',
+      isEmailVerified: true,
+    };
     jest.spyOn(usersService, 'findOne').mockResolvedValue(user as User);
 
     const authenticationDetail: Partial<AuthenticationDetail> = {
       userId: 1,
       type: AuthenticationType.LOCAL_PASSWORD,
-      password: 'my-password',
+      password: 'hashed-password',
     };
     jest
       .spyOn(authenticationDetailRepository, 'findOne')
       .mockResolvedValue(authenticationDetail as AuthenticationDetail);
 
+    // Mock bcrypt.compare to return true for correct password
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
     const isAuthenticated =
       await authService.getUserByUsernameAndAuthenticationDetails('testuser', {
         type: AuthenticationType.LOCAL_PASSWORD,
-        details: { password: 'my-password' },
+        details: { password: 'correct-password' },
       });
 
     expect(isAuthenticated).not.toBeNull();
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'correct-password',
+      'hashed-password'
+    );
   });
 
   it('should not authenticate user with incorrect credentials', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
+    const user: Partial<User> = {
+      id: 1,
+      username: 'testuser',
+      isEmailVerified: true,
+    };
     jest.spyOn(usersService, 'findOne').mockResolvedValue(user as User);
 
     jest.spyOn(authenticationDetailRepository, 'findOne').mockResolvedValue({
       id: 1,
       userId: user.id,
       type: AuthenticationType.LOCAL_PASSWORD,
-      password: 'my-password',
+      password: 'hashed-password',
     } as AuthenticationDetail);
+
+    // Mock bcrypt.compare to return false for incorrect password
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
     const isAuthenticated =
       await authService.getUserByUsernameAndAuthenticationDetails('testuser', {
         type: AuthenticationType.LOCAL_PASSWORD,
-        details: { password: 'wrongpassword' },
+        details: { password: 'wrong-password' },
       });
 
     expect(isAuthenticated).toBeNull();
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'wrong-password',
+      'hashed-password'
+    );
   });
 
   it('should create a JWT for a valid user', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
+    const user: Partial<User> = {
+      id: 1,
+      username: 'testuser',
+      isEmailVerified: true,
+    };
 
     jest.spyOn(jwtService, 'sign').mockReturnValue('test-token');
 
@@ -117,6 +173,9 @@ describe('AuthService', () => {
 
   it('should revoke a JWT and identify it as revoked', async () => {
     const tokenId = 'testTokenId';
+    jest
+      .spyOn(revokedTokenRepository, 'findOne')
+      .mockResolvedValue({ id: 1, tokenId } as RevokedToken);
     await authService.revokeJWT(tokenId);
 
     const isRevoked = await authService.isJWTRevoked(tokenId);

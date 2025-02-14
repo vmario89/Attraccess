@@ -15,16 +15,18 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 // Constants and Entities
 import { jwtConstants } from './constants';
-import { User, AuthenticationDetail } from '../database/entities';
+import { User, AuthenticationDetail, RevokedToken } from '../database/entities';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, AuthenticationDetail]),
+    TypeOrmModule.forFeature([User, AuthenticationDetail, RevokedToken]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
     }),
+    EmailModule,
   ],
   providers: [UsersService, AuthService, LocalStrategy, JwtStrategy],
   controllers: [UsersController, AuthController],

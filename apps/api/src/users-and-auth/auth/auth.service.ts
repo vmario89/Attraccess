@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { nanoid } from 'nanoid';
@@ -6,33 +10,63 @@ import { Repository } from 'typeorm';
 import {
   AuthenticationDetail,
   AuthenticationType,
+  RevokedToken,
 } from '../../database/entities';
 import { User } from '../../database/entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EmailService } from '../../email/email.service';
+import { addDays } from 'date-fns';
+import * as bcrypt from 'bcrypt';
 
 export interface LocalPasswordAuthenticationOptions {
   password: string;
 }
 
-type AuthenticationOptionsTypeMapping = {
-  [AuthenticationType.LOCAL_PASSWORD]: LocalPasswordAuthenticationOptions;
-};
-
-export type AuthenticationOptions<T extends AuthenticationType> = {
+export interface AuthenticationOptions<T extends AuthenticationType> {
   type: T;
-  details: AuthenticationOptionsTypeMapping[T];
-};
+  details: T extends AuthenticationType.LOCAL_PASSWORD
+    ? LocalPasswordAuthenticationOptions
+    : never;
+}
 
 @Injectable()
 export class AuthService {
-  private readonly revokedJWTs: string[] = [];
+  private readonly SALT_ROUNDS = 10;
 
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private emailService: EmailService,
     @InjectRepository(AuthenticationDetail)
-    private authenticationDetailRepository: Repository<AuthenticationDetail>
-  ) {}
+    private authenticationDetailRepository: Repository<AuthenticationDetail>,
+    @InjectRepository(RevokedToken)
+    private revokedTokenRepository: Repository<RevokedToken>
+  ) {
+    // Clean up expired revoked tokens periodically
+    setInterval(() => this.cleanupExpiredTokens(), 24 * 60 * 60 * 1000); // Run daily
+  }
+
+  private async cleanupExpiredTokens() {
+    await this.revokedTokenRepository
+      .createQueryBuilder()
+      .delete()
+      .where('expiresAt < :now', { now: new Date() })
+      .execute();
+  }
+
+  async isJWTRevoked(tokenId: string): Promise<boolean> {
+    const revokedToken = await this.revokedTokenRepository.findOne({
+      where: { tokenId },
+    });
+    return !!revokedToken;
+  }
+
+  async revokeJWT(tokenId: string): Promise<void> {
+    const token = new RevokedToken();
+    token.tokenId = tokenId;
+    token.expiresAt = addDays(new Date(), 7); // Keep revoked tokens for 7 days
+    await this.revokedTokenRepository.save(token);
+  }
 
   private async getAuthenticationDetail(
     authenticationType: AuthenticationType,
@@ -62,8 +96,10 @@ export class AuthService {
 
     switch (options.type) {
       case AuthenticationType.LOCAL_PASSWORD:
-        // TODO: use encryption to compare passwords
-        return options.details.password === authenticationDetails.password;
+        return bcrypt.compare(
+          options.details.password,
+          authenticationDetails.password || ''
+        );
 
       default:
         return false;
@@ -74,12 +110,16 @@ export class AuthService {
     userId: number,
     options: AuthenticationOptions<T>
   ): Promise<void> {
-    // TODO: replace with database logic
-
     const authenticationDetail = new AuthenticationDetail();
     authenticationDetail.userId = userId;
     authenticationDetail.type = options.type;
-    authenticationDetail.password = options.details.password;
+
+    if (options.type === AuthenticationType.LOCAL_PASSWORD) {
+      authenticationDetail.password = await bcrypt.hash(
+        options.details.password,
+        this.SALT_ROUNDS
+      );
+    }
 
     await this.authenticationDetailRepository.save(authenticationDetail);
   }
@@ -94,6 +134,10 @@ export class AuthService {
       return null;
     }
 
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email address first');
+    }
+
     const isValid = await this.validateAuthenticationDetails(user.id, options);
     if (!isValid) {
       return null;
@@ -103,21 +147,39 @@ export class AuthService {
   }
 
   async createJWT(user: User): Promise<string> {
-    return this.jwtService.sign({
-      username: user.username,
-      sub: user.id,
-      tokenId: nanoid(),
+    const tokenId = nanoid();
+    const payload = { username: user.username, sub: user.id, tokenId };
+    return this.jwtService.sign(payload);
+  }
+
+  async generateEmailVerificationToken(user: User): Promise<string> {
+    const token = nanoid();
+    await this.usersService.updateUser(user.id, {
+      emailVerificationToken: token,
+      emailVerificationTokenExpiresAt: addDays(new Date(), 3),
     });
+    return token;
   }
 
-  async revokeJWT(tokenId: string): Promise<void> {
-    // TODO: replace with database logic
+  async verifyEmail(email: string, token: string): Promise<void> {
+    const user = await this.usersService.findOne({ email });
 
-    this.revokedJWTs.push(tokenId);
-  }
+    if (!user) {
+      throw new NotFoundException('Invalid verification token');
+    }
 
-  async isJWTRevoked(tokenId: string): Promise<boolean> {
-    // TODO: replace with database logic
-    return this.revokedJWTs.includes(tokenId);
+    if (user.emailVerificationToken !== token) {
+      throw new UnauthorizedException('Invalid verification token');
+    }
+
+    if (user.emailVerificationTokenExpiresAt < new Date()) {
+      throw new UnauthorizedException('Verification token has expired');
+    }
+
+    await this.usersService.updateUser(user.id, {
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationTokenExpiresAt: null,
+    });
   }
 }

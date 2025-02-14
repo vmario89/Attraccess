@@ -32,7 +32,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build", "start-db"],
+      "dependsOn": ["build", "start-services"],
       "options": {
         "buildTarget": "api:build",
         "runBuildTargetDependencies": false
@@ -59,10 +59,10 @@
         "passWithNoTests": true
       }
     },
-    "start-db": {
+    "start-services": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker compose -f docker-compose.dev.yml up -d postgres"
+        "command": "docker compose -f docker-compose.dev.yml up -d --remove-orphans"
       }
     },
     "build-migration-config": {
