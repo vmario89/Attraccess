@@ -5,11 +5,13 @@ import { ForbiddenException } from '@nestjs/common';
 import { AuthenticatedRequest } from '../../types/request';
 import { AuthenticationType, User } from '../../database/entities';
 import { AuthService } from '../auth/auth.service';
+import { EmailService } from '../../email/email.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let usersService: UsersService;
   let authService: AuthService;
+  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,6 +30,16 @@ describe('UsersController', () => {
           provide: AuthService,
           useValue: {
             addAuthenticationDetails: jest.fn(),
+            createJWT: jest.fn(),
+            generateEmailVerificationToken: jest
+              .fn()
+              .mockResolvedValue('test-verification-token'),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendVerificationEmail: jest.fn(),
           },
         },
       ],
@@ -36,6 +48,7 @@ describe('UsersController', () => {
     controller = module.get<UsersController>(UsersController);
     usersService = module.get<UsersService>(UsersService);
     authService = module.get<AuthService>(AuthService);
+    emailService = module.get<EmailService>(EmailService);
   });
 
   it('should be defined', () => {
@@ -66,11 +79,13 @@ describe('UsersController', () => {
     const user: Partial<User> = { id: 1, username: 'testuser' };
 
     jest.spyOn(usersService, 'createOne').mockResolvedValue(user as User);
+    jest.spyOn(authService, 'createJWT').mockResolvedValue('test-token');
 
     const response = await controller.createUser({
       username: 'testuser',
       strategy: AuthenticationType.LOCAL_PASSWORD,
       password: 'password',
+      email: 'test@example.com',
     });
 
     expect(response).toEqual(user);
@@ -80,6 +95,9 @@ describe('UsersController', () => {
         password: 'password',
       },
     });
-    expect(usersService.createOne).toHaveBeenCalledWith('testuser');
+    expect(usersService.createOne).toHaveBeenCalledWith(
+      'testuser',
+      'test@example.com'
+    );
   });
 });

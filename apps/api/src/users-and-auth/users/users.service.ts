@@ -7,12 +7,23 @@ import {
   PaginationOptions,
   PaginationOptionsSchema,
 } from '../../types/request';
-import { loadEnv } from '@attraccess/env';
+import { z } from 'zod';
 
-interface FindOneOptions {
-  id?: number;
-  username?: string;
-}
+const FindOneOptionsSchema = z
+  .object({
+    id: z.number().optional(),
+    username: z.string().min(1).optional(),
+    email: z.string().email().optional(),
+  })
+  .refine(
+    (data) =>
+      data.id !== undefined ||
+      data.username !== undefined ||
+      data.email !== undefined,
+    { message: 'At least one search criteria must be provided' }
+  );
+
+type FindOneOptions = z.infer<typeof FindOneOptionsSchema>;
 
 @Injectable()
 export class UsersService {
@@ -22,25 +33,56 @@ export class UsersService {
   ) {}
 
   async findOne(options: FindOneOptions): Promise<User | null> {
-    if (!options.id && !options.username) {
-      throw new BadRequestException('No options provided');
-    }
+    const validatedOptions = FindOneOptionsSchema.parse(options);
 
     const user = await this.userRepository.findOne({
       where: {
-        id: options.id,
-        username: options.username,
+        id: validatedOptions.id,
+        username: validatedOptions.username,
+        email: validatedOptions.email,
       },
     });
 
-    // Return null instead of throwing an exception
     return user || null;
   }
 
-  async createOne(username: string): Promise<User> {
+  async createOne(username: string, email: string): Promise<User> {
+    // Check for existing email
+    const existingEmail = await this.findOne({ email });
+    if (existingEmail) {
+      throw new BadRequestException('Email already exists');
+    }
+
+    // Check for existing username
+    const existingUsername = await this.findOne({ username });
+    if (existingUsername) {
+      throw new BadRequestException('Username already exists');
+    }
+
     const user = new User();
     user.username = username;
+    user.email = email;
     return this.userRepository.save(user);
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    // If email is being updated, check for uniqueness
+    if (updates.email) {
+      const existingEmails = await this.userRepository.find({
+        where: { email: updates.email },
+      });
+
+      if (existingEmails.some((user) => user.id !== id)) {
+        throw new BadRequestException('Email already exists');
+      }
+    }
+
+    await this.userRepository.update(id, updates);
+    const updatedUser = await this.findOne({ id });
+    if (!updatedUser) {
+      throw new BadRequestException('User not found');
+    }
+    return updatedUser;
   }
 
   async findAll(options: PaginationOptions): Promise<PaginatedResponse<User>> {

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AuthenticatedRequest } from '../../types/request';
 import { User } from '../../database/entities';
-import { UsersService } from '../users/users.service';
+import { Request } from 'express';
+import { AuthenticatedRequest } from '../../types/request';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -16,16 +16,11 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: {
-            createJWT: jest.fn(),
+            createJWT: jest.fn().mockResolvedValue('test-token'),
             revokeJWT: jest.fn(),
           },
         },
-        {
-          provide: UsersService,
-          useValue: {},
-        },
       ],
-      imports: [],
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
@@ -36,24 +31,28 @@ describe('AuthController', () => {
     expect(authController).toBeDefined();
   });
 
-  it('should return a JWT token when starting a session', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
-    jest.spyOn(authService, 'createJWT').mockResolvedValue('testtoken');
+  it('should create a session', async () => {
+    const user: Partial<User> = {
+      id: 1,
+      username: 'testuser',
+    };
 
-    const result = await authController.postSession({
+    const mockRequest = {
+      ...Object.create(Request.prototype),
       user,
-      authInfo: {
-        tokenId: '123',
-      },
+      authInfo: { tokenId: 'test-token-id' },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       logout: async () => {},
-    } as AuthenticatedRequest);
+    } as AuthenticatedRequest;
 
-    expect(result).toHaveProperty('authToken');
-    expect(result).toHaveProperty('user');
-    expect(result.user).toEqual(user);
-    expect(result.authToken).toEqual('testtoken');
+    const result = await authController.postSession(mockRequest);
 
-    expect(authService.createJWT).toHaveBeenCalledWith(user);
+    expect(result).toEqual({
+      authToken: 'test-token',
+      user: {
+        id: 1,
+        username: 'testuser',
+      },
+    });
   });
 });

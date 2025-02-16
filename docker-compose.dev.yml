@@ -3,7 +3,6 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: attraccess_postgres
     environment:
       POSTGRES_USER: attraccess
       POSTGRES_PASSWORD: attraccess
@@ -12,6 +11,12 @@ services:
       - '2345:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '8025:8025'
+      - '1025:1025'
 
 volumes:
   postgres_data:
