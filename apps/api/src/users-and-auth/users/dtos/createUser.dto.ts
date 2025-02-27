@@ -1,7 +1,8 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { AuthenticationType } from '@attraccess/database-entities';
 
-export abstract class CreateUserDto {
+export class CreateUserDto {
   @ApiProperty({
     example: 'johndoe',
     description: 'The username for the new user',
@@ -15,4 +16,20 @@ export abstract class CreateUserDto {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'The password for the new user',
+    example: 'password123',
+  })
+  @IsString()
+  @MinLength(8)
+  password: string;
+
+  @ApiProperty({
+    description: 'The authentication strategy to use',
+    enum: AuthenticationType,
+    example: AuthenticationType.LOCAL_PASSWORD,
+  })
+  @IsEnum(AuthenticationType)
+  strategy: AuthenticationType.LOCAL_PASSWORD;
 }

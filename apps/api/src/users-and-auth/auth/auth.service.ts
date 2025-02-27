@@ -8,11 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 import { nanoid } from 'nanoid';
 import { Repository } from 'typeorm';
 import {
+  User,
+  RevokedToken,
   AuthenticationDetail,
   AuthenticationType,
-  RevokedToken,
-} from '../../database/entities';
-import { User } from '../../database/entities';
+} from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from '../../email/email.service';
 import { addDays } from 'date-fns';
@@ -158,6 +158,7 @@ export class AuthService {
       emailVerificationToken: token,
       emailVerificationTokenExpiresAt: addDays(new Date(), 3),
     });
+
     return token;
   }
 

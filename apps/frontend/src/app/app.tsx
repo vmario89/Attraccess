@@ -1,10 +1,16 @@
-import { Route, Routes, Link } from 'react-router-dom';
-import { useAppState } from './app.state';
+import { Route, Routes } from 'react-router-dom';
 import { Unauthorized } from './unauthorized/unauthorized';
 import { useTheme } from '@heroui/use-theme';
 import { useEffect } from 'react';
+import { Layout } from './layout/layout';
+import { useAuth } from '../hooks/useAuth';
+import { Loading } from './loading';
+import { authorizedRoutes } from './authorized-routes';
+import { VerifyEmail } from './verifyEmail';
+import { ToastProvider } from '../components/toastProvider';
+
 export function App() {
-  const auth = useAppState((state) => state.auth);
+  const { isAuthenticated, isLoading } = useAuth();
   const { setTheme } = useTheme();
 
   // set theme based on system preference of browser
@@ -16,32 +22,26 @@ export function App() {
     setTheme(systemTheme);
   }, [setTheme]);
 
-  if (!auth) {
-    return <Unauthorized />;
+  // Show loading screen while checking auth state
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (
-    <div>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              This is the generated root route.{' '}
-              <Link to="/page-2">Click here for page 2.</Link>
-            </div>
-          }
-        />
-        <Route
-          path="/page-2"
-          element={
-            <div>
-              <Link to="/">Click here to go back to root page.</Link>
-            </div>
-          }
-        />
-      </Routes>
-    </div>
+    <ToastProvider>
+      <Layout noLayout={!isAuthenticated}>
+        <Routes>
+          <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {isAuthenticated &&
+            authorizedRoutes.map((props, routeIndex) => (
+              <Route {...props} key={routeIndex} />
+            ))}
+
+          {!isAuthenticated && <Route path="*" element={<Unauthorized />} />}
+        </Routes>
+      </Layout>
+    </ToastProvider>
   );
 }
 

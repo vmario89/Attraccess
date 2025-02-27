@@ -6,6 +6,8 @@ module.exports = [
   ...nx.configs['flat/react'],
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    ignores: ['**/*.json'],
+    
     // Override or add rules here
     rules: {},
   },

@@ -1,8 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { User } from '../../database/entities';
+import { User } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { makePaginatedResponse, PaginatedResponse } from '../../types/response';
+import {
+  makePaginatedResponse,
+  PaginatedResponseDto,
+} from '../../types/response';
 import {
   PaginationOptions,
   PaginationOptionsSchema,
@@ -11,15 +14,14 @@ import { z } from 'zod';
 
 const FindOneOptionsSchema = z
   .object({
-    id: z.number().optional(),
-    username: z.string().min(1).optional(),
-    email: z.string().email().optional(),
+    id: z.number(),
+    username: z.string().min(1),
+    email: z.string().email(),
   })
+  .partial()
   .refine(
-    (data) =>
-      data.id !== undefined ||
-      data.username !== undefined ||
-      data.email !== undefined,
+    ({ id, username, email }) =>
+      id !== undefined || username !== undefined || email !== undefined,
     { message: 'At least one search criteria must be provided' }
   );
 
@@ -65,6 +67,10 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
+  async deleteOne(id: number): Promise<void> {
+    await this.userRepository.delete(id);
+  }
+
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
     // If email is being updated, check for uniqueness
     if (updates.email) {
@@ -85,7 +91,9 @@ export class UsersService {
     return updatedUser;
   }
 
-  async findAll(options: PaginationOptions): Promise<PaginatedResponse<User>> {
+  async findAll(
+    options: PaginationOptions
+  ): Promise<PaginatedResponseDto<User>> {
     const paginationOptions = PaginationOptionsSchema.parse(options);
     const { page, limit } = paginationOptions;
     const skip = (page - 1) * limit;
@@ -95,6 +103,13 @@ export class UsersService {
       take: limit,
     });
 
-    return makePaginatedResponse(options, users, total);
+    return makePaginatedResponse(
+      {
+        page: paginationOptions.page,
+        limit: paginationOptions.limit,
+      },
+      users,
+      total
+    );
   }
 }

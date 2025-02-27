@@ -18,7 +18,7 @@ i18n
   });
 
 interface TranslationModule {
-  default: Record<string, any>;
+  default: Record<string, unknown>;
 }
 
 interface TranslationModules {
@@ -29,7 +29,7 @@ interface TranslationModules {
 export function useTranslations<T extends TranslationModules>(
   namespace: string,
   translations: T
-) {
+): ReturnType<typeof useTranslation> {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

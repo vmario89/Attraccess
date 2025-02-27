@@ -2,8 +2,14 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
-import { AuthenticationType } from '../../database/entities';
-import { User } from '../../database/entities';
+import { AuthenticationType, User } from '@attraccess/database-entities';
+
+class UnknownUserOrPasswordException extends UnauthorizedException {
+  constructor() {
+    super('Unknown username or password');
+    super.name = 'UnknownUserOrPasswordException';
+  }
+}
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -24,7 +30,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       );
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnknownUserOrPasswordException();
     }
 
     return user;

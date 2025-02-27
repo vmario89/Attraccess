@@ -1,0 +1,143 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+} from '@nestjs/swagger';
+import { ResourcesService } from './resources.service';
+import { UpdateResourceDto } from './dtos/updateResource.dto';
+import { CreateResourceDto } from './dtos/createResource.dto';
+import { ListResourcesDto } from './dtos/listResources.dto';
+import { Resource } from '@attraccess/database-entities';
+import {
+  Auth,
+  SystemPermission,
+} from '../users-and-auth/strategies/systemPermissions.guard';
+import { PaginatedResponse } from '../types/pagination';
+import { FileUpload } from '../common/types/file-upload.types';
+import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';
+import { ResourceImageService } from '../common/services/resource-image.service';
+
+@ApiTags('Resources')
+@Controller('resources')
+export class ResourcesController {
+  constructor(
+    private readonly resourcesService: ResourcesService,
+    private readonly resourceImageService: ResourceImageService
+  ) {}
+
+  private transformResource = (resource: Resource): Resource => {
+    return {
+      ...resource,
+      imageFilename: this.resourceImageService.getPublicPath(
+        resource.id,
+        resource.imageFilename
+      ),
+    };
+  };
+
+  @Post()
+  @Auth(SystemPermission.canManageResources)
+  @ApiOperation({ summary: 'Create a new resource' })
+  @ApiResponse({
+    status: 201,
+    description: 'The resource has been successfully created.',
+    type: Resource,
+  })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
+  async createResource(
+    @Body() createDto: CreateResourceDto,
+    @UploadedFile() image?: FileUpload
+  ): Promise<Resource> {
+    const resource = await this.resourcesService.createResource(
+      createDto,
+      image
+    );
+    return this.transformResource(resource);
+  }
+
+  @Get()
+  @Auth()
+  @ApiOperation({ summary: 'Get all resources' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of resources with pagination.',
+    type: PaginatedResourceResponseDto,
+  })
+  async getResources(
+    @Query() query: ListResourcesDto
+  ): Promise<PaginatedResponse<Resource>> {
+    const resources = await this.resourcesService.listResources(
+      query.page,
+      query.limit,
+      query.search
+    );
+
+    resources.data = resources.data.map(this.transformResource);
+    return resources;
+  }
+
+  @Get(':id')
+  @Auth()
+  @ApiOperation({ summary: 'Get a resource by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found resource.',
+    type: Resource,
+  })
+  async getResourceById(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<Resource> {
+    const resource = await this.resourcesService.getResourceById(id);
+    return this.transformResource(resource);
+  }
+
+  @Put(':id')
+  @Auth(SystemPermission.canManageResources)
+  @ApiOperation({ summary: 'Update a resource' })
+  @ApiResponse({
+    status: 200,
+    description: 'The resource has been successfully updated.',
+    type: Resource,
+  })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
+  async updateResource(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateResourceDto,
+    @UploadedFile() image?: FileUpload
+  ): Promise<Resource> {
+    const resource = await this.resourcesService.updateResource(
+      id,
+      updateDto,
+      image
+    );
+    return this.transformResource(resource);
+  }
+
+  @Delete(':id')
+  @Auth(SystemPermission.canManageResources)
+  @ApiOperation({ summary: 'Delete a resource' })
+  @ApiResponse({
+    status: 200,
+    description: 'The resource has been successfully deleted.',
+  })
+  async deleteResource(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.resourcesService.deleteResource(id);
+  }
+}

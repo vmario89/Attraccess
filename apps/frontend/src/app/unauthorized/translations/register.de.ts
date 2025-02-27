@@ -5,10 +5,18 @@ export default {
   hasAccount: 'Nutzt du schon unsere Maschinen?',
   signInButton: 'Hier anmelden',
   username: 'Wähle einen Benutzernamen',
+  email: 'Deine E-Mail-Adresse',
   password: 'Erstelle dein Passwort',
   createAccountButton: 'Konto erstellen und loslegen!',
+  creatingAccount: 'Dein Konto wird erstellt...',
   error: {
     title: 'Hoppla! Ein kleiner Fehler',
     generic: 'Bitte überprüfe deine Angaben und versuche es erneut',
+  },
+  success: {
+    title: 'Konto erfolgreich erstellt!',
+    message:
+      'Wir haben eine Aktivierungs-E-Mail an {email} gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Aktivierungslink, um deine Registrierung abzuschließen.',
+    closeButton: 'Verstanden',
   },
 };

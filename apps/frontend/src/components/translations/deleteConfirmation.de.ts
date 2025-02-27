@@ -1,0 +1,7 @@
+export default {
+  title: 'Löschen bestätigen',
+  message:
+    'Sind Sie sicher, dass Sie <bold>{{itemName}}</bold> löschen möchten?<alert>Diese Aktion kann nicht rückgängig gemacht werden.</alert>',
+  cancelButton: 'Abbrechen',
+  deleteButton: 'Löschen',
+};

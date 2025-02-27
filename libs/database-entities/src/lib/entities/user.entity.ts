@@ -1,0 +1,113 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose } from 'class-transformer';
+import { ResourceIntroduction } from './resourceIntroduction.entity';
+import { ResourceUsage } from './resourceUsage.entity';
+import { RevokedToken } from './revokedToken.entity';
+import { AuthenticationDetail } from './authenticationDetail.entity';
+import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
+
+class SystemPermissions {
+  @Column({ default: false })
+  canManageResources!: boolean;
+
+  @Column({ default: false })
+  canManageUsers!: boolean;
+
+  @Column({ default: false })
+  canManagePermissions!: boolean;
+}
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    example: 1,
+  })
+  id!: number;
+
+  @Column({ unique: true })
+  @ApiProperty({
+    description: 'The username of the user',
+    example: 'johndoe',
+  })
+  username!: string;
+
+  @Column({ unique: true })
+  @Exclude()
+  email!: string;
+
+  @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether the user has verified their email address',
+    example: true,
+  })
+  isEmailVerified!: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  @Exclude()
+  emailVerificationToken!: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  @Exclude()
+  emailVerificationTokenExpiresAt!: Date | null;
+
+  @Column(() => SystemPermissions)
+  @ApiProperty({
+    description: 'System-wide permissions for the user',
+    example: {
+      canManageResources: true,
+      canManageUsers: false,
+    },
+  })
+  systemPermissions!: SystemPermissions;
+
+  @CreateDateColumn()
+  @ApiProperty({
+    description: 'When the user was created',
+  })
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  @ApiProperty({
+    description: 'When the user was last updated',
+  })
+  updatedAt!: Date;
+
+  @OneToMany(
+    () => ResourceIntroduction,
+    (introduction) => introduction.receiverUser,
+    {
+      onDelete: 'CASCADE',
+    }
+  )
+  resourceIntroductions!: ResourceIntroduction[];
+
+  @OneToMany(() => ResourceUsage, (usage) => usage.user, {
+    onDelete: 'SET NULL',
+  })
+  resourceUsages!: ResourceUsage[];
+
+  @OneToMany(() => RevokedToken, (token) => token.user, {
+    onDelete: 'CASCADE',
+  })
+  revokedTokens!: RevokedToken[];
+
+  @OneToMany(() => AuthenticationDetail, (detail) => detail.user, {
+    onDelete: 'CASCADE',
+  })
+  authenticationDetails!: AuthenticationDetail[];
+
+  @OneToMany(() => ResourceIntroductionUser, (introducer) => introducer.user, {
+    onDelete: 'CASCADE',
+  })
+  resourceIntroducerPermissions!: ResourceIntroductionUser[];
+}

@@ -1,0 +1,24 @@
+export default {
+  usageSession: 'Nutzungssitzung',
+  noActiveSession:
+    'Keine aktive Sitzung. Beginnen Sie die Nutzung dieser Ressource, indem Sie auf die Schaltfläche unten klicken.',
+  startSession: 'Ressource nutzen',
+  endSession: 'Sitzung beenden',
+  sessionStarted: 'Sitzung gestartet',
+  sessionStartedDescription:
+    'Sie haben die Nutzung dieser Ressource erfolgreich gestartet.',
+  sessionStartError: 'Fehler beim Starten der Sitzung',
+  sessionStartErrorDescription:
+    'Beim Starten der Sitzung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+  sessionEnded: 'Sitzung beendet',
+  sessionEndedDescription: 'Ihre Nutzungssitzung wurde erfolgreich beendet.',
+  sessionEndError: 'Fehler beim Beenden der Sitzung',
+  sessionEndErrorDescription:
+    'Beim Beenden der Sitzung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+  elapsedTime: 'Verstrichene Zeit',
+  needsIntroduction:
+    'Sie benötigen eine Einführung, bevor Sie diese Ressource nutzen können. Bitte kontaktieren Sie einen der unten aufgeführten Einführer.',
+  availableIntroducers: 'Verfügbare Einführer',
+  noIntroducersAvailable:
+    'Für diese Ressource sind derzeit keine Einführer verfügbar. Bitte kontaktieren Sie einen Administrator.',
+};

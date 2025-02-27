@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { User } from '../../database/entities';
-import { Request } from 'express';
+import { User } from '@attraccess/database-entities';
 import { AuthenticatedRequest } from '../../types/request';
 
 describe('AuthController', () => {
@@ -41,8 +40,7 @@ describe('AuthController', () => {
       ...Object.create(Request.prototype),
       user,
       authInfo: { tokenId: 'test-token-id' },
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      logout: async () => {},
+      logout: jest.fn().mockResolvedValue(undefined),
     } as AuthenticatedRequest;
 
     const result = await authController.postSession(mockRequest);
@@ -54,5 +52,19 @@ describe('AuthController', () => {
         username: 'testuser',
       },
     });
+    expect(authService.createJWT).toHaveBeenCalledWith(user);
+  });
+
+  it('should delete a session and revoke JWT', async () => {
+    const mockRequest = {
+      ...Object.create(Request.prototype),
+      authInfo: { tokenId: 'test-token-id' },
+      logout: jest.fn().mockImplementation((cb) => cb()),
+    } as AuthenticatedRequest;
+
+    await authController.deleteSession(mockRequest);
+
+    expect(mockRequest.logout).toHaveBeenCalled();
+    expect(authService.revokeJWT).toHaveBeenCalledWith('test-token-id');
   });
 });

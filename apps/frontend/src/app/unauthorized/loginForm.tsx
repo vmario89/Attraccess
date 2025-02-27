@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Input } from '@heroui/input';
 import { Checkbox } from '@heroui/checkbox';
 import { Button } from '@heroui/button';
-import { useAppState } from '../app.state';
 import { Alert } from '@heroui/alert';
 import { useTranslations } from '../../i18n';
+import { useAuth } from '../../hooks/useAuth';
 import * as en from './translations/login.en';
 import * as de from './translations/login.de';
 
@@ -23,14 +23,12 @@ export function LoginForm({
     de,
   });
 
-  const login = useAppState((state) => state.login);
-  const loginIsInProgress = useAppState((state) => state.loginIsInProgress);
+  const { login } = useAuth();
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit: React.FormEventHandler = useCallback(
     async (event) => {
-      setError(null);
       event.preventDefault();
       const formData = new FormData(event.currentTarget as HTMLFormElement);
       const username = formData.get('username');
@@ -40,13 +38,25 @@ export function LoginForm({
         return;
       }
 
-      await login(username, password, {
-        persist: rememberMe,
-      }).catch((response) => {
-        setError(response.error.message);
-      });
+      try {
+        await login.mutateAsync({
+          username,
+          password,
+          persist: rememberMe,
+        });
+      } catch (err) {
+        const error = err as { error?: { message?: string } };
+        setError(error.error?.message || 'An unexpected error occurred');
+      }
     },
-    [login, rememberMe, setError]
+    [login, rememberMe]
+  );
+
+  const memoizedArrowRight = useMemo(
+    () => (
+      <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+    ),
+    []
   );
 
   return (
@@ -55,7 +65,12 @@ export function LoginForm({
         <h2 className="text-3xl font-bold">{t('title')}</h2>
         <p className="mt-2 text-gray-600 dark:text-gray-300">
           {t('noAccount')}{' '}
-          <Button onPress={onNeedsAccount} variant="light" color="secondary">
+          <Button
+            onPress={onNeedsAccount}
+            variant="light"
+            color="secondary"
+            isDisabled={login.isPending}
+          >
             {t('signUpButton')}
           </Button>
         </p>
@@ -69,6 +84,7 @@ export function LoginForm({
           label={t('username')}
           variant="underlined"
           required
+          isDisabled={login.isPending}
         />
         <Input
           id="password"
@@ -77,6 +93,7 @@ export function LoginForm({
           label={t('password')}
           variant="underlined"
           required
+          isDisabled={login.isPending}
         />
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -84,12 +101,18 @@ export function LoginForm({
               name="remember-me"
               isSelected={rememberMe}
               onValueChange={setRememberMe}
+              isDisabled={login.isPending}
             >
               {t('rememberMe')}
             </Checkbox>
           </div>
 
-          <Button onPress={onForgotPassword} variant="light" color="secondary">
+          <Button
+            onPress={onForgotPassword}
+            variant="light"
+            color="secondary"
+            isDisabled={login.isPending}
+          >
             {t('forgotPassword')}
           </Button>
         </div>
@@ -97,12 +120,11 @@ export function LoginForm({
           type="submit"
           fullWidth
           color="primary"
-          endContent={
-            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-          }
-          isLoading={loginIsInProgress}
+          endContent={memoizedArrowRight}
+          isLoading={login.isPending}
+          isDisabled={login.isPending}
         >
-          {t('signInButton')}
+          {login.isPending ? t('signingIn') : t('signInButton')}
         </Button>
 
         {error && (

@@ -1,0 +1,15 @@
+export default {
+  usageHistory: 'Usage History',
+  showAllUsers: 'Show all users',
+  user: 'User',
+  startTime: 'Start Time',
+  endTime: 'End Time',
+  duration: 'Duration',
+  status: 'Status',
+  active: 'Active',
+  completed: 'Completed',
+  inProgress: 'In Progress',
+  noUsageHistory: 'No usage history found for this resource.',
+  errorLoadingHistory: 'Error loading usage history. Please try again.',
+  unknownUser: 'Unknown User',
+};

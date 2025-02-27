@@ -4,7 +4,7 @@ import {
 } from './systemPermissions.guard';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
-import { User } from '../../database/entities';
+import { User } from '@attraccess/database-entities';
 
 describe('SystemPermissionsGuard', () => {
   let guard: SystemPermissionsGuard;

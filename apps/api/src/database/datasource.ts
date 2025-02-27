@@ -1,9 +1,9 @@
 // typeorm.config.ts
 
-import { DataSource } from 'typeorm';
-import { entities } from './entities';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { loadEnv } from '@attraccess/env';
 import { join } from 'path';
+import { entities } from './entities';
 
 const env = loadEnv((z) => ({
   DB_TYPE: z.enum(['postgres', 'mysql']),
@@ -17,7 +17,7 @@ const env = loadEnv((z) => ({
   DB_DATABASE: z.string(),
 }));
 
-export const dataSourceConfig = {
+export const dataSourceConfig: DataSourceOptions = {
   type: env.DB_TYPE,
   host: env.DB_HOST,
   port: env.DB_PORT,
@@ -25,10 +25,9 @@ export const dataSourceConfig = {
   password: env.DB_PASSWORD,
   database: env.DB_DATABASE,
   synchronize: false,
-  autoLoadEntities: false,
   migrations: [join(__dirname, 'migrations', '**', '*.{ts,js}')],
   migrationsTableName: 'migrations',
-  migrationsRun: false,
+  migrationsRun: true,
   entities: Object.values(entities),
 };
 

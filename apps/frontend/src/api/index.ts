@@ -1,7 +1,33 @@
-import { Api } from '@attraccess/api-client';
+import { Api, AuthControllerPostSessionData } from '@attraccess/api-client';
 
-const api = new Api({
-  baseUrl: import.meta.env.VITE_API_URL,
-});
+const getApi = () => {
+  const api = new Api<{ token?: string }>({
+    baseUrl: import.meta.env.VITE_API_URL,
+    securityWorker: (config) => {
+      return {
+        headers: {
+          Authorization: `Bearer ${config?.token}`,
+        },
+      };
+    },
+  });
 
-export default api;
+  const authFromLocalStorage = localStorage.getItem('auth');
+
+  if (authFromLocalStorage) {
+    const auth = JSON.parse(
+      authFromLocalStorage
+    ) as AuthControllerPostSessionData;
+    api.setSecurityData({
+      token: auth.authToken,
+    });
+  }
+
+  return api;
+};
+
+export function filenameToUrl(name: string) {
+  return `${import.meta.env.VITE_API_URL}${name}`;
+}
+
+export default getApi;

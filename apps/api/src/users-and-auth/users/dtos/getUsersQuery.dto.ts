@@ -1,21 +1,27 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNumber, Min, Max } from 'class-validator';
 
 export class GetUsersQueryDto {
-  @IsInt()
-  @Type(() => Number)
   @ApiProperty({
-    description: 'The page number to retrieve',
-    example: 1,
+    description: 'Page number (1-based)',
+    minimum: 1,
+    default: 1,
   })
-  page: number;
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  page = 1;
 
-  @IsInt()
-  @Type(() => Number)
   @ApiProperty({
-    description: 'The number of users to retrieve per page',
-    example: 10,
+    description: 'Number of items per page',
+    minimum: 1,
+    maximum: 100,
+    default: 10,
   })
-  limit: number;
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit = 10;
 }

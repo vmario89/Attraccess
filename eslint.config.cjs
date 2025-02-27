@@ -1,20 +1,20 @@
 const nx = require('@nx/eslint-plugin');
 
 module.exports = [
-  {
-    files: ['**/*.json'],
-    // Override or add rules here
-    rules: {},
-    languageOptions: {
-      parser: require('jsonc-eslint-parser'),
-    },
-  },
+  // {
+  //   files: ['**/*.json'],
+  //   // Override or add rules here
+  //   rules: {},
+  //   languageOptions: {
+  //     parser: require('jsonc-eslint-parser'),
+  //   },
+  // },
 
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', "**/tsconfig.**"],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

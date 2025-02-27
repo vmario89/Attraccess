@@ -9,12 +9,13 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { User } from '../../database/entities';
+import { User } from '@attraccess/database-entities';
 import { JwtGuard } from './jwt.guard';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 export enum SystemPermission {
   canManageUsers = 'canManageUsers',
+  canManageResources = 'canManageResources',
 }
 
 const NeedsSystemPermissions = Reflector.createDecorator<SystemPermission[]>();

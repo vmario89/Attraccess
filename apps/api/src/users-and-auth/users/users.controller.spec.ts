@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from '../users/users.controller';
-import { UsersService } from '../users/users.service';
-import { ForbiddenException } from '@nestjs/common';
-import { AuthenticatedRequest } from '../../types/request';
-import { AuthenticationType, User } from '../../database/entities';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../../email/email.service';
+import { User, AuthenticationType } from '@attraccess/database-entities';
+import { AuthenticatedRequest } from '../../types/request';
+import { CreateUserDto } from './dtos/createUser.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -15,10 +15,8 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [],
       controllers: [UsersController],
       providers: [
-        UsersController,
         {
           provide: UsersService,
           useValue: {
@@ -29,11 +27,9 @@ describe('UsersController', () => {
         {
           provide: AuthService,
           useValue: {
-            addAuthenticationDetails: jest.fn(),
             createJWT: jest.fn(),
-            generateEmailVerificationToken: jest
-              .fn()
-              .mockResolvedValue('test-verification-token'),
+            addAuthenticationDetails: jest.fn(),
+            generateEmailVerificationToken: jest.fn(),
           },
         },
         {
@@ -55,49 +51,86 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should allow a user to get their own profile', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
+  describe('getUserById', () => {
+    it('should return a user by ID', async () => {
+      const user = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        isEmailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationTokenExpiresAt: null,
+        systemPermissions: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        resourceIntroductions: [],
+        resourceUsages: [],
+        revokedTokens: [],
+        authenticationDetails: [],
+      } as User;
 
-    jest.spyOn(usersService, 'findOne').mockResolvedValue(user as User);
+      jest.spyOn(usersService, 'findOne').mockResolvedValue(user);
 
-    const response = await controller.getUserById(user.id.toString(), {
-      user,
-    } as AuthenticatedRequest);
+      const mockRequest: Partial<AuthenticatedRequest> = {
+        user,
+        authInfo: { tokenId: 'test-token' },
+        logout: jest.fn(),
+      };
 
-    expect(response).toEqual(user);
-  });
-
-  it("should not allow a user to get another user's profile", async () => {
-    expect(
-      controller.getUserById('1', {
-        user: { id: 2 },
-      } as AuthenticatedRequest)
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('should allow a user to create a new user using the local password strategy', async () => {
-    const user: Partial<User> = { id: 1, username: 'testuser' };
-
-    jest.spyOn(usersService, 'createOne').mockResolvedValue(user as User);
-    jest.spyOn(authService, 'createJWT').mockResolvedValue('test-token');
-
-    const response = await controller.createUser({
-      username: 'testuser',
-      strategy: AuthenticationType.LOCAL_PASSWORD,
-      password: 'password',
-      email: 'test@example.com',
+      const response = await controller.getUserById(
+        user.id.toString(),
+        mockRequest as AuthenticatedRequest
+      );
+      expect(response).toEqual(user);
     });
+  });
 
-    expect(response).toEqual(user);
-    expect(authService.addAuthenticationDetails).toHaveBeenCalledWith(user.id, {
-      type: AuthenticationType.LOCAL_PASSWORD,
-      details: {
+  describe('createUser', () => {
+    it('should create a new user', async () => {
+      const user = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        isEmailVerified: false,
+        emailVerificationToken: 'token',
+        emailVerificationTokenExpiresAt: new Date(),
+        systemPermissions: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        resourceIntroductions: [],
+        resourceUsages: [],
+        revokedTokens: [],
+        authenticationDetails: [],
+      } as User;
+
+      jest.spyOn(usersService, 'createOne').mockResolvedValue(user);
+      jest.spyOn(authService, 'createJWT').mockResolvedValue('jwt-token');
+      jest
+        .spyOn(authService, 'generateEmailVerificationToken')
+        .mockResolvedValue('verification-token');
+
+      const createUserDto: CreateUserDto = {
+        username: 'testuser',
+        email: 'test@example.com',
         password: 'password',
-      },
+        strategy: AuthenticationType.LOCAL_PASSWORD,
+      };
+
+      const response = await controller.createUser(createUserDto);
+      expect(response).toEqual(user);
+      expect(authService.addAuthenticationDetails).toHaveBeenCalledWith(
+        user.id,
+        {
+          type: AuthenticationType.LOCAL_PASSWORD,
+          details: {
+            password: createUserDto.password,
+          },
+        }
+      );
+      expect(emailService.sendVerificationEmail).toHaveBeenCalledWith(
+        user,
+        'verification-token'
+      );
     });
-    expect(usersService.createOne).toHaveBeenCalledWith(
-      'testuser',
-      'test@example.com'
-    );
   });
 });

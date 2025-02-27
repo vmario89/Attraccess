@@ -7,6 +7,8 @@ import {
   Logger,
   LogLevel,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 export async function bootstrap() {
   // Parse log levels from environment variable
@@ -16,7 +18,7 @@ export async function bootstrap() {
       ['error', 'warn', 'log', 'debug', 'verbose'].includes(level)
     );
 
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: logLevels,
   });
 
@@ -27,6 +29,9 @@ export async function bootstrap() {
   const logger = new Logger('Bootstrap');
   logger.log(`🚀 Application is running with global prefix: ${globalPrefix}`);
   logger.log(`📝 Enabled log levels: ${logLevels.join(', ')}`);
+
+  const configService = app.get(ConfigService);
+  const storageConfig = configService.get('storage');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -39,6 +44,12 @@ export async function bootstrap() {
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get('Reflector'))
   );
+
+  // Set up static file serving for resource images
+  app.useStaticAssets(storageConfig.root, {
+    prefix: '/storage',
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Attraccess API')
@@ -58,5 +69,3 @@ export async function bootstrap() {
 
   return { app, globalPrefix, swaggerDocumentFactory: documentFactory };
 }
-
-bootstrap();

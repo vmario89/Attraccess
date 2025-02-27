@@ -1,21 +1,33 @@
-import { PaginationOptions } from './request';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface PaginatedResponse<T> {
+export class PaginatedResponseDto<T> {
   data: T[];
+
+  @ApiProperty()
   total: number;
+
+  @ApiProperty()
   page: number;
+
+  @ApiProperty()
   limit: number;
+
+  @ApiProperty()
+  totalPages: number;
 }
 
+export type PaginatedResponse<T> = PaginatedResponseDto<T>;
+
 export function makePaginatedResponse<T>(
-  requestOptions: PaginationOptions,
+  options: { page: number; limit: number },
   data: T[],
   total: number
 ): PaginatedResponse<T> {
   return {
     data,
     total,
-    page: requestOptions.page,
-    limit: requestOptions.limit,
+    page: options.page,
+    limit: options.limit,
+    totalPages: Math.ceil(total / options.limit),
   };
 }

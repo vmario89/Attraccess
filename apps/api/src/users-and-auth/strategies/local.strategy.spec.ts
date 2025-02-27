@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { LocalStrategy } from './local.strategy';
 import { AuthService } from '../auth/auth.service';
-import { User } from '../../database/entities';
+import { User } from '@attraccess/database-entities';
 
 describe('LocalStrategy', () => {
   let localStrategy: LocalStrategy;

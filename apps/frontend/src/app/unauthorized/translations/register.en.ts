@@ -5,10 +5,18 @@ export default {
   hasAccount: 'Already using our machines?',
   signInButton: 'Sign in here',
   username: 'Pick a username',
+  email: 'Your email address',
   password: 'Create your password',
   createAccountButton: 'Create account and start making!',
+  creatingAccount: 'Creating your account...',
   error: {
     title: 'Oops! A small hiccup',
     generic: 'Please check your info and try again',
+  },
+  success: {
+    title: 'Account Created Successfully!',
+    message:
+      'We have sent an activation email to {email}. Please check your inbox and click the activation link to complete your registration.',
+    closeButton: 'Got it',
   },
 };

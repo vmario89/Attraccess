@@ -6,7 +6,7 @@ import {
   AuthenticationType,
   User,
   RevokedToken,
-} from '../../database/entities';
+} from '@attraccess/database-entities';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -37,6 +37,7 @@ describe('AuthService', () => {
           provide: UsersService,
           useValue: {
             findOne: jest.fn(),
+            updateUser: jest.fn(),
           },
         },
         {
@@ -87,12 +88,22 @@ describe('AuthService', () => {
   });
 
   it('should authenticate user with correct credentials', async () => {
-    const user: Partial<User> = {
+    const user = {
       id: 1,
       username: 'testuser',
+      email: 'test@example.com',
       isEmailVerified: true,
-    };
-    jest.spyOn(usersService, 'findOne').mockResolvedValue(user as User);
+      emailVerificationToken: null,
+      emailVerificationTokenExpiresAt: null,
+      systemPermissions: {},
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      resourceIntroductions: [],
+      resourceUsages: [],
+      revokedTokens: [],
+      authenticationDetails: [],
+    } as User;
+    jest.spyOn(usersService, 'findOne').mockResolvedValue(user);
 
     const authenticationDetail: Partial<AuthenticationDetail> = {
       userId: 1,
@@ -120,12 +131,22 @@ describe('AuthService', () => {
   });
 
   it('should not authenticate user with incorrect credentials', async () => {
-    const user: Partial<User> = {
+    const user = {
       id: 1,
       username: 'testuser',
+      email: 'test@example.com',
       isEmailVerified: true,
-    };
-    jest.spyOn(usersService, 'findOne').mockResolvedValue(user as User);
+      emailVerificationToken: null,
+      emailVerificationTokenExpiresAt: null,
+      systemPermissions: {},
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      resourceIntroductions: [],
+      resourceUsages: [],
+      revokedTokens: [],
+      authenticationDetails: [],
+    } as User;
+    jest.spyOn(usersService, 'findOne').mockResolvedValue(user);
 
     jest.spyOn(authenticationDetailRepository, 'findOne').mockResolvedValue({
       id: 1,
@@ -151,15 +172,25 @@ describe('AuthService', () => {
   });
 
   it('should create a JWT for a valid user', async () => {
-    const user: Partial<User> = {
+    const user = {
       id: 1,
       username: 'testuser',
+      email: 'test@example.com',
       isEmailVerified: true,
-    };
+      emailVerificationToken: null,
+      emailVerificationTokenExpiresAt: null,
+      systemPermissions: {},
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      resourceIntroductions: [],
+      resourceUsages: [],
+      revokedTokens: [],
+      authenticationDetails: [],
+    } as User;
 
     jest.spyOn(jwtService, 'sign').mockReturnValue('test-token');
 
-    const token = await authService.createJWT(user as User);
+    const token = await authService.createJWT(user);
 
     expect(token).toBeDefined();
     expect(token).toEqual('test-token');

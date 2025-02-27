@@ -15,7 +15,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 // Constants and Entities
 import { jwtConstants } from './constants';
-import { User, AuthenticationDetail, RevokedToken } from '../database/entities';
+import {
+  User,
+  AuthenticationDetail,
+  RevokedToken,
+} from '@attraccess/database-entities';
 import { EmailModule } from '../email/email.module';
 
 @Module({
@@ -24,7 +28,7 @@ import { EmailModule } from '../email/email.module';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '24h' },
     }),
     EmailModule,
   ],

@@ -9,35 +9,49 @@ import {
   Inject,
   forwardRef,
   Query,
-  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedRequest } from '../../types/request';
 import { AuthService } from '../auth/auth.service';
 import { Auth, SystemPermission } from '../strategies/systemPermissions.guard';
-import { CreateLocalUserDto } from './dtos/createLocalUser.dto';
 import { EmailService } from '../../email/email.service';
 import { GetUsersQueryDto } from './dtos/getUsersQuery.dto';
 import { VerifyEmailDto } from './dtos/verifyEmail.dto';
+import { User } from '@attraccess/database-entities';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { PaginatedResponseDto } from '../../types/response';
+import { CreateUserDto } from './dtos/createUser.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
     @Inject(forwardRef(() => AuthService))
-    private authService: AuthService,
-    private emailService: EmailService
+    private readonly authService: AuthService,
+    private readonly emailService: EmailService
   ) {}
 
   @Post()
-  async createUser(@Body() body: CreateLocalUserDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: User,
+  })
+  async createUser(@Body() body: CreateUserDto): Promise<User> {
     const user = await this.usersService.createOne(body.username, body.email);
-    await this.authService.addAuthenticationDetails(user.id, {
-      type: body.strategy,
-      details: {
-        password: body.password,
-      },
-    });
+
+    try {
+      await this.authService.addAuthenticationDetails(user.id, {
+        type: body.strategy,
+        details: {
+          password: body.password,
+        },
+      });
+    } catch (e) {
+      await this.usersService.deleteOne(user.id);
+      throw e;
+    }
 
     const verificationToken =
       await this.authService.generateEmailVerificationToken(user);
@@ -50,6 +64,17 @@ export class UsersController {
   async verifyEmail(@Body() body: VerifyEmailDto) {
     await this.authService.verifyEmail(body.email, body.token);
     return { message: 'Email verified successfully' };
+  }
+
+  @Auth()
+  @Get('me')
+  @ApiResponse({
+    status: 200,
+    description: 'The current user.',
+    type: User,
+  })
+  async getMe(@Req() request: AuthenticatedRequest) {
+    return request.user;
   }
 
   @Auth()
@@ -75,7 +100,14 @@ export class UsersController {
 
   @Get()
   @Auth(SystemPermission.canManageUsers)
-  async getUsers(@Query() query: GetUsersQueryDto) {
+  @ApiResponse({
+    status: 200,
+    description: 'List of users.',
+    type: PaginatedResponseDto,
+  })
+  async getUsers(
+    @Query() query: GetUsersQueryDto
+  ): Promise<PaginatedResponseDto<User>> {
     return this.usersService.findAll({
       page: query.page,
       limit: query.limit,

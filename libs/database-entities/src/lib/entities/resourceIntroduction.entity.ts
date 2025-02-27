@@ -1,0 +1,76 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { Resource } from './resource.entity';
+import { User } from './user.entity';
+
+@Entity()
+export class ResourceIntroduction {
+  @PrimaryGeneratedColumn()
+  @ApiProperty({
+    description: 'The unique identifier of the introduction',
+    example: 1,
+  })
+  id!: number;
+
+  @Column()
+  @ApiProperty({
+    description: 'The ID of the resource',
+    example: 1,
+  })
+  resourceId!: number;
+
+  @Column()
+  @ApiProperty({
+    description: 'The ID of the user who received the introduction',
+    example: 1,
+  })
+  receiverUserId!: number;
+
+  @Column({ nullable: true })
+  @ApiProperty({
+    description: 'The ID of the user who tutored the receiver',
+    example: 2,
+  })
+  tutorUserId!: number;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @ApiProperty({
+    description: 'When the introduction was completed',
+    example: '2021-01-01T00:00:00.000Z',
+  })
+  completedAt!: Date;
+
+  @CreateDateColumn()
+  @ApiProperty({
+    description: 'When the introduction record was created',
+    example: '2021-01-01T00:00:00.000Z',
+  })
+  createdAt!: Date;
+
+  @ManyToOne(() => Resource, (resource) => resource.introductions)
+  @JoinColumn({ name: 'resourceId' })
+  resource!: Resource;
+
+  @ManyToOne(() => User, (user) => user.resourceIntroductions)
+  @JoinColumn({ name: 'receiverUserId' })
+  @ApiProperty({
+    description: 'The user who received the introduction',
+    type: () => User,
+  })
+  receiverUser!: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'tutorUserId' })
+  @ApiProperty({
+    description: 'The user who tutored the receiver',
+    type: () => User,
+  })
+  tutorUser!: User;
+}
