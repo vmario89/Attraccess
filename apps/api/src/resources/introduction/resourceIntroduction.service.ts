@@ -54,7 +54,9 @@ export class ResourceIntroductionService {
       });
 
     if (existingIntroduction) {
-      throw new BadRequestException('Introduction already completed');
+      throw new BadRequestException(
+        `Introduction for user "${existingIntroduction.receiverUser.username}" already completed`
+      );
     }
 
     // Create or update introduction record

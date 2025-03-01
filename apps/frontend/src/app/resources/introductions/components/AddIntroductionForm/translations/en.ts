@@ -1,13 +1,8 @@
 export default {
-  title: 'User Introductions',
   addNew: {
     label: 'username or email',
     button: 'Add',
   },
-  existingIntroductions: 'Users with Access',
-  noIntroductions: 'No introductions have been given yet',
-  introducedBy: 'Introduced by {{tutor}}',
-  unknown: 'Unknown',
   error: {
     emptyIdentifier: {
       title: 'No User Specified',
@@ -22,10 +17,5 @@ export default {
   success: {
     title: 'Introduction Added',
     description: 'Successfully added introduction for {{user}}',
-  },
-  pagination: {
-    showing: 'Showing {{start}} to {{end}} of {{total}} introductions',
-    previous: 'Previous',
-    next: 'Next',
   },
 };

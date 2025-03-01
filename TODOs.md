@@ -1,7 +1,24 @@
 # TODO's
 
-[x] Bug: Somewhere in the introduction or usage flow, auth credentials break/get mixed up between users - Added tests for the introduction flow to verify that auth credentials are properly maintained - Created backend E2E tests to verify auth tokens remain valid throughout the flow - Created frontend tests to ensure user context is maintained during resource introduction operations - Fixed a bug in the test environment where API endpoints needed the proper global prefix
+[ ] Bug: Somewhere in the introduction or usage flow, auth credentials break/get moved to a different user
+    - add further tests for the introduction flow to make sure this is not an actual bug
 [ ] Bug: Introducers are shown multiple times in the ui
-[ ] Feature: System administrators can add SSO providers - users can use these to login - roles from these sso providers can be mapped to system permissions and are kept in sync from that point on - if roles are synced, they can no longer be manually changed
-[ ] Feature: Maintenance Schedules - Users with resource manage permission can create / update Schedules - Users with resource manage permission as well as users who are maintainers of a resource can see schedules of a resource - Schedules are either real-time based, usage hours based, usages (count) based or any combination of these (first to match sets the maintenance status) - if a maintenance is active, the resource can no longer be used by normal users (block usage sessions) - active usage sessions are NOT terminated if during them a maintenance condition becomes active, the maintenance starts afterwards - users who are maintainers of the resource can still start and stop the machine during maintenance - users who are maintainers can mark an active maintenance schedule as done - each maintenance which was done is tracked and a history is shown (to all users) in the ui - each maintenance which was done can have a note (optional) from the maintainer
-[ ] Feature: Manual disabling/maintenance of a resource - Users with manage resource permissions as well as resource maintainers can manually set a resource to "in maintenance", they need to specify a note describing why the resource is going in maintenance - if the resource is in maintenance, it can only be used by users who are maintainers - only users with manage resource permission as well as resource maintainers can remove the maintenance status - this manual action is logged in the same maintenance history as the normal maintenance schedules (in the ui, does not need to be the same in the db)
+[ ] Feature: System administrators can add SSO providers
+    - users can use these to login
+    - roles from these sso providers can be mapped to system permissions and are kept in sync from that point on
+    - if roles are synced, they can no longer be manually changed
+[ ] Feature: Maintenance Schedules
+    - Users with resource manage permission can create / update Schedules
+    - Users with resource manage permission as well as users who are maintainers of a resource can see schedules of a resource
+    - Schedules are either real-time based, usage hours based, usages (count) based or any combination of these (first to match sets the maintenance status)
+    - if a maintenance is active, the resource can no longer be used by normal users (block usage sessions)
+    - active usage sessions are NOT terminated if during them a maintenance condition becomes active, the maintenance starts afterwards
+    - users who are maintainers of the resource can still start and stop the machine during maintenance
+    - users who are maintainers can mark an active maintenance schedule as done
+    - each maintenance which was done is tracked and a history is shown (to all users) in the ui
+    - each maintenance which was done can have a note (optional) from the maintainer
+[ ] Feature: Manual disabling/maintenance of a resource
+    - Users with manage resource permissions as well as resource maintainers can manually set a resource to "in maintenance", they need to specify a note describing why the resource is going in maintenance
+    - if the resource is in maintenance, it can only be used by users who are maintainers
+    - only users with manage resource permission as well as resource maintainers can remove the maintenance status
+    - this manual action is logged in the same maintenance history as the normal maintenance schedules (in the ui, does not need to be the same in the db)

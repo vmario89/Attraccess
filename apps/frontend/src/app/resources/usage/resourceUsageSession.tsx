@@ -14,13 +14,13 @@ import {
   useActiveSession,
   useStartSession,
   useEndSession,
-} from '../../api/hooks/resourceUsage';
+} from '../../../api/hooks/resourceUsage';
 import {
   useCheckIntroductionStatus,
   useResourceIntroducers,
-} from '../../api/hooks/resourceIntroduction';
-import { useToastMessage } from '../../components/toastProvider';
-import { useTranslations } from '../../i18n';
+} from '../../../api/hooks/resourceIntroduction';
+import { useToastMessage } from '../../../components/toastProvider';
+import { useTranslations } from '../../../i18n';
 import * as en from './translations/resourceUsageSession.en';
 import * as de from './translations/resourceUsageSession.de';
 

@@ -16,9 +16,9 @@ import {
   User as UserDisplay,
 } from '@heroui/react';
 import { History, Users } from 'lucide-react';
-import { useResourceUsageHistory } from '../../api/hooks/resourceUsage';
-import { useAuth } from '../../hooks/useAuth';
-import { useTranslations } from '../../i18n';
+import { useResourceUsageHistory } from '../../../api/hooks/resourceUsage';
+import { useAuth } from '../../../hooks/useAuth';
+import { useTranslations } from '../../../i18n';
 import * as en from './translations/resourceUsageHistory.en';
 import * as de from './translations/resourceUsageHistory.de';
 import { ResourceUsage } from '@attraccess/api-client';

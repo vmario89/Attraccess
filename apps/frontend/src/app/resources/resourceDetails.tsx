@@ -7,15 +7,15 @@ import { Button } from '@heroui/button';
 import { Spinner } from '@heroui/react';
 import { useDisclosure } from '@heroui/modal';
 import { ResourceCard } from './resourceCard';
-import { ResourceUsageSession } from './resourceUsageSession';
-import { ResourceUsageHistory } from './resourceUsageHistory';
+import { ResourceUsageSession } from './usage/resourceUsageSession';
+import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
 import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/resourceDetails.en';
 import * as de from './translations/resourceDetails.de';
 import { useResourceIntroducers } from '../../api/hooks/resourceIntroduction';
-import { ResourceIntroductions } from './resourceIntroductions';
+import { ResourceIntroductions } from './introductions/resourceIntroductions';
 
 export function ResourceDetails() {
   const { id } = useParams<{ id: string }>();
