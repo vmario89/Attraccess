@@ -1,4 +1,3 @@
- 
 export default {
   displayName: 'frontend',
   preset: '../../jest.preset.js',
@@ -8,6 +7,7 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/frontend',
   testEnvironment: 'jsdom',
+  passWithNoTests: true,
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   moduleNameMapper: {
     '\\.svg$': 'identity-obj-proxy',

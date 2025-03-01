@@ -26,7 +26,6 @@ describe('AuthService', () => {
   let authenticationDetailRepository: Repository<AuthenticationDetail>;
   let revokedTokenRepository: Repository<RevokedToken>;
   let jwtService: JwtService;
-  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -77,7 +76,6 @@ describe('AuthService', () => {
       RevokedTokenRepository
     );
     jwtService = module.get<JwtService>(JwtService);
-    emailService = module.get<EmailService>(EmailService);
 
     // Reset all mocks before each test
     jest.clearAllMocks();

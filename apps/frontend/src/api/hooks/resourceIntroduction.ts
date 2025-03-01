@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  ResourceIntroduction,
-  ResourceIntroductionUser,
-} from '@attraccess/api-client';
+import { ResourceIntroduction } from '@attraccess/api-client';
 import { queryKeys } from './base';
 import getApi from '../index';
 

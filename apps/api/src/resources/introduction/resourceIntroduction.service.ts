@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   ResourceIntroduction,
-  User,
   ResourceIntroductionUser,
 } from '@attraccess/database-entities';
 import { ResourcesService } from '../resources.service';

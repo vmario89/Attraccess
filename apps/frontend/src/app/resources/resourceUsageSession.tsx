@@ -23,8 +23,6 @@ import { useToastMessage } from '../../components/toastProvider';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/resourceUsageSession.en';
 import * as de from './translations/resourceUsageSession.de';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../../api/hooks/base';
 
 interface ResourceUsageSessionProps {
   resourceId: number;
@@ -35,7 +33,6 @@ export function ResourceUsageSession({
 }: ResourceUsageSessionProps) {
   const { t } = useTranslations('resourceUsageSession', { en, de });
   const { success, error: showError } = useToastMessage();
-  const queryClient = useQueryClient();
 
   // Check if user has completed the introduction
   const { data: hasCompletedIntroduction, isLoading: isLoadingIntroStatus } =
@@ -46,11 +43,8 @@ export function ResourceUsageSession({
     useResourceIntroducers(resourceId);
 
   // Get active session
-  const {
-    data: activeSession,
-    isLoading: isLoadingSession,
-    refetch: refetchActiveSession,
-  } = useActiveSession(resourceId);
+  const { data: activeSession, isLoading: isLoadingSession } =
+    useActiveSession(resourceId);
   const startSession = useStartSession();
   const endSession = useEndSession();
 

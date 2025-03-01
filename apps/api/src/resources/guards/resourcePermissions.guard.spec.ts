@@ -8,7 +8,6 @@ import { Reflector } from '@nestjs/core';
 import { ResourcePermissionsGuard } from './resourcePermissions.guard';
 import { ResourcesService } from '../resources.service';
 import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
-import { Resource, User } from '@attraccess/database-entities';
 import { createMock } from '@golevelup/ts-jest';
 
 interface RequestWithUser {

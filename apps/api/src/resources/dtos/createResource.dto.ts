@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, MinLength } from 'class-validator';
+import { IsString, IsOptional, MinLength } from 'class-validator';
 import { FileUpload } from '../../common/types/file-upload.types';
 
 export class CreateResourceDto {
