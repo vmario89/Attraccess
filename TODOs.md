@@ -22,3 +22,4 @@
     - if the resource is in maintenance, it can only be used by users who are maintainers
     - only users with manage resource permission as well as resource maintainers can remove the maintenance status
     - this manual action is logged in the same maintenance history as the normal maintenance schedules (in the ui, does not need to be the same in the db)
+[ ] Deployment: figure out how to deploy/ship using bytenode and docker images. should auto run migrations and check license
