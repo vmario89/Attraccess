@@ -1,7 +1,8 @@
 # TODO's
 
-[ ] Bug: Somewhere in the introduction or usage flow, auth credentials break/get moved to a different user
-    - add further tests for the introduction flow to make sure this is not an actual bug
+[ ] Refactor db to default to sqlite, use simple-enum for enum support.
+    - e2e tests should use different db
+    - env to use postgres should still be possible
 [ ] Bug: Introducers are shown multiple times in the ui
 [ ] Feature: System administrators can add SSO providers
     - users can use these to login
