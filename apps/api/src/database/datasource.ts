@@ -4,28 +4,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { loadEnv } from '@attraccess/env';
 import { join, resolve } from 'path';
 import { entities } from './entities';
-
-// TypeScript declaration for webpack's require.context
-declare const require: {
-  context(
-    directory: string,
-    useSubdirectories: boolean,
-    regExp: RegExp
-  ): {
-    keys(): string[];
-    <T>(id: string): T;
-  };
-};
-
-// Use webpack's require.context for glob imports
-// This will be processed by webpack during build time
-const migrationContext = require.context('./migrations', false, /\.ts$/);
-
-// Extract and transform migration classes from the context
-const migrations = migrationContext.keys().map((fileName) => {
-  const migration = migrationContext(fileName);
-  return Object.values(migration)[0];
-});
+import * as migrations from './migrations';
 
 const envType = loadEnv((z) => ({
   DB_TYPE: z.enum(['postgres', 'sqlite']).default('sqlite'),
@@ -34,7 +13,7 @@ const envType = loadEnv((z) => ({
 let dbConfig: DataSourceOptions = {
   type: envType.DB_TYPE,
   synchronize: false,
-  migrations: migrations,
+  migrations: Object.values(migrations),
   migrationsTableName: 'migrations',
   migrationsRun: true,
   entities: Object.values(entities),
@@ -89,7 +68,5 @@ switch (envType.DB_TYPE) {
 }
 
 export const dataSourceConfig = dbConfig;
-
-console.log('dbConfig', dbConfig);
 
 export default new DataSource(dataSourceConfig);
