@@ -10,7 +10,7 @@ function getInferredApiUrl() {
     return `${frontendUrl.protocol}//${frontendUrl.hostname}:3000`;
   }
 
-  return `${frontendUrl.protocol}//api.${frontendUrl.hostname}`;
+  return `${frontendUrl.protocol}//${frontendUrl.hostname}:${frontendUrl.port}/api`;
 }
 
 function getBaseUrl() {

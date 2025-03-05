@@ -7,14 +7,15 @@
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0
-ENV PORT=3000
+ENV PORT=80
 
 WORKDIR /app
 
 RUN addgroup --system api && \
-          adduser --system -G api api
+    adduser --system -G api api
 
 COPY dist/apps/api api/
+COPY dist/apps/frontend frontend/
 RUN chown -R api:api .
 
 # You can remove this install step if you build with `--bundle` option.

@@ -7,7 +7,8 @@ import { dataSourceConfig } from '../database/datasource';
 import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule } from '@nestjs/config';
 import { storageConfig } from '../config/storage.config';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -17,6 +18,9 @@ import { storageConfig } from '../config/storage.config';
     UsersAndAuthModule,
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'frontend'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
