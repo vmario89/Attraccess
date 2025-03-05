@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  # Trigger on release creation
+  release:
+    types: [published]
+  
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag (e.g. v1.0.0, latest)'
+        required: true
+        default: 'latest'
+
+# Define environment variables
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Enable Docker BuildKit
+  DOCKER_BUILDKIT: 1
+
+# Define permissions
+permissions:
+  contents: read
+  packages: write
+  id-token: write # Needed for SLSA attestation
+
+jobs:
+  # Build and test to ensure everything is working before release
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm nx run-many --target=lint,typecheck,test,e2e
+
+      - name: Run production build
+        run: pnpm nx run-many --target=build --projects=api,frontend --prod
+
+  # Build and push Docker container
+  build-push-container:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' && github.event.release.prerelease == false }}
+            type=raw,value=${{ github.event.inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
+
+      # Read Node.js version from .nvmrc
+      - name: Get Node.js Version
+        id: node-version
+        run: echo "NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
+      # Set execute permissions on build script
+      - name: Make build script executable
+        run: chmod +x build.sh
+
+      # Build Docker image with secrets support
+      - name: Build and push Docker image
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
+          # Use secret mount for Nx Cloud token
+          secrets: |
+            nx_token=${{ env.NX_CLOUD_ACCESS_TOKEN }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # Generate SLSA attestation for the container image
+      - name: Generate SLSA attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build-push.outputs.digest }}
+          push-to-registry: true
+
+  # Optionally add a deployment step
+  deploy:
+    needs: build-push-container
+    runs-on: ubuntu-latest
+    # Only deploy on actual releases, not manual workflow runs
+    if: github.event_name == 'release'
+    steps:
+      - name: Deployment notification
+        run: echo "Container was built and pushed. Ready for deployment to production."
+      # Add deployment steps here when you're ready
+      # For example, update k8s manifests, trigger a deployment API, etc. 

@@ -8,7 +8,7 @@ import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule } from '@nestjs/config';
 import { storageConfig } from '../config/storage.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +19,7 @@ import { join } from 'path';
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'frontend'),
+      rootPath: process.env.STATIC_FRONTEND_FILE_PATH,
     }),
   ],
   controllers: [AppController],

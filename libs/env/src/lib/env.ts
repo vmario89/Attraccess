@@ -7,6 +7,7 @@ export function loadEnv<TSchema extends SchemaDefinition>(
   env: typeof process.env = process.env
 ): z.infer<z.ZodObject<TSchema>> {
   const zodSchema = schema(z);
+  const envSchema = z.object(zodSchema);
 
-  return z.object(zodSchema).parse(env);
+  return envSchema.parse(env);
 }

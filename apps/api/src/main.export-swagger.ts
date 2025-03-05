@@ -6,6 +6,7 @@ async function main() {
   console.log('Exporting swagger');
 
   console.log('Bootstrapping');
+
   const { swaggerDocumentFactory } = await bootstrap();
 
   console.log('Creating swagger document');
