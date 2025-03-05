@@ -1,7 +1,6 @@
 export default {
   addNew: {
-    label: 'Benutzername oder E-Mail',
-    button: 'Hinzufügen',
+    button: 'wurde eingeführt',
   },
   error: {
     emptyIdentifier: {

@@ -11,6 +11,9 @@
     },
     "serve": {
       "dependsOn": ["api-client:build"]
+    },
+    "lint": {
+      "dependsOn": ["frontend:typecheck"]
     }
   }
 }

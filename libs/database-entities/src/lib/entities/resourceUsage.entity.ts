@@ -64,13 +64,6 @@ export class ResourceUsage {
   })
   endNotes!: string | null;
 
-  @Column({ type: 'float', default: 0 })
-  @ApiProperty({
-    description: 'Duration of the usage session in hours',
-    example: 2.5,
-  })
-  duration!: number;
-
   @ManyToOne(() => Resource, (resource) => resource.usages)
   @JoinColumn({ name: 'resourceId' })
   resource!: Resource;
@@ -84,4 +77,17 @@ export class ResourceUsage {
     type: () => User,
   })
   user!: User | null;
+
+  @Column({
+    generatedType: 'STORED',
+    asExpression: `CASE 
+      WHEN "endTime" IS NULL THEN -1
+      ELSE EXTRACT(EPOCH FROM ("endTime" - "startTime")) / 60
+    END`,
+  })
+  @ApiProperty({
+    description: 'The duration of the usage session in minutes',
+    example: 120,
+  })
+  usageInMinutes!: number;
 }

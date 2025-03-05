@@ -1,0 +1,20 @@
+{
+  "name": "Attraccess",
+  "short_name": "Attraccess",
+  "description": "Attraccess is a platform for managing access to resources in a collaborative environment (e.g. Makerspaces and FabLabs).",
+  "start_url": "/?pwa=true",
+  "id": "/",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "display": "standalone"
+}

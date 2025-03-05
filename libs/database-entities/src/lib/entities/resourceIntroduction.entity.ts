@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { User } from './user.entity';
+import { ResourceIntroductionHistoryItem } from './resourceIntroductionHistoryItem.entity';
 
 @Entity()
 export class ResourceIntroduction {
@@ -73,4 +75,14 @@ export class ResourceIntroduction {
     type: () => User,
   })
   tutorUser!: User;
+
+  @OneToMany(
+    () => ResourceIntroductionHistoryItem,
+    (history) => history.introduction
+  )
+  @ApiProperty({
+    description: 'History of revoke/unrevoke actions for this introduction',
+    type: () => [ResourceIntroductionHistoryItem],
+  })
+  history!: ResourceIntroductionHistoryItem[];
 }

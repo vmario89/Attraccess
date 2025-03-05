@@ -80,13 +80,14 @@ export interface VerifyEmailDto {
   email: string;
 }
 
-export type Object = object;
+export type UserNotFoundException = object;
 
-export interface PaginatedResponseDto {
+export interface PaginatedUsersResponseDto {
   total: number;
   page: number;
   limit: number;
   totalPages: number;
+  data: User[];
 }
 
 export interface CreateSessionResponse {
@@ -133,11 +134,6 @@ export interface Resource {
    * @example "1234567890_abcdef.jpg"
    */
   imageFilename?: string;
-  /**
-   * Total hours the resource has been in use
-   * @example 123.5
-   */
-  totalUsageHours: number;
   /**
    * When the resource was created
    * @format date-time
@@ -221,15 +217,15 @@ export interface ResourceUsage {
    */
   endNotes?: string;
   /**
-   * Duration of the usage session in hours
-   * @example 2.5
-   */
-  duration: number;
-  /**
    * The user who used the resource
    * @example 1
    */
   user?: User;
+  /**
+   * The duration of the usage session in minutes
+   * @example 120
+   */
+  usageInMinutes: number;
 }
 
 export interface EndUsageSessionDto {
@@ -245,6 +241,14 @@ export interface EndUsageSessionDto {
   endTime?: string;
 }
 
+export interface GetResourceHistoryResponseDto {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  data: ResourceUsage[];
+}
+
 export interface CompleteIntroductionDto {
   /**
    * User ID (deprecated, use userIdentifier instead)
@@ -256,6 +260,42 @@ export interface CompleteIntroductionDto {
    * @example "username or user@example.com"
    */
   userIdentifier?: string;
+}
+
+export interface ResourceIntroductionHistoryItem {
+  /**
+   * The unique identifier of the introduction history entry
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the related introduction
+   * @example 1
+   */
+  introductionId: number;
+  /**
+   * The action performed (revoke or unrevoke)
+   * @example "revoke"
+   */
+  action: 'revoke' | 'unrevoke';
+  /**
+   * The ID of the user who performed the action
+   * @example 1
+   */
+  performedByUserId: number;
+  /**
+   * Optional comment explaining the reason for the action
+   * @example "User no longer requires access to this resource"
+   */
+  comment?: string;
+  /**
+   * When the action was performed
+   * @format date-time
+   * @example "2021-01-01T00:00:00.000Z"
+   */
+  createdAt: string;
+  /** The user who performed the action */
+  performedByUser: User;
 }
 
 export interface ResourceIntroduction {
@@ -295,6 +335,8 @@ export interface ResourceIntroduction {
   receiverUser: User;
   /** The user who tutored the receiver */
   tutorUser: User;
+  /** History of revoke/unrevoke actions for this introduction */
+  history: ResourceIntroductionHistoryItem[];
 }
 
 export interface PaginatedResourceIntroductionResponseDto {
@@ -303,6 +345,22 @@ export interface PaginatedResourceIntroductionResponseDto {
   limit: number;
   totalPages: number;
   data: ResourceIntroduction[];
+}
+
+export interface RevokeIntroductionDto {
+  /**
+   * Optional comment explaining the reason for revoking access
+   * @example "User no longer works on this project"
+   */
+  comment?: string;
+}
+
+export interface UnrevokeIntroductionDto {
+  /**
+   * Optional comment explaining the reason for unrevoking access
+   * @example "User rejoined the project"
+   */
+  comment?: string;
 }
 
 export interface ResourceIntroductionUser {
@@ -330,22 +388,34 @@ export interface ResourceIntroductionUser {
   user: User;
 }
 
-export type AppControllerGetPingData = any;
+export interface AppControllerGetPingData {
+  /** @example "pong" */
+  message?: string;
+}
 
 export type UsersControllerCreateUserData = User;
 
 export interface UsersControllerGetUsersParams {
   /** Page number (1-based) */
-  page: Object;
+  page?: number;
   /** Number of items per page */
-  limit: Object;
+  limit?: number;
+  /** Search query */
+  search?: string;
 }
 
-export type UsersControllerGetUsersData = PaginatedResponseDto;
+export type UsersControllerGetUsersData = PaginatedUsersResponseDto;
 
-export type UsersControllerVerifyEmailData = any;
+export interface UsersControllerVerifyEmailData {
+  /** @example "Email verified successfully" */
+  message?: string;
+}
 
 export type UsersControllerGetMeData = User;
+
+export type UsersControllerGetUserByIdData = User;
+
+export type UsersControllerGetUserByIdError = UserNotFoundException;
 
 export interface AuthControllerPostSessionPayload {
   /** The username for authentication */
@@ -356,7 +426,7 @@ export interface AuthControllerPostSessionPayload {
 
 export type AuthControllerPostSessionData = CreateSessionResponse;
 
-export type AuthControllerDeleteSessionData = any;
+export type AuthControllerDeleteSessionData = object;
 
 export type ResourcesControllerCreateResourceData = Resource;
 
@@ -383,7 +453,7 @@ export type ResourcesControllerGetResourceByIdData = Resource;
 
 export type ResourcesControllerUpdateResourceData = Resource;
 
-export type ResourcesControllerDeleteResourceData = any;
+export type ResourcesControllerDeleteResourceData = object;
 
 export type ResourceUsageControllerStartSessionData = ResourceUsage;
 
@@ -408,7 +478,7 @@ export interface ResourceUsageControllerGetResourceHistoryParams {
   resourceId: number;
 }
 
-export type ResourceUsageControllerGetResourceHistoryData = PaginatedResponseDto;
+export type ResourceUsageControllerGetResourceHistoryData = GetResourceHistoryResponseDto;
 
 export type ResourceUsageControllerGetActiveSessionData = ResourceUsage;
 
@@ -433,19 +503,42 @@ export interface ResourceIntroductionControllerGetResourceIntroductionsParams {
 
 export type ResourceIntroductionControllerGetResourceIntroductionsData = PaginatedResourceIntroductionResponseDto;
 
-export type ResourceIntroductionControllerCheckIntroductionStatusData = boolean;
+export interface ResourceIntroductionControllerCheckIntroductionStatusData {
+  hasValidIntroduction?: boolean;
+}
 
-export type ResourceIntroductionControllerAddIntroducerData = ResourceIntroductionUser;
+export type ResourceIntroductionControllerRevokeIntroductionData = ResourceIntroductionHistoryItem;
 
-export type ResourceIntroductionControllerRemoveIntroducerData = any;
+export type ResourceIntroductionControllerUnrevokeIntroductionData = ResourceIntroductionHistoryItem;
 
-export type ResourceIntroductionControllerGetResourceIntroducersData = ResourceIntroductionUser[];
+export type ResourceIntroductionControllerGetIntroductionHistoryData = ResourceIntroductionHistoryItem[];
 
-export namespace App {
+export interface ResourceIntroductionControllerCheckIntroductionRevokedStatusData {
+  isRevoked?: boolean;
+}
+
+export type ResourceIntroductionControllerGetResourceIntroductionData = ResourceIntroduction;
+
+export interface ResourceIntroductionControllerCanManageIntroductionsData {
+  canManageIntroductions?: boolean;
+}
+
+export type ResourceIntroducersControllerGetResourceIntroducersData = ResourceIntroductionUser[];
+
+export type ResourceIntroducersControllerAddIntroducerData = ResourceIntroductionUser;
+
+export type ResourceIntroducersControllerRemoveIntroducerData = object;
+
+export interface ResourceIntroducersControllerCanManageIntroducersData {
+  canManageIntroducers?: boolean;
+}
+
+export namespace Application {
   /**
    * No description
-   * @tags App
+   * @tags Application
    * @name AppControllerGetPing
+   * @summary Check API availability
    * @request GET:/api/ping
    */
   export namespace AppControllerGetPing {
@@ -462,6 +555,7 @@ export namespace Users {
    * No description
    * @tags users
    * @name UsersControllerCreateUser
+   * @summary Create a new user
    * @request POST:/api/users
    */
   export namespace UsersControllerCreateUser {
@@ -476,6 +570,7 @@ export namespace Users {
    * No description
    * @tags users
    * @name UsersControllerGetUsers
+   * @summary Get a paginated list of users
    * @request GET:/api/users
    * @secure
    */
@@ -483,9 +578,11 @@ export namespace Users {
     export type RequestParams = {};
     export type RequestQuery = {
       /** Page number (1-based) */
-      page: Object;
+      page?: number;
       /** Number of items per page */
-      limit: Object;
+      limit?: number;
+      /** Search query */
+      search?: string;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -496,6 +593,7 @@ export namespace Users {
    * No description
    * @tags users
    * @name UsersControllerVerifyEmail
+   * @summary Verify a user email address
    * @request POST:/api/users/verify-email
    */
   export namespace UsersControllerVerifyEmail {
@@ -510,6 +608,7 @@ export namespace Users {
    * No description
    * @tags users
    * @name UsersControllerGetMe
+   * @summary Get the current authenticated user
    * @request GET:/api/users/me
    * @secure
    */
@@ -525,25 +624,27 @@ export namespace Users {
    * No description
    * @tags users
    * @name UsersControllerGetUserById
+   * @summary Get a user by ID
    * @request GET:/api/users/{id}
    * @secure
    */
   export namespace UsersControllerGetUserById {
     export type RequestParams = {
-      id: string;
+      id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = any;
+    export type ResponseBody = UsersControllerGetUserByIdData;
   }
 }
 
-export namespace Auth {
+export namespace Authentication {
   /**
    * No description
-   * @tags Auth
+   * @tags Authentication
    * @name AuthControllerPostSession
+   * @summary Create a new session using local authentication
    * @request POST:/api/auth/session/local
    */
   export namespace AuthControllerPostSession {
@@ -556,8 +657,9 @@ export namespace Auth {
 
   /**
    * No description
-   * @tags Auth
+   * @tags Authentication
    * @name AuthControllerDeleteSession
+   * @summary Logout and invalidate the current session
    * @request DELETE:/api/auth/session
    * @secure
    */
@@ -815,10 +917,10 @@ export namespace ResourceIntroductions {
   }
 
   /**
-   * No description
+   * @description Check if the current user has completed the introduction for this resource and it is not revoked
    * @tags Resource Introductions
    * @name ResourceIntroductionControllerCheckIntroductionStatus
-   * @summary Check if current user has completed the introduction
+   * @summary Check if current user has a valid introduction
    * @request GET:/api/resources/{resourceId}/introductions/status
    * @secure
    */
@@ -833,59 +935,192 @@ export namespace ResourceIntroductions {
   }
 
   /**
-   * No description
+   * @description Revoke access for a user by marking their introduction as revoked
    * @tags Resource Introductions
-   * @name ResourceIntroductionControllerAddIntroducer
-   * @summary Add a user as an authorized introducer
-   * @request POST:/api/resources/{resourceId}/introductions/introducers/{userId}
+   * @name ResourceIntroductionControllerRevokeIntroduction
+   * @summary Revoke an introduction
+   * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
    * @secure
    */
-  export namespace ResourceIntroductionControllerAddIntroducer {
+  export namespace ResourceIntroductionControllerRevokeIntroduction {
     export type RequestParams = {
       resourceId: number;
-      userId: number;
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RevokeIntroductionDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroductionControllerRevokeIntroductionData;
+  }
+
+  /**
+   * @description Restore access for a user by unrevoking their introduction
+   * @tags Resource Introductions
+   * @name ResourceIntroductionControllerUnrevokeIntroduction
+   * @summary Unrevoke an introduction
+   * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
+   * @secure
+   */
+  export namespace ResourceIntroductionControllerUnrevokeIntroduction {
+    export type RequestParams = {
+      resourceId: number;
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UnrevokeIntroductionDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroductionControllerUnrevokeIntroductionData;
+  }
+
+  /**
+   * @description Retrieve the history of revoke/unrevoke actions for an introduction
+   * @tags Resource Introductions
+   * @name ResourceIntroductionControllerGetIntroductionHistory
+   * @summary Get history of an introduction
+   * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
+   * @secure
+   */
+  export namespace ResourceIntroductionControllerGetIntroductionHistory {
+    export type RequestParams = {
+      resourceId: number;
+      introductionId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerAddIntroducerData;
+    export type ResponseBody = ResourceIntroductionControllerGetIntroductionHistoryData;
+  }
+
+  /**
+   * @description Determine if a specific introduction is currently revoked
+   * @tags Resource Introductions
+   * @name ResourceIntroductionControllerCheckIntroductionRevokedStatus
+   * @summary Check if an introduction is revoked
+   * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
+   * @secure
+   */
+  export namespace ResourceIntroductionControllerCheckIntroductionRevokedStatus {
+    export type RequestParams = {
+      resourceId: number;
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroductionControllerCheckIntroductionRevokedStatusData;
+  }
+
+  /**
+   * @description Retrieve detailed information about a specific introduction
+   * @tags Resource Introductions
+   * @name ResourceIntroductionControllerGetResourceIntroduction
+   * @summary Get a single resource introduction
+   * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
+   * @secure
+   */
+  export namespace ResourceIntroductionControllerGetResourceIntroduction {
+    export type RequestParams = {
+      resourceId: number;
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroductionControllerGetResourceIntroductionData;
   }
 
   /**
    * No description
    * @tags Resource Introductions
-   * @name ResourceIntroductionControllerRemoveIntroducer
-   * @summary Remove a user from authorized introducers
-   * @request DELETE:/api/resources/{resourceId}/introductions/introducers/{userId}
+   * @name ResourceIntroductionControllerCanManageIntroductions
+   * @summary Check if user can manage introductions for the resource
+   * @request GET:/api/resources/{resourceId}/introductions/permissions/manage
    * @secure
    */
-  export namespace ResourceIntroductionControllerRemoveIntroducer {
+  export namespace ResourceIntroductionControllerCanManageIntroductions {
     export type RequestParams = {
       resourceId: number;
-      userId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerRemoveIntroducerData;
+    export type ResponseBody = ResourceIntroductionControllerCanManageIntroductionsData;
   }
+}
 
+export namespace ResourceIntroducers {
   /**
    * No description
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerGetResourceIntroducers
+   * @tags Resource Introducers
+   * @name ResourceIntroducersControllerGetResourceIntroducers
    * @summary Get all authorized introducers for a resource
-   * @request GET:/api/resources/{resourceId}/introductions/introducers
+   * @request GET:/api/resources/{resourceId}/introducers
    * @secure
    */
-  export namespace ResourceIntroductionControllerGetResourceIntroducers {
+  export namespace ResourceIntroducersControllerGetResourceIntroducers {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerGetResourceIntroducersData;
+    export type ResponseBody = ResourceIntroducersControllerGetResourceIntroducersData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Introducers
+   * @name ResourceIntroducersControllerAddIntroducer
+   * @summary Add a user as an authorized introducer
+   * @request POST:/api/resources/{resourceId}/introducers/{userId}
+   * @secure
+   */
+  export namespace ResourceIntroducersControllerAddIntroducer {
+    export type RequestParams = {
+      resourceId: number;
+      userId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroducersControllerAddIntroducerData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Introducers
+   * @name ResourceIntroducersControllerRemoveIntroducer
+   * @summary Remove a user from authorized introducers
+   * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
+   * @secure
+   */
+  export namespace ResourceIntroducersControllerRemoveIntroducer {
+    export type RequestParams = {
+      resourceId: number;
+      userId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroducersControllerRemoveIntroducerData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Introducers
+   * @name ResourceIntroducersControllerCanManageIntroducers
+   * @summary Check if user can manage introducers for the resource
+   * @request GET:/api/resources/{resourceId}/introducers/permissions/manage
+   * @secure
+   */
+  export namespace ResourceIntroducersControllerCanManageIntroducers {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroducersControllerCanManageIntroducersData;
   }
 }
 
@@ -1107,18 +1342,20 @@ export class HttpClient<SecurityDataType = unknown> {
  * The Attraccess API used to manage machine and tool access in a Makerspace or FabLab
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  app = {
+  application = {
     /**
      * No description
      *
-     * @tags App
+     * @tags Application
      * @name AppControllerGetPing
+     * @summary Check API availability
      * @request GET:/api/ping
      */
     appControllerGetPing: (params: RequestParams = {}) =>
       this.request<AppControllerGetPingData, any>({
         path: `/api/ping`,
         method: 'GET',
+        format: 'json',
         ...params,
       }),
   };
@@ -1128,10 +1365,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags users
      * @name UsersControllerCreateUser
+     * @summary Create a new user
      * @request POST:/api/users
      */
     usersControllerCreateUser: (data: CreateUserDto, params: RequestParams = {}) =>
-      this.request<UsersControllerCreateUserData, any>({
+      this.request<UsersControllerCreateUserData, void>({
         path: `/api/users`,
         method: 'POST',
         body: data,
@@ -1145,6 +1383,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags users
      * @name UsersControllerGetUsers
+     * @summary Get a paginated list of users
      * @request GET:/api/users
      * @secure
      */
@@ -1163,14 +1402,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags users
      * @name UsersControllerVerifyEmail
+     * @summary Verify a user email address
      * @request POST:/api/users/verify-email
      */
     usersControllerVerifyEmail: (data: VerifyEmailDto, params: RequestParams = {}) =>
-      this.request<UsersControllerVerifyEmailData, any>({
+      this.request<UsersControllerVerifyEmailData, void>({
         path: `/api/users/verify-email`,
         method: 'POST',
         body: data,
         type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
 
@@ -1179,6 +1420,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags users
      * @name UsersControllerGetMe
+     * @summary Get the current authenticated user
      * @request GET:/api/users/me
      * @secure
      */
@@ -1196,27 +1438,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags users
      * @name UsersControllerGetUserById
+     * @summary Get a user by ID
      * @request GET:/api/users/{id}
      * @secure
      */
-    usersControllerGetUserById: (id: string, params: RequestParams = {}) =>
-      this.request<any, void>({
+    usersControllerGetUserById: (id: number, params: RequestParams = {}) =>
+      this.request<UsersControllerGetUserByIdData, UsersControllerGetUserByIdError>({
         path: `/api/users/${id}`,
         method: 'GET',
         secure: true,
+        format: 'json',
         ...params,
       }),
   };
-  auth = {
+  authentication = {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Authentication
      * @name AuthControllerPostSession
+     * @summary Create a new session using local authentication
      * @request POST:/api/auth/session/local
      */
     authControllerPostSession: (data: AuthControllerPostSessionPayload, params: RequestParams = {}) =>
-      this.request<AuthControllerPostSessionData, any>({
+      this.request<AuthControllerPostSessionData, void>({
         path: `/api/auth/session/local`,
         method: 'POST',
         body: data,
@@ -1228,8 +1473,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Authentication
      * @name AuthControllerDeleteSession
+     * @summary Logout and invalidate the current session
      * @request DELETE:/api/auth/session
      * @secure
      */
@@ -1238,6 +1484,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/auth/session`,
         method: 'DELETE',
         secure: true,
+        format: 'json',
         ...params,
       }),
   };
@@ -1333,6 +1580,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/resources/${id}`,
         method: 'DELETE',
         secure: true,
+        format: 'json',
         ...params,
       }),
   };
@@ -1465,11 +1713,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description Check if the current user has completed the introduction for this resource and it is not revoked
      *
      * @tags Resource Introductions
      * @name ResourceIntroductionControllerCheckIntroductionStatus
-     * @summary Check if current user has completed the introduction
+     * @summary Check if current user has a valid introduction
      * @request GET:/api/resources/{resourceId}/introductions/status
      * @secure
      */
@@ -1483,18 +1731,116 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description Revoke access for a user by marking their introduction as revoked
      *
      * @tags Resource Introductions
-     * @name ResourceIntroductionControllerAddIntroducer
-     * @summary Add a user as an authorized introducer
-     * @request POST:/api/resources/{resourceId}/introductions/introducers/{userId}
+     * @name ResourceIntroductionControllerRevokeIntroduction
+     * @summary Revoke an introduction
+     * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
      * @secure
      */
-    resourceIntroductionControllerAddIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroductionControllerAddIntroducerData, void>({
-        path: `/api/resources/${resourceId}/introductions/introducers/${userId}`,
+    resourceIntroductionControllerRevokeIntroduction: (
+      resourceId: number,
+      introductionId: number,
+      data: RevokeIntroductionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroductionControllerRevokeIntroductionData, void>({
+        path: `/api/resources/${resourceId}/introductions/${introductionId}/revoke`,
         method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Restore access for a user by unrevoking their introduction
+     *
+     * @tags Resource Introductions
+     * @name ResourceIntroductionControllerUnrevokeIntroduction
+     * @summary Unrevoke an introduction
+     * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
+     * @secure
+     */
+    resourceIntroductionControllerUnrevokeIntroduction: (
+      resourceId: number,
+      introductionId: number,
+      data: UnrevokeIntroductionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroductionControllerUnrevokeIntroductionData, void>({
+        path: `/api/resources/${resourceId}/introductions/${introductionId}/unrevoke`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Retrieve the history of revoke/unrevoke actions for an introduction
+     *
+     * @tags Resource Introductions
+     * @name ResourceIntroductionControllerGetIntroductionHistory
+     * @summary Get history of an introduction
+     * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
+     * @secure
+     */
+    resourceIntroductionControllerGetIntroductionHistory: (
+      resourceId: number,
+      introductionId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroductionControllerGetIntroductionHistoryData, void>({
+        path: `/api/resources/${resourceId}/introductions/${introductionId}/history`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Determine if a specific introduction is currently revoked
+     *
+     * @tags Resource Introductions
+     * @name ResourceIntroductionControllerCheckIntroductionRevokedStatus
+     * @summary Check if an introduction is revoked
+     * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
+     * @secure
+     */
+    resourceIntroductionControllerCheckIntroductionRevokedStatus: (
+      resourceId: number,
+      introductionId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroductionControllerCheckIntroductionRevokedStatusData, void>({
+        path: `/api/resources/${resourceId}/introductions/${introductionId}/revoked`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Retrieve detailed information about a specific introduction
+     *
+     * @tags Resource Introductions
+     * @name ResourceIntroductionControllerGetResourceIntroduction
+     * @summary Get a single resource introduction
+     * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
+     * @secure
+     */
+    resourceIntroductionControllerGetResourceIntroduction: (
+      resourceId: number,
+      introductionId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroductionControllerGetResourceIntroductionData, void>({
+        path: `/api/resources/${resourceId}/introductions/${introductionId}`,
+        method: 'GET',
         secure: true,
         format: 'json',
         ...params,
@@ -1504,31 +1850,87 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Introductions
-     * @name ResourceIntroductionControllerRemoveIntroducer
-     * @summary Remove a user from authorized introducers
-     * @request DELETE:/api/resources/{resourceId}/introductions/introducers/{userId}
+     * @name ResourceIntroductionControllerCanManageIntroductions
+     * @summary Check if user can manage introductions for the resource
+     * @request GET:/api/resources/{resourceId}/introductions/permissions/manage
      * @secure
      */
-    resourceIntroductionControllerRemoveIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroductionControllerRemoveIntroducerData, void>({
-        path: `/api/resources/${resourceId}/introductions/introducers/${userId}`,
-        method: 'DELETE',
+    resourceIntroductionControllerCanManageIntroductions: (resourceId: number, params: RequestParams = {}) =>
+      this.request<ResourceIntroductionControllerCanManageIntroductionsData, void>({
+        path: `/api/resources/${resourceId}/introductions/permissions/manage`,
+        method: 'GET',
         secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  resourceIntroducers = {
+    /**
+     * No description
+     *
+     * @tags Resource Introducers
+     * @name ResourceIntroducersControllerGetResourceIntroducers
+     * @summary Get all authorized introducers for a resource
+     * @request GET:/api/resources/{resourceId}/introducers
+     * @secure
+     */
+    resourceIntroducersControllerGetResourceIntroducers: (resourceId: number, params: RequestParams = {}) =>
+      this.request<ResourceIntroducersControllerGetResourceIntroducersData, void>({
+        path: `/api/resources/${resourceId}/introducers`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerGetResourceIntroducers
-     * @summary Get all authorized introducers for a resource
-     * @request GET:/api/resources/{resourceId}/introductions/introducers
+     * @tags Resource Introducers
+     * @name ResourceIntroducersControllerAddIntroducer
+     * @summary Add a user as an authorized introducer
+     * @request POST:/api/resources/{resourceId}/introducers/{userId}
      * @secure
      */
-    resourceIntroductionControllerGetResourceIntroducers: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroductionControllerGetResourceIntroducersData, void>({
-        path: `/api/resources/${resourceId}/introductions/introducers`,
+    resourceIntroducersControllerAddIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
+      this.request<ResourceIntroducersControllerAddIntroducerData, void>({
+        path: `/api/resources/${resourceId}/introducers/${userId}`,
+        method: 'POST',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Introducers
+     * @name ResourceIntroducersControllerRemoveIntroducer
+     * @summary Remove a user from authorized introducers
+     * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
+     * @secure
+     */
+    resourceIntroducersControllerRemoveIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
+      this.request<ResourceIntroducersControllerRemoveIntroducerData, void>({
+        path: `/api/resources/${resourceId}/introducers/${userId}`,
+        method: 'DELETE',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Introducers
+     * @name ResourceIntroducersControllerCanManageIntroducers
+     * @summary Check if user can manage introducers for the resource
+     * @request GET:/api/resources/{resourceId}/introducers/permissions/manage
+     * @secure
+     */
+    resourceIntroducersControllerCanManageIntroducers: (resourceId: number, params: RequestParams = {}) =>
+      this.request<ResourceIntroducersControllerCanManageIntroducersData, void>({
+        path: `/api/resources/${resourceId}/introducers/permissions/manage`,
         method: 'GET',
         secure: true,
         format: 'json',

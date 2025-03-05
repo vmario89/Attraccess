@@ -8,7 +8,6 @@ import {
   Query,
   ParseIntPipe,
   Req,
-  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceUsageService } from './resourceUsage.service';
@@ -17,8 +16,12 @@ import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { AuthenticatedRequest } from '../../types/request';
-import { PaginatedResponseDto } from '../../types/response';
+import {
+  PaginatedResponseDto,
+  makePaginatedResponse,
+} from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
+import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
 
 @ApiTags('Resource Usage')
 @Controller('resources/:resourceId/usage')
@@ -32,6 +35,18 @@ export class ResourceUsageController {
     status: 201,
     description: 'Usage session started successfully.',
     type: ResourceUsage,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid input data',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource not found',
   })
   async startSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
@@ -49,6 +64,18 @@ export class ResourceUsageController {
     description: 'Usage session ended successfully.',
     type: ResourceUsage,
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid input data or no active session',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource or session not found',
+  })
   async endSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() dto: EndUsageSessionDto,
@@ -63,19 +90,24 @@ export class ResourceUsageController {
   @ApiResponse({
     status: 200,
     description: 'Resource usage history retrieved successfully.',
-    type: PaginatedResponseDto,
+    type: GetResourceHistoryResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource not found',
   })
   async getResourceHistory(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceHistoryQueryDto
-  ): Promise<PaginatedResponseDto<ResourceUsage>> {
-    if (query.page < 1) {
-      throw new BadRequestException('Page must be greater than 0');
-    }
-    if (query.limit < 1) {
-      throw new BadRequestException('Limit must be greater than 0');
-    }
-
+  ): Promise<GetResourceHistoryResponseDto> {
     const { data, total } =
       await this.resourceUsageService.getResourceUsageHistory(
         resourceId,
@@ -84,13 +116,11 @@ export class ResourceUsageController {
         query.userId
       );
 
-    return {
+    return makePaginatedResponse(
+      { page: query.page, limit: query.limit },
       data,
-      total,
-      page: query.page,
-      limit: query.limit,
-      totalPages: Math.ceil(total / query.limit),
-    };
+      total
+    );
   }
 
   @Get('active')
@@ -100,6 +130,14 @@ export class ResourceUsageController {
     status: 200,
     description: 'Active session retrieved successfully.',
     type: ResourceUsage,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource not found',
   })
   async getActiveSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,

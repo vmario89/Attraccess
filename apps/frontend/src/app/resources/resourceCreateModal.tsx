@@ -26,7 +26,6 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const [formData, setFormData] = useState<CreateResourceDto>({
     name: '',
     description: '',
-    status: 'ready',
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { success, error } = useToastMessage();
@@ -46,7 +45,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
         props.onCreated(createResource.data);
       }
 
-      setFormData({ name: '', description: '', status: 'ready' });
+      setFormData({ name: '', description: '' });
       setSelectedImage(null);
 
       setIsSubmitting(false);
@@ -84,7 +83,6 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
       createResource.mutateAsync({
         name: formData.name,
         description: formData.description,
-        status: formData.status,
         image: selectedImage || undefined,
       });
     },

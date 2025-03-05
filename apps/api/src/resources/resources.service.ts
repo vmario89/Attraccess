@@ -7,6 +7,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { PaginatedResponse } from '../types/pagination';
 import { ResourceImageService } from '../common/services/resource-image.service';
 import { FileUpload } from '../common/types/file-upload.types';
+import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
 
 @Injectable()
 export class ResourcesService {
@@ -25,7 +26,6 @@ export class ResourcesService {
     const resource = this.resourceRepository.create({
       name: dto.name,
       description: dto.description,
-      totalUsageHours: 0,
     });
 
     // Save the resource first to get an ID
@@ -53,7 +53,7 @@ export class ResourcesService {
     });
 
     if (!resource) {
-      throw new BadRequestException(`Resource with ID ${id} not found`);
+      throw new ResourceNotFoundException(id);
     }
 
     return resource;
@@ -94,7 +94,7 @@ export class ResourcesService {
 
     const result = await this.resourceRepository.delete(id);
     if (result.affected === 0) {
-      throw new BadRequestException(`Resource with ID ${id} not found`);
+      throw new ResourceNotFoundException(id);
     }
   }
 
@@ -122,14 +122,5 @@ export class ResourcesService {
       page,
       limit,
     };
-  }
-
-  async updateTotalUsageHours(
-    id: number,
-    additionalHours: number
-  ): Promise<Resource> {
-    const resource = await this.getResourceById(id);
-    resource.totalUsageHours += additionalHours;
-    return this.resourceRepository.save(resource);
   }
 }

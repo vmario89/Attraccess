@@ -34,7 +34,9 @@ export class User {
   })
   id!: number;
 
-  @Column({ unique: true })
+  @Column({
+    unique: true,
+  })
   @ApiProperty({
     description: 'The username of the user',
     example: 'johndoe',

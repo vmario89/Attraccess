@@ -10,9 +10,7 @@
       "options": {
         "command": "webpack-cli build",
         "args": ["node-env=production"],
-        "tsPlugins": [
-          "@nestjs/swagger/plugin"
-        ]
+        "tsPlugins": ["@nestjs/swagger/plugin"]
       },
       "configurations": {
         "development": {
@@ -55,7 +53,18 @@
       "outputs": ["{projectRoot}/dist/apps/api-swagger/swagger.json"]
     },
     "test": {
+      "executor": "@nx/jest:jest",
       "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "testMatch": ["**/*.spec.ts", "!**/*.e2e.spec.ts"],
+        "passWithNoTests": true
+      }
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "testMatch": ["**/*.e2e.spec.ts"],
         "passWithNoTests": true
       }
     },
@@ -75,21 +84,33 @@
         "webpackConfig": "apps/api/webpack.config.migrations.js"
       }
     },
-    "generate-migrations": {
+    "generate-migration": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": "apps/api",
-        "commands": ["typeorm -d ../../dist/apps/typeorm-migration/main.js migration:generate"]
+        "commands": [
+          "typeorm -d ../../dist/apps/typeorm-migration/main.js migration:generate"
+        ]
       },
       "dependsOn": ["build-migration-config"]
+    },
+    "create-empty-migration": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": "apps/api",
+        "commands": ["typeorm migration:create"]
+      }
     },
     "run-migrations": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": "apps/api",
-        "commands": ["typeorm -d ../../dist/apps/typeorm-migration/main.js migration:run"]
+        "commands": [
+          "typeorm -d ../../dist/apps/typeorm-migration/main.js migration:run"
+        ]
       },
       "dependsOn": ["build-migration-config"]
     }

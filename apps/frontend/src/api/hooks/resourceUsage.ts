@@ -4,7 +4,7 @@ import {
   StartUsageSessionDto,
   EndUsageSessionDto,
 } from '@attraccess/api-client';
-import { queryKeys } from './base';
+import { baseQueryKeys } from './base';
 import getApi from '../index';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -16,9 +16,8 @@ interface ResourceUsageError {
 // Get active session for current user on a specific resource
 export function useActiveSession(resourceId: number) {
   return useQuery({
-    queryKey: queryKeys.resourceUsage.active(resourceId),
+    queryKey: baseQueryKeys.resourceUsage.active(resourceId),
     queryFn: async () => {
-      console.log('Fetching active session for resource:', resourceId);
       const api = getApi();
 
       try {
@@ -26,7 +25,6 @@ export function useActiveSession(resourceId: number) {
           await api.resourceUsage.resourceUsageControllerGetActiveSession(
             resourceId
           );
-        console.log('Active session API response:', response);
         return response.data;
       } catch (error) {
         console.error('Error fetching active session:', error);
@@ -63,13 +61,13 @@ export function useStartSession() {
     },
     onSuccess: (_, { resourceId }) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resourceUsage.active(resourceId),
+        queryKey: baseQueryKeys.resourceUsage.active(resourceId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.detail(resourceId),
+        queryKey: baseQueryKeys.resources.detail(resourceId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resourceUsage.history(resourceId),
+        queryKey: baseQueryKeys.resourceUsage.history(resourceId),
       });
     },
   });
@@ -85,7 +83,6 @@ export function useEndSession() {
     { resourceId: number; dto: EndUsageSessionDto }
   >({
     mutationFn: async ({ resourceId, dto }) => {
-      console.log('Making API call to end session for resource:', resourceId);
       const api = getApi();
 
       try {
@@ -94,7 +91,6 @@ export function useEndSession() {
             resourceId,
             dto
           );
-        console.log('End session API response:', response);
         return response.data;
       } catch (error) {
         console.error('API error when ending session:', error);
@@ -102,15 +98,14 @@ export function useEndSession() {
       }
     },
     onSuccess: (data, { resourceId }) => {
-      console.log('Session ended successfully, invalidating queries', data);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resourceUsage.active(resourceId),
+        queryKey: baseQueryKeys.resourceUsage.active(resourceId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.detail(resourceId),
+        queryKey: baseQueryKeys.resources.detail(resourceId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resourceUsage.history(resourceId),
+        queryKey: baseQueryKeys.resourceUsage.history(resourceId),
       });
     },
   });
@@ -128,7 +123,7 @@ export function useResourceUsageHistory(
 
   return useQuery({
     queryKey: [
-      ...queryKeys.resourceUsage.history(resourceId),
+      ...baseQueryKeys.resourceUsage.history(resourceId),
       page,
       limit,
       showAllUsers,

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ResourceIntroductions } from '../resourceIntroductions';
+import { ResourceIntroductions } from './resourceIntroductions';
 
 // Create a wrapper for our components with React Query
 const createWrapper = () => {

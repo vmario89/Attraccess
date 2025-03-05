@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '@attraccess/database-entities';
 import { Repository, UpdateResult } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
+import { UserNotFoundException } from '../../exceptions/user.notFound.exception';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -21,6 +22,7 @@ describe('UsersService', () => {
             save: jest.fn(),
             update: jest.fn(),
             findAndCount: jest.fn(),
+            count: jest.fn(),
           },
         },
       ],
@@ -73,17 +75,62 @@ describe('UsersService', () => {
   });
 
   describe('createOne', () => {
-    it('should create a new user', async () => {
-      const newUser = {
+    it('the first created user should have all permissions', async () => {
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'save').mockImplementation(async (data) => {
+        return {
+          id: 1,
+          ...data,
+          systemPermissions: {
+            canManageUsers: false,
+            canManageResources: false,
+            canManagePermissions: false,
+            ...(data.systemPermissions || {}),
+          },
+        } as User;
+      });
+      jest.spyOn(userRepository, 'count').mockResolvedValue(0);
+
+      const result = await service.createOne('test', 'test@example.com');
+      expect(result).toEqual({
         id: 1,
         username: 'test',
         email: 'test@example.com',
-      } as User;
+        systemPermissions: {
+          canManageUsers: true,
+          canManageResources: true,
+          canManagePermissions: true,
+        },
+      });
+    });
+
+    it('the following created user should not have any permissions', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
-      jest.spyOn(userRepository, 'save').mockResolvedValue(newUser);
+      jest.spyOn(userRepository, 'save').mockImplementation(async (data) => {
+        return {
+          id: 1,
+          ...data,
+          systemPermissions: {
+            canManageUsers: false,
+            canManageResources: false,
+            canManagePermissions: false,
+            ...(data.systemPermissions || {}),
+          },
+        } as User;
+      });
+      jest.spyOn(userRepository, 'count').mockResolvedValue(1);
 
       const result = await service.createOne('test', 'test@example.com');
-      expect(result).toEqual(newUser);
+      expect(result).toEqual({
+        id: 1,
+        username: 'test',
+        email: 'test@example.com',
+        systemPermissions: {
+          canManageUsers: false,
+          canManageResources: false,
+          canManagePermissions: false,
+        },
+      });
     });
 
     it('should throw if email already exists', async () => {
@@ -153,7 +200,7 @@ describe('UsersService', () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
       await expect(service.updateUser(1, { username: 'test' })).rejects.toThrow(
-        BadRequestException
+        UserNotFoundException
       );
     });
   });

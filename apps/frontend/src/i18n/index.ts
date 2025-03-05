@@ -55,8 +55,8 @@ export function useTranslations<T extends TranslationModules>(
   if (!isLoaded) {
     return {
       ...translation,
-      t: (key: string) => '',
-    };
+      t: () => '',
+    } as ReturnType<typeof useTranslation>;
   }
 
   return translation;

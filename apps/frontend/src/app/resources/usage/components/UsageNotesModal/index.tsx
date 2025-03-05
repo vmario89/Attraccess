@@ -1,0 +1,84 @@
+import { memo } from 'react';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Spinner,
+  Textarea,
+} from '@heroui/react';
+import { ResourceUsage } from '@attraccess/api-client';
+import { useTranslations } from '../../../../../i18n';
+import * as en from './translations/en';
+import * as de from './translations/de';
+
+interface UsageNotesModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  session: ResourceUsage | null;
+}
+
+export const UsageNotesModal = memo(
+  ({ isOpen, onClose, session }: UsageNotesModalProps) => {
+    const { t } = useTranslations('usageNotesModal', { en, de });
+
+    if (!isOpen) return null;
+
+    return (
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            {t('sessionNotes')}
+          </ModalHeader>
+          <ModalBody>
+            {session ? (
+              <div className="space-y-4">
+                <Textarea
+                  labelPlacement="outside"
+                  value={session.startNotes || t('noNotesProvided')}
+                  label={t('startNotes')}
+                  readOnly
+                />
+
+                {session.endTime && (
+                  <Textarea
+                    labelPlacement="outside"
+                    value={session.endNotes || t('noNotesProvided')}
+                    label={t('endNotes')}
+                    readOnly
+                  />
+                )}
+
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  <p>
+                    {t('sessionStarted')}:{' '}
+                    {new Date(session.startTime).toLocaleString()}
+                  </p>
+                  {session.endTime && (
+                    <p>
+                      {t('sessionEnded')}:{' '}
+                      {new Date(session.endTime).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-center py-4">
+                <Spinner size="md" color="primary" />
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" variant="light" onPress={onClose}>
+              {t('close')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  }
+);
+
+UsageNotesModal.displayName = 'UsageNotesModal';

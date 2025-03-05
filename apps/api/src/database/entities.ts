@@ -1,19 +1,23 @@
 import {
-  Resource,
   User,
-  ResourceUsage,
-  RevokedToken,
   AuthenticationDetail,
+  RevokedToken,
+  Resource,
+  ResourceComputedView,
+  ResourceUsage,
   ResourceIntroduction,
   ResourceIntroductionUser,
+  ResourceIntroductionHistoryItem,
 } from '@attraccess/database-entities';
 
 export const entities = {
-  Resource,
   User,
+  AuthenticationDetail,
+  RevokedToken,
+  Resource,
+  ResourceComputedView,
   ResourceUsage,
   ResourceIntroduction,
-  RevokedToken,
-  AuthenticationDetail,
   ResourceIntroductionUser,
+  ResourceIntroductionHistoryItem,
 };

@@ -5,6 +5,7 @@ import {
   ResourceUsage,
   ResourceIntroduction,
   ResourceIntroductionUser,
+  ResourceIntroductionHistoryItem,
   User,
 } from '@attraccess/database-entities';
 import { ResourcesController } from './resources.controller';
@@ -18,6 +19,7 @@ import { ResourceImageService } from '../common/services/resource-image.service'
 import { ResourceIntroductionController } from './introduction/resourceIntroduction.controller';
 import { ResourceIntroductionService } from './introduction/resourceIntroduction.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
+import { ResourceIntroducersController } from './introduction/resourceIntroducers.controller';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
       ResourceUsage,
       ResourceIntroduction,
       ResourceIntroductionUser,
+      ResourceIntroductionHistoryItem,
       User,
     ]),
     ScheduleModule.forRoot(),
@@ -36,6 +39,7 @@ import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
     ResourcesController,
     ResourceUsageController,
     ResourceIntroductionController,
+    ResourceIntroducersController,
   ],
   providers: [
     ResourcesService,

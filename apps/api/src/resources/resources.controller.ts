@@ -79,6 +79,10 @@ export class ResourcesController {
     description: 'List of resources with pagination.',
     type: PaginatedResourceResponseDto,
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
   async getResources(
     @Query() query: ListResourcesDto
   ): Promise<PaginatedResponse<Resource>> {
@@ -99,6 +103,14 @@ export class ResourcesController {
     status: 200,
     description: 'The found resource.',
     type: Resource,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource not found',
   })
   async getResourceById(
     @Param('id', ParseIntPipe) id: number
@@ -136,6 +148,23 @@ export class ResourcesController {
   @ApiResponse({
     status: 200,
     description: 'The resource has been successfully deleted.',
+    schema: {
+      type: 'object',
+      properties: {},
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Forbidden - User does not have permission to manage resources',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resource not found',
   })
   async deleteResource(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.resourcesService.deleteResource(id);

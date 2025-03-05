@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -27,6 +28,24 @@ export interface AuthenticationOptions<T extends AuthenticationType> {
   details: T extends AuthenticationType.LOCAL_PASSWORD
     ? LocalPasswordAuthenticationOptions
     : never;
+}
+
+class UserEmailNotVerifiedException extends ForbiddenException {
+  constructor() {
+    super('UserEmailNotVerifiedException');
+  }
+}
+
+class UserEmailInvalidVerificationTokenException extends UnauthorizedException {
+  constructor() {
+    super('UserEmailInvalidVerificationTokenException');
+  }
+}
+
+class UserEmailVerificationTokenExpiredException extends UnauthorizedException {
+  constructor() {
+    super('UserEmailVerificationTokenExpiredException');
+  }
 }
 
 @Injectable()
@@ -135,7 +154,7 @@ export class AuthService {
     }
 
     if (!user.isEmailVerified) {
-      throw new UnauthorizedException('Please verify your email address first');
+      throw new UserEmailNotVerifiedException();
     }
 
     const isValid = await this.validateAuthenticationDetails(user.id, options);
@@ -166,15 +185,15 @@ export class AuthService {
     const user = await this.usersService.findOne({ email });
 
     if (!user) {
-      throw new NotFoundException('Invalid verification token');
+      throw new UserEmailInvalidVerificationTokenException();
     }
 
     if (user.emailVerificationToken !== token) {
-      throw new UnauthorizedException('Invalid verification token');
+      throw new UserEmailInvalidVerificationTokenException();
     }
 
     if (user.emailVerificationTokenExpiresAt < new Date()) {
-      throw new UnauthorizedException('Verification token has expired');
+      throw new UserEmailVerificationTokenExpiredException();
     }
 
     await this.usersService.updateUser(user.id, {

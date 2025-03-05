@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import sharp from 'sharp';
 import * as path from 'path';
@@ -25,6 +25,30 @@ const DIMENSION_LIMITS = {
   max: 2000,
 };
 
+class ImageProcessingWidthLimitsError extends BadRequestException {
+  constructor(cause: string) {
+    super('ImageProcessingWidthLimitsError', {
+      cause,
+    });
+  }
+}
+
+class ImageProcessingHeightLimitsError extends BadRequestException {
+  constructor(cause: string) {
+    super('ImageProcessingHeightLimitsError', {
+      cause,
+    });
+  }
+}
+
+class ImageProcessingError extends BadRequestException {
+  constructor(cause: string) {
+    super('ImageProcessingError', {
+      cause,
+    });
+  }
+}
+
 @Injectable()
 export class ImageProcessingService {
   private readonly logger = new Logger(ImageProcessingService.name);
@@ -36,12 +60,12 @@ export class ImageProcessingService {
 
   private validateDimensions(width: number, height: number): void {
     if (width < DIMENSION_LIMITS.min || width > DIMENSION_LIMITS.max) {
-      throw new Error(
+      throw new ImageProcessingWidthLimitsError(
         `Width must be between ${DIMENSION_LIMITS.min} and ${DIMENSION_LIMITS.max} pixels`
       );
     }
     if (height < DIMENSION_LIMITS.min || height > DIMENSION_LIMITS.max) {
-      throw new Error(
+      throw new ImageProcessingHeightLimitsError(
         `Height must be between ${DIMENSION_LIMITS.min} and ${DIMENSION_LIMITS.max} pixels`
       );
     }
@@ -115,7 +139,7 @@ export class ImageProcessingService {
           `Error processing image: ${error.message}`,
           error.stack
         );
-        throw new Error('Failed to process image');
+        throw new ImageProcessingError('Failed to process image');
       }
     }
   }

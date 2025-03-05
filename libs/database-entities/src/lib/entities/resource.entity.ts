@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ViewEntity,
+  ViewColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResourceIntroduction } from './resourceIntroduction.entity';
@@ -43,13 +45,6 @@ export class Resource {
   })
   imageFilename!: string | null;
 
-  @Column({ type: 'float', default: 0 })
-  @ApiProperty({
-    description: 'Total hours the resource has been in use',
-    example: 123.5,
-  })
-  totalUsageHours!: number;
-
   @CreateDateColumn()
   @ApiProperty({
     description: 'When the resource was created',
@@ -76,4 +71,23 @@ export class Resource {
     (introducer) => introducer.resource
   )
   introducers!: ResourceIntroductionUser[];
+}
+
+@ViewEntity({
+  materialized: false,
+  expression: (connection) =>
+    connection
+      .createQueryBuilder()
+      .select('resource.id', 'id')
+      .addSelect('COALESCE(SUM(usage.usageInMinutes), -1)', 'totalUsageMinutes')
+      .from(Resource, 'resource')
+      .leftJoin(ResourceUsage, 'usage', 'usage.resourceId = resource.id')
+      .groupBy('resource.id'),
+})
+export class ResourceComputedView {
+  @ViewColumn()
+  id!: number;
+
+  @ViewColumn()
+  totalUsageMinutes!: number;
 }

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ResourceIntroductionUser } from '@attraccess/database-entities';
 import { ResourcesService } from '../resources.service';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
 @Injectable()
 export class ResourceIntroductionUserService {
@@ -23,7 +24,7 @@ export class ResourceIntroductionUserService {
     // Check if resource exists
     const resource = await this.resourcesService.getResourceById(resourceId);
     if (!resource) {
-      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
+      throw new ResourceNotFoundException(resourceId);
     }
 
     // Check if user already has permission

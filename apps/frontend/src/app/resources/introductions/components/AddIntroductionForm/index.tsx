@@ -1,42 +1,79 @@
-import { Input } from '@heroui/input';
-import { Loader2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from '../../../../../i18n';
+import { UserSearch } from '../../../../../components/userSearch';
+import { useCompleteIntroduction } from '../../../../../api/hooks/resourceIntroduction';
+import { Button } from '@heroui/button';
+import { PlusCircle } from 'lucide-react';
 import * as en from './translations/en';
 import * as de from './translations/de';
+import { useToastMessage } from '../../../../../components/toastProvider';
 
 export type AddIntroductionFormProps = {
-  userIdentifier: string;
-  setUserIdentifier: (value: string) => void;
-  onSubmit: () => void;
-  isSubmitting: boolean;
+  resourceId: number;
 };
 
 export const AddIntroductionForm = ({
-  userIdentifier,
-  setUserIdentifier,
-  onSubmit,
-  isSubmitting,
+  resourceId,
 }: AddIntroductionFormProps) => {
   const { t } = useTranslations('addIntroductionForm', {
     en,
     de,
   });
 
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  const { success: showSuccess, error: showError } = useToastMessage();
+
+  const {
+    mutate: createIntroduction,
+    isPending: isSubmitting,
+    status,
+    error,
+  } = useCompleteIntroduction();
+
+  const submitIntroduction = useCallback(async () => {
+    if (!selectedUserId) {
+      return;
+    }
+
+    createIntroduction({
+      resourceId,
+      userId: selectedUserId,
+    });
+  }, [createIntroduction, resourceId, selectedUserId]);
+
+  useEffect(() => {
+    if (status === 'success') {
+      setSelectedUserId(null);
+      showSuccess({
+        title: t('addNew.success'),
+      });
+    }
+
+    if (status === 'error') {
+      showError({
+        title: t('addNew.error'),
+        description: error?.message,
+      });
+    }
+  }, [status, t, error, showError, showSuccess]);
+
   return (
-    <form
-      className="mb-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-    >
-      <Input
-        value={userIdentifier}
-        onChange={(e) => setUserIdentifier(e.target.value)}
-        className="flex-1"
-        label={t('addNew.label')}
-        endContent={isSubmitting ? <Loader2 /> : null}
+    <div className="space-y-4 mb-4">
+      <UserSearch
+        onSelectionChange={setSelectedUserId}
+        allowsCustomValue={true}
       />
-    </form>
+
+      <Button
+        onPress={submitIntroduction}
+        isLoading={isSubmitting}
+        color="primary"
+        startContent={<PlusCircle className="w-4 h-4" />}
+        fullWidth
+      >
+        {t('addNew.button')}
+      </Button>
+    </div>
   );
 };

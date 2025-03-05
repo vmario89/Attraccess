@@ -77,7 +77,7 @@ export function useAuth() {
   const login = useMutation({
     mutationFn: async ({ username, password, persist }: LoginCredentials) => {
       const api = getApi();
-      const response = await api.auth.authControllerPostSession({
+      const response = await api.authentication.authControllerPostSession({
         username,
         password,
       });
@@ -119,7 +119,7 @@ export function useAuth() {
   const logout = useMutation({
     mutationFn: async () => {
       const api = getApi();
-      await api.auth.authControllerDeleteSession();
+      await api.authentication.authControllerDeleteSession();
       localStorage.removeItem('auth');
       sessionStorage.removeItem('auth');
     },

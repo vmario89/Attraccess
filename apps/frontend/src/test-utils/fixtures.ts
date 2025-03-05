@@ -8,8 +8,6 @@ export function createMockResource(overrides?: Partial<Resource>): Resource {
     id: 1,
     name: 'Test Resource',
     description: 'Test Description',
-    status: 'ready',
-    totalUsageHours: 100,
     imageFilename: 'test.jpg',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

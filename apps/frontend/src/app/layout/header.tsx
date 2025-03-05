@@ -1,4 +1,4 @@
-import { Menu, Settings, LogOut } from 'lucide-react';
+import { Menu, Settings, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/header.en';
@@ -9,10 +9,11 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Link,
 } from '@heroui/react';
 
 export function Header() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { t } = useTranslations('header', {
     en,
     de,
@@ -30,11 +31,22 @@ export function Header() {
             <Button variant="light" aria-label="Menu" isIconOnly>
               <Menu className="h-6 w-6" />
             </Button>
-            <h1 className="ml-4 text-xl font-semibold text-gray-900 dark:text-white">
-              Resource Manager
-            </h1>
+            <Link
+              href="/"
+              className="ml-4 text-xl font-semibold"
+              color="foreground"
+              underline="none"
+            >
+              Attraccess
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
+            {user && (
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                <User className="h-4 w-4 mr-1" />
+                <span>{user.username}</span>
+              </div>
+            )}
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="light" aria-label="Settings" isIconOnly>

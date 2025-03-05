@@ -4,12 +4,12 @@ import { filenameToUrl } from '../../api';
 import {
   Card,
   CardBody,
-  Link,
   Image,
   CardHeader,
   CardFooter,
   CardProps,
   Skeleton,
+  Link,
 } from '@heroui/react';
 
 interface ResourceCardSkeletonProps extends CardProps {
@@ -41,11 +41,10 @@ export function ResourceCardSkeletonLoader() {
   );
 }
 
-function ActualResourceCard({
-  resource,
-  badges,
-  isPressable = false,
-}: ResourceCardProps & { isPressable?: boolean }) {
+function ActualResourceCard(
+  props: ResourceCardProps & { isPressable?: boolean }
+) {
+  const { resource, badges, isPressable = false, ...rest } = props;
   return (
     <ResourceCardSkeleton
       isPressable={isPressable}
@@ -57,14 +56,17 @@ function ActualResourceCard({
       }
       body={
         resource.imageFilename && (
-          <Image
-            alt={resource.name}
-            className="object-cover rounded-xl"
-            src={filenameToUrl(resource.imageFilename)}
-            width={270}
-          />
+          <div className="flex justify-center w-full">
+            <Image
+              alt={resource.name}
+              className="object-cover rounded-xl"
+              src={filenameToUrl(resource.imageFilename)}
+              width={270}
+            />
+          </div>
         )
       }
+      {...rest}
     />
   );
 }
@@ -75,13 +77,11 @@ interface ResourceCardProps extends Omit<CardProps, 'resource'> {
 }
 
 export function ResourceCard(props: ResourceCardProps & { href?: string }) {
-  if (props.href) {
-    return (
-      <Link href={props.href}>
-        <ActualResourceCard {...props} isPressable />
-      </Link>
-    );
-  }
-
-  return <ActualResourceCard {...props} />;
+  return (
+    <ActualResourceCard
+      {...props}
+      isPressable={!!props.href || props.isPressable}
+      as={props.href ? Link : undefined}
+    />
+  );
 }

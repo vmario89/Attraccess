@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -6,6 +11,14 @@ import * as crypto from 'crypto';
 import { FileUploadValidationError } from '../errors/file-upload-validation.error';
 import { StorageConfig, AllowedMimeType } from '../../config/storage.config';
 import { FileUpload } from '../types/file-upload.types';
+
+class FileNotFoundError extends NotFoundException {
+  constructor(filePath: string) {
+    super('FileNotFoundError', {
+      description: `File with path "${filePath}" not found`,
+    });
+  }
+}
 
 @Injectable()
 export class FileStorageService implements OnModuleInit {
@@ -111,7 +124,7 @@ export class FileStorageService implements OnModuleInit {
       await fs.access(filePath);
       return filePath;
     } catch {
-      throw new Error('File not found');
+      throw new FileNotFoundError(filename);
     }
   }
 

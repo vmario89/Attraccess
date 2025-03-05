@@ -9,6 +9,7 @@ import { ResourcePermissionsGuard } from './resourcePermissions.guard';
 import { ResourcesService } from '../resources.service';
 import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { createMock } from '@golevelup/ts-jest';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
 interface RequestWithUser {
   user: {
@@ -91,11 +92,11 @@ describe('ResourcePermissionsGuard', () => {
       expect(resourcesService.getResourceById).not.toHaveBeenCalled();
     });
 
-    it('should throw ForbiddenException if resource not found', async () => {
+    it('should throw ResourceNotFoundException if resource not found', async () => {
       jest.spyOn(resourcesService, 'getResourceById').mockResolvedValue(null);
 
       await expect(guard.canActivate(mockContext)).rejects.toThrow(
-        ForbiddenException
+        ResourceNotFoundException
       );
     });
   });

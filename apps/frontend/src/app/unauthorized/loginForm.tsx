@@ -45,8 +45,12 @@ export function LoginForm({
           persist: rememberMe,
         });
       } catch (err) {
-        const error = err as { error?: { message?: string } };
-        setError(error.error?.message || 'An unexpected error occurred');
+        const error = err as { error?: { message?: string }; message?: string };
+        setError(
+          error.error?.message ||
+            error.message ||
+            'An unexpected error occurred'
+        );
       }
     },
     [login, rememberMe]

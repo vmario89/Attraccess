@@ -20,6 +20,20 @@ export function App() {
       ? 'dark'
       : 'light';
     setTheme(systemTheme);
+
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.setAttribute('name', 'theme-color');
+    }
+
+    const darkBackground = 'rgb(0,0,0)';
+    const lightBackground = 'rgb(255,255,255)';
+
+    metaTheme.setAttribute(
+      'content',
+      systemTheme === 'dark' ? darkBackground : lightBackground
+    );
   }, [setTheme]);
 
   // Show loading screen while checking auth state

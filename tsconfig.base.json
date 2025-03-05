@@ -19,6 +19,7 @@
       "@attraccess/attracces": ["tools/attracces/src/index.ts"],
       "@attraccess/database-entities": ["libs/database-entities/src/index.ts"],
       "@attraccess/env": ["libs/env/src/index.ts"],
+      "@frontend/*": ["apps/frontend/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

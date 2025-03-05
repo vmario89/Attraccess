@@ -10,6 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { ResourcesService } from '../resources.service';
 import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { User } from '@attraccess/database-entities';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
 export enum ResourcePermission {
   canMaintain = 'canMaintain',
@@ -42,7 +43,7 @@ export class ResourcePermissionsGuard implements CanActivate {
 
     const resource = await this.resourcesService.getResourceById(resourceId);
     if (!resource) {
-      throw new ForbiddenException('Resource not found');
+      throw new ResourceNotFoundException(resourceId);
     }
 
     return true;

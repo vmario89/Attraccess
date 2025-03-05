@@ -6,41 +6,79 @@ export type QueryConfig<TData, TError> = Omit<
   'queryKey' | 'queryFn'
 >;
 
-export const queryKeys = {
+export const baseQueryKeys = {
   resources: {
     all: ['resources'] as const,
     list: (params?: ResourcesControllerGetResourcesParams) =>
-      [...queryKeys.resources.all, 'list', params] as const,
-    detail: (id: number) => [...queryKeys.resources.all, 'detail', id] as const,
+      [...baseQueryKeys.resources.all, 'list', params] as const,
+    detail: (id: number) =>
+      [...baseQueryKeys.resources.all, 'detail', id] as const,
   },
   users: {
     all: ['users'] as const,
     verifyEmail: (email: string, token: string) =>
-      [...queryKeys.users.all, 'verifyEmail', email, token] as const,
+      [...baseQueryKeys.users.all, 'verifyEmail', email, token] as const,
   },
   resourceUsage: {
     all: ['resourceUsage'] as const,
     active: (resourceId: number) =>
-      [...queryKeys.resourceUsage.all, 'active', resourceId] as const,
+      [...baseQueryKeys.resourceUsage.all, 'active', resourceId] as const,
     history: (resourceId: number) =>
-      [...queryKeys.resourceUsage.all, 'history', resourceId] as const,
+      [...baseQueryKeys.resourceUsage.all, 'history', resourceId] as const,
   },
   resourceIntroduction: {
     all: ['resourceIntroduction'] as const,
     status: (resourceId: number) =>
-      [...queryKeys.resourceIntroduction.all, 'status', resourceId] as const,
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'status',
+        resourceId,
+      ] as const,
     introducers: (resourceId: number) =>
       [
-        ...queryKeys.resourceIntroduction.all,
+        ...baseQueryKeys.resourceIntroduction.all,
         'introducers',
         resourceId,
       ] as const,
     list: (resourceId: number, params?: { page?: number; limit?: number }) =>
       [
-        ...queryKeys.resourceIntroduction.all,
+        ...baseQueryKeys.resourceIntroduction.all,
         'list',
         resourceId,
         params,
+      ] as const,
+    history: (resourceId: number, introductionId: number) =>
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'history',
+        resourceId,
+        introductionId,
+      ] as const,
+    revokedStatus: (resourceId: number, introductionId: number) =>
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'revokedStatus',
+        resourceId,
+        introductionId,
+      ] as const,
+    detail: (resourceId: number, introductionId: number) =>
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'detail',
+        resourceId,
+        introductionId,
+      ] as const,
+    canManageIntroductions: (resourceId: number) =>
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'canManageIntroductions',
+        resourceId,
+      ] as const,
+    canManageIntroducers: (resourceId: number) =>
+      [
+        ...baseQueryKeys.resourceIntroduction.all,
+        'canManageIntroducers',
+        resourceId,
       ] as const,
   },
 } as const;

@@ -6,7 +6,7 @@ import {
   ResourcesControllerGetResourcesParams,
   ResourcesControllerGetResourcesData,
 } from '@attraccess/api-client';
-import { queryKeys } from './base';
+import { baseQueryKeys } from './base';
 import getApi from '../index';
 
 interface ResourceError {
@@ -16,7 +16,7 @@ interface ResourceError {
 
 export function useResources(params?: ResourcesControllerGetResourcesParams) {
   return useQuery({
-    queryKey: queryKeys.resources.list(params),
+    queryKey: baseQueryKeys.resources.list(params),
     queryFn: async () => {
       const api = getApi();
       const response = await api.resources.resourcesControllerGetResources({
@@ -31,7 +31,7 @@ export function useResources(params?: ResourcesControllerGetResourcesParams) {
 
 export function useResource(id: number) {
   return useQuery({
-    queryKey: queryKeys.resources.detail(id),
+    queryKey: baseQueryKeys.resources.detail(id),
     queryFn: async () => {
       const api = getApi();
       const response = await api.resources.resourcesControllerGetResourceById(
@@ -56,7 +56,7 @@ export function useCreateResource() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.all,
+        queryKey: baseQueryKeys.resources.all,
       });
     },
   });
@@ -80,10 +80,10 @@ export function useUpdateResource() {
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.detail(id),
+        queryKey: baseQueryKeys.resources.detail(id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.all,
+        queryKey: baseQueryKeys.resources.all,
       });
     },
   });
@@ -99,7 +99,7 @@ export function useDeleteResource() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.resources.all,
+        queryKey: baseQueryKeys.resources.all,
       });
     },
   });

@@ -6,7 +6,6 @@ import { ArrowLeft, Trash } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Spinner } from '@heroui/react';
 import { useDisclosure } from '@heroui/modal';
-import { ResourceCard } from './resourceCard';
 import { ResourceUsageSession } from './usage/resourceUsageSession';
 import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
@@ -14,17 +13,23 @@ import { DeleteConfirmationModal } from '../../components/deleteConfirmationModa
 import { useTranslations } from '../../i18n';
 import * as en from './translations/resourceDetails.en';
 import * as de from './translations/resourceDetails.de';
-import { useResourceIntroducers } from '../../api/hooks/resourceIntroduction';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
+import { ManageIntroducers } from './introductions/components/ManageIntroducers';
+import { useMemo } from 'react';
+import {
+  useCanManageIntroductions,
+  useCanManageIntroducers,
+} from '../../api/hooks/resourceIntroduction';
 
 export function ResourceDetails() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const resourceId = parseInt(id || '', 10);
-  const { success, error: showError } = useToastMessage();
-  const { hasPermission, user } = useAuth();
-  const canManageResources = hasPermission('canManageResources');
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const { hasPermission } = useAuth();
+  const { success, error: showError } = useToastMessage();
+  const navigate = useNavigate();
 
   const { t } = useTranslations('resourceDetails', {
     en,
@@ -36,12 +41,6 @@ export function ResourceDetails() {
     isLoading: isLoadingResource,
     error: resourceError,
   } = useResource(resourceId);
-
-  // Check if the current user can give introductions
-  const { data: introducers } = useResourceIntroducers(resourceId);
-  const canGiveIntroductions = !!introducers?.some(
-    (introducer) => introducer.userId === user?.id
-  );
 
   const deleteResource = useDeleteResource();
 
@@ -63,6 +62,21 @@ export function ResourceDetails() {
       throw err;
     }
   };
+
+  const canManageResources = hasPermission('canManageResources');
+  const { data: canManageIntroductions } =
+    useCanManageIntroductions(resourceId);
+  const { data: canManageIntroducers } = useCanManageIntroducers(resourceId);
+
+  const showIntroductionsManagement = useMemo(
+    () => canManageResources || canManageIntroductions,
+    [canManageResources, canManageIntroductions]
+  );
+
+  const showIntroducersManagement = useMemo(
+    () => canManageResources || canManageIntroducers,
+    [canManageResources, canManageIntroducers]
+  );
 
   if (isLoadingResource) {
     return (
@@ -95,6 +109,7 @@ export function ResourceDetails() {
     <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
       <PageHeader
         title={resource.name}
+        subtitle={resource.description || undefined}
         backTo="/resources"
         actions={
           canManageResources && (
@@ -111,18 +126,29 @@ export function ResourceDetails() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Resource Info */}
-        <div className="lg:col-span-1 space-y-6">
-          <ResourceCard resource={resource} />
+        {(showIntroducersManagement || showIntroductionsManagement) && (
+          <div className="lg:col-span-1 space-y-6 order-1 lg:order-1">
+            {showIntroductionsManagement && (
+              <ResourceIntroductions resourceId={resourceId} />
+            )}
 
-          {/* Only show introductions section to users who can give introductions */}
-          {canGiveIntroductions && (
-            <ResourceIntroductions resourceId={resourceId} />
-          )}
-        </div>
+            {showIntroducersManagement && (
+              <ManageIntroducers resourceId={resourceId} />
+            )}
+          </div>
+        )}
 
         {/* Usage Session */}
-        <div className="lg:col-span-2 space-y-6">
+        <div
+          className={
+            'space-y-6 order-first lg:order-2 ' +
+            `${
+              showIntroducersManagement || showIntroductionsManagement
+                ? 'lg:col-span-2'
+                : 'lg:col-span-3'
+            }`
+          }
+        >
           <ResourceUsageSession resourceId={resourceId} />
           <ResourceUsageHistory resourceId={resourceId} />
         </div>

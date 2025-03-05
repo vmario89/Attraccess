@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, FindOneOptions } from 'typeorm';
 import { ResourceUsage, User } from '@attraccess/database-entities';
@@ -10,6 +6,8 @@ import { ResourcesService } from '../resources.service';
 import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { ResourceIntroductionService } from '../introduction/resourceIntroduction.service';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
+import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 
 @Injectable()
 export class ResourceUsageService {
@@ -28,16 +26,38 @@ export class ResourceUsageService {
     // Check if resource exists and is ready
     const resource = await this.resourcesService.getResourceById(resourceId);
     if (!resource) {
-      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
+      throw new ResourceNotFoundException(resourceId);
     }
 
-    // Check if user has completed the introduction
-    const hasCompletedIntroduction =
-      await this.resourceIntroductionService.hasCompletedIntroduction(
-        resourceId,
-        user.id
-      );
-    if (!hasCompletedIntroduction) {
+    // Skip introduction check for users with resource management permission
+    const canManageResources =
+      user.systemPermissions?.[SystemPermission.canManageResources] || false;
+
+    let canStartSession = canManageResources;
+
+    // Only check for introduction if user doesn't have resource management permission
+    if (!canStartSession) {
+      // Check if user has completed the introduction
+      const hasCompletedIntroduction =
+        await this.resourceIntroductionService.hasCompletedIntroduction(
+          resourceId,
+          user.id
+        );
+
+      canStartSession = hasCompletedIntroduction;
+    }
+
+    if (!canStartSession) {
+      const canGiveIntroductions =
+        await this.resourceIntroductionService.canGiveIntroductions(
+          resourceId,
+          user.id
+        );
+
+      canStartSession = canGiveIntroductions;
+    }
+
+    if (!canStartSession) {
       throw new BadRequestException(
         'You must complete the resource introduction before using it'
       );
@@ -77,20 +97,7 @@ export class ResourceUsageService {
       activeSession.endNotes = dto.notes;
     }
 
-    // Calculate duration in hours (rounded to 2 decimal places)
-    const durationMs =
-      activeSession.endTime.getTime() - activeSession.startTime.getTime();
-    const durationHours =
-      Math.round((durationMs / (1000 * 60 * 60)) * 100) / 100;
-    activeSession.duration = durationHours;
-
     const savedSession = await this.resourceUsageRepository.save(activeSession);
-
-    // Update resource total usage hours
-    await this.resourcesService.updateTotalUsageHours(
-      resourceId,
-      durationHours
-    );
 
     return savedSession;
   }
@@ -99,12 +106,6 @@ export class ResourceUsageService {
     resourceId: number,
     userId: number
   ): Promise<ResourceUsage | null> {
-    console.log(
-      'Getting active session for resource:',
-      resourceId,
-      'and user:',
-      userId
-    );
     return await this.resourceUsageRepository.findOne({
       where: {
         resourceId,

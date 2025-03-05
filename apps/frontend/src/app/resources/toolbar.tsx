@@ -1,4 +1,4 @@
-import { Search, Plus, Filter } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { ResourceCreateModal } from './resourceCreateModal';
 import { Button, Input } from '@heroui/react';
@@ -19,18 +19,18 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
   }, [searchValue, onSearch]);
 
   return (
-    <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-      <div className="relative flex-1 max-w-md">
+    <div className="mb-6 flex flex-col w-full gap-2">
+      <div className="relative w-full">
         <Input
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder="Search resources..."
-          className={searchIsLoading ? 'animate-pulse' : ''}
+          className={`w-full ${searchIsLoading ? 'animate-pulse' : ''}`}
           startContent={<Search />}
         />
       </div>
-      <div className="flex items-center space-x-4">
-        {canManageResources && (
+      {canManageResources && (
+        <div className="flex justify-end">
           <ResourceCreateModal>
             {(onOpen) => (
               <Button onPress={onOpen} startContent={<Plus />} color="primary">
@@ -38,14 +38,8 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
               </Button>
             )}
           </ResourceCreateModal>
-        )}
-        <button
-          className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          aria-label="Filter resources"
-        >
-          <Filter className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-        </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

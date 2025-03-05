@@ -4,18 +4,30 @@ import { AuthenticatedRequest } from '../../types/request';
 import { LoginGuard } from '../strategies/login.guard';
 import { Auth } from '../strategies/systemPermissions.guard';
 import { CreateSessionResponse } from './auth.types';
-import { ApiBody, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+  ApiOperation,
+} from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/session/local')
   @UseGuards(LoginGuard)
+  @ApiOperation({ summary: 'Create a new session using local authentication' })
   @ApiResponse({
     status: 200,
     description: 'The session has been created',
     type: CreateSessionResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid credentials',
   })
   @ApiBody({
     schema: {
@@ -46,10 +58,19 @@ export class AuthController {
 
   @Delete('/session')
   @Auth()
+  @ApiOperation({ summary: 'Logout and invalidate the current session' })
   @ApiOkResponse({
     description: 'The session has been deleted',
+    schema: {
+      type: 'object',
+      properties: {},
+    },
   })
-  async deleteSession(@Req() request: AuthenticatedRequest) {
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - User is not authenticated',
+  })
+  async deleteSession(@Req() request: AuthenticatedRequest): Promise<void> {
     const tokenId = request.authInfo?.tokenId;
     await new Promise<void>((resolve) => request.logout(resolve));
     if (tokenId) {
