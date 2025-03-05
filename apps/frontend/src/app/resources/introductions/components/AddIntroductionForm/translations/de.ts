@@ -1,6 +1,8 @@
 export default {
   addNew: {
     button: 'wurde eingeführt',
+    error: 'Einführung fehlgeschlagen',
+    success: 'Einführung erfolgreich durchgeführt!',
   },
   error: {
     emptyIdentifier: {

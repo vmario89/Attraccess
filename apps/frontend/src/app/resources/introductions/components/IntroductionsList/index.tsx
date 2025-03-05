@@ -35,14 +35,19 @@ export function IntroductionsList(props: IntroductionsListProps) {
               }
             >
               <div className="flex flex-col gap-2">
-                <IntroductionListItemContent
-                  resourceId={resourceId}
-                  introduction={introduction}
-                />
-                <IntroductionListItemActions
-                  resourceId={resourceId}
-                  introduction={introduction}
-                />
+                <div className="flex justify-between items-center w-full">
+                  <IntroductionListItemContent
+                    resourceId={resourceId}
+                    introduction={introduction}
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <IntroductionListItemActions
+                    resourceId={resourceId}
+                    introduction={introduction}
+                  />
+                </div>
               </div>
             </ListboxItem>
           ))}

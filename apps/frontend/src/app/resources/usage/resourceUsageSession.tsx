@@ -28,6 +28,8 @@ import {
 } from './components/SessionNotesModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { AttraccessUser } from '../../../components/AttraccessUser';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
 
 interface ResourceUsageSessionProps {
   resourceId: number;
@@ -192,7 +194,7 @@ export function ResourceUsageSession({
                     {t('sessionStarted')}:
                   </p>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {new Date(activeSession.startTime).toLocaleString()}
+                    <DateTimeDisplay date={activeSession.startTime} />
                   </p>
                 </div>
                 <div className="text-right">

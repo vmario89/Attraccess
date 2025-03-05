@@ -4,8 +4,43 @@ import {
   ResourceIntroductionHistoryItem,
   ResourceIntroductionUser,
 } from '@attraccess/api-client';
-import { baseQueryKeys } from './base';
+import { createQueryKeys } from './base';
 import getApi from '../index';
+
+// Define module-specific query keys with all functions defined inline
+export const resourceIntroductionKeys = {
+  ...createQueryKeys('resourceIntroduction'),
+  // Custom query keys with their implementations
+  status: (resourceId: number) =>
+    ['resourceIntroduction', 'status', resourceId] as const,
+  introducers: (resourceId: number) =>
+    ['resourceIntroduction', 'introducers', resourceId] as const,
+  list: (resourceId: number, params?: { page?: number; limit?: number }) =>
+    ['resourceIntroduction', 'list', resourceId, params || {}] as const,
+  history: (resourceId: number, introductionId: number) =>
+    ['resourceIntroduction', 'history', resourceId, introductionId] as const,
+  revokedStatus: (resourceId: number, introductionId: number) =>
+    [
+      'resourceIntroduction',
+      'revokedStatus',
+      resourceId,
+      introductionId,
+    ] as const,
+  // Override the basic detail key with our custom implementation
+  detail: (resourceId: number, introductionId?: number) =>
+    introductionId
+      ? ([
+          'resourceIntroduction',
+          'detail',
+          resourceId,
+          introductionId,
+        ] as const)
+      : (['resourceIntroduction', 'detail', resourceId] as const),
+  canManageIntroductions: (resourceId: number) =>
+    ['resourceIntroduction', 'canManageIntroductions', resourceId] as const,
+  canManageIntroducers: (resourceId: number) =>
+    ['resourceIntroduction', 'canManageIntroducers', resourceId] as const,
+};
 
 interface ResourceIntroductionError {
   message: string;
@@ -15,7 +50,7 @@ interface ResourceIntroductionError {
 // Check if the current user has completed the introduction for a resource
 export function useCheckIntroductionStatus(resourceId: number) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.status(resourceId),
+    queryKey: resourceIntroductionKeys.status(resourceId),
     queryFn: async () => {
       const api = getApi();
       const response =
@@ -28,10 +63,10 @@ export function useCheckIntroductionStatus(resourceId: number) {
   });
 }
 
-// Get list of users who can give introductions for a resource
+// Get list of users who can introduce others to a resource
 export function useResourceIntroducers(resourceId: number) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.introducers(resourceId),
+    queryKey: resourceIntroductionKeys.introducers(resourceId),
     queryFn: async () => {
       const api = getApi();
       const response =
@@ -53,7 +88,7 @@ export function useResourceIntroductions(
   const limit = options?.limit || 10;
 
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.list(resourceId, {
+    queryKey: resourceIntroductionKeys.list(resourceId, {
       page,
       limit,
     }),
@@ -76,31 +111,31 @@ export function useCompleteIntroduction() {
   return useMutation<
     ResourceIntroduction,
     ResourceIntroductionError,
-    { resourceId: number; userId?: number; userIdentifier?: string }
+    { resourceId: number; userId: number }
   >({
-    mutationFn: async ({ resourceId, userId, userIdentifier }) => {
+    mutationFn: async ({ resourceId, userId }) => {
       const api = getApi();
       const response =
         await api.resourceIntroductions.resourceIntroductionControllerCompleteIntroduction(
           resourceId,
-          { userId, userIdentifier }
+          { userId }
         );
       return response.data;
     },
     onSuccess: (data, { resourceId }) => {
       // Invalidate the list of introductions for this resource
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.list(resourceId),
+        queryKey: resourceIntroductionKeys.list(resourceId),
       });
 
       // Also invalidate the introduction status as it may have changed
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.status(resourceId),
+        queryKey: resourceIntroductionKeys.status(resourceId),
       });
 
       // Invalidate all resource introducers as well to ensure consistency
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.introducers(resourceId),
+        queryKey: resourceIntroductionKeys.introducers(resourceId),
       });
     },
   });
@@ -112,7 +147,7 @@ export function useCheckIntroductionRevokedStatus(
   introductionId: number
 ) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.revokedStatus(
+    queryKey: resourceIntroductionKeys.revokedStatus(
       resourceId,
       introductionId
     ),
@@ -135,10 +170,7 @@ export function useIntroductionHistory(
   introductionId: number
 ) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.history(
-      resourceId,
-      introductionId
-    ),
+    queryKey: resourceIntroductionKeys.history(resourceId, introductionId),
     queryFn: async () => {
       const api = getApi();
       const response =
@@ -174,12 +206,12 @@ export function useRevokeIntroduction() {
     onSuccess: (data, { resourceId, introductionId }) => {
       // Invalidate the list of introductions for this resource
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.list(resourceId),
+        queryKey: resourceIntroductionKeys.list(resourceId),
       });
 
       // Invalidate the revoked status query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.revokedStatus(
+        queryKey: resourceIntroductionKeys.revokedStatus(
           resourceId,
           introductionId
         ),
@@ -187,15 +219,12 @@ export function useRevokeIntroduction() {
 
       // Invalidate the history query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.history(
-          resourceId,
-          introductionId
-        ),
+        queryKey: resourceIntroductionKeys.history(resourceId, introductionId),
       });
 
       // Also invalidate the introduction status for any user that might be affected
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.status(resourceId),
+        queryKey: resourceIntroductionKeys.status(resourceId),
       });
     },
   });
@@ -223,12 +252,12 @@ export function useUnrevokeIntroduction() {
     onSuccess: (data, { resourceId, introductionId }) => {
       // Invalidate the list of introductions for this resource
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.list(resourceId),
+        queryKey: resourceIntroductionKeys.list(resourceId),
       });
 
       // Invalidate the revoked status query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.revokedStatus(
+        queryKey: resourceIntroductionKeys.revokedStatus(
           resourceId,
           introductionId
         ),
@@ -236,15 +265,12 @@ export function useUnrevokeIntroduction() {
 
       // Invalidate the history query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.history(
-          resourceId,
-          introductionId
-        ),
+        queryKey: resourceIntroductionKeys.history(resourceId, introductionId),
       });
 
       // Also invalidate the introduction status for any user that might be affected
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.status(resourceId),
+        queryKey: resourceIntroductionKeys.status(resourceId),
       });
     },
   });
@@ -271,7 +297,7 @@ export function useAddIntroducer() {
     onSuccess: (data, { resourceId }) => {
       // Invalidate the list of introducers for this resource
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.introducers(resourceId),
+        queryKey: resourceIntroductionKeys.introducers(resourceId),
       });
     },
   });
@@ -296,7 +322,7 @@ export function useRemoveIntroducer() {
     onSuccess: (_, { resourceId }) => {
       // Invalidate the list of introducers for this resource
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceIntroduction.introducers(resourceId),
+        queryKey: resourceIntroductionKeys.introducers(resourceId),
       });
     },
   });
@@ -308,10 +334,7 @@ export function useResourceIntroduction(
   introductionId: number
 ) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceIntroduction.detail(
-      resourceId,
-      introductionId
-    ),
+    queryKey: resourceIntroductionKeys.detail(resourceId, introductionId),
     queryFn: async () => {
       const api = getApi();
       const response =
@@ -328,8 +351,7 @@ export function useResourceIntroduction(
 // Check if the current user can manage introductions for a resource
 export function useCanManageIntroductions(resourceId: number) {
   return useQuery({
-    queryKey:
-      baseQueryKeys.resourceIntroduction.canManageIntroductions(resourceId),
+    queryKey: resourceIntroductionKeys.canManageIntroductions(resourceId),
     queryFn: async () => {
       const api = getApi();
       const response =
@@ -345,8 +367,7 @@ export function useCanManageIntroductions(resourceId: number) {
 // Check if the current user can manage introducers for a resource
 export function useCanManageIntroducers(resourceId: number) {
   return useQuery({
-    queryKey:
-      baseQueryKeys.resourceIntroduction.canManageIntroducers(resourceId),
+    queryKey: resourceIntroductionKeys.canManageIntroducers(resourceId),
     queryFn: async () => {
       const api = getApi();
       const response =

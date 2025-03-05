@@ -15,13 +15,13 @@ import * as en from './translations/resourceDetails.en';
 import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
 import { ManageIntroducers } from './introductions/components/ManageIntroducers';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import {
   useCanManageIntroductions,
   useCanManageIntroducers,
 } from '../../api/hooks/resourceIntroduction';
 
-export function ResourceDetails() {
+function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
   const resourceId = parseInt(id || '', 10);
 
@@ -165,3 +165,5 @@ export function ResourceDetails() {
     </div>
   );
 }
+
+export const ResourceDetails = memo(ResourceDetailsComponent);

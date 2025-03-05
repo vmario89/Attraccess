@@ -3,38 +3,47 @@ import { useResourceIntroducers } from '@frontend/api/hooks/resourceIntroduction
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
 import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Spinner } from '@heroui/spinner';
 import { Divider } from '@heroui/divider';
 import { AddIntroducer } from './components/AddIntroducer';
-import { IntroducersList } from './components/IntroducersList';
 import * as en from './translations/en';
 import * as de from './translations/de';
+import { TFunction } from 'i18next';
+import { IntroducersList } from './components/IntroducersList';
+import { memo } from 'react';
+
+interface IntroducersListProps {
+  resourceId: number;
+  t: TFunction;
+}
+
+function IntroducersListCard({ resourceId, t }: IntroducersListProps) {
+  const { data: introducers } = useResourceIntroducers(resourceId);
+
+  return introducers && introducers.length > 0 ? (
+    <>
+      <Divider className="my-4" />
+      <h3 className="text-lg font-medium mb-2 dark:text-white">
+        {t('currentIntroducers')}
+      </h3>
+      <IntroducersList resourceId={resourceId} />
+    </>
+  ) : (
+    <div className="text-center p-4 mt-4 bg-gray-50 rounded-md dark:bg-gray-800">
+      <p className="text-gray-500 dark:text-gray-400">{t('noIntroducers')}</p>
+    </div>
+  );
+}
 
 export type ManageIntroducersProps = {
   resourceId: number;
 };
 
-export function ManageIntroducers({ resourceId }: ManageIntroducersProps) {
+function ManageIntroducersComponent(props: ManageIntroducersProps) {
+  const { resourceId } = props;
   const { t } = useTranslations('manageIntroducers', {
     en,
     de,
   });
-
-  // Get current introducers
-  const { data: introducers, isLoading: isLoadingIntroducers } =
-    useResourceIntroducers(resourceId);
-
-  if (isLoadingIntroducers) {
-    return (
-      <Card>
-        <CardBody>
-          <div className="flex justify-center p-4">
-            <Spinner size="md" />
-          </div>
-        </CardBody>
-      </Card>
-    );
-  }
 
   return (
     <Card>
@@ -46,22 +55,10 @@ export function ManageIntroducers({ resourceId }: ManageIntroducersProps) {
       <CardBody className="space-y-4">
         <AddIntroducer resourceId={resourceId} />
 
-        {introducers && introducers.length > 0 ? (
-          <>
-            <Divider className="my-4" />
-            <h3 className="text-lg font-medium mb-2 dark:text-white">
-              {t('currentIntroducers')}
-            </h3>
-            <IntroducersList resourceId={resourceId} />
-          </>
-        ) : (
-          <div className="text-center p-4 mt-4 bg-gray-50 rounded-md dark:bg-gray-800">
-            <p className="text-gray-500 dark:text-gray-400">
-              {t('noIntroducers')}
-            </p>
-          </div>
-        )}
+        <IntroducersListCard resourceId={resourceId} t={t} />
       </CardBody>
     </Card>
   );
 }
+
+export const ManageIntroducers = memo(ManageIntroducersComponent);

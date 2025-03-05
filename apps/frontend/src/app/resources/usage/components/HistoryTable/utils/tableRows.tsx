@@ -1,8 +1,14 @@
 import React, { ReactElement } from 'react';
-import { TableCell, Chip, User as UserDisplay } from '@heroui/react';
+import { TableCell, Chip } from '@heroui/react';
 import { ResourceUsage } from '@attraccess/api-client';
 import { TFunction } from 'i18next';
-import { DurationDisplay } from '../../../../../../components/DurationDisplay';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DurationDisplay } from '@frontend/components/DurationDisplay';
+import { MessageSquareText } from 'lucide-react';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AttraccessUser } from '@frontend/components/AttraccessUser';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
 
 /**
  * Generates table row cells based on session data and user permissions
@@ -19,24 +25,20 @@ export function generateRowCells(
   if (canManageResources && showAllUsers) {
     cells.push(
       <TableCell key={`user-${session.id}`}>
-        <UserDisplay
-          name={session.user?.username || t('unknownUser')}
-          description={`ID: ${session.user?.username}`}
-          avatarProps={{
-            name: session.user?.username?.charAt(0) || '?',
-            color: 'primary',
-          }}
-        />
+        <AttraccessUser user={session.user} />
       </TableCell>
     );
   }
 
+  const hasNotes =
+    ((session.startNotes || '') + (session.endNotes || '')).trim().length > 0;
+
   cells.push(
     <TableCell key={`start-${session.id}`}>
-      {new Date(session.startTime).toLocaleString()}
+      <DateTimeDisplay date={session.startTime} />
     </TableCell>,
     <TableCell key={`end-${session.id}`}>
-      {session.endTime ? new Date(session.endTime).toLocaleString() : '—'}
+      <DateTimeDisplay date={session.endTime} />
     </TableCell>,
     <TableCell key={`duration-${session.id}`}>
       <DurationDisplay
@@ -44,7 +46,7 @@ export function generateRowCells(
         alternativeText={t('inProgress')}
       />
     </TableCell>,
-    <TableCell key={`status-${session.id}`}>
+    <TableCell key={`status-${session.id}`} className="flex items-center gap-2">
       {!session.endTime ? (
         <Chip color="primary" variant="flat">
           {t('active')}
@@ -54,6 +56,7 @@ export function generateRowCells(
           {t('completed')}
         </Chip>
       )}
+      {hasNotes && <MessageSquareText />}
     </TableCell>
   );
 

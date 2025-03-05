@@ -1,22 +1,24 @@
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Button } from '@heroui/button';
 import { PlusCircle } from 'lucide-react';
-import { UserSearch } from '../../../../../../components/userSearch';
-import { useTranslations } from '../../../../../../i18n';
-
-// Import translations
-import * as en from './translations/addIntroducer.en';
-import * as de from './translations/addIntroducer.de';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { UserSearch } from '@frontend/components/userSearch';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useAddIntroducer } from '@frontend/api/hooks/resourceIntroduction';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components';
 
+// Import translations
+import * as en from './translations/addIntroducer.en';
+import * as de from './translations/addIntroducer.de';
+
 interface AddIntroducerProps {
   resourceId: number;
 }
 
-export function AddIntroducer(props: AddIntroducerProps) {
+function AddIntroducerComponent(props: AddIntroducerProps) {
   const { resourceId } = props;
 
   const { t } = useTranslations('addIntroducer', {
@@ -29,7 +31,7 @@ export function AddIntroducer(props: AddIntroducerProps) {
   const addIntroducer = useAddIntroducer();
   const { success, error: showError } = useToastMessage();
 
-  const handleAddIntroducer = async () => {
+  const handleAddIntroducer = useCallback(async () => {
     if (!selectedUserId) {
       showError({
         title: t('error.noUserSelected.title'),
@@ -53,15 +55,12 @@ export function AddIntroducer(props: AddIntroducerProps) {
       });
       console.error('Failed to add introducer:', err);
     }
-  };
+  }, [selectedUserId, addIntroducer, resourceId, showError, success, t]);
 
   return (
     <>
       <div className="relative">
-        <UserSearch
-          allowsCustomValue={false}
-          onSelectionChange={setSelectedUserId}
-        />
+        <UserSearch onSelectionChange={setSelectedUserId} />
       </div>
 
       <Button
@@ -75,3 +74,5 @@ export function AddIntroducer(props: AddIntroducerProps) {
     </>
   );
 }
+
+export const AddIntroducer = memo(AddIntroducerComponent);

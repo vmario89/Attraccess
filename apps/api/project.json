@@ -20,6 +20,7 @@
     },
     "build-swagger": {
       "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
       "options": {
         "command": "webpack-cli build",
         "config": "apps/api/webpack.config.swagger.js",

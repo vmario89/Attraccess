@@ -4,19 +4,25 @@ import {
   StartUsageSessionDto,
   EndUsageSessionDto,
 } from '@attraccess/api-client';
-import { baseQueryKeys } from './base';
+import { ApiError, createQueryKeys } from './base';
 import getApi from '../index';
-import { useAuth } from '../../hooks/useAuth';
 
-interface ResourceUsageError {
-  message: string;
-  statusCode: number;
-}
+// Define module-specific query keys with combined implementation
+export const resourceUsageKeys = {
+  ...createQueryKeys('resourceUsage'),
+  // Custom query keys with their implementations
+  active: (resourceId: number) =>
+    ['resourceUsage', 'active', resourceId] as const,
+  history: (
+    resourceId: number,
+    params?: { page?: number; limit?: number; showAllUsers?: boolean }
+  ) => ['resourceUsage', 'history', resourceId, params || {}] as const,
+};
 
 // Get active session for current user on a specific resource
 export function useActiveSession(resourceId: number) {
   return useQuery({
-    queryKey: baseQueryKeys.resourceUsage.active(resourceId),
+    queryKey: resourceUsageKeys.active(resourceId),
     queryFn: async () => {
       const api = getApi();
 
@@ -28,26 +34,20 @@ export function useActiveSession(resourceId: number) {
         return response.data;
       } catch (error) {
         console.error('Error fetching active session:', error);
-        throw error;
+        return null;
       }
     },
     enabled: !!resourceId,
-    // Check every 10 seconds to update session duration display
-    refetchInterval: 10000,
-    // Always fetch fresh data
-    staleTime: 0,
-    // Keep the data in cache for a reasonable time
-    gcTime: 30000,
   });
 }
 
-// Start a new session
+// Start a new usage session
 export function useStartSession() {
   const queryClient = useQueryClient();
 
   return useMutation<
     ResourceUsage,
-    ResourceUsageError,
+    ApiError,
     { resourceId: number; dto: StartUsageSessionDto }
   >({
     mutationFn: async ({ resourceId, dto }) => {
@@ -60,104 +60,76 @@ export function useStartSession() {
       return response.data;
     },
     onSuccess: (_, { resourceId }) => {
+      // Invalidate active session query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceUsage.active(resourceId),
+        queryKey: resourceUsageKeys.active(resourceId),
       });
+
+      // Invalidate resource history
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.detail(resourceId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceUsage.history(resourceId),
+        queryKey: resourceUsageKeys.history(resourceId),
       });
     },
   });
 }
 
-// End an active session
+// End an active usage session
 export function useEndSession() {
   const queryClient = useQueryClient();
 
   return useMutation<
     ResourceUsage,
-    ResourceUsageError,
+    ApiError,
     { resourceId: number; dto: EndUsageSessionDto }
   >({
     mutationFn: async ({ resourceId, dto }) => {
       const api = getApi();
-
-      try {
-        const response =
-          await api.resourceUsage.resourceUsageControllerEndSession(
-            resourceId,
-            dto
-          );
-        return response.data;
-      } catch (error) {
-        console.error('API error when ending session:', error);
-        throw error;
-      }
+      const response =
+        await api.resourceUsage.resourceUsageControllerEndSession(
+          resourceId,
+          dto
+        );
+      return response.data;
     },
-    onSuccess: (data, { resourceId }) => {
+    onSuccess: (_, { resourceId }) => {
+      // Invalidate active session query
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceUsage.active(resourceId),
+        queryKey: resourceUsageKeys.active(resourceId),
       });
+
+      // Invalidate resource history
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.detail(resourceId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resourceUsage.history(resourceId),
+        queryKey: resourceUsageKeys.history(resourceId),
       });
     },
   });
 }
 
-// Get usage history for a resource
+// Get resource usage history with pagination
 export function useResourceUsageHistory(
   resourceId: number,
   page = 1,
   limit = 10,
   showAllUsers = false
 ) {
-  const { hasPermission, user } = useAuth();
-  const canManageResources = hasPermission('canManageResources');
-
   return useQuery({
-    queryKey: [
-      ...baseQueryKeys.resourceUsage.history(resourceId),
+    queryKey: resourceUsageKeys.history(resourceId, {
       page,
       limit,
       showAllUsers,
-    ],
+    }),
     queryFn: async () => {
       const api = getApi();
-
-      try {
-        // Determine if we should filter by userId
-        // - If user doesn't have manage permission, always filter by their ID
-        // - If user has manage permission but doesn't want to see all users, filter by their ID
-        // - If user has manage permission and wants to see all users, don't filter
-        const shouldFilterByUser = !canManageResources || !showAllUsers;
-        const queryParams = {
+      const response =
+        await api.resourceUsage.resourceUsageControllerGetResourceHistory({
           resourceId,
           page,
           limit,
-          ...(shouldFilterByUser && user ? { userId: user.id } : {}),
-        };
-
-        const response =
-          await api.resourceUsage.resourceUsageControllerGetResourceHistory(
-            queryParams
-          );
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching usage history:', error);
-        throw error;
-      }
+          // Only add showAllUsers if it's relevant to the API
+          ...(showAllUsers && { userId: undefined }), // If showAllUsers is true, we don't filter by userId
+        });
+      return response.data;
     },
-    enabled: !!resourceId,
-    // Ensure we always get fresh data for the history
-    staleTime: 0,
-    // Keep the data in cache for a reasonable time
-    gcTime: 30000,
+    enabled: !!resourceId && page > 0 && limit > 0,
   });
 }

@@ -1,23 +1,19 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { VerifyEmailDto } from '@attraccess/api-client';
+import { ApiError, createQueryKeys } from './base';
 import getApi from '../index';
 
-interface VerifyEmailError {
-  message: string;
-  statusCode: number;
-}
-
-// Query keys for caching
-export const usersQueryKeys = {
-  users: {
-    all: ['users', 'all'] as const,
-    detail: (userId: number) => ['users', 'detail', userId] as const,
-    search: (searchTerm: string) => ['users', 'search', searchTerm] as const,
-  },
+// Define module-specific query keys with combined implementation
+export const usersKeys = {
+  ...createQueryKeys('users'),
+  // Custom query keys with their implementations
+  verifyEmail: (email: string, token: string) =>
+    ['users', 'verifyEmail', email, token] as const,
+  search: (searchTerm: string) => ['users', 'search', searchTerm] as const,
 };
 
 export function useVerifyEmail() {
-  return useMutation<void, VerifyEmailError, VerifyEmailDto>({
+  return useMutation<void, ApiError, VerifyEmailDto>({
     mutationFn: async ({ email, token }) => {
       const api = getApi();
       await api.users.usersControllerVerifyEmail({
@@ -31,7 +27,7 @@ export function useVerifyEmail() {
 // Get all users with pagination
 export function useUsers(page = 1, limit = 10) {
   return useQuery({
-    queryKey: [...usersQueryKeys.users.all, { page, limit }],
+    queryKey: usersKeys.list({ page, limit }),
     queryFn: async () => {
       const api = getApi();
       const response = await api.users.usersControllerGetUsers({
@@ -46,7 +42,7 @@ export function useUsers(page = 1, limit = 10) {
 // Search users with pagination
 export function useSearchUsers(searchTerm = '', page = 1, limit = 10) {
   return useQuery({
-    queryKey: [...usersQueryKeys.users.search(searchTerm), { page, limit }],
+    queryKey: [...usersKeys.search(searchTerm), { page, limit }],
     queryFn: async () => {
       const api = getApi();
       const response = await api.users.usersControllerGetUsers({
@@ -61,10 +57,14 @@ export function useSearchUsers(searchTerm = '', page = 1, limit = 10) {
 }
 
 // Get user details by ID
-export function useUserDetails(userId: number) {
+export function useUserDetails(userId?: number | null) {
   return useQuery({
-    queryKey: usersQueryKeys.users.detail(userId),
+    queryKey: usersKeys.detail(userId ?? '__UNDEFINED__'),
     queryFn: async () => {
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
       const api = getApi();
       const response = await api.users.usersControllerGetUserById(userId);
       return response.data;

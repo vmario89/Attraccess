@@ -60,10 +60,7 @@ export const AddIntroductionForm = ({
 
   return (
     <div className="space-y-4 mb-4">
-      <UserSearch
-        onSelectionChange={setSelectedUserId}
-        allowsCustomValue={true}
-      />
+      <UserSearch onSelectionChange={setSelectedUserId} />
 
       <Button
         onPress={submitIntroduction}

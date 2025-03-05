@@ -6,17 +6,18 @@ import {
   ResourcesControllerGetResourcesParams,
   ResourcesControllerGetResourcesData,
 } from '@attraccess/api-client';
-import { baseQueryKeys } from './base';
+import { ApiError, createQueryKeys } from './base';
 import getApi from '../index';
 
-interface ResourceError {
-  message: string;
-  statusCode: number;
-}
+// Define module-specific query keys
+export const resourcesKeys = {
+  ...createQueryKeys('resources'),
+  // Custom keys could be added here if needed
+};
 
 export function useResources(params?: ResourcesControllerGetResourcesParams) {
   return useQuery({
-    queryKey: baseQueryKeys.resources.list(params),
+    queryKey: resourcesKeys.list(params),
     queryFn: async () => {
       const api = getApi();
       const response = await api.resources.resourcesControllerGetResources({
@@ -31,7 +32,7 @@ export function useResources(params?: ResourcesControllerGetResourcesParams) {
 
 export function useResource(id: number) {
   return useQuery({
-    queryKey: baseQueryKeys.resources.detail(id),
+    queryKey: resourcesKeys.detail(id),
     queryFn: async () => {
       const api = getApi();
       const response = await api.resources.resourcesControllerGetResourceById(
@@ -46,7 +47,7 @@ export function useResource(id: number) {
 export function useCreateResource() {
   const queryClient = useQueryClient();
 
-  return useMutation<Resource, ResourceError, CreateResourceDto>({
+  return useMutation<Resource, ApiError, CreateResourceDto>({
     mutationFn: async (data) => {
       const api = getApi();
       const response = await api.resources.resourcesControllerCreateResource(
@@ -56,7 +57,7 @@ export function useCreateResource() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.all,
+        queryKey: resourcesKeys.all,
       });
     },
   });
@@ -67,7 +68,7 @@ export function useUpdateResource() {
 
   return useMutation<
     Resource,
-    ResourceError,
+    ApiError,
     { id: number; data: UpdateResourceDto }
   >({
     mutationFn: async ({ id, data }) => {
@@ -80,10 +81,10 @@ export function useUpdateResource() {
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.detail(id),
+        queryKey: resourcesKeys.detail(id),
       });
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.all,
+        queryKey: resourcesKeys.all,
       });
     },
   });
@@ -92,14 +93,14 @@ export function useUpdateResource() {
 export function useDeleteResource() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, ResourceError, number>({
+  return useMutation<void, ApiError, number>({
     mutationFn: async (id) => {
       const api = getApi();
       await api.resources.resourcesControllerDeleteResource(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: baseQueryKeys.resources.all,
+        queryKey: resourcesKeys.all,
       });
     },
   });

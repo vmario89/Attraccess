@@ -1,116 +1,94 @@
-import { useState } from 'react';
-import { User } from '@attraccess/api-client';
-import { Search } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Autocomplete, AutocompleteItem } from '@heroui/autocomplete';
-import { User as UserComponent } from '@heroui/user';
-import { useSearchUsers } from '../api/hooks/users';
+import { useSearchUsers, useUserDetails } from '../api/hooks/users';
 import { useTranslations } from '../i18n';
 
 // Import translations
 import * as en from './translations/userSearch.en';
 import * as de from './translations/userSearch.de';
+import { AttraccessUser } from './AttraccessUser';
 
-export type UserSearchProps = {
-  /**
-   * Custom label for the autocomplete input (overrides default translation)
-   */
+interface UserSearchProps {
   label?: string;
-  /**
-   * Custom placeholder for the autocomplete input (overrides default translation)
-   */
   placeholder?: string;
-  /**
-   * Whether to allow custom values (typing a username or email without selecting from dropdown)
-   */
-  allowsCustomValue?: boolean;
-  /**
-   * Whether the component is in a loading state (in addition to search loading)
-   */
-  isLoading?: boolean;
-  /**
-   * Callback when selection changes
-   * @param userId - Selected user ID or null if selection is cleared
-   * @param username - Selected username or null if selection is cleared
-   */
   onSelectionChange?: (userId: number | null) => void;
-  /**
-   * Callback when input value changes
-   * @param value - Current input value
-   */
-  onInputChange?: (value: string) => void;
-  /**
-   * Exclude users with these IDs from the results
-   */
-  excludeUserIds?: number[];
-  /**
-   * Initial input value
-   */
-  inputValue?: string;
-};
+}
 
-export const UserSearch = ({
-  label,
-  placeholder,
-  allowsCustomValue = false,
-  onSelectionChange,
-  onInputChange,
-}: UserSearchProps) => {
-  // Initialize translations
+export function UserSearch(props: UserSearchProps) {
+  const { label, placeholder, onSelectionChange } = props;
+
   const { t } = useTranslations('userSearch', {
     en,
     de,
   });
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Get users based on search term with pagination
-  const { data: users, isLoading: isLoadingUsers } = useSearchUsers(
-    searchTerm,
-    1,
-    10
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const selectedUserId = useMemo(
+    () => (selectedKey ? Number(selectedKey) : null),
+    [selectedKey]
   );
 
-  const handleSelectionChange = (key: React.Key | null) => {
-    if (!onSelectionChange) {
+  const searchUsers = useSearchUsers(searchTerm, 1, 10);
+
+  const users = useMemo(() => {
+    return searchUsers.data?.data ?? [];
+  }, [searchUsers.data]);
+
+  const selectedUserDetails = useUserDetails(selectedUserId);
+
+  const selectedUser = useMemo(() => {
+    if (!selectedUserId) {
+      return null;
+    }
+
+    if (selectedUserDetails.data?.id === selectedUserId) {
+      return selectedUserDetails.data;
+    }
+
+    const userFromSearch = users.find((user) => user.id === selectedUserId);
+    if (userFromSearch) {
+      return userFromSearch;
+    }
+
+    return null;
+  }, [selectedUserId, selectedUserDetails.data, users]);
+
+  useEffect(() => {
+    if (typeof onSelectionChange !== 'function') {
       return;
     }
 
-    if (key === null) {
-      onSelectionChange(null);
-      return;
-    }
-
-    const userId = Number(key);
-    const selectedUser = users?.data.find((user) => user.id === userId);
-    if (selectedUser) {
-      onSelectionChange(userId);
-    }
-  };
-
-  const handleInputChange = (value: string) => {
-    setSearchTerm(value);
-    onInputChange?.(value);
-  };
+    onSelectionChange(selectedUserId);
+  }, [selectedUserId, onSelectionChange]);
 
   return (
-    <Autocomplete
-      label={label || t('label')}
-      placeholder={placeholder || t('placeholder')}
-      isLoading={isLoadingUsers}
-      onInputChange={handleInputChange}
-      onSelectionChange={handleSelectionChange}
-      menuTrigger="input"
-      startContent={<Search className="w-4 h-4 text-gray-400" />}
-      items={users?.data ?? []}
-      listboxProps={{
-        emptyContent: t('noUsersFound'),
-      }}
-    >
-      {(user: User) => (
-        <AutocompleteItem key={user.id} textValue={user.username}>
-          <UserComponent name={user.username} />
-        </AutocompleteItem>
+    <>
+      <Autocomplete
+        inputValue={searchTerm}
+        isLoading={searchUsers.isLoading}
+        items={users}
+        label={label ?? t('label')}
+        placeholder={placeholder ?? t('placeholder')}
+        onInputChange={setSearchTerm}
+        selectedKey={selectedKey}
+        onSelectionChange={(key) => setSelectedKey(key as string | null)}
+        isClearable
+        onClear={() => {
+          setSelectedKey(null);
+          setSearchTerm('');
+        }}
+      >
+        {(item) => (
+          <AutocompleteItem key={item.id}>
+            <AttraccessUser user={item} />
+          </AutocompleteItem>
+        )}
+      </Autocomplete>
+
+      {selectedUser && (
+        <AttraccessUser user={selectedUser} className="my-2 mx-2" />
       )}
-    </Autocomplete>
+    </>
   );
-};
+}

@@ -56,8 +56,8 @@ export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
       </CardHeader>
 
       <CardBody>
-        {/* Add new introduction */}
         <AddIntroductionForm resourceId={resourceId} />
+
         <Divider className="my-4" />
 
         <IntroductionsList resourceId={resourceId} />

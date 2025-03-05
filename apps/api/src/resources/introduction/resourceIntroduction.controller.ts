@@ -38,23 +38,13 @@ import { MissingIntroductionPermissionException } from '../../exceptions/resourc
 
 class CompleteIntroductionDto {
   @ApiProperty({
-    description: 'User ID (deprecated, use userIdentifier instead)',
+    description: 'User ID',
     required: false,
     example: 1,
   })
   @IsNumber()
-  @IsOptional()
   @Type(() => Number)
-  userId?: number;
-
-  @ApiProperty({
-    description: 'Username or email of the user',
-    required: false,
-    example: 'username or user@example.com',
-  })
-  @IsString()
-  @IsOptional()
-  userIdentifier?: string;
+  userId: number;
 }
 
 @ApiTags('Resource Introductions')
@@ -90,36 +80,10 @@ export class ResourceIntroductionController {
     @Body() dto: CompleteIntroductionDto,
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroduction> {
-    // Determine the target user ID from either userId or userIdentifier
-    let targetUserId: number;
-
-    if (dto.userId) {
-      // Use directly provided userId if available
-      targetUserId = dto.userId;
-    } else if (dto.userIdentifier) {
-      // Try to find user by username or email
-      const isEmail = dto.userIdentifier.includes('@');
-      const user = await this.usersService.findOne(
-        isEmail
-          ? { email: dto.userIdentifier }
-          : { username: dto.userIdentifier }
-      );
-
-      if (!user) {
-        throw new UserNotFoundException(dto.userIdentifier);
-      }
-
-      targetUserId = user.id;
-    } else {
-      throw new BadRequestException(
-        'Either userId or userIdentifier must be provided'
-      );
-    }
-
     return this.resourceIntroductionService.createIntroduction(
       resourceId,
       req.user.id,
-      targetUserId
+      dto.userId
     );
   }
 

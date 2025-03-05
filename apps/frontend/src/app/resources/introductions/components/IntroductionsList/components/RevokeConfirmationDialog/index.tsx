@@ -7,7 +7,7 @@ import {
 } from '@heroui/modal';
 import { Button } from '@heroui/button';
 import { Textarea } from '@heroui/input';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from '../../../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
@@ -143,6 +143,12 @@ export const RevokeConfirmationDialog = ({
       handleUnrevoke();
     }
   }, [handleRevoke, handleUnrevoke, mode]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setComment('');
+    }
+  }, [setComment, isOpen]);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>

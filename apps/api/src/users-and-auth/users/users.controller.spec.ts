@@ -78,7 +78,7 @@ describe('UsersController', () => {
       };
 
       const response = await controller.getUserById(
-        user.id.toString(),
+        user.id,
         mockRequest as AuthenticatedRequest
       );
       expect(response).toEqual(user);

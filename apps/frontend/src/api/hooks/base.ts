@@ -1,84 +1,36 @@
-import { ResourcesControllerGetResourcesParams } from '@attraccess/api-client';
 import { UseQueryOptions } from '@tanstack/react-query';
 
+/**
+ * Generic query configuration type that can be used across all query hooks
+ */
 export type QueryConfig<TData, TError> = Omit<
   UseQueryOptions<TData, TError>,
   'queryKey' | 'queryFn'
 >;
 
-export const baseQueryKeys = {
-  resources: {
-    all: ['resources'] as const,
-    list: (params?: ResourcesControllerGetResourcesParams) =>
-      [...baseQueryKeys.resources.all, 'list', params] as const,
-    detail: (id: number) =>
-      [...baseQueryKeys.resources.all, 'detail', id] as const,
-  },
-  users: {
-    all: ['users'] as const,
-    verifyEmail: (email: string, token: string) =>
-      [...baseQueryKeys.users.all, 'verifyEmail', email, token] as const,
-  },
-  resourceUsage: {
-    all: ['resourceUsage'] as const,
-    active: (resourceId: number) =>
-      [...baseQueryKeys.resourceUsage.all, 'active', resourceId] as const,
-    history: (resourceId: number) =>
-      [...baseQueryKeys.resourceUsage.all, 'history', resourceId] as const,
-  },
-  resourceIntroduction: {
-    all: ['resourceIntroduction'] as const,
-    status: (resourceId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'status',
-        resourceId,
-      ] as const,
-    introducers: (resourceId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'introducers',
-        resourceId,
-      ] as const,
-    list: (resourceId: number, params?: { page?: number; limit?: number }) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'list',
-        resourceId,
-        params,
-      ] as const,
-    history: (resourceId: number, introductionId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'history',
-        resourceId,
-        introductionId,
-      ] as const,
-    revokedStatus: (resourceId: number, introductionId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'revokedStatus',
-        resourceId,
-        introductionId,
-      ] as const,
-    detail: (resourceId: number, introductionId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'detail',
-        resourceId,
-        introductionId,
-      ] as const,
-    canManageIntroductions: (resourceId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'canManageIntroductions',
-        resourceId,
-      ] as const,
-    canManageIntroducers: (resourceId: number) =>
-      [
-        ...baseQueryKeys.resourceIntroduction.all,
-        'canManageIntroducers',
-        resourceId,
-      ] as const,
-  },
-} as const;
+/**
+ * Utility to create a query key factory for a module
+ * @param module The module name (resource type)
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createQueryKeys<T extends Record<string, any>>(module: string) {
+  const baseKey = [module] as const;
+
+  // Base query key structure that modules can extend
+  return {
+    all: baseKey,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    list: (params?: Record<string, any>) =>
+      [...baseKey, 'list', params] as const,
+    detail: (id: number | string) => [...baseKey, 'detail', id] as const,
+    ...({} as T), // Allow extensions by module
+  };
+}
+
+/**
+ * Standard error interface for API responses
+ */
+export interface ApiError {
+  message: string;
+  statusCode: number;
+}

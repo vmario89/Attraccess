@@ -69,7 +69,7 @@ export function IntroductionListItemActions(
       {isRevoked ? (
         <Button
           size="sm"
-          color="primary"
+          color="success"
           variant="bordered"
           startContent={<RefreshCw className="h-4 w-4" />}
           onPress={handleUnrevoke}
@@ -80,7 +80,7 @@ export function IntroductionListItemActions(
       ) : (
         <Button
           size="sm"
-          color="primary"
+          color="danger"
           variant="bordered"
           startContent={<Ban className="h-4 w-4" />}
           onPress={handleRevoke}

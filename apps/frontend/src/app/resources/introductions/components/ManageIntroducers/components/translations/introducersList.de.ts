@@ -1,6 +1,5 @@
 export default {
   currentIntroducers: 'Aktuelle Einführer',
-  noIntroducers: 'Es wurden noch keine Einführer hinzugefügt.',
   removeIntroducer: '{{username}} als Einführer entfernen',
   removeConfirmation: {
     title: 'Einführer entfernen',

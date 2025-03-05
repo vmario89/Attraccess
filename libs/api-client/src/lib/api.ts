@@ -251,15 +251,10 @@ export interface GetResourceHistoryResponseDto {
 
 export interface CompleteIntroductionDto {
   /**
-   * User ID (deprecated, use userIdentifier instead)
+   * User ID
    * @example 1
    */
   userId?: number;
-  /**
-   * Username or email of the user
-   * @example "username or user@example.com"
-   */
-  userIdentifier?: string;
 }
 
 export interface ResourceIntroductionHistoryItem {

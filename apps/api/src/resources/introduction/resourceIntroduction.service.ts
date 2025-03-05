@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +17,7 @@ import { ResourcesService } from '../resources.service';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { ResourceIntroductionNotFoundException } from '../../exceptions/resource.introduction.notFound.exception';
 import { MissingIntroductionPermissionException } from '../../exceptions/resource.introduction.forbidden.exception';
+import { UsersService } from '../../users-and-auth/users/users.service';
 
 class IntroducionAlreadyCompletedException extends BadRequestException {
   constructor() {
@@ -37,6 +39,8 @@ class UserAlreadyHasIntroductionPermissionException extends ForbiddenException {
 
 @Injectable()
 export class ResourceIntroductionService {
+  private readonly logger = new Logger(ResourceIntroductionService.name);
+
   constructor(
     @InjectRepository(ResourceIntroduction)
     private resourceIntroductionRepository: Repository<ResourceIntroduction>,
@@ -44,7 +48,8 @@ export class ResourceIntroductionService {
     private resourceIntroductionUserRepository: Repository<ResourceIntroductionUser>,
     @InjectRepository(ResourceIntroductionHistoryItem)
     private resourceIntroductionHistoryRepository: Repository<ResourceIntroductionHistoryItem>,
-    private resourcesService: ResourcesService
+    private resourcesService: ResourcesService,
+    private usersService: UsersService
   ) {}
 
   async createIntroduction(
@@ -125,7 +130,12 @@ export class ResourceIntroductionService {
       },
     });
 
-    return !!permission;
+    const hasPermission = !!permission;
+
+    const user = await this.usersService.findOne({ id: tutorUserId });
+    const canManageResources = user.systemPermissions.canManageResources;
+
+    return hasPermission || canManageResources;
   }
 
   async getResourceIntroductions(
@@ -191,18 +201,21 @@ export class ResourceIntroductionService {
   }
 
   async removeIntroducer(resourceId: number, userId: number): Promise<void> {
-    const permission = await this.resourceIntroductionUserRepository.findOne({
-      where: {
-        resourceId,
-        userId,
-      },
-    });
+    const introductionPermission =
+      await this.resourceIntroductionUserRepository.findOne({
+        where: {
+          resourceId,
+          userId,
+        },
+      });
 
-    if (!permission) {
+    if (!introductionPermission) {
       throw new MissingIntroductionPermissionException();
     }
 
-    await this.resourceIntroductionUserRepository.delete(permission.id);
+    await this.resourceIntroductionUserRepository.delete(
+      introductionPermission.id
+    );
   }
 
   async getResourceIntroducers(
@@ -382,7 +395,10 @@ export class ResourceIntroductionService {
       },
     });
 
-    return !!isIntroducer;
+    const user = await this.usersService.findOne({ id: userId });
+    const isResourceManager = user.systemPermissions.canManageResources;
+
+    return !!isIntroducer || isResourceManager;
   }
 
   /**

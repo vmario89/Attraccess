@@ -22,6 +22,8 @@
 {"type":"entity","name":"HistoryPagination","entityType":"Component","observations":["Handles pagination for the history table","Memoized to prevent unnecessary re-renders","Only shown when multiple pages are available","Takes current page and total pages as props"]}
 {"type":"entity","name":"Component Structure","entityType":"Concept","observations":["Each component is now in its own file","Each component has its own translation files","Components are organized in a directory structure","Main component imports modular components"]}
 {"type":"entity","name":"Component Structure Update","entityType":"Concept","observations":["Each component now has its own file","HistoryTable has been split into HistoryTableHeaders and SessionRow","Each component has its own translations","Main ResourceUsageHistory now imports all separate components","Replaced wrapper components with utility functions to comply with HeroUI's strict requirements","Used functions that return React elements instead of creating wrapper components","Moved translations to utils folder and consolidated them","Maintained file separation but with a different implementation approach"]}
+{"type":"entity","name":"UserSearch Component","entityType":"React Component","observations":["Memo-ized component for searching users","Uses Autocomplete from @heroui/autocomplete","Had an infinite rerender loop when losing focus","Fixed by adding a controlled selectedKey state"]}
+{"type":"entity","name":"Infinite Rerender Bug","entityType":"Bug","observations":["Occurred when selecting a user and then clicking elsewhere","Caused by missing controlled state for Autocomplete component","Fixed by adding selectedKey state and passing it to Autocomplete","Original fix wasn't sufficient - needed more comprehensive solution","Multiple factors contributed: unstable callbacks, improper use of defaultItems, unnecessary component state updates","Fixed by using memoized items, stable callbacks with minimal dependencies, and proper input change handling"]}
 {"type":"relation","from":"Attraccess API","to":"Swagger Documentation","relationType":"includes"}
 {"type":"relation","from":"Session Notes Feature","to":"Attraccess API","relationType":"extends"}
 {"type":"relation","from":"IntroductionHistoryDialog Component","to":"HistoryItem Component","relationType":"contains"}
@@ -62,3 +64,5 @@
 {"type":"relation","from":"HistoryTable","relationType":"follows","to":"Component Structure Update"}
 {"type":"relation","from":"HistoryTableHeaders","relationType":"follows","to":"Component Structure Update"}
 {"type":"relation","from":"SessionRow","relationType":"follows","to":"Component Structure Update"}
+{"type":"relation","from":"UserSearch Component","relationType":"had","to":"Infinite Rerender Bug"}
+{"type":"relation","from":"Infinite Rerender Bug","relationType":"was fixed in","to":"UserSearch Component"}

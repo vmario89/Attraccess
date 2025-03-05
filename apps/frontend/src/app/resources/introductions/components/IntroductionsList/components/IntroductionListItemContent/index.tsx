@@ -1,11 +1,16 @@
-import { useTranslations } from '../../../../../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
-import { useCheckIntroductionRevokedStatus } from '../../../../../../../api/hooks/resourceIntroduction';
-import { User } from '@heroui/user';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useCheckIntroductionRevokedStatus } from '@frontend/api/hooks/resourceIntroduction';
 import { Chip } from '@heroui/chip';
 import { useMemo } from 'react';
 import { ResourceIntroduction } from '@attraccess/api-client';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AttraccessUser } from '@frontend/components/AttraccessUser';
 
 interface IntroductionListItemContentProps {
   introduction: ResourceIntroduction;
@@ -31,13 +36,6 @@ export function IntroductionListItemContent(
     [revokedData]
   );
 
-  const username = useMemo(
-    () =>
-      introduction.receiverUser?.username ||
-      `User ${introduction.receiverUserId}`,
-    [introduction]
-  );
-
   const tutorname = useMemo(() => {
     return (
       introduction.tutorUser?.username ||
@@ -48,32 +46,26 @@ export function IntroductionListItemContent(
   }, [introduction, t]);
 
   return (
-    <div className="flex items-center gap-2">
-      <User
-        name={username}
-        description={
-          <>
-            <span>
-              {t('introducedBy', {
-                tutor: tutorname,
-              })}
-            </span>
-            <br />
-            <span className="text-xs text-gray-500">
-              {new Date(introduction.completedAt).toLocaleDateString()}
-            </span>
-          </>
-        }
-        avatarProps={{
-          showFallback: true,
-          fallback: (introduction.receiverUser?.username
-            ? introduction.receiverUser.username[0]
-            : introduction.receiverUserId.toString()[0]
-          ).toUpperCase(),
-        }}
-      />
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center">
+        <AttraccessUser
+          user={introduction.receiverUser}
+          description={
+            <>
+              <span>
+                {t('introducedBy', {
+                  tutor: tutorname,
+                })}
+              </span>
+              <br />
+              <DateTimeDisplay date={introduction.completedAt} />
+            </>
+          }
+        />
+      </div>
+
       {isRevoked && (
-        <Chip color="danger" size="sm" className="ml-2">
+        <Chip color="danger" size="sm">
           {t('revoked')}
         </Chip>
       )}

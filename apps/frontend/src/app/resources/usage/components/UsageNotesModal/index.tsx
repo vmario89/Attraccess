@@ -13,6 +13,8 @@ import { ResourceUsage } from '@attraccess/api-client';
 import { useTranslations } from '../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
 
 interface UsageNotesModalProps {
   isOpen: boolean;
@@ -54,12 +56,12 @@ export const UsageNotesModal = memo(
                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                   <p>
                     {t('sessionStarted')}:{' '}
-                    {new Date(session.startTime).toLocaleString()}
+                    <DateTimeDisplay date={session.startTime} />
                   </p>
                   {session.endTime && (
                     <p>
                       {t('sessionEnded')}:{' '}
-                      {new Date(session.endTime).toLocaleString()}
+                      <DateTimeDisplay date={session.endTime} />
                     </p>
                   )}
                 </div>
