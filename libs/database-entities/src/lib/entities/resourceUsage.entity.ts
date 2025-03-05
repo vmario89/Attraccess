@@ -49,7 +49,7 @@ export class ResourceUsage {
   })
   startNotes!: string | null;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   @ApiProperty({
     description: 'When the usage session ended',
     required: false,
@@ -82,7 +82,7 @@ export class ResourceUsage {
     generatedType: 'STORED',
     asExpression: `CASE 
       WHEN "endTime" IS NULL THEN -1
-      ELSE EXTRACT(EPOCH FROM ("endTime" - "startTime")) / 60
+      ELSE (julianday("endTime") - julianday("startTime")) * 1440
     END`,
   })
   @ApiProperty({

@@ -42,7 +42,7 @@ export class ResourceIntroduction {
   })
   tutorUserId!: number;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'datetime', default: () => 'NOW()' })
   @ApiProperty({
     description: 'When the introduction was completed',
     example: '2021-01-01T00:00:00.000Z',

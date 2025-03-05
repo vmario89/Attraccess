@@ -58,7 +58,7 @@ export class User {
   @Exclude()
   emailVerificationToken!: string | null;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   @Exclude()
   emailVerificationTokenExpiresAt!: Date | null;
 

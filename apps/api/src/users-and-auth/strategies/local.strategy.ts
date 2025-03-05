@@ -6,7 +6,7 @@ import { AuthenticationType, User } from '@attraccess/database-entities';
 
 class UnknownUserOrPasswordException extends UnauthorizedException {
   constructor() {
-    super('Unknown username or password');
+    super('UnkownUserOrPasswordException');
     super.name = 'UnknownUserOrPasswordException';
   }
 }

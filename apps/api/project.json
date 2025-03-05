@@ -79,7 +79,7 @@
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/typeorm-migration",
+        "outputPath": "dist/apps/migrations",
         "main": "apps/api/src/database/datasource.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
         "webpackConfig": "apps/api/webpack.config.migrations.js"
@@ -91,7 +91,7 @@
       "options": {
         "cwd": "apps/api",
         "commands": [
-          "typeorm -d ../../dist/apps/typeorm-migration/main.js migration:generate"
+          "typeorm -d ../../dist/apps/migrations/main.js migration:generate"
         ]
       },
       "dependsOn": ["build-migration-config"]
@@ -110,7 +110,7 @@
       "options": {
         "cwd": "apps/api",
         "commands": [
-          "typeorm -d ../../dist/apps/typeorm-migration/main.js migration:run"
+          "typeorm -d ../../dist/apps/migrations/main.js migration:run"
         ]
       },
       "dependsOn": ["build-migration-config"]

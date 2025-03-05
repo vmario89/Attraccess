@@ -37,7 +37,7 @@ export class RevokedToken {
   })
   tokenId!: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'datetime' })
   @ApiProperty({
     description: 'When the token expires',
   })

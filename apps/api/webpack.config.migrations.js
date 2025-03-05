@@ -12,7 +12,7 @@ const migrationEntries = migrationFiles.reduce((acc, file) => {
 
 module.exports = {
   output: {
-    path: join(__dirname, '../../dist/apps/typeorm-migration'),
+    path: join(__dirname, '../../dist/apps/migrations'),
     library: {
       type: 'commonjs2'
     }

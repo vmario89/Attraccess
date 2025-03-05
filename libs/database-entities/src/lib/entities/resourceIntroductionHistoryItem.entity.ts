@@ -32,7 +32,7 @@ export class ResourceIntroductionHistoryItem {
   introductionId!: number;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: IntroductionHistoryAction,
   })
   @ApiProperty({

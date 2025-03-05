@@ -26,7 +26,7 @@ export class AuthenticationDetail {
   userId!: number;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: AuthenticationType,
   })
   @ApiProperty({
