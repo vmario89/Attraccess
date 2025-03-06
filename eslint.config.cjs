@@ -46,4 +46,23 @@ module.exports = [
     // Override or add rules here
     rules: {},
   },
+  // Add special configuration for CI environment that converts warnings to errors
+  ...(process.env.CI === 'true'
+    ? [
+        {
+          files: [
+            '**/*.ts',
+            '**/*.tsx',
+            '**/*.js',
+            '**/*.jsx',
+            '**/*.cjs',
+            '**/*.mjs',
+          ],
+          rules: {
+            // This special ESLint rule transforms all warnings to errors
+            'no-warning-comments': 'error',
+          },
+        },
+      ]
+    : []),
 ];

@@ -26,8 +26,9 @@ COPY . .
 
 # Build the API and frontend projects
 # Mount NX_CLOUD_ACCESS_TOKEN as a secret during build time
-# To use this, build with: docker build --secret id=nx_token,env=NX_CLOUD_ACCESS_TOKEN ...
-RUN --mount=type=secret,id=nx_token,env=NX_CLOUD_ACCESS_TOKEN \
+# To use this, build with: docker build --secret id=nx_token ...
+RUN --mount=type=secret,id=nx_token \
+    export NX_CLOUD_ACCESS_TOKEN=$(cat /run/secrets/nx_token) && \
     pnpm nx run-many --target=build --projects=api,frontend --prod
 
 # Production stage - reuse Node version from first stage
