@@ -8,6 +8,7 @@ import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule } from '@nestjs/config';
 import { storageConfig } from '../config/storage.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve, join } from 'path';
 
 @Module({
   imports: [
@@ -19,7 +20,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
     ServeStaticModule.forRoot({
-      rootPath: process.env.STATIC_FRONTEND_FILE_PATH,
+      rootPath:
+        process.env.STATIC_FRONTEND_FILE_PATH ||
+        resolve(join(__dirname, 'public')),
     }),
   ],
   controllers: [AppController],
