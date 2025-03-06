@@ -40,13 +40,12 @@ FROM node:${NODE_VERSION}-alpine AS production
 WORKDIR /app
 
 # Copy API dist files from builder
-COPY --from=builder /app/dist/apps/api ./
-
-# Copy frontend dist files
-COPY --from=builder /app/dist/apps/frontend /app/public
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/package.json ./package.json
 
 # Set environment variable to tell API about frontend location
-ENV STATIC_FRONTEND_FILE_PATH=/app/public
+ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 
 # -- Actually not needed, because nx adds a package.json and pnpm-lock.yaml to the dist folder --
 # Install only production dependencies for API
@@ -60,4 +59,4 @@ RUN corepack enable && corepack prepare && \
 EXPOSE 3000
 
 # Start the API
-CMD ["node", "main.js"]
+CMD ["node", "dist/apps/api/main.js"]
