@@ -53,8 +53,11 @@ jobs:
       - name: Run tests
         run: pnpm nx run-many --target=lint,typecheck,test,e2e
 
-      - name: Run production build
-        run: pnpm nx run-many --target=build --projects=api,frontend --prod
+      - name: Build Api
+        run: pnpm nx build api --skipNxCache
+
+      - name: Build Frontend
+        run: pnpm nx build frontend --skipNxCache
 
       # Upload build artifacts to be used in Docker build
       - name: Upload build artifacts
