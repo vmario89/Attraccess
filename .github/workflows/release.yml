@@ -56,6 +56,14 @@ jobs:
       - name: Run production build
         run: pnpm nx run-many --target=build --projects=api,frontend --prod
 
+      # Upload build artifacts to be used in Docker build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            dist/
+
   # Build and push Docker container
   build-push-container:
     needs: build-test
@@ -63,6 +71,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # Download build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -88,28 +103,19 @@ jobs:
         id: node-version
         run: echo "NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-      # Set execute permissions on build script
-      - name: Make build script executable
-        run: chmod +x build.sh
-
-      # Build Docker image with secrets support and version tag
-      - name: Build and tag Docker image with release version
-        run: |
-          echo "Building with release version: ${{ env.RELEASE_VERSION }}"
-          ./build.sh --nx-token="${{ env.NX_CLOUD_ACCESS_TOKEN }}" --version="${{ env.RELEASE_VERSION }}"
-
       # Create lowercase image name for Docker compatibility
       - name: Set lowercase image name
         run: echo "LOWERCASE_IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # Tag and push Docker image to registry
-      - name: Tag and push Docker image to registry
-        run: |
-          # Tag the local image with the registry path (using lowercase repository name)
-          docker tag attraccess:${{ env.RELEASE_VERSION }} ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-
-          # Push the image
-          docker push ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+      # Build and push Docker image in one step
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          build-args: |
+            NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
 
   # Optionally add a deployment step
   deploy:

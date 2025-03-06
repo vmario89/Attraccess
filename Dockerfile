@@ -5,58 +5,32 @@
 # Define ARG before FROM so it can be used in FROM
 ARG NODE_VERSION=20.10.0
 
-# Build stage
-FROM node:${NODE_VERSION}-alpine AS builder
+# Single-stage Dockerfile that only copies pre-built artifacts
+FROM node:${NODE_VERSION}-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and pnpm-lock.yaml first
-COPY package.json pnpm-lock.yaml ./
-COPY .npmrc ./
-
-# Install pnpm using corepack (it will read version from package.json)
-RUN corepack enable && corepack prepare
-
-# Install dependencies (using --frozen-lockfile to stick to lockfile)
-RUN pnpm install --frozen-lockfile
-
-# Copy the rest of the source code
-COPY . .
-
-# Build the API and frontend projects
-# Mount NX_CLOUD_ACCESS_TOKEN as a secret during build time
-# To use this, build with: docker build --secret id=nx_token ...
-RUN --mount=type=secret,id=nx_token \
-    export NX_CLOUD_ACCESS_TOKEN=$(cat /run/secrets/nx_token) && \
-    pnpm nx run-many --target=build --projects=api,frontend --prod
-
-# Production stage - reuse Node version from first stage
-# ARG must be redeclared in each stage where it's used
-ARG NODE_VERSION
-FROM node:${NODE_VERSION}-alpine AS production
-
-# Set working directory
-WORKDIR /app
-
-# Copy API dist files from builder
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /app/package.json ./package.json
+# Copy the pre-built application (these will be built in the CI pipeline)
+COPY ./dist ./dist
 
 # Set environment variable to tell API about frontend location
 ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 
-# -- Actually not needed, because nx adds a package.json and pnpm-lock.yaml to the dist folder --
-# Install only production dependencies for API
-# COPY package.json pnpm-lock.yaml ./
-
-# Use corepack to automatically install the correct pnpm version
+# Install dependencies directly from the Nx-generated package.json
+WORKDIR /app/dist/apps/api
 RUN corepack enable && corepack prepare && \
-    pnpm install --prod --frozen-lockfile
+    pnpm install --frozen-lockfile
 
-# Expose the API port (update this if your API uses a different port)
+# Back to app root for consistent starting dir
+WORKDIR /app
+
+# Expose the API port
 EXPOSE 3000
 
-# Start the API
-CMD ["node", "dist/apps/api/main.js"]
+# Create a launch script to help with debugging
+RUN echo '#!/bin/sh\necho "Starting API from $(pwd)"\necho "Contents of dist/apps/api:"\nls -la dist/apps/api\necho "API node_modules:"\nls -la dist/apps/api/node_modules | head -n 5\necho "Starting API..."\nexec node dist/apps/api/main.js' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Start the API using the launch script
+CMD ["/app/start.sh"]
