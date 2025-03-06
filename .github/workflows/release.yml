@@ -72,12 +72,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Download build artifacts
+      # Download build artifacts - Updated path to ensure dist directory structure is preserved
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: .
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -106,6 +105,14 @@ jobs:
       # Create lowercase image name for Docker compatibility
       - name: Set lowercase image name
         run: echo "LOWERCASE_IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # Debug step to verify dist directory existence
+      - name: Debug dist directory
+        run: |
+          echo "Current directory structure:"
+          ls -la
+          echo "Dist directory contents:"
+          ls -la dist || echo "Dist directory not found"
 
       # Build and push Docker image in one step
       - name: Build and push Docker image
