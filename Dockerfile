@@ -28,9 +28,5 @@ WORKDIR /app
 # Expose the API port
 EXPOSE 3000
 
-# Create a launch script to help with debugging
-RUN echo '#!/bin/sh\necho "Starting API from $(pwd)"\necho "Contents of dist/apps/api:"\nls -la dist/apps/api\necho "API node_modules:"\nls -la dist/apps/api/node_modules | head -n 5\necho "Starting API..."\nexec node dist/apps/api/main.js' > /app/start.sh && \
-    chmod +x /app/start.sh
-
 # Start the API using the launch script
-CMD ["/app/start.sh"]
+CMD ["node", "dist/apps/api/main.js"]
