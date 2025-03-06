@@ -16,7 +16,7 @@ on:
 # Define environment variables
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository | lowercase }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
