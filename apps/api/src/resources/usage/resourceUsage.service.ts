@@ -70,14 +70,33 @@ export class ResourceUsageService {
     }
 
     // Create new usage session
-    const usage = this.resourceUsageRepository.create({
+    const usageData = {
       resourceId,
       userId: user.id,
       startTime: new Date(),
       startNotes: dto.notes,
-    });
+      endTime: null,
+      endNotes: null,
+    };
 
-    return this.resourceUsageRepository.save(usage);
+    await this.resourceUsageRepository
+      .createQueryBuilder()
+      .insert()
+      .into(ResourceUsage)
+      .values(usageData)
+      .execute();
+
+    return await this.resourceUsageRepository.findOne({
+      where: {
+        resourceId,
+        userId: user.id,
+        endTime: IsNull(),
+      },
+      order: {
+        startTime: 'DESC',
+      },
+      relations: ['resource', 'user'],
+    });
   }
 
   async endSession(
@@ -91,15 +110,22 @@ export class ResourceUsageService {
       throw new BadRequestException('No active session found');
     }
 
-    // Update session end time and notes
-    activeSession.endTime = dto.endTime || new Date();
-    if (dto.notes) {
-      activeSession.endNotes = dto.notes;
-    }
+    // Update session with end time and notes - using explicit update to avoid the generated column
+    await this.resourceUsageRepository
+      .createQueryBuilder()
+      .update(ResourceUsage)
+      .set({
+        endTime: new Date(),
+        endNotes: dto.notes,
+      })
+      .where('id = :id', { id: activeSession.id })
+      .execute();
 
-    const savedSession = await this.resourceUsageRepository.save(activeSession);
-
-    return savedSession;
+    // Fetch the updated record
+    return await this.resourceUsageRepository.findOne({
+      where: { id: activeSession.id },
+      relations: ['resource', 'user'],
+    });
   }
 
   async getActiveSession(

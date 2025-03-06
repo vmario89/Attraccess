@@ -1,5 +1,5 @@
 export default {
   history: 'Historie',
-  unrevokeAccess: 'unentziehen',
+  unrevokeAccess: 'wiedergeben',
   revokeAccess: 'entziehen',
 };

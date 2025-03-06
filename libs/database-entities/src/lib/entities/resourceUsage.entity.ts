@@ -84,6 +84,8 @@ export class ResourceUsage {
       WHEN "endTime" IS NULL THEN -1
       ELSE (julianday("endTime") - julianday("startTime")) * 1440
     END`,
+    insert: false,
+    update: false,
   })
   @ApiProperty({
     description: 'The duration of the usage session in minutes',
