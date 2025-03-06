@@ -4,7 +4,7 @@ on:
   # Trigger on release creation
   release:
     types: [published]
-  
+
   # Allow manual triggering for testing
   workflow_dispatch:
     inputs:
@@ -26,6 +26,7 @@ permissions:
   contents: read
   packages: write
   id-token: write # Needed for SLSA attestation
+  actions: write # Needed for creating attestations
 
 jobs:
   # Build and test to ensure everything is working before release
@@ -125,4 +126,4 @@ jobs:
       - name: Deployment notification
         run: echo "Container was built and pushed. Ready for deployment to production."
       # Add deployment steps here when you're ready
-      # For example, update k8s manifests, trigger a deployment API, etc. 
+      # For example, update k8s manifests, trigger a deployment API, etc.
