@@ -3,6 +3,7 @@ set -e
 
 # Default values
 NX_TOKEN=""
+VERSION_TAG="latest"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -13,6 +14,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --nx-token)
       NX_TOKEN="$2"
+      shift 2
+      ;;
+    --version=*)
+      VERSION_TAG="${1#*=}"
+      shift
+      ;;
+    --version)
+      VERSION_TAG="$2"
       shift 2
       ;;
     *)
@@ -49,7 +58,13 @@ echo "Running docker build with arguments: ${BUILD_ARGS[@]}"
 docker build \
   "${BUILD_ARGS[@]}" \
   "${SECRET_ARGS[@]}" \
-  -t attraccess:latest \
+  -t attraccess:${VERSION_TAG} \
   .
 
-echo "Docker image built successfully with tag: attraccess:latest" 
+# Always tag as latest for convenience
+if [[ "$VERSION_TAG" != "latest" ]]; then
+  docker tag attraccess:${VERSION_TAG} attraccess:latest
+  echo "Docker image built successfully with tags: attraccess:${VERSION_TAG}, attraccess:latest"
+else
+  echo "Docker image built successfully with tag: attraccess:latest"
+fi 

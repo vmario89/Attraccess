@@ -20,6 +20,8 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
+  # Determine release version
+  RELEASE_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.tag }}
 
 # Define permissions
 permissions:
@@ -79,7 +81,6 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ github.event_name == 'release' && github.event.release.prerelease == false }}
             type=raw,value=${{ github.event.inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
       # Read Node.js version from .nvmrc
@@ -91,20 +92,20 @@ jobs:
       - name: Make build script executable
         run: chmod +x build.sh
 
-      # Build Docker image with secrets support
-      - name: Build and push Docker image
-        id: build-push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          build-args: |
-            NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
-          # Use secret mount for Nx Cloud token
-          secrets: |
-            nx_token=${{ env.NX_CLOUD_ACCESS_TOKEN }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      # Build Docker image with secrets support and version tag
+      - name: Build and tag Docker image with release version
+        run: |
+          echo "Building with release version: ${{ env.RELEASE_VERSION }}"
+          ./build.sh --nx-token="${{ env.NX_CLOUD_ACCESS_TOKEN }}" --version="${{ env.RELEASE_VERSION }}"
+
+      # Tag and push Docker image to registry
+      - name: Tag and push Docker image to registry
+        run: |
+          # Tag the local image with the registry path
+          docker tag attraccess:${{ env.RELEASE_VERSION }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+
+          # Push the image
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
 
   # Optionally add a deployment step
   deploy:
