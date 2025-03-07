@@ -3,13 +3,6 @@ import { Api, AuthControllerPostSessionData } from '@attraccess/api-client';
 function getInferredApiUrl() {
   const frontendUrl = new URL(window.location.href);
 
-  const hostnameIsIP = frontendUrl.hostname.match(/^[0-9.]+$/);
-  const isLocalhost = frontendUrl.hostname === 'localhost';
-
-  if (hostnameIsIP || isLocalhost) {
-    return `${frontendUrl.protocol}//${frontendUrl.hostname}:3000`;
-  }
-
   return `${frontendUrl.protocol}//${frontendUrl.hostname}:${frontendUrl.port}/api`;
 }
 
