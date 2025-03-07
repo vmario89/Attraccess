@@ -2,19 +2,16 @@ import {
   Controller,
   Post,
   Get,
-  Delete,
   Param,
   ParseIntPipe,
   Req,
   Body,
   Query,
-  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import {
   ResourceIntroduction,
-  ResourceIntroductionUser,
   ResourceIntroductionHistoryItem,
 } from '@attraccess/database-entities';
 import {
@@ -27,13 +24,12 @@ import { GetResourceIntroductionsQueryDto } from './dtos/getResourceIntroduction
 import { PaginatedResourceIntroductionResponseDto } from './dtos/paginatedResourceIntroductionResponse.dto';
 import { UsersService } from '../../users-and-auth/users/users.service';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   RevokeIntroductionDto,
   UnrevokeIntroductionDto,
 } from './dtos/revokeIntroduction.dto';
-import { UserNotFoundException } from '../../exceptions/user.notFound.exception';
 import { MissingIntroductionPermissionException } from '../../exceptions/resource.introduction.forbidden.exception';
 
 class CompleteIntroductionDto {

@@ -14,7 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { AuthenticatedRequest } from '../../types/request';
 import { AuthService } from '../auth/auth.service';
-import { Auth, SystemPermission } from '../strategies/systemPermissions.guard';
+import { Auth } from '../strategies/systemPermissions.guard';
 import { EmailService } from '../../email/email.service';
 import { GetUsersQueryDto } from './dtos/getUsersQuery.dto';
 import { VerifyEmailDto } from './dtos/verifyEmail.dto';
@@ -23,8 +23,6 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { PaginatedUsersResponseDto } from './dtos/paginatedUsersResponse.dto';
 import { UserNotFoundException } from '../../exceptions/user.notFound.exception';
-import { IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
 
 @ApiTags('users')
 @Controller('users')

@@ -3,7 +3,6 @@ import {
   ExecutionContext,
   CanActivate,
   UnauthorizedException,
-  ForbiddenException,
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
