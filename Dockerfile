@@ -14,6 +14,9 @@ WORKDIR /app
 # Copy the pre-built application (these will be built in the CI pipeline)
 COPY ./dist ./dist
 
+# Copy the email templates
+ENV EMAIL_TEMPLATES_PATH=/app/dist/apps/api/assets/email-templates
+
 # Set environment variable to tell API about frontend location
 ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 

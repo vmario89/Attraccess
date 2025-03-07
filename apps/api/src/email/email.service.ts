@@ -26,6 +26,7 @@ export class EmailService {
 
   private async loadTemplates() {
     const possiblePaths = [
+      process.env.EMAIL_TEMPLATES_PATH,
       resolve(join('assets', 'email-templates')),
       resolve(join('src', 'assets', 'email-templates')),
       resolve(join('apps', 'api', 'src', 'assets', 'email-templates')),
@@ -33,6 +34,10 @@ export class EmailService {
 
     let templatesPath = null;
     for (const path of possiblePaths) {
+      if (!path) {
+        continue;
+      }
+
       const templatesPathExists = await stat(path)
         .then((stats) => stats.isDirectory())
         .catch(() => false);
