@@ -8,7 +8,7 @@ function getInferredApiUrl() {
     port = `:${frontendUrl.port}`;
   }
 
-  return `${frontendUrl.protocol}//${frontendUrl.hostname}${port}/api`;
+  return `${frontendUrl.protocol}//${frontendUrl.hostname}${port}`;
 }
 
 function getBaseUrl() {
