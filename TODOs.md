@@ -1,9 +1,13 @@
 # TODO's
 
-[ ] Refactor db to default to sqlite, use simple-enum for enum support.
-    - e2e tests should use different db
-    - env to use postgres should still be possible
-[ ] Bug: Introducers are shown multiple times in the ui
+[ ] Feature: Backend (especially email) i18n
+    - frontend login should contain users language which is then persisted in db user object
+[ ] Feature: MQTT support
+    - configure resources to broadcast their usage statuses to certain mqtt servers and channels (configurable per resource)
+[ ] Feature: ESPHome integration
+    - esphome compiler in the ui (user has to host themself and just provide a hosting url for embedding in our frontend, we dont manage it ourself)
+    - esphome module/plugin for easy integration with our resurces
+[ ] Feature:
 [ ] Feature: System administrators can add SSO providers
     - users can use these to login
     - roles from these sso providers can be mapped to system permissions and are kept in sync from that point on
