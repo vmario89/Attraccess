@@ -11,3 +11,6 @@ vitest.config.*.timestamp*
 *.sqlite
 
 storage/
+.env
+.env.*
+!.env.example

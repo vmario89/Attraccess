@@ -16,9 +16,7 @@ export default {
   transformIgnorePatterns: ['node_modules/(?!(@attraccess)/)'],
   globals: {
     'import.meta': {
-      env: {
-        VITE_API_URL: 'http://localhost:3000',
-      },
+      env: {},
     },
   },
   coverageThreshold: {

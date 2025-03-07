@@ -6,7 +6,6 @@ import './test-utils/setupIntegrationTests';
 (global as any).import = {
   meta: {
     env: {
-      VITE_API_URL: 'http://localhost:3000',
       MODE: 'test',
     },
   },
@@ -46,9 +45,8 @@ class MockIntersectionObserver implements IntersectionObserver {
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
-     
     callback: IntersectionObserverCallback,
-     
+
     options?: IntersectionObserverInit
   ) {
     // This is a mock implementation, so we don't need to use the callback or options

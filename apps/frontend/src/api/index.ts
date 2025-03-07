@@ -3,7 +3,12 @@ import { Api, AuthControllerPostSessionData } from '@attraccess/api-client';
 function getInferredApiUrl() {
   const frontendUrl = new URL(window.location.href);
 
-  return `${frontendUrl.protocol}//${frontendUrl.hostname}:${frontendUrl.port}/api`;
+  let port = '';
+  if (frontendUrl.port) {
+    port = `:${frontendUrl.port}`;
+  }
+
+  return `${frontendUrl.protocol}//${frontendUrl.hostname}${port}/api`;
 }
 
 function getBaseUrl() {
