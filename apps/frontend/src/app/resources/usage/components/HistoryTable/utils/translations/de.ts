@@ -12,4 +12,6 @@ export default {
 
   // Other
   noUsageHistory: 'Keine Nutzungshistorie für diese Ressource gefunden.',
+  errorLoadingHistory:
+    'Fehler beim Laden der Nutzungshistorie. Bitte versuchen Sie es erneut.',
 };

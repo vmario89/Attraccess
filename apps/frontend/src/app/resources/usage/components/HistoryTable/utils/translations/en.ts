@@ -12,4 +12,5 @@ export default {
 
   // Other
   noUsageHistory: 'No usage history found for this resource.',
+  errorLoadingHistory: 'Error loading usage history. Please try again.',
 };
