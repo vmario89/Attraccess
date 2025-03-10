@@ -1,7 +1,9 @@
 import { CreateResourceDto } from '@attraccess/api-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useCreateResource } from '../../api/hooks';
-import { useToastMessage } from '../../components';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useCreateResource } from '@frontend/api/hooks';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useToastMessage } from '@frontend/components/toastProvider';
 import {
   Button,
   Form,
@@ -13,7 +15,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react';
-import { FileUpload } from '../../components/fileUpload';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { FileUpload } from '@frontend/components/fileUpload';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
+import * as en from './translations/resourceCreateModal.en';
+import * as de from './translations/resourceCreateModal.de';
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -22,6 +29,10 @@ interface ResourceCreateModalProps {
 
 export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { t } = useTranslations('resourceCreateModal', {
+    en,
+    de,
+  });
 
   const [formData, setFormData] = useState<CreateResourceDto>({
     name: '',
@@ -37,8 +48,8 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   useEffect(() => {
     if (createResource.isSuccess && isSubmitting) {
       success({
-        title: 'Resource created',
-        description: `${formData.name} has been successfully created`,
+        title: t('successTitle'),
+        description: t('successDescription', { name: formData.name }),
       });
 
       if (typeof props.onCreated === 'function') {
@@ -61,20 +72,20 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
     formData.name,
     props,
     success,
+    t,
   ]);
 
   useEffect(() => {
     if (isSubmitting && createResource.isError) {
       error({
-        title: 'Failed to create resource',
-        description:
-          'An error occurred while creating the resource. Please try again.',
+        title: t('errorTitle'),
+        description: t('errorDescription'),
       });
       console.error('Failed to create resource:', createResource.error);
 
       setIsSubmitting(false);
     }
-  }, [createResource.isError, createResource.error, error, isSubmitting]);
+  }, [createResource.isError, createResource.error, error, isSubmitting, t]);
 
   const handleSubmit = useCallback(
     async (closeFn: () => void) => {
@@ -101,19 +112,19 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                 await handleSubmit(onClose);
               }}
             >
-              <ModalHeader>Create a new Resource</ModalHeader>
+              <ModalHeader>{t('modalTitle')}</ModalHeader>
 
               <ModalBody className="w-full">
                 <Input
                   isRequired
-                  label="Name"
+                  label={t('nameLabel')}
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
                 />
                 <Input
-                  label="Description"
+                  label={t('descriptionLabel')}
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
@@ -121,7 +132,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                 />
 
                 <FileUpload
-                  label="Image"
+                  label={t('imageLabel')}
                   id="image"
                   onChange={setSelectedImage}
                   className="w-full"
@@ -130,7 +141,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
 
               <ModalFooter>
                 <Button color="primary" type="submit">
-                  Create
+                  {t('createButton')}
                 </Button>
               </ModalFooter>
             </Form>

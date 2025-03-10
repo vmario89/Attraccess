@@ -1,8 +1,12 @@
+import { useState, useEffect } from 'react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 import { Search, Plus } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
 import { ResourceCreateModal } from './resourceCreateModal';
-import { Button, Input } from '@heroui/react';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import { useTranslations } from '../../i18n';
+import * as en from './translations/toolbar.en';
+import * as de from './translations/toolbar.de';
 
 interface ToolbarProps {
   onSearch: (value: string) => void;
@@ -14,6 +18,11 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
   const canManageResources = hasPermission('canManageResources');
   const [searchValue, setSearchValue] = useState('');
 
+  const { t } = useTranslations('toolbar', {
+    en,
+    de,
+  });
+
   useEffect(() => {
     onSearch(searchValue);
   }, [searchValue, onSearch]);
@@ -24,7 +33,7 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
         <Input
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Search resources..."
+          placeholder={t('searchPlaceholder')}
           className={`w-full ${searchIsLoading ? 'animate-pulse' : ''}`}
           startContent={<Search />}
         />
@@ -34,7 +43,7 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
           <ResourceCreateModal>
             {(onOpen) => (
               <Button onPress={onOpen} startContent={<Plus />} color="primary">
-                Add Resource
+                {t('addResource')}
               </Button>
             )}
           </ResourceCreateModal>

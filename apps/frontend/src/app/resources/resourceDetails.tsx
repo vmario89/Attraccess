@@ -2,9 +2,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useResource, useDeleteResource } from '../../api/hooks/resources';
 import { useAuth } from '../../hooks/useAuth';
 import { useToastMessage } from '../../components/toastProvider';
-import { ArrowLeft, Trash } from 'lucide-react';
+import { ArrowLeft, Trash, Wifi } from 'lucide-react';
 import { Button } from '@heroui/button';
-import { Spinner } from '@heroui/react';
+import { Spinner, Link } from '@heroui/react';
 import { useDisclosure } from '@heroui/modal';
 import { ResourceUsageSession } from './usage/resourceUsageSession';
 import { ResourceUsageHistory } from './usage/resourceUsageHistory';
@@ -113,46 +113,50 @@ function ResourceDetailsComponent() {
         backTo="/resources"
         actions={
           canManageResources && (
-            <Button
-              onPress={onOpen}
-              color="danger"
-              variant="light"
-              startContent={<Trash className="w-4 h-4" />}
-            >
-              {t('delete')}
-            </Button>
+            <div className="flex space-x-2">
+              <Link href={`/resources/${resourceId}/iot`}>
+                <Button
+                  variant="light"
+                  startContent={<Wifi className="w-4 h-4" />}
+                >
+                  {t('iotSettings')}
+                </Button>
+              </Link>
+              <Button
+                onPress={onOpen}
+                color="danger"
+                variant="light"
+                startContent={<Trash className="w-4 h-4" />}
+              >
+                {t('delete')}
+              </Button>
+            </div>
           )
         }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {(showIntroducersManagement || showIntroductionsManagement) && (
-          <div className="lg:col-span-1 space-y-6 order-1 lg:order-1">
-            {showIntroductionsManagement && (
-              <ResourceIntroductions resourceId={resourceId} />
-            )}
-
-            {showIntroducersManagement && (
-              <ManageIntroducers resourceId={resourceId} />
-            )}
-          </div>
-        )}
-
-        {/* Usage Session */}
-        <div
-          className={
-            'space-y-6 order-first lg:order-2 ' +
-            `${
-              showIntroducersManagement || showIntroductionsManagement
-                ? 'lg:col-span-2'
-                : 'lg:col-span-3'
-            }`
-          }
-        >
-          <ResourceUsageSession resourceId={resourceId} />
-          <ResourceUsageHistory resourceId={resourceId} />
-        </div>
+      {/* Full width Usage section for all devices */}
+      <div className="w-full space-y-6 mb-8">
+        <ResourceUsageSession resourceId={resourceId} />
+        <ResourceUsageHistory resourceId={resourceId} />
       </div>
+
+      {/* 2-column layout for Introductions and Introducers on non-mobile */}
+      {(showIntroducersManagement || showIntroductionsManagement) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {showIntroductionsManagement && (
+            <div className="w-full">
+              <ResourceIntroductions resourceId={resourceId} />
+            </div>
+          )}
+
+          {showIntroducersManagement && (
+            <div className="w-full">
+              <ManageIntroducers resourceId={resourceId} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal

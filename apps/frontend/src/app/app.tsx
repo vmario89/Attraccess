@@ -1,17 +1,72 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Unauthorized } from './unauthorized/unauthorized';
 import { useTheme } from '@heroui/use-theme';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Layout } from './layout/layout';
 import { useAuth } from '../hooks/useAuth';
 import { Loading } from './loading';
-import { authorizedRoutes } from './authorized-routes';
+import { routes as allRoutes, RouteConfig } from './routes';
 import { VerifyEmail } from './verifyEmail';
 import { ToastProvider } from '../components/toastProvider';
+import { HeroUIProvider } from '@heroui/react';
+import { SystemPermissions } from '@attraccess/api-client';
+
+function useRoutesWithAuthElements(routes: RouteConfig[]) {
+  const { user } = useAuth();
+
+  const routesWithAuthElements = useMemo(() => {
+    return routes.map((route) => {
+      if (!route.authRequired) {
+        return route;
+      }
+
+      if (route.authRequired === true && user) {
+        return route;
+      }
+
+      if (!user) {
+        return {
+          ...route,
+          element: <Unauthorized />,
+        };
+      }
+
+      const requiredPermissions = (
+        Array.isArray(route.authRequired)
+          ? route.authRequired
+          : [route.authRequired]
+      ) as (keyof SystemPermissions)[];
+
+      const userHasAllRequiredPermissions = requiredPermissions.every(
+        (permission) => user.systemPermissions[permission]
+      );
+
+      if (!userHasAllRequiredPermissions) {
+        return {
+          ...route,
+          element: <Unauthorized />,
+        };
+      }
+
+      return route;
+    });
+  }, [routes, user]);
+
+  return useMemo(
+    () =>
+      routesWithAuthElements.map((route: RouteConfig, index) => (
+        <Route key={index} path={route.path} element={route.element} />
+      )),
+    [routesWithAuthElements]
+  );
+}
 
 export function App() {
   const { isAuthenticated, isLoading } = useAuth();
   const { setTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const routesWithAuthElements = useRoutesWithAuthElements(allRoutes);
 
   // set theme based on system preference of browser
   useEffect(() => {
@@ -42,20 +97,19 @@ export function App() {
   }
 
   return (
-    <ToastProvider>
-      <Layout noLayout={!isAuthenticated}>
-        <Routes>
-          <Route path="/verify-email" element={<VerifyEmail />} />
+    <HeroUIProvider navigate={navigate}>
+      <ToastProvider>
+        <Layout noLayout={!isAuthenticated}>
+          <Routes>
+            <Route path="/verify-email" element={<VerifyEmail />} />
 
-          {isAuthenticated &&
-            authorizedRoutes.map((props, routeIndex) => (
-              <Route {...props} key={routeIndex} />
-            ))}
+            {routesWithAuthElements}
 
-          {!isAuthenticated && <Route path="*" element={<Unauthorized />} />}
-        </Routes>
-      </Layout>
-    </ToastProvider>
+            {!isAuthenticated && <Route path="*" element={<Unauthorized />} />}
+          </Routes>
+        </Layout>
+      </ToastProvider>
+    </HeroUIProvider>
   );
 }
 

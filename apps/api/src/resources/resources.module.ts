@@ -20,6 +20,9 @@ import { ResourceIntroductionController } from './introduction/resourceIntroduct
 import { ResourceIntroductionService } from './introduction/resourceIntroduction.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { ResourceIntroducersController } from './introduction/resourceIntroducers.controller';
+import { MqttResourceModule } from './mqtt/mqtt-resource.module';
+import { ConfigModule } from '@nestjs/config';
+import { MqttModule } from '../mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { ResourceIntroducersController } from './introduction/resourceIntroducer
     ScheduleModule.forRoot(),
     FileStorageModule,
     UsersAndAuthModule,
+    MqttResourceModule,
+    ConfigModule,
+    MqttModule,
   ],
   controllers: [
     ResourcesController,

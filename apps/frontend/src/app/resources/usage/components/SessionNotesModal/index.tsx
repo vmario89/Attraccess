@@ -66,10 +66,10 @@ export const SessionNotesModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="bordered" onClick={onClose} disabled={isSubmitting}>
+          <Button variant="bordered" onPress={onClose} disabled={isSubmitting}>
             {t('cancel')}
           </Button>
-          <Button onClick={handleConfirm} disabled={isSubmitting}>
+          <Button onPress={handleConfirm} disabled={isSubmitting}>
             {isSubmitting ? t('processing') : t('confirm')}
           </Button>
         </ModalFooter>

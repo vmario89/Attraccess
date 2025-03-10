@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useToastMessage } from './toastProvider';
 import { ImageIcon, X } from 'lucide-react';
+import { useTranslations } from '../i18n';
+import * as en from './translations/fileUpload.en';
+import * as de from './translations/fileUpload.de';
 
 interface FileUploadProps {
   id: string;
@@ -20,6 +23,10 @@ export function FileUpload({
   disabled = false,
   className = '',
 }: FileUploadProps) {
+  const { t } = useTranslations('fileUpload', {
+    en,
+    de,
+  });
   const [isDragActive, setIsDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -40,10 +47,10 @@ export function FileUpload({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (!ALLOWED_MIME_TYPES.includes(file.type as any)) {
         error({
-          title: 'Invalid file type',
-          description: `Please upload a valid image file (${ALLOWED_MIME_TYPES.join(
-            ', '
-          )})`,
+          title: t('invalidFileType'),
+          description: t('invalidFileTypeDescription', {
+            allowedTypes: ALLOWED_MIME_TYPES.join(', '),
+          }),
         });
         return false;
       }
@@ -51,17 +58,17 @@ export function FileUpload({
       // Check file size
       if (file.size > MAX_FILE_SIZE) {
         error({
-          title: 'File too large',
-          description: `File size must be less than ${
-            MAX_FILE_SIZE / 1024 / 1024
-          }MB`,
+          title: t('fileTooLarge'),
+          description: t('fileTooLargeDescription', {
+            maxSize: MAX_FILE_SIZE / 1024 / 1024,
+          }),
         });
         return false;
       }
 
       return true;
     },
-    [error]
+    [error, t]
   );
 
   const handleFileChange = useCallback(
@@ -159,12 +166,10 @@ export function FileUpload({
           <div className="text-center">
             <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Drag and drop an image here, or click to select
+              {t('dragAndDrop')}
             </p>
             <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-              Accepted formats: JPEG, PNG, WebP (max{' '}
-              {MAX_FILE_SIZE / 1024 / 1024}
-              MB)
+              {t('acceptedFormats', { maxSize: MAX_FILE_SIZE / 1024 / 1024 })}
             </p>
           </div>
         )}
@@ -186,8 +191,10 @@ export function FileUpload({
               />
             </div>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 text-center">
-              {selectedFile.name} (
-              {(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
+              {t('preview', {
+                fileName: selectedFile.name,
+                fileSize: (selectedFile.size / 1024 / 1024).toFixed(2),
+              })}
             </p>
           </div>
         )}

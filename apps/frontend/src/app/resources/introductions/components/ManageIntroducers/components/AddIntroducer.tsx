@@ -8,7 +8,7 @@ import { useTranslations } from '@frontend/i18n';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useAddIntroducer } from '@frontend/api/hooks/resourceIntroduction';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components';
+import { useToastMessage } from '@frontend/components/toastProvider';
 
 // Import translations
 import * as en from './translations/addIntroducer.en';

@@ -4,11 +4,19 @@ import { ResourceCard, ResourceCardSkeletonLoader } from './resourceCard';
 import { Toolbar } from './toolbar';
 import { Resource } from '@attraccess/api-client';
 import { Alert, Pagination } from '@heroui/react';
+import { useTranslations } from '../../i18n';
+import * as en from './translations/resourceList.en';
+import * as de from './translations/resourceList.de';
 
 export function ResourceList() {
   const [searchInput, setSearchInput] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 9; // 3x3 grid for desktop
+
+  const { t } = useTranslations('resourceList', {
+    en,
+    de,
+  });
 
   const resources = useResources({
     search: searchInput,
@@ -50,14 +58,14 @@ export function ResourceList() {
       return (
         <Alert
           description={resources.error?.message}
-          title="Error loading resources"
+          title={t('errorLoadingResources')}
           color="danger"
         />
       );
     }
 
     if (!resources.isLoading && !hasItems) {
-      return <Alert title="No resources found" color="warning" />;
+      return <Alert title={t('noResourcesFound')} color="warning" />;
     }
 
     return (
@@ -65,7 +73,7 @@ export function ResourceList() {
         {resources.isLoading ? ResourceCardSkeletons : ResourceCards}
       </div>
     );
-  }, [resources, ResourceCards, ResourceCardSkeletons]);
+  }, [resources, ResourceCards, ResourceCardSkeletons, t]);
 
   const totalPages = useMemo(() => {
     const total = resources.data?.total ?? 0;

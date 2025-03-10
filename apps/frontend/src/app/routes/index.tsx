@@ -1,0 +1,58 @@
+import { Navigate, PathRouteProps } from 'react-router-dom';
+import { ResourceList } from '../resources/list';
+import { ResourceDetails } from '../resources/resourceDetails';
+import { IoTSettings } from '../resources/iotSettings';
+import { Database, ServerIcon } from 'lucide-react';
+import React from 'react';
+import { MqttServersPage } from '../mqtt/MqttServersPage';
+import { SystemPermissions, User } from '@attraccess/api-client';
+export * as de from './translations/de';
+export * as en from './translations/en';
+
+// Extended route type that includes sidebar options
+export interface RouteConfig extends Omit<PathRouteProps, 'children'> {
+  sidebar?: {
+    translationKey: string; // Key for translation
+    icon: React.ReactNode;
+    order?: number; // Optional ordering for sidebar items
+  };
+  authRequired: boolean | keyof SystemPermissions | (keyof SystemPermissions)[];
+}
+
+export const routes: RouteConfig[] = [
+  {
+    path: '/',
+    element: <Navigate to="/resources" replace />,
+    authRequired: true,
+  },
+  {
+    path: '/resources',
+    element: <ResourceList />,
+    sidebar: {
+      translationKey: 'resources',
+      icon: <Database className="h-5 w-5 mr-3" />,
+      order: 1,
+    },
+    authRequired: true,
+  },
+  {
+    path: '/resources/:id',
+    element: <ResourceDetails />,
+    authRequired: true,
+  },
+  {
+    path: '/resources/:id/iot',
+    element: <IoTSettings />,
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/mqtt/servers',
+    element: <MqttServersPage />,
+    sidebar: {
+      translationKey: 'mqttServers',
+      icon: <ServerIcon className="h-5 w-5 mr-3" />,
+      order: 2,
+    },
+    authRequired: 'canManageResources',
+  },
+];

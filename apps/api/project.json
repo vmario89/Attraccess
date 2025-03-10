@@ -31,10 +31,10 @@
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build", "start-services"],
+      "dependsOn": ["start-services"],
       "options": {
         "buildTarget": "api:build",
-        "runBuildTargetDependencies": false
+        "watch": true
       },
       "configurations": {
         "development": {

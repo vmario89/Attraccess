@@ -3,13 +3,26 @@ import { useUrlQuery } from '../hooks/useUrlQuery';
 import { useVerifyEmail } from '../api/hooks/users';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from './loading';
-import { Alert } from '@heroui/react';
+import {
+  Alert,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Spacer,
+  Link,
+} from '@heroui/react';
+import { useTranslations } from '../i18n';
+import * as en from './translations/verifyEmail.en';
+import * as de from './translations/verifyEmail.de';
 
 export function VerifyEmail() {
   const query = useUrlQuery();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { t } = useTranslations('verifyEmail', { en, de });
 
   const token = useMemo(() => query.get('token'), [query]);
   const email = useMemo(() => query.get('email'), [query]);
@@ -18,7 +31,7 @@ export function VerifyEmail() {
 
   const activateEmail = useCallback(async () => {
     if (!token || !email) {
-      setError('Invalid verification link. Please request a new one.');
+      setError(t('apiErrors.invalidLink'));
       return;
     }
 
@@ -28,10 +41,22 @@ export function VerifyEmail() {
       setError(null);
     } catch (err) {
       const error = err as { error?: { message?: string } };
-      setError(error.error?.message || 'An unexpected error occurred');
+      const errorMessage =
+        error.error?.message || t('apiErrors.unexpectedError');
+
+      // Check if a translation exists for this error message
+      const translationKey = `apiErrors.${errorMessage}`;
+      const translation = t(translationKey);
+
+      if (translation !== translationKey) {
+        setError(translation);
+      } else {
+        // If no translation exists, use the original error message
+        setError(errorMessage);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, email]);
+  }, [token, email, t]);
 
   useEffect(() => {
     activateEmail();
@@ -43,61 +68,55 @@ export function VerifyEmail() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Email Verified!
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Your email has been successfully verified. You can now log in to
-              your account.
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <h2 className="text-3xl font-bold">{t('success.title')}</h2>
+          </CardHeader>
+          <CardBody>
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+              {t('success.message')}
             </p>
-          </div>
-          <div className="mt-8">
-            <button
-              onClick={() => navigate('/')}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Go to Login
-            </button>
-          </div>
-        </div>
+          </CardBody>
+          <CardFooter>
+            <Button fullWidth color="primary" onPress={() => navigate('/')}>
+              {t('success.goToLogin')}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Verification Failed
-            </h2>
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <h2 className="text-3xl font-bold">{t('error.title')}</h2>
+          </CardHeader>
+          <CardBody>
             <Alert
               color="danger"
-              title="Error"
+              title={t('error.errorTitle')}
               description={error}
-              className="mt-4"
             />
-          </div>
-          <div className="mt-8">
-            <button
-              onClick={activateEmail}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              disabled={verifyEmail.isPending}
+          </CardBody>
+          <CardFooter>
+            <Button
+              fullWidth
+              color="primary"
+              onPress={activateEmail}
+              isDisabled={verifyEmail.isPending}
             >
-              Try Again
-            </button>
-            <button
-              onClick={() => navigate('/')}
-              className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Back to Login
-            </button>
-          </div>
-        </div>
+              {t('error.tryAgain')}
+            </Button>
+            <Spacer y={2} />
+            <Button fullWidth variant="bordered" onPress={() => navigate('/')}>
+              {t('error.backToLogin')}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }

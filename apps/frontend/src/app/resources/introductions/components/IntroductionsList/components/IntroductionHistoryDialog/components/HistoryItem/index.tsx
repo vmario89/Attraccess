@@ -1,4 +1,4 @@
-import { Chip } from '@heroui/react';
+import { Card, CardBody, Chip } from '@heroui/react';
 import { format } from 'date-fns';
 import { HistoryComment } from '../HistoryComment';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -25,21 +25,23 @@ export const HistoryItem = ({
   });
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-3 rounded-md border border-gray-200 dark:border-gray-700 mb-3">
-      <div className="flex justify-between items-start">
-        <div>
-          <Chip color={revoked ? 'danger' : 'success'}>
-            {revoked ? t('revoked') : t('unrevoked')}
-          </Chip>
-        </div>
-        <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
-          <span>{format(new Date(timestamp), 'dd.MM.yyyy HH:mm:ss')}</span>
-          <br />
+    <Card classNames={{ base: 'bg-primary-100' }}>
+      <CardBody>
+        <div className="flex justify-between items-start">
+          <div>
+            <Chip color={revoked ? 'danger' : 'success'}>
+              {revoked ? t('revoked') : t('unrevoked')}
+            </Chip>
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
+            <span>{format(new Date(timestamp), 'dd.MM.yyyy HH:mm:ss')}</span>
+            <br />
 
-          <span>{t('by', { user: userName })}</span>
+            <span>{t('by', { user: userName })}</span>
+          </div>
         </div>
-      </div>
-      {comment && <HistoryComment comment={comment} />}
-    </div>
+        {comment && <HistoryComment comment={comment} />}
+      </CardBody>
+    </Card>
   );
 };

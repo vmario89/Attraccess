@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import {
   Repository,
   ILike,
@@ -46,12 +46,15 @@ class UserUsernameAlreadyInUseException extends BadRequestException {
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>
   ) {}
 
   async findOne(options: FindOneOptions): Promise<User | null> {
+    this.logger.debug(`Finding user with options: ${JSON.stringify(options)}`);
     const validatedOptions = FindOneOptionsSchema.parse(options);
 
     // Build a where condition that uses case-insensitive comparison for username
@@ -69,23 +72,40 @@ export class UsersService {
       whereCondition.email = validatedOptions.email;
     }
 
+    this.logger.debug(
+      `Searching user with where condition: ${JSON.stringify(whereCondition)}`
+    );
     const user = await this.userRepository.findOne({
       where: whereCondition,
     });
+
+    if (user) {
+      this.logger.debug(`User found with ID: ${user.id}`);
+    } else {
+      this.logger.debug('No user found matching criteria');
+    }
 
     return user || null;
   }
 
   async createOne(username: string, email: string): Promise<User> {
+    this.logger.debug(
+      `Creating new user - username: ${username}, email: ${email}`
+    );
+
     // Check for existing email
+    this.logger.debug(`Checking if email already exists: ${email}`);
     const existingEmail = await this.findOne({ email });
     if (existingEmail) {
+      this.logger.debug(`Email already exists: ${email}`);
       throw new BadRequestException('Email already exists');
     }
 
     // Check for existing username
+    this.logger.debug(`Checking if username already exists: ${username}`);
     const existingUsername = await this.findOne({ username });
     if (existingUsername) {
+      this.logger.debug(`Username already exists: ${username}`);
       throw new BadRequestException('Username already exists');
     }
 
@@ -94,8 +114,12 @@ export class UsersService {
     user.email = email;
 
     // Check if this is the first user in the system
+    this.logger.debug('Checking if this is the first user in the system');
     const totalUsers = await this.userRepository.count();
     if (totalUsers === 0) {
+      this.logger.debug(
+        'First user in system - granting all system permissions'
+      );
       // This is the first user, grant all system permissions
       user.systemPermissions = {
         canManageResources: true,
@@ -104,60 +128,98 @@ export class UsersService {
       };
     }
 
-    return this.userRepository.save(user);
+    this.logger.debug('Saving new user to database');
+    const savedUser = await this.userRepository.save(user);
+    this.logger.debug(`User saved with ID: ${savedUser.id}`);
+    return savedUser;
   }
 
   async deleteOne(id: number): Promise<void> {
+    this.logger.debug(`Deleting user with ID: ${id}`);
     await this.userRepository.delete(id);
+    this.logger.debug(`User deleted with ID: ${id}`);
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    this.logger.debug(
+      `Updating user with ID: ${id}, updates: ${JSON.stringify(updates)}`
+    );
+
     // If email is being updated, check for uniqueness
     if (updates.email) {
+      this.logger.debug(`Checking uniqueness for new email: ${updates.email}`);
       const existingEmails = await this.userRepository.find({
         where: { email: updates.email },
       });
 
       if (existingEmails.some((user) => user.id !== id)) {
+        this.logger.debug(
+          `Email already in use by another user: ${updates.email}`
+        );
         throw new UserEmailAlreadyInUseException();
       }
     }
 
     // If username is being updated, check for case-insensitive uniqueness
     if (updates.username) {
+      this.logger.debug(
+        `Checking uniqueness for new username: ${updates.username}`
+      );
       const existingUsername = await this.findOne({
         username: updates.username,
       });
       if (existingUsername && existingUsername.id !== id) {
+        this.logger.debug(
+          `Username already in use by another user: ${updates.username}`
+        );
         throw new UserUsernameAlreadyInUseException();
       }
     }
 
+    this.logger.debug(`Performing update for user ID: ${id}`);
     await this.userRepository.update(id, updates);
+
+    this.logger.debug(`Fetching updated user from database, ID: ${id}`);
     const updatedUser = await this.findOne({ id });
     if (!updatedUser) {
+      this.logger.error(`User not found after update, ID: ${id}`);
       throw new UserNotFoundException(id);
     }
+
+    this.logger.debug(`User updated successfully, ID: ${id}`);
     return updatedUser;
   }
 
   async findAll(
     options: PaginationOptions & { search?: string }
   ): Promise<PaginatedResponseDto<User>> {
+    this.logger.debug(
+      `Finding all users with options: ${JSON.stringify(options)}`
+    );
     const paginationOptions = PaginationOptionsSchema.parse(options);
     const { search } = options;
     const { page, limit } = paginationOptions;
     const skip = (page - 1) * limit;
 
+    const whereCondition: { username?: any; email?: any } = {};
+    if (search) {
+      this.logger.debug(`Searching for users with query: ${search}`);
+      whereCondition.username = ILike(`%${search}%`);
+      whereCondition.email = ILike(`%${search}%`);
+    }
+
+    this.logger.debug(`Executing find with skip: ${skip}, take: ${limit}`);
     const [users, total] = await this.userRepository.findAndCount({
       skip,
       take: limit,
-      where: {
-        username: search ? ILike(`%${search}%`) : undefined,
-        email: search ? ILike(`%${search}%`) : undefined,
-      },
+      where: search
+        ? [{ username: ILike(`%${search}%`) }, { email: ILike(`%${search}%`) }]
+        : undefined,
     });
 
+    this.logger.debug(
+      `Found ${total} total users, returning page ${page} with ${users.length} results`
+    );
     return makePaginatedResponse(
       {
         page: paginationOptions.page,

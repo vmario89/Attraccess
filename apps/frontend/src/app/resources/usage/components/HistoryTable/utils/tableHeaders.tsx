@@ -21,7 +21,7 @@ export function generateHeaderColumns(
     <TableColumn key="startTime">{t('startTime')}</TableColumn>,
     <TableColumn key="endTime">{t('endTime')}</TableColumn>,
     <TableColumn key="duration">{t('duration')}</TableColumn>,
-    <TableColumn key="status">{t('status')}</TableColumn>
+    <TableColumn key="icons">{''}</TableColumn>
   );
 
   return headers;

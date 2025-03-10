@@ -16,7 +16,7 @@ export const HistoryComment = ({ comment }: HistoryCommentProps) => {
 
   return (
     <>
-      <Divider className="my-1" />
+      <Divider className="my-3" />
       <Textarea label={t('comment')} value={comment} readOnly />
     </>
   );

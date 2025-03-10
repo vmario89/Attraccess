@@ -7,11 +7,13 @@ import {
   OneToMany,
   ViewEntity,
   ViewColumn,
+  OneToOne,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResourceIntroduction } from './resourceIntroduction.entity';
 import { ResourceUsage } from './resourceUsage.entity';
 import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
+import { MqttResourceConfig } from './mqttResourceConfig.entity';
 
 @Entity()
 export class Resource {
@@ -71,6 +73,9 @@ export class Resource {
     (introducer) => introducer.resource
   )
   introducers!: ResourceIntroductionUser[];
+
+  @OneToOne(() => MqttResourceConfig, (config) => config.resource)
+  mqttConfig!: MqttResourceConfig;
 }
 
 @ViewEntity({

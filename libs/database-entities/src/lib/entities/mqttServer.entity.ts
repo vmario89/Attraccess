@@ -1,0 +1,87 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { MqttResourceConfig } from './mqttResourceConfig.entity';
+
+@Entity()
+export class MqttServer {
+  @PrimaryGeneratedColumn()
+  @ApiProperty({
+    description: 'The unique identifier of the MQTT server',
+    example: 1,
+  })
+  id!: number;
+
+  @Column()
+  @ApiProperty({
+    description: 'Friendly name for the MQTT server',
+    example: 'Workshop MQTT Server',
+  })
+  name!: string;
+
+  @Column()
+  @ApiProperty({
+    description: 'MQTT server hostname/IP',
+    example: 'mqtt.example.com',
+  })
+  host!: string;
+
+  @Column()
+  @ApiProperty({
+    description: 'MQTT server port (default: 1883 for MQTT, 8883 for MQTTS)',
+    example: 1883,
+  })
+  port!: number;
+
+  @Column({ nullable: true })
+  @ApiProperty({
+    description: 'Optional authentication username',
+    example: 'mqttuser',
+    required: false,
+  })
+  username!: string | null;
+
+  @Column({ nullable: true })
+  @ApiProperty({
+    description: 'Optional authentication password',
+    example: 'password123',
+    required: false,
+  })
+  password!: string | null;
+
+  @Column({ nullable: true })
+  @ApiProperty({
+    description: 'Client ID for MQTT connection',
+    example: 'attraccess-client-1',
+    required: false,
+  })
+  clientId!: string | null;
+
+  @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether to use TLS/SSL',
+    example: false,
+  })
+  useTls!: boolean;
+
+  @CreateDateColumn()
+  @ApiProperty({
+    description: 'When the MQTT server was created',
+  })
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  @ApiProperty({
+    description: 'When the MQTT server was last updated',
+  })
+  updatedAt!: Date;
+
+  @OneToMany(() => MqttResourceConfig, (config) => config.server)
+  resourceConfigs!: MqttResourceConfig[];
+}

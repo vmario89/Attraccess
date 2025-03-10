@@ -43,19 +43,14 @@ export function generateRowCells(
     <TableCell key={`duration-${session.id}`}>
       <DurationDisplay
         minutes={session.usageInMinutes >= 0 ? session.usageInMinutes : null}
-        alternativeText={t('inProgress')}
+        alternativeText={
+          <Chip color="primary" variant="flat">
+            {t('inProgress')}
+          </Chip>
+        }
       />
     </TableCell>,
-    <TableCell key={`status-${session.id}`} className="flex items-center gap-2">
-      {!session.endTime ? (
-        <Chip color="primary" variant="flat">
-          {t('active')}
-        </Chip>
-      ) : (
-        <Chip color="success" variant="flat">
-          {t('completed')}
-        </Chip>
-      )}
+    <TableCell key={`icons-${session.id}`} className="flex items-center gap-2">
       {hasNotes && <MessageSquareText />}
     </TableCell>
   );

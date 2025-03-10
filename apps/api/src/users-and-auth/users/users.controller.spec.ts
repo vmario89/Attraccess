@@ -22,6 +22,7 @@ describe('UsersController', () => {
           useValue: {
             findOne: jest.fn(),
             createOne: jest.fn(),
+            deleteOne: jest.fn(),
           },
         },
         {
@@ -30,6 +31,7 @@ describe('UsersController', () => {
             createJWT: jest.fn(),
             addAuthenticationDetails: jest.fn(),
             generateEmailVerificationToken: jest.fn(),
+            removeAuthenticationDetails: jest.fn(),
           },
         },
         {
@@ -108,6 +110,13 @@ describe('UsersController', () => {
       jest
         .spyOn(authService, 'generateEmailVerificationToken')
         .mockResolvedValue('verification-token');
+      jest.spyOn(authService, 'addAuthenticationDetails').mockResolvedValue({
+        id: 1,
+        userId: 1,
+        type: AuthenticationType.LOCAL_PASSWORD,
+        password: 'hashed-password',
+        user: {} as User,
+      });
 
       const createUserDto: CreateUserDto = {
         username: 'testuser',

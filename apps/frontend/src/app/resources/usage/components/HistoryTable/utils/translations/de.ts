@@ -8,9 +8,7 @@ export default {
 
   // Row items
   unknownUser: 'Unbekannter Benutzer',
-  inProgress: 'In Bearbeitung',
-  active: 'Aktiv',
-  completed: 'Abgeschlossen',
+  inProgress: 'In Benutzung',
 
   // Other
   noUsageHistory: 'Keine Nutzungshistorie für diese Ressource gefunden.',

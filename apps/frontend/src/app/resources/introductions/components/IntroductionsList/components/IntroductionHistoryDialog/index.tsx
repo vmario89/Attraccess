@@ -14,6 +14,7 @@ import * as de from './translations/de';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
 import { useIntroductionHistory } from '../../../../../../../api/hooks/resourceIntroduction';
+import { Button } from '@heroui/react';
 
 export type IntroductionHistoryDialogProps = {
   isOpen: boolean;
@@ -66,13 +67,9 @@ export const IntroductionHistoryDialog = ({
           )}
         </ModalBody>
         <ModalFooter>
-          <button
-            type="button"
-            className="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
-            onClick={onClose}
-          >
+          <Button variant="light" onPress={onClose}>
             {t('close')}
-          </button>
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

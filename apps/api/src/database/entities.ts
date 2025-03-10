@@ -8,6 +8,8 @@ import {
   ResourceIntroduction,
   ResourceIntroductionUser,
   ResourceIntroductionHistoryItem,
+  MqttServer,
+  MqttResourceConfig,
 } from '@attraccess/database-entities';
 
 export const entities = {
@@ -20,4 +22,6 @@ export const entities = {
   ResourceIntroduction,
   ResourceIntroductionUser,
   ResourceIntroductionHistoryItem,
+  MqttServer,
+  MqttResourceConfig,
 };

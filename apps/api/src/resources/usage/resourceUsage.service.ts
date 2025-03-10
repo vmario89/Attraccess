@@ -8,6 +8,11 @@ import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { ResourceIntroductionService } from '../introduction/resourceIntroduction.service';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  ResourceUsageStartedEvent,
+  ResourceUsageEndedEvent,
+} from './events/resource-usage.events';
 
 @Injectable()
 export class ResourceUsageService {
@@ -15,7 +20,8 @@ export class ResourceUsageService {
     @InjectRepository(ResourceUsage)
     private resourceUsageRepository: Repository<ResourceUsage>,
     private resourcesService: ResourcesService,
-    private resourceIntroductionService: ResourceIntroductionService
+    private resourceIntroductionService: ResourceIntroductionService,
+    private eventEmitter: EventEmitter2
   ) {}
 
   async startSession(
@@ -86,7 +92,7 @@ export class ResourceUsageService {
       .values(usageData)
       .execute();
 
-    return await this.resourceUsageRepository.findOne({
+    const newSession = await this.resourceUsageRepository.findOne({
       where: {
         resourceId,
         userId: user.id,
@@ -97,6 +103,14 @@ export class ResourceUsageService {
       },
       relations: ['resource', 'user'],
     });
+
+    // Emit event after successful save
+    this.eventEmitter.emit(
+      'resource.usage.started',
+      new ResourceUsageStartedEvent(resourceId, user.id, usageData.startTime)
+    );
+
+    return newSession;
   }
 
   async endSession(
@@ -110,16 +124,29 @@ export class ResourceUsageService {
       throw new BadRequestException('No active session found');
     }
 
+    const endTime = new Date();
+
     // Update session with end time and notes - using explicit update to avoid the generated column
     await this.resourceUsageRepository
       .createQueryBuilder()
       .update(ResourceUsage)
       .set({
-        endTime: new Date(),
+        endTime,
         endNotes: dto.notes,
       })
       .where('id = :id', { id: activeSession.id })
       .execute();
+
+    // Emit event after successful save
+    this.eventEmitter.emit(
+      'resource.usage.ended',
+      new ResourceUsageEndedEvent(
+        resourceId,
+        user.id,
+        activeSession.startTime,
+        endTime
+      )
+    );
 
     // Fetch the updated record
     return await this.resourceUsageRepository.findOne({

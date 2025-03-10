@@ -32,7 +32,23 @@ export interface CreateUserDto {
   strategy: 'local_password' | 'google' | 'github';
 }
 
-export type SystemPermissions = object;
+export interface SystemPermissions {
+  /**
+   * Whether the user can manage resources
+   * @example false
+   */
+  canManageResources: boolean;
+  /**
+   * Whether the user can manage users
+   * @example false
+   */
+  canManageUsers: boolean;
+  /**
+   * Whether the user can manage permissions
+   * @example false
+   */
+  canManagePermissions: boolean;
+}
 
 export interface User {
   /**
@@ -383,6 +399,299 @@ export interface ResourceIntroductionUser {
   user: User;
 }
 
+export interface MqttResourceConfig {
+  /**
+   * The unique identifier of the MQTT resource configuration
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the resource this configuration is for
+   * @example 1
+   */
+  resourceId: number;
+  /**
+   * The ID of the MQTT server to publish to
+   * @example 1
+   */
+  serverId: number;
+  /**
+   * Topic template using Handlebars for in-use status
+   * @example "resources/{{id}}/status"
+   */
+  inUseTopic: string;
+  /**
+   * Message template using Handlebars for in-use status
+   * @example "{"status": "in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
+   */
+  inUseMessage: string;
+  /**
+   * Topic template using Handlebars for not-in-use status
+   * @example "resources/{{id}}/status"
+   */
+  notInUseTopic: string;
+  /**
+   * Message template using Handlebars for not-in-use status
+   * @example "{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
+   */
+  notInUseMessage: string;
+  /**
+   * When the MQTT resource configuration was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the MQTT resource configuration was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface CreateMqttResourceConfigDto {
+  /**
+   * ID of the MQTT server to use
+   * @example 1
+   */
+  serverId: number;
+  /**
+   * Topic template for when resource is in use
+   * @example "resources/{{id}}/status"
+   */
+  inUseTopic: string;
+  /**
+   * Message template for when resource is in use
+   * @example "{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  inUseMessage: string;
+  /**
+   * Topic template for when resource is not in use
+   * @example "resources/{{id}}/status"
+   */
+  notInUseTopic: string;
+  /**
+   * Message template for when resource is not in use
+   * @example "{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  notInUseMessage: string;
+}
+
+export interface TestMqttConfigResponseDto {
+  /**
+   * Whether the test was successful
+   * @example true
+   */
+  success: boolean;
+  /**
+   * Message describing the test result
+   * @example "MQTT configuration is valid and connection to server was successful"
+   */
+  message: string;
+}
+
+export interface MqttServer {
+  /**
+   * The unique identifier of the MQTT server
+   * @example 1
+   */
+  id: number;
+  /**
+   * Friendly name for the MQTT server
+   * @example "Workshop MQTT Server"
+   */
+  name: string;
+  /**
+   * MQTT server hostname/IP
+   * @example "mqtt.example.com"
+   */
+  host: string;
+  /**
+   * MQTT server port (default: 1883 for MQTT, 8883 for MQTTS)
+   * @example 1883
+   */
+  port: number;
+  /**
+   * Optional authentication username
+   * @example "mqttuser"
+   */
+  username?: string;
+  /**
+   * Optional authentication password
+   * @example "password123"
+   */
+  password?: string;
+  /**
+   * Client ID for MQTT connection
+   * @example "attraccess-client-1"
+   */
+  clientId?: string;
+  /**
+   * Whether to use TLS/SSL
+   * @example false
+   */
+  useTls: boolean;
+  /**
+   * When the MQTT server was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the MQTT server was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface CreateMqttServerDto {
+  /** Friendly name for the MQTT server */
+  name: string;
+  /** Hostname or IP address of the MQTT server */
+  host: string;
+  /**
+   * Port number of the MQTT server
+   * @example 1883
+   */
+  port: number;
+  /** Optional username for authentication */
+  username?: string;
+  /** Optional password for authentication */
+  password?: string;
+  /** Optional client ID for MQTT connection */
+  clientId?: string;
+  /**
+   * Whether to use TLS/SSL for the connection
+   * @default false
+   */
+  useTls?: boolean;
+}
+
+export interface UpdateMqttServerDto {
+  /** Friendly name for the MQTT server */
+  name?: string;
+  /** Hostname or IP address of the MQTT server */
+  host?: string;
+  /**
+   * Port number of the MQTT server
+   * @example 1883
+   */
+  port?: number;
+  /** Optional username for authentication */
+  username?: string;
+  /** Optional password for authentication */
+  password?: string;
+  /** Optional client ID for MQTT connection */
+  clientId?: string;
+  /**
+   * Whether to use TLS/SSL for the connection
+   * @default false
+   */
+  useTls?: boolean;
+}
+
+export interface TestConnectionResponseDto {
+  /**
+   * Whether the connection test was successful
+   * @example true
+   */
+  success: boolean;
+  /**
+   * Message describing the test result
+   * @example "Connection successful"
+   */
+  message: string;
+}
+
+export interface MqttHealthStatusDto {
+  /**
+   * Whether the connection is healthy
+   * @example true
+   */
+  healthy: boolean;
+  /**
+   * Detailed health status message
+   * @example "Connected: true, Failures: 0/3, Messages: 10 sent, 0 failed"
+   */
+  details: string;
+}
+
+export interface MqttConnectionStatsDto {
+  /**
+   * Number of connection attempts
+   * @example 5
+   */
+  connectionAttempts: number;
+  /**
+   * Number of failed connections
+   * @example 1
+   */
+  connectionFailures: number;
+  /**
+   * Number of successful connections
+   * @example 4
+   */
+  connectionSuccesses: number;
+  /**
+   * Timestamp of last successful connection
+   * @format date-time
+   * @example "2023-01-01T12:00:00.000Z"
+   */
+  lastConnectTime?: string;
+  /**
+   * Timestamp of last disconnection
+   * @format date-time
+   * @example "2023-01-01T12:30:00.000Z"
+   */
+  lastDisconnectTime?: string;
+}
+
+export interface MqttMessageStatsDto {
+  /**
+   * Number of successfully published messages
+   * @example 42
+   */
+  published: number;
+  /**
+   * Number of failed message publications
+   * @example 3
+   */
+  failed: number;
+  /**
+   * Timestamp of last successful message publication
+   * @format date-time
+   * @example "2023-01-01T12:15:00.000Z"
+   */
+  lastPublishTime?: string;
+  /**
+   * Timestamp of last failed message publication
+   * @format date-time
+   * @example "2023-01-01T12:10:00.000Z"
+   */
+  lastFailureTime?: string;
+}
+
+export interface MqttServerStatsDto {
+  /** Connection statistics */
+  connection: MqttConnectionStatsDto;
+  /** Message statistics */
+  messages: MqttMessageStatsDto;
+}
+
+export interface MqttServerStatusDto {
+  /**
+   * Whether the server is currently connected
+   * @example true
+   */
+  connected: boolean;
+  /** Health status of the connection */
+  healthStatus: MqttHealthStatusDto;
+  /** Detailed statistics */
+  stats: MqttServerStatsDto;
+}
+
+export interface AllMqttServerStatusesDto {
+  /** Map of server IDs to their statuses */
+  servers: Record<string, MqttServerStatusDto>;
+}
+
 export interface AppControllerGetPingData {
   /** @example "pong" */
   message?: string;
@@ -527,6 +836,30 @@ export type ResourceIntroducersControllerRemoveIntroducerData = object;
 export interface ResourceIntroducersControllerCanManageIntroducersData {
   canManageIntroducers?: boolean;
 }
+
+export type MqttResourceConfigControllerGetMqttConfigData = MqttResourceConfig;
+
+export type MqttResourceConfigControllerCreateOrUpdateMqttConfigData = MqttResourceConfig;
+
+export type MqttResourceConfigControllerDeleteMqttConfigData = any;
+
+export type MqttResourceConfigControllerTestMqttConfigData = TestMqttConfigResponseDto;
+
+export type MqttServerControllerGetMqttServersData = MqttServer[];
+
+export type MqttServerControllerCreateMqttServerData = MqttServer;
+
+export type MqttServerControllerGetMqttServerByIdData = MqttServer;
+
+export type MqttServerControllerUpdateMqttServerData = MqttServer;
+
+export type MqttServerControllerDeleteMqttServerData = any;
+
+export type MqttServerControllerTestMqttServerConnectionData = TestConnectionResponseDto;
+
+export type MqttServerControllerGetServerStatusData = MqttServerStatusDto;
+
+export type MqttServerControllerGetAllServerStatusesData = AllMqttServerStatusesDto;
 
 export namespace Application {
   /**
@@ -1116,6 +1449,220 @@ export namespace ResourceIntroducers {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ResourceIntroducersControllerCanManageIntroducersData;
+  }
+}
+
+export namespace MqttResourceConfiguration {
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name MqttResourceConfigControllerGetMqttConfig
+   * @summary Get MQTT configuration for a resource
+   * @request GET:/api/resources/{resourceId}/mqtt/config
+   * @secure
+   */
+  export namespace MqttResourceConfigControllerGetMqttConfig {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttResourceConfigControllerGetMqttConfigData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name MqttResourceConfigControllerCreateOrUpdateMqttConfig
+   * @summary Create or update MQTT configuration for a resource
+   * @request POST:/api/resources/{resourceId}/mqtt/config
+   * @secure
+   */
+  export namespace MqttResourceConfigControllerCreateOrUpdateMqttConfig {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateMqttResourceConfigDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttResourceConfigControllerCreateOrUpdateMqttConfigData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name MqttResourceConfigControllerDeleteMqttConfig
+   * @summary Delete MQTT configuration for a resource
+   * @request DELETE:/api/resources/{resourceId}/mqtt/config
+   * @secure
+   */
+  export namespace MqttResourceConfigControllerDeleteMqttConfig {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttResourceConfigControllerDeleteMqttConfigData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name MqttResourceConfigControllerTestMqttConfig
+   * @summary Test MQTT configuration
+   * @request POST:/api/resources/{resourceId}/mqtt/config/test
+   * @secure
+   */
+  export namespace MqttResourceConfigControllerTestMqttConfig {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttResourceConfigControllerTestMqttConfigData;
+  }
+}
+
+export namespace MqttServers {
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerGetMqttServers
+   * @summary Get all MQTT servers
+   * @request GET:/api/mqtt/servers
+   * @secure
+   */
+  export namespace MqttServerControllerGetMqttServers {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerGetMqttServersData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerCreateMqttServer
+   * @summary Create new MQTT server
+   * @request POST:/api/mqtt/servers
+   * @secure
+   */
+  export namespace MqttServerControllerCreateMqttServer {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateMqttServerDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerCreateMqttServerData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerGetMqttServerById
+   * @summary Get MQTT server by ID
+   * @request GET:/api/mqtt/servers/{id}
+   * @secure
+   */
+  export namespace MqttServerControllerGetMqttServerById {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerGetMqttServerByIdData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerUpdateMqttServer
+   * @summary Update MQTT server
+   * @request PUT:/api/mqtt/servers/{id}
+   * @secure
+   */
+  export namespace MqttServerControllerUpdateMqttServer {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateMqttServerDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerUpdateMqttServerData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerDeleteMqttServer
+   * @summary Delete MQTT server
+   * @request DELETE:/api/mqtt/servers/{id}
+   * @secure
+   */
+  export namespace MqttServerControllerDeleteMqttServer {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerDeleteMqttServerData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerTestMqttServerConnection
+   * @summary Test MQTT server connection
+   * @request POST:/api/mqtt/servers/{id}/test
+   * @secure
+   */
+  export namespace MqttServerControllerTestMqttServerConnection {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerTestMqttServerConnectionData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerGetServerStatus
+   * @summary Get MQTT server connection status and statistics
+   * @request GET:/api/mqtt/servers/{id}/status
+   * @secure
+   */
+  export namespace MqttServerControllerGetServerStatus {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerGetServerStatusData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Servers
+   * @name MqttServerControllerGetAllServerStatuses
+   * @summary Get all MQTT server connection statuses and statistics
+   * @request GET:/api/mqtt/servers/status
+   * @secure
+   */
+  export namespace MqttServerControllerGetAllServerStatuses {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MqttServerControllerGetAllServerStatusesData;
   }
 }
 
@@ -1926,6 +2473,232 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     resourceIntroducersControllerCanManageIntroducers: (resourceId: number, params: RequestParams = {}) =>
       this.request<ResourceIntroducersControllerCanManageIntroducersData, void>({
         path: `/api/resources/${resourceId}/introducers/permissions/manage`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  mqttResourceConfiguration = {
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name MqttResourceConfigControllerGetMqttConfig
+     * @summary Get MQTT configuration for a resource
+     * @request GET:/api/resources/{resourceId}/mqtt/config
+     * @secure
+     */
+    mqttResourceConfigControllerGetMqttConfig: (resourceId: number, params: RequestParams = {}) =>
+      this.request<MqttResourceConfigControllerGetMqttConfigData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name MqttResourceConfigControllerCreateOrUpdateMqttConfig
+     * @summary Create or update MQTT configuration for a resource
+     * @request POST:/api/resources/{resourceId}/mqtt/config
+     * @secure
+     */
+    mqttResourceConfigControllerCreateOrUpdateMqttConfig: (
+      resourceId: number,
+      data: CreateMqttResourceConfigDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<MqttResourceConfigControllerCreateOrUpdateMqttConfigData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name MqttResourceConfigControllerDeleteMqttConfig
+     * @summary Delete MQTT configuration for a resource
+     * @request DELETE:/api/resources/{resourceId}/mqtt/config
+     * @secure
+     */
+    mqttResourceConfigControllerDeleteMqttConfig: (resourceId: number, params: RequestParams = {}) =>
+      this.request<MqttResourceConfigControllerDeleteMqttConfigData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name MqttResourceConfigControllerTestMqttConfig
+     * @summary Test MQTT configuration
+     * @request POST:/api/resources/{resourceId}/mqtt/config/test
+     * @secure
+     */
+    mqttResourceConfigControllerTestMqttConfig: (resourceId: number, params: RequestParams = {}) =>
+      this.request<MqttResourceConfigControllerTestMqttConfigData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config/test`,
+        method: 'POST',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  mqttServers = {
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerGetMqttServers
+     * @summary Get all MQTT servers
+     * @request GET:/api/mqtt/servers
+     * @secure
+     */
+    mqttServerControllerGetMqttServers: (params: RequestParams = {}) =>
+      this.request<MqttServerControllerGetMqttServersData, void>({
+        path: `/api/mqtt/servers`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerCreateMqttServer
+     * @summary Create new MQTT server
+     * @request POST:/api/mqtt/servers
+     * @secure
+     */
+    mqttServerControllerCreateMqttServer: (data: CreateMqttServerDto, params: RequestParams = {}) =>
+      this.request<MqttServerControllerCreateMqttServerData, void>({
+        path: `/api/mqtt/servers`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerGetMqttServerById
+     * @summary Get MQTT server by ID
+     * @request GET:/api/mqtt/servers/{id}
+     * @secure
+     */
+    mqttServerControllerGetMqttServerById: (id: number, params: RequestParams = {}) =>
+      this.request<MqttServerControllerGetMqttServerByIdData, void>({
+        path: `/api/mqtt/servers/${id}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerUpdateMqttServer
+     * @summary Update MQTT server
+     * @request PUT:/api/mqtt/servers/{id}
+     * @secure
+     */
+    mqttServerControllerUpdateMqttServer: (id: number, data: UpdateMqttServerDto, params: RequestParams = {}) =>
+      this.request<MqttServerControllerUpdateMqttServerData, void>({
+        path: `/api/mqtt/servers/${id}`,
+        method: 'PUT',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerDeleteMqttServer
+     * @summary Delete MQTT server
+     * @request DELETE:/api/mqtt/servers/{id}
+     * @secure
+     */
+    mqttServerControllerDeleteMqttServer: (id: number, params: RequestParams = {}) =>
+      this.request<MqttServerControllerDeleteMqttServerData, void>({
+        path: `/api/mqtt/servers/${id}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerTestMqttServerConnection
+     * @summary Test MQTT server connection
+     * @request POST:/api/mqtt/servers/{id}/test
+     * @secure
+     */
+    mqttServerControllerTestMqttServerConnection: (id: number, params: RequestParams = {}) =>
+      this.request<MqttServerControllerTestMqttServerConnectionData, void>({
+        path: `/api/mqtt/servers/${id}/test`,
+        method: 'POST',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerGetServerStatus
+     * @summary Get MQTT server connection status and statistics
+     * @request GET:/api/mqtt/servers/{id}/status
+     * @secure
+     */
+    mqttServerControllerGetServerStatus: (id: number, params: RequestParams = {}) =>
+      this.request<MqttServerControllerGetServerStatusData, void>({
+        path: `/api/mqtt/servers/${id}/status`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Servers
+     * @name MqttServerControllerGetAllServerStatuses
+     * @summary Get all MQTT server connection statuses and statistics
+     * @request GET:/api/mqtt/servers/status
+     * @secure
+     */
+    mqttServerControllerGetAllServerStatuses: (params: RequestParams = {}) =>
+      this.request<MqttServerControllerGetAllServerStatusesData, void>({
+        path: `/api/mqtt/servers/status`,
         method: 'GET',
         secure: true,
         format: 'json',

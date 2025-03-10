@@ -3,7 +3,7 @@ import { useFormatedDuration } from '../hooks/useFormatDuration';
 
 interface DurationDisplayProps {
   minutes: number | null;
-  alternativeText?: string;
+  alternativeText?: React.ReactNode;
 }
 
 /**

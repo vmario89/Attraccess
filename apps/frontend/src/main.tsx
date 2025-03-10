@@ -4,7 +4,6 @@ import * as ReactDOM from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import App from './app/app';
 import './i18n';
-import { HeroUIProvider } from '@heroui/react';
 import { queryClient } from './api/queryClient';
 
 const root = ReactDOM.createRoot(
@@ -14,11 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <HeroUIProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </HeroUIProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>
 );

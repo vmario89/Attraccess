@@ -16,12 +16,24 @@ import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
 
 class SystemPermissions {
   @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether the user can manage resources',
+    example: false,
+  })
   canManageResources!: boolean;
 
   @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether the user can manage users',
+    example: false,
+  })
   canManageUsers!: boolean;
 
   @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether the user can manage permissions',
+    example: false,
+  })
   canManagePermissions!: boolean;
 }
 
