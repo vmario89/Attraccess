@@ -9,3 +9,4 @@ export * from './lib/types/authenticationType.enum';
 export * from './lib/entities/resourceIntroductionHistoryItem.entity';
 export * from './lib/entities/mqttServer.entity';
 export * from './lib/entities/mqttResourceConfig.entity';
+export * from './lib/entities/webhookConfig.entity';

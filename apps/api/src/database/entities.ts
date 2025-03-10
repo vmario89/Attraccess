@@ -10,6 +10,7 @@ import {
   ResourceIntroductionHistoryItem,
   MqttServer,
   MqttResourceConfig,
+  WebhookConfig,
 } from '@attraccess/database-entities';
 
 export const entities = {
@@ -24,4 +25,5 @@ export const entities = {
   ResourceIntroductionHistoryItem,
   MqttServer,
   MqttResourceConfig,
+  WebhookConfig,
 };

@@ -22,3 +22,13 @@ services:
     depends_on:
       - mqtt
 
+  webhook-site:
+    image: tarampampam/webhook-tester:latest
+    environment:
+      - STORAGE_DRIVER=fs
+      - FS_STORAGE_DIR=/storage
+    ports:
+      - '8084:8080'
+    volumes:
+      - ./data/webhook-site:/storage
+

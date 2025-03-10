@@ -27,12 +27,13 @@ const getApi = () => {
     },
   });
 
+  // Check both storage locations
   const authFromLocalStorage = localStorage.getItem('auth');
+  const authFromSessionStorage = sessionStorage.getItem('auth');
+  const authData = authFromLocalStorage || authFromSessionStorage;
 
-  if (authFromLocalStorage) {
-    const auth = JSON.parse(
-      authFromLocalStorage
-    ) as AuthControllerPostSessionData;
+  if (authData) {
+    const auth = JSON.parse(authData) as AuthControllerPostSessionData;
     api.setSecurityData({
       token: auth.authToken,
     });

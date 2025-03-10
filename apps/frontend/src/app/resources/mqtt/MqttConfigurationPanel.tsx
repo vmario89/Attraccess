@@ -18,6 +18,7 @@ import {
   Select,
   SelectItem,
   Snippet,
+  CardFooter,
 } from '@heroui/react';
 import {
   Server,
@@ -281,47 +282,17 @@ export const MqttConfigurationPanel: React.FC<MqttConfigurationPanelProps> = ({
           aria-label="MQTT Configuration"
           title={
             <div className="flex justify-between items-center w-full pr-4">
-              <span className="text-lg font-semibold">MQTT Configuration</span>
+              <span className="text-lg font-semibold">MQTT</span>
               <div className="flex items-center gap-2">
-                {isOpen && mqttConfig && (
-                  <>
-                    <Button
-                      size="sm"
-                      color="primary"
-                      variant="light"
-                      startContent={<RefreshCw size={16} />}
-                      isLoading={isTesting}
-                      onPress={handleTest}
-                    >
-                      Test
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="danger"
-                      variant="light"
-                      onPress={handleDelete}
-                    >
-                      Delete
-                    </Button>
-                  </>
-                )}
                 {isOpen && (
-                  <Button
-                    size="sm"
-                    color="primary"
-                    startContent={<Save size={16} />}
-                    onPress={handleSubmit}
+                  <Link
+                    href="/mqtt/servers"
+                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
-                    Save
-                  </Button>
+                    <Server size={14} />
+                    <span>Manage Servers</span>
+                  </Link>
                 )}
-                <Link
-                  href="/mqtt/servers"
-                  className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  <Server size={14} />
-                  <span>Manage Servers</span>
-                </Link>
               </div>
             </div>
           }
@@ -539,6 +510,37 @@ export const MqttConfigurationPanel: React.FC<MqttConfigurationPanelProps> = ({
               </Accordion>
             </div>
           </CardBody>
+          {isOpen && mqttConfig && (
+            <CardFooter className="flex justify-end gap-2">
+              <Button
+                size="sm"
+                color="primary"
+                variant="light"
+                startContent={<RefreshCw size={16} />}
+                isLoading={isTesting}
+                onPress={handleTest}
+              >
+                Test
+              </Button>
+              <Button
+                size="sm"
+                color="danger"
+                variant="light"
+                onPress={handleDelete}
+              >
+                Delete
+              </Button>
+
+              <Button
+                size="sm"
+                color="primary"
+                startContent={<Save size={16} />}
+                onPress={handleSubmit}
+              >
+                Save
+              </Button>
+            </CardFooter>
+          )}
         </AccordionItem>
       </Accordion>
     </Card>

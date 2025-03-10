@@ -19,7 +19,7 @@ export default defineConfig({
   plugins: [
     react(),
     nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md']),
+    nxCopyAssetsPlugin([]),
     // MillionLint.vite(),
   ],
   // Uncomment this if you are using workers.

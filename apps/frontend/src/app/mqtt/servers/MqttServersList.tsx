@@ -33,8 +33,8 @@ import {
   UpdateMqttServerDto,
 } from '@attraccess/api-client';
 import { useTranslations } from '../../../i18n';
-import en from './translations/en';
-import de from './translations/de';
+import * as en from './translations/en';
+import * as de from './translations/de';
 
 const defaultServerValues: CreateMqttServerDto = {
   name: '',

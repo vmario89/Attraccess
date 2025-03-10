@@ -11,6 +11,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MqttModule } from '../mqtt/mqtt.module';
+import { WebhooksModule } from '../webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MqttModule } from '../mqtt/mqtt.module';
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
     MqttModule,
+    WebhooksModule,
     ServeStaticModule.forRoot({
       rootPath:
         process.env.STATIC_FRONTEND_FILE_PATH ||

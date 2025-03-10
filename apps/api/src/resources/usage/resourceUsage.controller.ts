@@ -19,6 +19,7 @@ import { AuthenticatedRequest } from '../../types/request';
 import { makePaginatedResponse } from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
+import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 @ApiTags('Resource Usage')
 @Controller('resources/:resourceId/usage')
@@ -82,7 +83,7 @@ export class ResourceUsageController {
   }
 
   @Get('history')
-  @Auth()
+  @CanManageResources()
   @ApiOperation({ summary: 'Get usage history for a resource' })
   @ApiResponse({
     status: 200,

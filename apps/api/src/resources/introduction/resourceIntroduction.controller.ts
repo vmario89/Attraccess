@@ -7,6 +7,7 @@ import {
   Req,
   Body,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
@@ -31,6 +32,7 @@ import {
   UnrevokeIntroductionDto,
 } from './dtos/revokeIntroduction.dto';
 import { MissingIntroductionPermissionException } from '../../exceptions/resource.introduction.forbidden.exception';
+import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 class CompleteIntroductionDto {
   @ApiProperty({
@@ -84,20 +86,12 @@ export class ResourceIntroductionController {
   }
 
   @Get()
-  @Auth()
+  @CanManageResources()
   @ApiOperation({ summary: 'Get all introductions for a resource' })
   @ApiResponse({
     status: 200,
-    description: 'List of resource introductions.',
+    description: 'Resource introductions',
     type: PaginatedResourceIntroductionResponseDto,
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - User is not authenticated',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Resource not found',
   })
   async getResourceIntroductions(
     @Param('resourceId', ParseIntPipe) resourceId: number,
@@ -158,7 +152,7 @@ export class ResourceIntroductionController {
   }
 
   @Post(':introductionId/revoke')
-  @Auth()
+  @CanManageResources()
   @ApiOperation({
     summary: 'Revoke an introduction',
     description:
@@ -196,7 +190,7 @@ export class ResourceIntroductionController {
   }
 
   @Post(':introductionId/unrevoke')
-  @Auth()
+  @CanManageResources()
   @ApiOperation({
     summary: 'Unrevoke an introduction',
     description: 'Restore access for a user by unrevoking their introduction',
@@ -233,15 +227,15 @@ export class ResourceIntroductionController {
   }
 
   @Get(':introductionId/history')
-  @Auth()
+  @CanManageResources()
   @ApiOperation({
-    summary: 'Get history of an introduction',
+    summary: 'Get history for a specific introduction',
     description:
       'Retrieve the history of revoke/unrevoke actions for an introduction',
   })
   @ApiResponse({
     status: 200,
-    description: 'Introduction history retrieved successfully',
+    description: 'Introduction history',
     type: [ResourceIntroductionHistoryItem],
   })
   async getIntroductionHistory(

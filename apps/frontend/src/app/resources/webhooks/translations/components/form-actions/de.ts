@@ -1,0 +1,20 @@
+const translations = {
+  delete: 'Löschen',
+  test: 'Test',
+  cancel: 'Abbrechen',
+  save: 'Speichern',
+  deleteConfirmation:
+    'Sind Sie sicher, dass Sie diese Webhook-Konfiguration löschen möchten?',
+  webhookDeleted: 'Webhook gelöscht',
+  webhookDeletedDesc: 'Der Webhook wurde erfolgreich gelöscht.',
+  testSuccess: 'Test erfolgreich',
+  testFailed: 'Test fehlgeschlagen',
+  notImplemented: 'Nicht implementiert',
+  notImplementedDesc:
+    'Das Testen von nicht gespeicherten Webhooks wird noch nicht unterstützt.',
+  errorGeneric: 'Fehler',
+  failedToDelete: 'Webhook konnte nicht gelöscht werden.',
+  failedToTest: 'Webhook konnte nicht getestet werden.',
+};
+
+export default { default: translations };

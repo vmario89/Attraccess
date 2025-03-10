@@ -14,15 +14,12 @@ import {
   CreateMqttResourceConfigDto,
   TestMqttConfigResponseDto,
 } from './dtos/mqtt-resource-config.dto';
-import {
-  Auth,
-  SystemPermission,
-} from '../../../users-and-auth/strategies/systemPermissions.guard';
 import { MqttClientService } from '../../../mqtt/mqtt-client.service';
 import * as Handlebars from 'handlebars';
+import { CanManageResources } from '../../guards/can-manage-resources.decorator';
 
 @ApiTags('MQTT Resource Configuration')
-@Auth(SystemPermission.canManageResources)
+@CanManageResources()
 @Controller('resources/:resourceId/mqtt/config')
 export class MqttResourceConfigController {
   constructor(

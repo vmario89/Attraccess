@@ -31,6 +31,7 @@ import { PaginatedResponse } from '../types/pagination';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';
 import { ResourceImageService } from '../common/services/resource-image.service';
+import { CanManageResources } from './guards/can-manage-resources.decorator';
 
 @ApiTags('Resources')
 @Controller('resources')
@@ -51,13 +52,13 @@ export class ResourcesController {
   };
 
   @Post()
-  @Auth(SystemPermission.canManageResources)
   @ApiOperation({ summary: 'Create a new resource' })
   @ApiResponse({
     status: 201,
     description: 'The resource has been successfully created.',
     type: Resource,
   })
+  @CanManageResources()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   async createResource(
@@ -120,13 +121,13 @@ export class ResourcesController {
   }
 
   @Put(':id')
-  @Auth(SystemPermission.canManageResources)
   @ApiOperation({ summary: 'Update a resource' })
   @ApiResponse({
     status: 200,
     description: 'The resource has been successfully updated.',
     type: Resource,
   })
+  @CanManageResources()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   async updateResource(
@@ -143,29 +144,12 @@ export class ResourcesController {
   }
 
   @Delete(':id')
-  @Auth(SystemPermission.canManageResources)
   @ApiOperation({ summary: 'Delete a resource' })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'The resource has been successfully deleted.',
-    schema: {
-      type: 'object',
-      properties: {},
-    },
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - User is not authenticated',
-  })
-  @ApiResponse({
-    status: 403,
-    description:
-      'Forbidden - User does not have permission to manage resources',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Resource not found',
-  })
+  @CanManageResources()
   async deleteResource(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.resourcesService.deleteResource(id);
   }

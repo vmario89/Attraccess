@@ -6,6 +6,7 @@ import { Button } from '@heroui/button';
 import { Spinner } from '@heroui/react';
 import { PageHeader } from '../../components/pageHeader';
 import { MqttConfigurationPanel } from './mqtt/MqttConfigurationPanel';
+import { WebhookConfigurationPanel } from './webhooks/WebhookConfigurationPanel';
 
 export function IoTSettings() {
   const { id } = useParams<{ id: string }>();
@@ -63,8 +64,8 @@ export function IoTSettings() {
       />
 
       <div className="space-y-8">
-        {/* MQTT Configuration Panel */}
         <MqttConfigurationPanel resourceId={resourceId} />
+        <WebhookConfigurationPanel resourceId={resourceId} />
       </div>
     </div>
   );

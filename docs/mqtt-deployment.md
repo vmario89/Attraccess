@@ -149,12 +149,7 @@ Common issues and solutions:
    - The application maintains one connection per MQTT server
    - Monitor memory usage if connecting to many MQTT servers
 
-2. **Message Rate Limiting**:
-
-   - Consider implementing rate limiting if your system has resources with very frequent status changes
-   - Template compilation is cached for performance, but complex templates may impact performance
-
-3. **Resource Usage**:
+2. **Resource Usage**:
    - Monitor CPU and memory usage
    - Each active MQTT connection requires a small amount of memory
    - The retry queue mechanism uses memory proportional to the number of failed messages

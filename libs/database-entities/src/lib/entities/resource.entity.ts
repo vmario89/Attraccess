@@ -14,6 +14,7 @@ import { ResourceIntroduction } from './resourceIntroduction.entity';
 import { ResourceUsage } from './resourceUsage.entity';
 import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
 import { MqttResourceConfig } from './mqttResourceConfig.entity';
+import { WebhookConfig } from './webhookConfig.entity';
 
 @Entity()
 export class Resource {
@@ -76,6 +77,9 @@ export class Resource {
 
   @OneToOne(() => MqttResourceConfig, (config) => config.resource)
   mqttConfig!: MqttResourceConfig;
+
+  @OneToMany(() => WebhookConfig, (config) => config.resource)
+  webhookConfigs!: WebhookConfig[];
 }
 
 @ViewEntity({

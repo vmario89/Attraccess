@@ -399,6 +399,14 @@ export interface ResourceIntroductionUser {
   user: User;
 }
 
+export interface CanManageIntroducersResponseDto {
+  /**
+   * Whether the user can manage introducers for the resource
+   * @example true
+   */
+  canManageIntroducers: boolean;
+}
+
 export interface MqttResourceConfig {
   /**
    * The unique identifier of the MQTT resource configuration
@@ -692,6 +700,221 @@ export interface AllMqttServerStatusesDto {
   servers: Record<string, MqttServerStatusDto>;
 }
 
+export interface WebhookConfigResponseDto {
+  /**
+   * The unique identifier of the webhook configuration
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the resource this webhook configuration is for
+   * @example 1
+   */
+  resourceId: number;
+  /**
+   * Friendly name for the webhook
+   * @example "Slack Notification"
+   */
+  name: string;
+  /**
+   * Destination URL for the webhook. Supports templating with variables like {{id}}, {{name}}, {{event}}, etc.
+   * @example "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+   */
+  url: string;
+  /**
+   * HTTP method to use for the webhook request
+   * @example "POST"
+   */
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /**
+   * JSON object for custom headers. Values can include templates like {{id}}, {{name}}, etc.
+   * @example "{"Content-Type": "application/json", "Authorization": "Bearer token123", "X-Resource-Name": "{{name}}"}"
+   */
+  headers: string;
+  /**
+   * Template for payload when resource is in use
+   * @example "{"status": "in_use", "resource": "{{name}}", "user": "{{user.name}}", "timestamp": "{{timestamp}}"}"
+   */
+  inUseTemplate: string;
+  /**
+   * Template for payload when resource is not in use
+   * @example "{"status": "not_in_use", "resource": "{{name}}", "timestamp": "{{timestamp}}"}"
+   */
+  notInUseTemplate: string;
+  /**
+   * Whether the webhook is active
+   * @example true
+   */
+  active: boolean;
+  /**
+   * Whether to enable retry mechanism for failed webhook requests
+   * @example true
+   */
+  retryEnabled: boolean;
+  /**
+   * Number of retry attempts for failed webhook requests
+   * @example 3
+   */
+  maxRetries: number;
+  /**
+   * Delay in milliseconds between retries
+   * @example 1000
+   */
+  retryDelay: number;
+  /**
+   * Name of the header that contains the signature
+   * @example "X-Webhook-Signature"
+   */
+  signatureHeader: string;
+  /**
+   * When the webhook configuration was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the webhook configuration was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface CreateWebhookConfigDto {
+  /**
+   * Friendly name for the webhook
+   * @example "Slack Notification"
+   */
+  name: string;
+  /**
+   * Destination URL for the webhook. Supports templating with variables like {{id}}, {{name}}, {{event}}, etc.
+   * @example "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+   */
+  url: string;
+  /**
+   * HTTP method to use for the webhook request
+   * @example "POST"
+   */
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /**
+   * JSON object for custom headers. Values can include templates like {{id}}, {{name}}, etc.
+   * @example "{"Content-Type": "application/json", "Authorization": "Bearer token123", "X-Resource-Name": "{{name}}"}"
+   */
+  headers?: string;
+  /**
+   * Template for payload when resource is in use
+   * @example "{"status": "in_use", "resource": "{{name}}", "user": "{{user.name}}", "timestamp": "{{timestamp}}"}"
+   */
+  inUseTemplate: string;
+  /**
+   * Template for payload when resource is not in use
+   * @example "{"status": "not_in_use", "resource": "{{name}}", "timestamp": "{{timestamp}}"}"
+   */
+  notInUseTemplate: string;
+  /**
+   * Whether the webhook is active
+   * @default true
+   * @example true
+   */
+  active?: boolean;
+  /**
+   * Whether to enable retry mechanism for failed webhook requests
+   * @default false
+   * @example true
+   */
+  retryEnabled?: boolean;
+  /**
+   * Number of retry attempts for failed webhook requests (maximum 10)
+   * @default 3
+   * @example 3
+   */
+  maxRetries?: number;
+  /**
+   * Delay in milliseconds between retries (maximum 10000)
+   * @default 1000
+   * @example 1000
+   */
+  retryDelay?: number;
+  /**
+   * Name of the header that contains the signature
+   * @default "X-Webhook-Signature"
+   * @example "X-Webhook-Signature"
+   */
+  signatureHeader?: string;
+}
+
+export interface UpdateWebhookConfigDto {
+  /**
+   * Friendly name for the webhook
+   * @example "Slack Notification"
+   */
+  name?: string;
+  /**
+   * Destination URL for the webhook. Supports templating with variables like {{id}}, {{name}}, {{event}}, etc.
+   * @example "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+   */
+  url?: string;
+  /**
+   * HTTP method to use for the webhook request
+   * @example "POST"
+   */
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /**
+   * JSON object for custom headers. Values can include templates like {{id}}, {{name}}, etc.
+   * @example "{"Content-Type": "application/json", "Authorization": "Bearer token123", "X-Resource-Name": "{{name}}"}"
+   */
+  headers?: string;
+  /**
+   * Template for payload when resource is in use
+   * @example "{"status": "in_use", "resource": "{{name}}", "user": "{{user.name}}", "timestamp": "{{timestamp}}"}"
+   */
+  inUseTemplate?: string;
+  /**
+   * Template for payload when resource is not in use
+   * @example "{"status": "not_in_use", "resource": "{{name}}", "timestamp": "{{timestamp}}"}"
+   */
+  notInUseTemplate?: string;
+  /**
+   * Whether to enable retry mechanism for failed webhook requests
+   * @example true
+   */
+  retryEnabled?: boolean;
+  /**
+   * Number of retry attempts for failed webhook requests (maximum 10)
+   * @example 3
+   */
+  maxRetries?: number;
+  /**
+   * Delay in milliseconds between retries (maximum 10000)
+   * @example 1000
+   */
+  retryDelay?: number;
+  /**
+   * Name of the header that contains the signature
+   * @example "X-Webhook-Signature"
+   */
+  signatureHeader?: string;
+}
+
+export interface WebhookStatusDto {
+  /**
+   * Whether the webhook is active
+   * @example true
+   */
+  active: boolean;
+}
+
+export interface WebhookTestResponseDto {
+  /**
+   * Whether the test was successful
+   * @example true
+   */
+  success: boolean;
+  /**
+   * Message describing the test result
+   * @example "Webhook test request sent successfully"
+   */
+  message: string;
+}
+
 export interface AppControllerGetPingData {
   /** @example "pong" */
   message?: string;
@@ -757,7 +980,7 @@ export type ResourcesControllerGetResourceByIdData = Resource;
 
 export type ResourcesControllerUpdateResourceData = Resource;
 
-export type ResourcesControllerDeleteResourceData = object;
+export type ResourcesControllerDeleteResourceData = any;
 
 export type ResourceUsageControllerStartSessionData = ResourceUsage;
 
@@ -831,11 +1054,9 @@ export type ResourceIntroducersControllerGetResourceIntroducersData = ResourceIn
 
 export type ResourceIntroducersControllerAddIntroducerData = ResourceIntroductionUser;
 
-export type ResourceIntroducersControllerRemoveIntroducerData = object;
+export type ResourceIntroducersControllerRemoveIntroducerData = any;
 
-export interface ResourceIntroducersControllerCanManageIntroducersData {
-  canManageIntroducers?: boolean;
-}
+export type ResourceIntroducersControllerCanManageIntroducersData = CanManageIntroducersResponseDto;
 
 export type MqttResourceConfigControllerGetMqttConfigData = MqttResourceConfig;
 
@@ -860,6 +1081,22 @@ export type MqttServerControllerTestMqttServerConnectionData = TestConnectionRes
 export type MqttServerControllerGetServerStatusData = MqttServerStatusDto;
 
 export type MqttServerControllerGetAllServerStatusesData = AllMqttServerStatusesDto;
+
+export type WebhookConfigControllerFindAllData = WebhookConfigResponseDto[];
+
+export type WebhookConfigControllerCreateData = WebhookConfigResponseDto;
+
+export type WebhookConfigControllerFindByIdData = WebhookConfigResponseDto;
+
+export type WebhookConfigControllerUpdateData = WebhookConfigResponseDto;
+
+export type WebhookConfigControllerDeleteData = any;
+
+export type WebhookConfigControllerUpdateStatusData = WebhookConfigResponseDto;
+
+export type WebhookConfigControllerTestWebhookData = WebhookTestResponseDto;
+
+export type WebhookConfigControllerRegenerateSecretData = WebhookConfigResponseDto;
 
 export namespace Application {
   /**
@@ -1304,7 +1541,7 @@ export namespace ResourceIntroductions {
    * @description Retrieve the history of revoke/unrevoke actions for an introduction
    * @tags Resource Introductions
    * @name ResourceIntroductionControllerGetIntroductionHistory
-   * @summary Get history of an introduction
+   * @summary Get history for a specific introduction
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
    * @secure
    */
@@ -1399,7 +1636,7 @@ export namespace ResourceIntroducers {
    * No description
    * @tags Resource Introducers
    * @name ResourceIntroducersControllerAddIntroducer
-   * @summary Add a user as an authorized introducer
+   * @summary Add a user as an introducer for a resource
    * @request POST:/api/resources/{resourceId}/introducers/{userId}
    * @secure
    */
@@ -1418,7 +1655,7 @@ export namespace ResourceIntroducers {
    * No description
    * @tags Resource Introducers
    * @name ResourceIntroducersControllerRemoveIntroducer
-   * @summary Remove a user from authorized introducers
+   * @summary Remove a user as an introducer for a resource
    * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
    * @secure
    */
@@ -1437,8 +1674,8 @@ export namespace ResourceIntroducers {
    * No description
    * @tags Resource Introducers
    * @name ResourceIntroducersControllerCanManageIntroducers
-   * @summary Check if user can manage introducers for the resource
-   * @request GET:/api/resources/{resourceId}/introducers/permissions/manage
+   * @summary Check if the current user can manage introducers for a resource
+   * @request GET:/api/resources/{resourceId}/introducers/can-manage
    * @secure
    */
   export namespace ResourceIntroducersControllerCanManageIntroducers {
@@ -1663,6 +1900,172 @@ export namespace MqttServers {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = MqttServerControllerGetAllServerStatusesData;
+  }
+}
+
+export namespace Webhooks {
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerFindAll
+   * @summary Get all webhook configurations for a resource
+   * @request GET:/api/resources/{resourceId}/webhooks
+   * @secure
+   */
+  export namespace WebhookConfigControllerFindAll {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerFindAllData;
+  }
+
+  /**
+   * @description Creates a new webhook configuration for a resource. ## URL Templating The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `https://example.com/webhooks/{{id}}/{{event}}` ## Header Templating Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}` ## Available Template Variables Available template variables for URLs, headers, and payloads: - `id`: Resource ID - `name`: Resource name - `description`: Resource description - `timestamp`: ISO timestamp of the event - `user.id`: ID of the user who triggered the event - `event`: Either "started" or "ended" depending on the resource usage state
+   * @tags Webhooks
+   * @name WebhookConfigControllerCreate
+   * @summary Create a new webhook configuration
+   * @request POST:/api/resources/{resourceId}/webhooks
+   * @secure
+   */
+  export namespace WebhookConfigControllerCreate {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateWebhookConfigDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerCreateData;
+  }
+
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerFindById
+   * @summary Get webhook configuration by ID
+   * @request GET:/api/resources/{resourceId}/webhooks/{id}
+   * @secure
+   */
+  export namespace WebhookConfigControllerFindById {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerFindByIdData;
+  }
+
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerUpdate
+   * @summary Update webhook configuration
+   * @request PUT:/api/resources/{resourceId}/webhooks/{id}
+   * @secure
+   */
+  export namespace WebhookConfigControllerUpdate {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateWebhookConfigDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerUpdateData;
+  }
+
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerDelete
+   * @summary Delete webhook configuration
+   * @request DELETE:/api/resources/{resourceId}/webhooks/{id}
+   * @secure
+   */
+  export namespace WebhookConfigControllerDelete {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerDeleteData;
+  }
+
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerUpdateStatus
+   * @summary Enable or disable webhook
+   * @request PUT:/api/resources/{resourceId}/webhooks/{id}/status
+   * @secure
+   */
+  export namespace WebhookConfigControllerUpdateStatus {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = WebhookStatusDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerUpdateStatusData;
+  }
+
+  /**
+   * No description
+   * @tags Webhooks
+   * @name WebhookConfigControllerTestWebhook
+   * @summary Test webhook
+   * @request POST:/api/resources/{resourceId}/webhooks/{id}/test
+   * @secure
+   */
+  export namespace WebhookConfigControllerTestWebhook {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerTestWebhookData;
+  }
+
+  /**
+   * @description When signature verification is enabled, each webhook request includes: 1. A timestamp header (X-Webhook-Timestamp) 2. A signature header (configurable, default: X-Webhook-Signature) To verify the signature: 1. Extract the timestamp from the X-Webhook-Timestamp header 2. Combine the timestamp and payload as "${timestamp}.${payload}" 3. Compute the HMAC-SHA256 signature using your webhook secret 4. Compare the resulting signature with the value in the signature header Example (Node.js): ```javascript const crypto = require('crypto'); function verifySignature(payload, timestamp, signature, secret) { const signaturePayload = `${timestamp}.${payload}`; const expectedSignature = crypto .createHmac('sha256', secret) .update(signaturePayload) .digest('hex'); return crypto.timingSafeEqual( Buffer.from(signature), Buffer.from(expectedSignature) ); } ```
+   * @tags Webhooks
+   * @name WebhookConfigControllerRegenerateSecret
+   * @summary Regenerate webhook secret
+   * @request POST:/api/resources/{resourceId}/webhooks/{id}/regenerate-secret
+   * @secure
+   */
+  export namespace WebhookConfigControllerRegenerateSecret {
+    export type RequestParams = {
+      /** Resource ID */
+      resourceId: number;
+      /** Webhook configuration ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = WebhookConfigControllerRegenerateSecretData;
   }
 }
 
@@ -2122,7 +2525,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/resources/${id}`,
         method: 'DELETE',
         secure: true,
-        format: 'json',
         ...params,
       }),
   };
@@ -2327,7 +2729,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Resource Introductions
      * @name ResourceIntroductionControllerGetIntroductionHistory
-     * @summary Get history of an introduction
+     * @summary Get history for a specific introduction
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
      * @secure
      */
@@ -2430,7 +2832,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Resource Introducers
      * @name ResourceIntroducersControllerAddIntroducer
-     * @summary Add a user as an authorized introducer
+     * @summary Add a user as an introducer for a resource
      * @request POST:/api/resources/{resourceId}/introducers/{userId}
      * @secure
      */
@@ -2448,7 +2850,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Resource Introducers
      * @name ResourceIntroducersControllerRemoveIntroducer
-     * @summary Remove a user from authorized introducers
+     * @summary Remove a user as an introducer for a resource
      * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
      * @secure
      */
@@ -2457,7 +2859,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/resources/${resourceId}/introducers/${userId}`,
         method: 'DELETE',
         secure: true,
-        format: 'json',
         ...params,
       }),
 
@@ -2466,13 +2867,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Resource Introducers
      * @name ResourceIntroducersControllerCanManageIntroducers
-     * @summary Check if user can manage introducers for the resource
-     * @request GET:/api/resources/{resourceId}/introducers/permissions/manage
+     * @summary Check if the current user can manage introducers for a resource
+     * @request GET:/api/resources/{resourceId}/introducers/can-manage
      * @secure
      */
     resourceIntroducersControllerCanManageIntroducers: (resourceId: number, params: RequestParams = {}) =>
       this.request<ResourceIntroducersControllerCanManageIntroducersData, void>({
-        path: `/api/resources/${resourceId}/introducers/permissions/manage`,
+        path: `/api/resources/${resourceId}/introducers/can-manage`,
         method: 'GET',
         secure: true,
         format: 'json',
@@ -2700,6 +3101,166 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<MqttServerControllerGetAllServerStatusesData, void>({
         path: `/api/mqtt/servers/status`,
         method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  webhooks = {
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerFindAll
+     * @summary Get all webhook configurations for a resource
+     * @request GET:/api/resources/{resourceId}/webhooks
+     * @secure
+     */
+    webhookConfigControllerFindAll: (resourceId: number, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerFindAllData, void>({
+        path: `/api/resources/${resourceId}/webhooks`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Creates a new webhook configuration for a resource. ## URL Templating The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `https://example.com/webhooks/{{id}}/{{event}}` ## Header Templating Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}` ## Available Template Variables Available template variables for URLs, headers, and payloads: - `id`: Resource ID - `name`: Resource name - `description`: Resource description - `timestamp`: ISO timestamp of the event - `user.id`: ID of the user who triggered the event - `event`: Either "started" or "ended" depending on the resource usage state
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerCreate
+     * @summary Create a new webhook configuration
+     * @request POST:/api/resources/{resourceId}/webhooks
+     * @secure
+     */
+    webhookConfigControllerCreate: (resourceId: number, data: CreateWebhookConfigDto, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerCreateData, void>({
+        path: `/api/resources/${resourceId}/webhooks`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerFindById
+     * @summary Get webhook configuration by ID
+     * @request GET:/api/resources/{resourceId}/webhooks/{id}
+     * @secure
+     */
+    webhookConfigControllerFindById: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerFindByIdData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerUpdate
+     * @summary Update webhook configuration
+     * @request PUT:/api/resources/{resourceId}/webhooks/{id}
+     * @secure
+     */
+    webhookConfigControllerUpdate: (
+      resourceId: number,
+      id: number,
+      data: UpdateWebhookConfigDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<WebhookConfigControllerUpdateData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}`,
+        method: 'PUT',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerDelete
+     * @summary Delete webhook configuration
+     * @request DELETE:/api/resources/{resourceId}/webhooks/{id}
+     * @secure
+     */
+    webhookConfigControllerDelete: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerDeleteData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerUpdateStatus
+     * @summary Enable or disable webhook
+     * @request PUT:/api/resources/{resourceId}/webhooks/{id}/status
+     * @secure
+     */
+    webhookConfigControllerUpdateStatus: (
+      resourceId: number,
+      id: number,
+      data: WebhookStatusDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<WebhookConfigControllerUpdateStatusData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}/status`,
+        method: 'PUT',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerTestWebhook
+     * @summary Test webhook
+     * @request POST:/api/resources/{resourceId}/webhooks/{id}/test
+     * @secure
+     */
+    webhookConfigControllerTestWebhook: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerTestWebhookData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}/test`,
+        method: 'POST',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description When signature verification is enabled, each webhook request includes: 1. A timestamp header (X-Webhook-Timestamp) 2. A signature header (configurable, default: X-Webhook-Signature) To verify the signature: 1. Extract the timestamp from the X-Webhook-Timestamp header 2. Combine the timestamp and payload as "${timestamp}.${payload}" 3. Compute the HMAC-SHA256 signature using your webhook secret 4. Compare the resulting signature with the value in the signature header Example (Node.js): ```javascript const crypto = require('crypto'); function verifySignature(payload, timestamp, signature, secret) { const signaturePayload = `${timestamp}.${payload}`; const expectedSignature = crypto .createHmac('sha256', secret) .update(signaturePayload) .digest('hex'); return crypto.timingSafeEqual( Buffer.from(signature), Buffer.from(expectedSignature) ); } ```
+     *
+     * @tags Webhooks
+     * @name WebhookConfigControllerRegenerateSecret
+     * @summary Regenerate webhook secret
+     * @request POST:/api/resources/{resourceId}/webhooks/{id}/regenerate-secret
+     * @secure
+     */
+    webhookConfigControllerRegenerateSecret: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<WebhookConfigControllerRegenerateSecretData, void>({
+        path: `/api/resources/${resourceId}/webhooks/${id}/regenerate-secret`,
+        method: 'POST',
         secure: true,
         format: 'json',
         ...params,

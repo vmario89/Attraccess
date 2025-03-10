@@ -1,4 +1,4 @@
-const translations = {
+export default {
   title: 'MQTT Servers',
   addNewServer: 'Add New Server',
   errorLoading: 'Error loading MQTT servers.',
@@ -71,5 +71,3 @@ const translations = {
   failedToCreate: 'Failed to create MQTT server.',
   failedToConnect: 'Failed to connect to MQTT server',
 };
-
-export default { default: translations };
