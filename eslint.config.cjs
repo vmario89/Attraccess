@@ -17,7 +17,15 @@ module.exports = [
     ignores: ['**/dist', "**/tsconfig.**"],
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+    // Override or add rules here
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
@@ -32,20 +40,7 @@ module.exports = [
           ],
         },
       ],
-      'no-warning-comments': 'off',
-    },
-  },
-  {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    // Override or add rules here
-    rules: {},
+      'no-warning-comments': 'off'},
   },
   // Add special configuration for CI environment that converts warnings to errors
   ...(process.env.CI === 'true'
@@ -60,8 +55,6 @@ module.exports = [
             '**/*.mjs',
           ],
           rules: {
-            // This special ESLint rule transforms all warnings to errors
-            'no-warning-comments': 'error',
           },
         },
       ]
