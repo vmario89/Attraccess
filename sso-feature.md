@@ -69,13 +69,6 @@ export class SSOProvider {
   })
   isEnabled!: boolean;
 
-  @Column({ default: false })
-  @ApiProperty({
-    description: 'Whether the SSO provider is the default option for login',
-    example: false,
-  })
-  isDefault!: boolean;
-
   @OneToMany(() => RoleMapping, (roleMapping) => roleMapping.ssoProvider)
   roleMappings!: RoleMapping[];
 
@@ -378,6 +371,7 @@ externalProfileData?: Record<string, any>;
 - Create `apps/api/src/users-and-auth/sso-providers/sso-providers.module.ts`
 - Create `apps/api/src/users-and-auth/sso-providers/sso-providers.service.ts` for CRUD operations on SSO providers
 - Create `apps/api/src/users-and-auth/sso-providers/sso-providers.controller.ts` with endpoints for managing providers
+  - Ensure all controllers are properly annotated with NestJS Swagger decorators
 - Create provider-specific services:
   - `apps/api/src/users-and-auth/sso-providers/keycloak-provider.service.ts`
   - `apps/api/src/users-and-auth/sso-providers/oidc-provider.service.ts`
@@ -462,29 +456,19 @@ externalProfileData?: Record<string, any>;
 - Add end-to-end tests for SSO login flow with mock SSO server
 - Test complete flow from login to accessing protected resources
 
-## Documentation
-
-### 1. API Documentation
-
-- Update Swagger documentation with new SSO endpoints
-- Document new entities and DTOs
-
-### 2. User Guide
-
-- Document how to configure Keycloak and OIDC providers
-- Document how to map external roles to system permissions
-
 ## Migration and Deployment
 
 ### 1. Database Migrations
 
-- Create database migration script for new entities and fields
-- Update existing migration scripts if needed
-
-### 2. Environment Variables
-
-- Add new environment variables for default SSO configuration
-- Update `.env.example` with SSO-related variables
+- Generate migration by running:
+  ```
+  pnpm nx run api:generate-migration src/database/migrations/<migration-name>
+  ```
+- Add the generated migration to the array of migrations in the datasource config in the API
+- Execute migrations by running:
+  ```
+  pnpm nx run api:run-migrations
+  ```
 
 ## Security Considerations
 
