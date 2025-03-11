@@ -69,6 +69,11 @@
     },
     "e2e-ci--**/*": {
       "dependsOn": ["^build"]
+    },
+    "lint": {
+      "options": {
+        "max-warnings": 0
+      }
     }
   },
   "generators": {
