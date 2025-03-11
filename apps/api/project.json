@@ -49,7 +49,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build-swagger"],
       "options": {
-        "command": "SMTP_HOST=not-a-host SMTP_PORT=1234 SMTP_FROM=mail@attraccess.org FRONTEND_URL=http://localhost:4200 node dist/apps/api-swagger/main.js"
+        "command": "AUTH_JWT_ORIGIN=ENV AUTH_JWT_SECRET=not-set SMTP_SERVICE=SMTP SMTP_HOST=not-a-host SMTP_PORT=1234 SMTP_FROM=mail@attraccess.org FRONTEND_URL=http://localhost:4200 node dist/apps/api-swagger/main.js"
       },
       "outputs": ["{projectRoot}/dist/apps/api-swagger/swagger.json"]
     },
