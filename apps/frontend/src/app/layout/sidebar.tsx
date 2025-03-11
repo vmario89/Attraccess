@@ -13,6 +13,7 @@ import {
   Link,
 } from '@heroui/react';
 import { routes, de as routesDe, en as routesEn } from '../routes';
+import { SystemPermissions } from '@attraccess/api-client';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -34,7 +35,35 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   // Get navigation items from routes that have sidebar config
   const navigationItems = React.useMemo(() => {
     return routes
-      .filter((route) => route.sidebar)
+      .filter((route) => {
+        if (!route.sidebar) {
+          return false;
+        }
+
+        if (!route.authRequired) {
+          return true;
+        }
+
+        if (!user) {
+          return false;
+        }
+
+        if (route.authRequired === true) {
+          return true;
+        }
+
+        const requiredPermissions = (
+          Array.isArray(route.authRequired)
+            ? route.authRequired
+            : [route.authRequired]
+        ) as (keyof SystemPermissions)[];
+
+        const userHasAllRequiredPermissions = requiredPermissions.every(
+          (permission) => user.systemPermissions[permission] === true
+        );
+
+        return userHasAllRequiredPermissions;
+      })
       .sort((a, b) => {
         // Sort by order if available, otherwise alphabetically by translation key
         const orderA = a.sidebar?.order || 0;

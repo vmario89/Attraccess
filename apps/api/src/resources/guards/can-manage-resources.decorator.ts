@@ -1,5 +1,9 @@
-import { UseGuards, applyDecorators } from '@nestjs/common';
-import { CanManageResourcesGuard } from './can-manage-resources.guard';
+import { UseGuards, applyDecorators, SetMetadata } from '@nestjs/common';
+import {
+  CanManageResourcesGuard,
+  CanManageResourcesOptions,
+  CAN_MANAGE_RESOURCES_OPTIONS,
+} from './can-manage-resources.guard';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -11,10 +15,15 @@ import { JwtGuard } from '../../users-and-auth/strategies/jwt.guard';
  * Decorator to protect routes that require permission to manage resources.
  * Combines the guard with proper API documentation for unauthorized and forbidden responses.
  *
- * Usage: @CanManageResources()
+ * Usage:
+ * - Default: @CanManageResources()
+ * - With options: @CanManageResources({ paramName: 'id', skipResourceCheck: false })
+ *
+ * @param options Configuration options for the guard
  */
-export function CanManageResources() {
+export function CanManageResources(options?: CanManageResourcesOptions) {
   return applyDecorators(
+    SetMetadata(CAN_MANAGE_RESOURCES_OPTIONS, options || {}),
     UseGuards(JwtGuard, CanManageResourcesGuard),
     ApiBearerAuth(),
     ApiUnauthorizedResponse({ description: 'User is not authenticated' }),

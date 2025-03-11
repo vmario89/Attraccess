@@ -38,7 +38,7 @@ function useRoutesWithAuthElements(routes: RouteConfig[]) {
       ) as (keyof SystemPermissions)[];
 
       const userHasAllRequiredPermissions = requiredPermissions.every(
-        (permission) => user.systemPermissions[permission]
+        (permission) => user.systemPermissions[permission] === true
       );
 
       if (!userHasAllRequiredPermissions) {

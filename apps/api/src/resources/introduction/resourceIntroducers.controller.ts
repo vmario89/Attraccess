@@ -6,6 +6,10 @@ import {
   Param,
   ParseIntPipe,
   Req,
+  ForbiddenException,
+  Logger,
+  NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
@@ -18,17 +22,21 @@ import { AuthenticatedRequest } from '../../types/request';
 import { UsersService } from '../../users-and-auth/users/users.service';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 import { CanManageIntroducersResponseDto } from './dtos/canManageIntroducers.dto';
+import { ResourcesService } from '../resources.service';
 
 @ApiTags('Resource Introducers')
 @Controller('resources/:resourceId/introducers')
 export class ResourceIntroducersController {
+  private readonly logger = new Logger(ResourceIntroducersController.name);
+
   constructor(
     private readonly resourceIntroductionService: ResourceIntroductionService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly resourcesService: ResourcesService
   ) {}
 
   @Get()
-  @CanManageResources()
+  @Auth()
   @ApiOperation({ summary: 'Get all authorized introducers for a resource' })
   @ApiResponse({
     status: 200,
@@ -36,9 +44,43 @@ export class ResourceIntroducersController {
     type: [ResourceIntroductionUser],
   })
   async getResourceIntroducers(
-    @Param('resourceId', ParseIntPipe) resourceId: number
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionUser[]> {
-    return this.resourceIntroductionService.getResourceIntroducers(resourceId);
+    try {
+      // First verify the resource exists
+      const resource = await this.resourcesService.getResourceById(resourceId);
+
+      if (!resource) {
+        throw new NotFoundException(`Resource with ID ${resourceId} not found`);
+      }
+
+      // For viewing introducers, any authenticated user is allowed
+      // No additional permission checks needed for viewing
+
+      // Get the introducers list
+      return this.resourceIntroductionService.getResourceIntroducers(
+        resourceId
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error getting resource introducers: ${error.message}`,
+        error.stack
+      );
+
+      // Rethrow known exceptions
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+
+      // For other errors, hide details in production
+      throw new InternalServerErrorException(
+        'Error fetching resource introducers'
+      );
+    }
   }
 
   @Post(':userId')

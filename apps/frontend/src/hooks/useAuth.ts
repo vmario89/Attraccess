@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateSessionResponse, CreateUserDto } from '@attraccess/api-client';
 import getApi from '../api';
+import { useNavigate } from 'react-router-dom';
 
 interface SystemPermissions {
   canManageResources: boolean;
@@ -17,6 +18,7 @@ const AUTH_QUERY_KEY = ['auth', 'session'] as const;
 
 export function useAuth() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: session,
@@ -124,8 +126,17 @@ export function useAuth() {
       sessionStorage.removeItem('auth');
     },
     onSuccess: () => {
-      // Clear the auth query data
+      // First set auth state to null to update UI immediately
       queryClient.setQueryData(AUTH_QUERY_KEY, null);
+
+      // Clear all query caches to prevent data leakage between users
+      queryClient.clear();
+
+      // Force a refresh of the auth state
+      queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
+
+      // Navigate to the root which will show the unauthorized component
+      navigate('/', { replace: true });
     },
   });
 

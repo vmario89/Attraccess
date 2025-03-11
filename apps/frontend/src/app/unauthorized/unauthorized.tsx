@@ -6,7 +6,7 @@ import { useTranslations } from '../../i18n';
 import * as en from './translations/unauthorized.en';
 import * as de from './translations/unauthorized.de';
 
-export const Unauthorized = memo(function () {
+export const Unauthorized = memo(function UnauthorizedComponent() {
   const { t } = useTranslations('unauthorized', {
     en,
     de,
@@ -30,3 +30,5 @@ export const Unauthorized = memo(function () {
     </UnauthorizedLayout>
   );
 });
+
+Unauthorized.displayName = 'Unauthorized';

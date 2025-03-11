@@ -8,6 +8,7 @@ import {
   Query,
   ParseIntPipe,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceUsageService } from './resourceUsage.service';
@@ -83,7 +84,7 @@ export class ResourceUsageController {
   }
 
   @Get('history')
-  @CanManageResources()
+  @Auth()
   @ApiOperation({ summary: 'Get usage history for a resource' })
   @ApiResponse({
     status: 200,
@@ -104,8 +105,25 @@ export class ResourceUsageController {
   })
   async getResourceHistory(
     @Param('resourceId', ParseIntPipe) resourceId: number,
-    @Query() query: GetResourceHistoryQueryDto
+    @Query() query: GetResourceHistoryQueryDto,
+    @Req() req: AuthenticatedRequest
   ): Promise<GetResourceHistoryResponseDto> {
+    // Allow users to see their own history, or admins to see all history
+    const canManageResources =
+      req.user.systemPermissions?.canManageResources === true;
+    const isViewingOwnHistory =
+      query.userId === req.user.id || query.userId === undefined;
+
+    // If not an admin and trying to view someone else's history, deny access
+    if (!canManageResources && !isViewingOwnHistory) {
+      throw new ForbiddenException('You can only view your own usage history');
+    }
+
+    // If not an admin, force filtering by the current user's ID
+    if (!canManageResources) {
+      query.userId = req.user.id;
+    }
+
     const { data, total } =
       await this.resourceUsageService.getResourceUsageHistory(
         resourceId,

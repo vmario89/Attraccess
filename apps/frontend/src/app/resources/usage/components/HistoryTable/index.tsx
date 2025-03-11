@@ -68,8 +68,8 @@ export const HistoryTable = ({
   );
 
   const loadingState = useMemo(() => {
-    return isLoading || usageHistory?.data.length === 0 ? 'loading' : 'idle';
-  }, [isLoading, usageHistory]);
+    return isLoading ? 'loading' : 'idle';
+  }, [isLoading]);
 
   if (error) {
     return (

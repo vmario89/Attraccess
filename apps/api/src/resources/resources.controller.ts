@@ -58,7 +58,7 @@ export class ResourcesController {
     description: 'The resource has been successfully created.',
     type: Resource,
   })
-  @CanManageResources()
+  @CanManageResources({ skipResourceCheck: true })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   async createResource(
@@ -127,7 +127,7 @@ export class ResourcesController {
     description: 'The resource has been successfully updated.',
     type: Resource,
   })
-  @CanManageResources()
+  @CanManageResources({ paramName: 'id' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   async updateResource(
@@ -149,7 +149,7 @@ export class ResourcesController {
     status: 204,
     description: 'The resource has been successfully deleted.',
   })
-  @CanManageResources()
+  @CanManageResources({ paramName: 'id' })
   async deleteResource(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.resourcesService.deleteResource(id);
   }

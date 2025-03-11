@@ -6,8 +6,8 @@ import { Navigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from '../../i18n';
-import serverListEn from './servers/translations/en';
-import serverListDe from './servers/translations/de';
+import * as serverListEn from './servers/translations/en';
+import * as serverListDe from './servers/translations/de';
 
 export const MqttServersPage: React.FC = () => {
   const { hasPermission } = useAuth();

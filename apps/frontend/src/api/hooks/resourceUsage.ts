@@ -3,9 +3,11 @@ import {
   ResourceUsage,
   StartUsageSessionDto,
   EndUsageSessionDto,
+  ResourceUsageControllerGetResourceHistoryParams,
 } from '@attraccess/api-client';
 import { ApiError, createQueryKeys } from './base';
 import getApi from '../index';
+import { useAuth } from '../../hooks/useAuth';
 
 // Define module-specific query keys with combined implementation
 export const resourceUsageKeys = {
@@ -112,6 +114,9 @@ export function useResourceUsageHistory(
   limit = 10,
   showAllUsers = false
 ) {
+  const { user, hasPermission } = useAuth();
+  const canManageResources = hasPermission('canManageResources');
+
   return useQuery({
     queryKey: resourceUsageKeys.history(resourceId, {
       page,
@@ -120,16 +125,25 @@ export function useResourceUsageHistory(
     }),
     queryFn: async () => {
       const api = getApi();
+      const params: ResourceUsageControllerGetResourceHistoryParams = {
+        resourceId,
+        page,
+        limit,
+      };
+
+      // Only admins can see all users' history, regular users can only see their own
+      if (!canManageResources || !showAllUsers) {
+        // Regular users always filter by their own ID
+        // Admins can choose to show just their own data
+        params.userId = user?.id;
+      }
+
       const response =
-        await api.resourceUsage.resourceUsageControllerGetResourceHistory({
-          resourceId,
-          page,
-          limit,
-          // Only add showAllUsers if it's relevant to the API
-          ...(showAllUsers && { userId: undefined }), // If showAllUsers is true, we don't filter by userId
-        });
+        await api.resourceUsage.resourceUsageControllerGetResourceHistory(
+          params
+        );
       return response.data;
     },
-    enabled: !!resourceId && page > 0 && limit > 0,
+    enabled: !!resourceId && page > 0 && limit > 0 && !!user?.id,
   });
 }
