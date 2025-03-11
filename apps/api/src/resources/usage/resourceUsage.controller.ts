@@ -20,7 +20,6 @@ import { AuthenticatedRequest } from '../../types/request';
 import { makePaginatedResponse } from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
-import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 @ApiTags('Resource Usage')
 @Controller('resources/:resourceId/usage')

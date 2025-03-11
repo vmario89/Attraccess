@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@heroui/button';
-import { Spacer } from '@heroui/spacer';
-import { Chip } from '@heroui/chip';
 
 interface PageHeaderProps {
   title: string;

@@ -23,10 +23,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { ListResourcesDto } from './dtos/listResources.dto';
 import { Resource } from '@attraccess/database-entities';
-import {
-  Auth,
-  SystemPermission,
-} from '../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '../users-and-auth/strategies/systemPermissions.guard';
 import { PaginatedResponse } from '../types/pagination';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';

@@ -5,7 +5,7 @@ import { IoTSettings } from '../resources/iotSettings';
 import { Database, ServerIcon } from 'lucide-react';
 import React from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
-import { SystemPermissions, User } from '@attraccess/api-client';
+import { SystemPermissions } from '@attraccess/api-client';
 export * as de from './translations/de';
 export * as en from './translations/en';
 

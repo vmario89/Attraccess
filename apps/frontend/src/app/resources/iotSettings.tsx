@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useResource } from '../../api/hooks/resources';
 import { useAuth } from '../../hooks/useAuth';
-import { ArrowLeft, Wifi } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Spinner } from '@heroui/react';
 import { PageHeader } from '../../components/pageHeader';

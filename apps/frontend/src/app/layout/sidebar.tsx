@@ -77,7 +77,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
         return orderA - orderB;
       });
-  }, []);
+  }, [user]);
 
   return (
     <>

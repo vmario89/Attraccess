@@ -3,6 +3,7 @@ import {
   Repository,
   ILike,
   FindOneOptions as TypeormFindOneOptions,
+  FindOperator,
 } from 'typeorm';
 import { User } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -201,7 +202,10 @@ export class UsersService {
     const { page, limit } = paginationOptions;
     const skip = (page - 1) * limit;
 
-    const whereCondition: { username?: any; email?: any } = {};
+    const whereCondition: {
+      username?: FindOperator<string>;
+      email?: FindOperator<string>;
+    } = {};
     if (search) {
       this.logger.debug(`Searching for users with query: ${search}`);
       whereCondition.username = ILike(`%${search}%`);

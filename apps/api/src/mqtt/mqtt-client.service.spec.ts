@@ -7,6 +7,12 @@ import * as mqtt from 'mqtt';
 import { Logger } from '@nestjs/common';
 import { MqttMonitoringService } from './mqtt-monitoring.service';
 
+// Interface to access private members for testing
+interface MqttClientServicePrivate {
+  getOrCreateClient: (serverId: number) => Promise<mqtt.MqttClient>;
+  clients: Map<number, mqtt.MqttClient>;
+}
+
 // Mock mqtt module thoroughly to avoid actual connections
 jest.mock('mqtt', () => ({
   connect: jest.fn(() => ({
@@ -96,7 +102,10 @@ describe('MqttClientService', () => {
 
     // Mock the getOrCreateClient method to avoid actual connection attempts
     jest
-      .spyOn(service as any, 'getOrCreateClient')
+      .spyOn(
+        service as unknown as MqttClientServicePrivate,
+        'getOrCreateClient'
+      )
       .mockResolvedValue(mqtt.connect({}));
   });
 
@@ -112,7 +121,7 @@ describe('MqttClientService', () => {
     it('should successfully publish a message', async () => {
       // Arrange - mock the internal methods to avoid actual connections
       const getOrCreateClientSpy = jest.spyOn(
-        service as any,
+        service as unknown as MqttClientServicePrivate,
         'getOrCreateClient'
       );
       const mockClient = mqtt.connect({});
@@ -134,7 +143,7 @@ describe('MqttClientService', () => {
     it('should throw an error if publishing fails', async () => {
       // Arrange - mock the client to throw an error on publish
       const getOrCreateClientSpy = jest.spyOn(
-        service as any,
+        service as unknown as MqttClientServicePrivate,
         'getOrCreateClient'
       );
       const mockClient = mqtt.connect({});
@@ -160,7 +169,7 @@ describe('MqttClientService', () => {
     it('should return success if connection is successful', async () => {
       // Arrange - mock the internal methods
       const getOrCreateClientSpy = jest.spyOn(
-        service as any,
+        service as unknown as MqttClientServicePrivate,
         'getOrCreateClient'
       );
       const mockClient = mqtt.connect({});
@@ -186,7 +195,10 @@ describe('MqttClientService', () => {
     it('should disconnect all clients', async () => {
       // Arrange - mock the clients map to have a client
       const mockClient = mqtt.connect({});
-      (service as any).clients.set(1, mockClient);
+      (service as unknown as MqttClientServicePrivate).clients.set(
+        1,
+        mockClient
+      );
 
       // Act
       await service.onModuleDestroy();

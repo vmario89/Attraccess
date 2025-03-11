@@ -32,7 +32,7 @@ export const useTemplatePreview = (resourceId: number) => {
         .replace(/\{\{user\.id\}\}/g, String(previewContext.user.id))
         .replace(/\{\{user\.username\}\}/g, previewContext.user.username);
       return result;
-    } catch (error) {
+    } catch {
       return 'Error previewing template';
     }
   };

@@ -44,8 +44,7 @@ export class ResourceIntroducersController {
     type: [ResourceIntroductionUser],
   })
   async getResourceIntroducers(
-    @Param('resourceId', ParseIntPipe) resourceId: number,
-    @Req() req: AuthenticatedRequest
+    @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<ResourceIntroductionUser[]> {
     try {
       // First verify the resource exists

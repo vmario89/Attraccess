@@ -11,7 +11,6 @@ import {
   CardFooter,
   CardHeader,
   Spacer,
-  Link,
 } from '@heroui/react';
 import { useTranslations } from '../i18n';
 import * as en from './translations/verifyEmail.en';

@@ -23,16 +23,12 @@ export function ResourceUsageHistory({
   const canManageResources = hasPermission('canManageResources');
 
   const [showAllUsers, setShowAllUsers] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
-    null
-  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<ResourceUsage | null>(
     null
   );
 
   const handleSessionClick = (session: ResourceUsage) => {
-    setSelectedSessionId(session.id);
     setSelectedSession(session);
     setIsModalOpen(true);
   };

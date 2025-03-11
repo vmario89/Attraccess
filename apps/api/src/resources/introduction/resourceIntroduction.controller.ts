@@ -7,7 +7,6 @@ import {
   Req,
   Body,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';

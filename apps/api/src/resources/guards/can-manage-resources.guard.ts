@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
   Logger,
   BadRequestException,
-  Inject,
   Optional,
 } from '@nestjs/common';
 import { ResourcesService } from '../resources.service';
