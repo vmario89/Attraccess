@@ -14,7 +14,7 @@ import { RevokedToken } from './revokedToken.entity';
 import { AuthenticationDetail } from './authenticationDetail.entity';
 import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
 
-class SystemPermissions {
+export class SystemPermissions {
   @Column({ default: false })
   @ApiProperty({
     description: 'Whether the user can manage resources',

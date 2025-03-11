@@ -5,7 +5,7 @@ import {
   FindOneOptions as TypeormFindOneOptions,
   FindOperator,
 } from 'typeorm';
-import { User } from '@attraccess/database-entities';
+import { SystemPermissions, User } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   makePaginatedResponse,
@@ -122,11 +122,15 @@ export class UsersService {
         'First user in system - granting all system permissions'
       );
       // This is the first user, grant all system permissions
-      user.systemPermissions = {
+      type permissionKeys = keyof SystemPermissions;
+
+      const permissions: Record<permissionKeys, true> = {
         canManageResources: true,
         canManageUsers: true,
         canManagePermissions: true,
       };
+
+      user.systemPermissions = permissions;
     }
 
     this.logger.debug('Saving new user to database');
