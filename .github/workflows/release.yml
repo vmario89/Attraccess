@@ -25,7 +25,7 @@ env:
 
 # Define permissions
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -127,6 +127,36 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
+
+      # Update GitHub Release with Docker image information
+      - name: Update GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.RELEASE_VERSION }}
+          body: |
+            ## Docker Image
+
+            ### Usage
+            ```bash
+            docker pull ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ```
+
+            ### Image Details
+            - Registry: `${{ env.REGISTRY }}`
+            - Repository: `${{ env.LOWERCASE_IMAGE_NAME }}`
+            - Tag: `${{ env.RELEASE_VERSION }}`
+            - Full Image Name: `${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
+
+            ### Docker Run Example
+            ```bash
+            docker run -p 3000:3000 ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ```
+
+            ### Links
+            - [GitHub Container Registry](https://github.com/${{ github.repository }}/pkgs/container/${{ github.repository_name }})
+          append_body: true
 
   # Optionally add a deployment step
   deploy:
