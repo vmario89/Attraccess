@@ -11,6 +11,7 @@ import {
   Query,
   ParseIntPipe,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedRequest } from '../../types/request';
@@ -24,6 +25,14 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { PaginatedUsersResponseDto } from './dtos/paginatedUsersResponse.dto';
 import { UserNotFoundException } from '../../exceptions/user.notFound.exception';
+import { UpdateUserPermissionsDto } from './dtos/updateUserPermissions.dto';
+import { BulkUpdateUserPermissionsDto } from './dtos/bulkUpdateUserPermissions.dto';
+import { SystemPermissions } from '@attraccess/database-entities';
+import {
+  GetUsersWithPermissionQueryDto,
+  PermissionFilter,
+} from './dtos/getUsersWithPermissionQuery.dto';
+import { PaginatedResponseDto } from '../../types/response';
 
 @ApiTags('users')
 @Controller('users')
@@ -36,6 +45,32 @@ export class UsersController {
     private readonly authService: AuthService,
     private readonly emailService: EmailService
   ) {}
+
+  /**
+   * Validates that a user can grant the specified permissions
+   * @param user The user attempting to grant permissions
+   * @param permissions The permissions being granted
+   * @throws ForbiddenException if the user tries to grant a permission they don't have
+   */
+  private validateCanGrantPermissions(
+    user: User,
+    permissions: Partial<SystemPermissions>
+  ): void {
+    for (const permission of Object.keys(permissions)) {
+      // If the permission is being set to true, check if the user has it
+      if (
+        permissions[permission] === true &&
+        !user.systemPermissions[permission]
+      ) {
+        this.logger.warn(
+          `User ${user.id} attempted to grant ${permission} permission they don't have`
+        );
+        throw new ForbiddenException(
+          'You cannot grant permissions you do not have'
+        );
+      }
+    }
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -183,9 +218,13 @@ export class UsersController {
     );
     const authenticatedUser = request.user;
 
-    if (authenticatedUser?.id !== id) {
+    // Allow access if the user is requesting their own data or has canManageUsers permission
+    if (
+      authenticatedUser?.id !== id &&
+      !authenticatedUser.systemPermissions.canManageUsers
+    ) {
       this.logger.debug(
-        `Access denied - User ID ${authenticatedUser.id} attempting to access user ID ${id}`
+        `Access denied - User ID ${authenticatedUser.id} attempting to access user ID ${id} without required permissions`
       );
       throw new ForbiddenException();
     }
@@ -229,6 +268,258 @@ export class UsersController {
     this.logger.debug(
       `Found ${result.total} users total, returning ${result.data.length} users`
     );
+    return result;
+  }
+
+  @Patch(':id/permissions')
+  @Auth('canManageUsers')
+  @ApiOperation({ summary: "Update a user's system permissions" })
+  @ApiResponse({
+    status: 200,
+    description: 'The user permissions have been successfully updated.',
+    type: User,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have permission to manage users.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async updateUserPermissions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserPermissionsDto,
+    @Req() request: AuthenticatedRequest
+  ): Promise<User> {
+    this.logger.debug(
+      `Updating permissions for user ID: ${id}, by user ID: ${request.user.id}`
+    );
+
+    // Prevent users from updating their own permissions
+    if (request.user.id === id) {
+      this.logger.warn(`User ${id} attempted to update their own permissions`);
+      throw new ForbiddenException('You cannot update your own permissions');
+    }
+
+    // Validate the user can grant the requested permissions
+    this.validateCanGrantPermissions(request.user, body);
+
+    // Get the user to update
+    const user = await this.usersService.findOne({ id });
+    if (!user) {
+      this.logger.debug(`User not found with ID: ${id}`);
+      throw new UserNotFoundException(id);
+    }
+
+    // Create an update object with just the systemPermissions
+    const updates: Partial<User> = {
+      systemPermissions: {
+        ...user.systemPermissions,
+      },
+    };
+
+    // Update only the permissions that were specified in the request
+    if (body.canManageResources !== undefined) {
+      updates.systemPermissions.canManageResources = body.canManageResources;
+    }
+
+    if (body.canManageSystemConfiguration !== undefined) {
+      updates.systemPermissions.canManageSystemConfiguration =
+        body.canManageSystemConfiguration;
+    }
+
+    if (body.canManageUsers !== undefined) {
+      updates.systemPermissions.canManageUsers = body.canManageUsers;
+    }
+
+    this.logger.debug(
+      `Applying permission updates for user ID: ${id}: ${JSON.stringify(
+        updates.systemPermissions
+      )}`
+    );
+
+    // Update the user
+    const updatedUser = await this.usersService.updateUser(id, updates);
+    this.logger.debug(`Successfully updated permissions for user ID: ${id}`);
+
+    return updatedUser;
+  }
+
+  @Post('permissions')
+  @Auth('canManageUsers')
+  @ApiOperation({ summary: 'Bulk update user permissions' })
+  @ApiResponse({
+    status: 200,
+    description: 'The user permissions have been successfully updated.',
+    type: [User],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have permission to manage users.',
+  })
+  async bulkUpdateUserPermissions(
+    @Body() body: BulkUpdateUserPermissionsDto,
+    @Req() request: AuthenticatedRequest
+  ): Promise<User[]> {
+    this.logger.debug(
+      `Bulk updating permissions for ${body.updates.length} users, by user ID: ${request.user.id}`
+    );
+
+    // First, validate that the user is not trying to grant permissions they don't have
+    for (const update of body.updates) {
+      this.validateCanGrantPermissions(request.user, update.permissions);
+    }
+
+    const updatedUsers: User[] = [];
+
+    for (const update of body.updates) {
+      // Skip if user is trying to update their own permissions
+      if (request.user.id === update.userId) {
+        this.logger.warn(
+          `User ${update.userId} attempted to update their own permissions in bulk operation, skipping`
+        );
+        continue;
+      }
+
+      try {
+        // Get the user to update
+        const user = await this.usersService.findOne({ id: update.userId });
+        if (!user) {
+          this.logger.debug(
+            `User not found with ID: ${update.userId}, skipping`
+          );
+          continue;
+        }
+
+        // Create an update object with just the systemPermissions
+        const updates: Partial<User> = {
+          systemPermissions: {
+            ...user.systemPermissions,
+          },
+        };
+
+        // Update only the permissions that were specified in the request
+        if (update.permissions.canManageResources !== undefined) {
+          updates.systemPermissions.canManageResources =
+            update.permissions.canManageResources;
+        }
+
+        if (update.permissions.canManageSystemConfiguration !== undefined) {
+          updates.systemPermissions.canManageSystemConfiguration =
+            update.permissions.canManageSystemConfiguration;
+        }
+
+        if (update.permissions.canManageUsers !== undefined) {
+          updates.systemPermissions.canManageUsers =
+            update.permissions.canManageUsers;
+        }
+
+        this.logger.debug(
+          `Applying permission updates for user ID: ${
+            update.userId
+          }: ${JSON.stringify(updates.systemPermissions)}`
+        );
+
+        // Update the user
+        const updatedUser = await this.usersService.updateUser(
+          update.userId,
+          updates
+        );
+        this.logger.debug(
+          `Successfully updated permissions for user ID: ${update.userId}`
+        );
+
+        updatedUsers.push(updatedUser);
+      } catch (error) {
+        this.logger.error(
+          `Error updating user ID: ${update.userId}: ${error.message}`
+        );
+        // Continue with the next user even if there's an error
+      }
+    }
+
+    this.logger.debug(`Successfully updated ${updatedUsers.length} users`);
+    return updatedUsers;
+  }
+
+  @Get(':id/permissions')
+  @Auth('canManageUsers')
+  @ApiOperation({ summary: "Get a user's system permissions" })
+  @ApiResponse({
+    status: 200,
+    description: "The user's permissions.",
+    schema: {
+      type: 'object',
+      properties: {
+        canManageResources: { type: 'boolean' },
+        canManageSystemConfiguration: { type: 'boolean' },
+        canManageUsers: { type: 'boolean' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have permission to manage users.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async getUserPermissions(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<SystemPermissions> {
+    this.logger.debug(`Getting permissions for user ID: ${id}`);
+
+    // Get the user
+    const user = await this.usersService.findOne({ id });
+    if (!user) {
+      this.logger.debug(`User not found with ID: ${id}`);
+      throw new UserNotFoundException(id);
+    }
+
+    this.logger.debug(`Returning permissions for user ID: ${id}`);
+    return user.systemPermissions;
+  }
+
+  @Get('with-permission')
+  @Auth('canManageUsers')
+  @ApiOperation({ summary: 'Get users with a specific permission' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of users with the specified permission.',
+    type: PaginatedUsersResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have permission to manage users.',
+  })
+  async getUsersWithPermission(
+    @Query() query: GetUsersWithPermissionQueryDto
+  ): Promise<PaginatedResponseDto<User>> {
+    const permission = query.permission || PermissionFilter.canManageUsers;
+
+    this.logger.debug(
+      `Getting users with permission: ${permission}, page: ${query.page}, limit: ${query.limit}`
+    );
+
+    const result = await this.usersService.findByPermission(permission, {
+      page: query.page,
+      limit: query.limit,
+    });
+
+    this.logger.debug(
+      `Found ${result.total} users with permission ${permission}, returning ${result.data.length} users`
+    );
+
     return result;
   }
 }

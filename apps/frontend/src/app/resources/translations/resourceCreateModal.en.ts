@@ -5,7 +5,7 @@ export default {
   imageLabel: 'Image',
   createButton: 'Create',
   successTitle: 'Resource created',
-  successDescription: '{name} has been successfully created',
+  successDescription: '{{name}} has been successfully created',
   errorTitle: 'Failed to create resource',
   errorDescription:
     'An error occurred while creating the resource. Please try again.',

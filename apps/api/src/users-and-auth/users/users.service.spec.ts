@@ -84,6 +84,7 @@ describe('UsersService', () => {
           systemPermissions: {
             canManageResources: false,
             canManageSystemConfiguration: false,
+            canManageUsers: false,
             ...(data.systemPermissions || {}),
           },
         } as User;
@@ -98,6 +99,7 @@ describe('UsersService', () => {
         systemPermissions: {
           canManageResources: true,
           canManageSystemConfiguration: true,
+          canManageUsers: true,
         },
       });
     });

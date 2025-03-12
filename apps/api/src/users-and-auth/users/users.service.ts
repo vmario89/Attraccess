@@ -127,6 +127,7 @@ export class UsersService {
       const permissions: Record<permissionKeys, true> = {
         canManageResources: true,
         canManageSystemConfiguration: true,
+        canManageUsers: true,
       };
 
       user.systemPermissions = permissions;
@@ -226,6 +227,64 @@ export class UsersService {
 
     this.logger.debug(
       `Found ${total} total users, returning page ${page} with ${users.length} results`
+    );
+    return makePaginatedResponse(
+      {
+        page: paginationOptions.page,
+        limit: paginationOptions.limit,
+      },
+      users,
+      total
+    );
+  }
+
+  async findByPermission(
+    permission: keyof SystemPermissions,
+    options: PaginationOptions & { search?: string }
+  ): Promise<PaginatedResponseDto<User>> {
+    this.logger.debug(
+      `Finding users with permission "${permission}" and options: ${JSON.stringify(
+        options
+      )}`
+    );
+    const paginationOptions = PaginationOptionsSchema.parse(options);
+    const { search } = options;
+    const { page, limit } = paginationOptions;
+    const skip = (page - 1) * limit;
+
+    // Create a query to find users with the specified permission
+    const query = this.userRepository.createQueryBuilder('user');
+
+    // Add where clause for the specific permission = true
+    query.where(
+      `user.systemPermissions${
+        permission.charAt(0).toUpperCase() + permission.slice(1)
+      } = :value`,
+      { value: true }
+    );
+
+    // Add search clause if provided
+    if (search) {
+      this.logger.debug(`Searching for users with query: ${search}`);
+      query.andWhere(
+        '(user.username LIKE :search OR user.email LIKE :search)',
+        {
+          search: `%${search}%`,
+        }
+      );
+    }
+
+    // Add pagination
+    query.skip(skip).take(limit);
+
+    // Execute the query
+    this.logger.debug(
+      `Executing query for users with permission "${permission}"`
+    );
+    const [users, total] = await query.getManyAndCount();
+
+    this.logger.debug(
+      `Found ${total} total users with permission "${permission}", returning page ${page} with ${users.length} results`
     );
     return makePaginatedResponse(
       {

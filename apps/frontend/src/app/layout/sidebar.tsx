@@ -83,7 +83,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     <>
       {/* Mobile backdrop */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-40 bg-gray-600 bg-opacity-75 transition-opacity duration-300 md:hidden ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={toggleSidebar}
@@ -92,7 +92,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 dark:border-gray-700 shadow-lg transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col`}
       >

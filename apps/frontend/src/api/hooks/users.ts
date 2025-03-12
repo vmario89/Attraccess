@@ -72,3 +72,99 @@ export function useUserDetails(userId?: number | null) {
     enabled: !!userId,
   });
 }
+
+// Get user permissions by ID
+export function useUserPermissions(userId?: number | null) {
+  return useQuery({
+    queryKey: [...usersKeys.detail(userId ?? '__UNDEFINED__'), 'permissions'],
+    queryFn: async () => {
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      const api = getApi();
+      const response = await api.users.usersControllerGetUserPermissions(
+        userId
+      );
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+}
+
+// Update user permissions
+export function useUpdateUserPermissions() {
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      permissions,
+    }: {
+      userId: number;
+      permissions: {
+        canManageResources?: boolean;
+        canManageSystemConfiguration?: boolean;
+        canManageUsers?: boolean;
+      };
+    }) => {
+      const api = getApi();
+      const response = await api.users.usersControllerUpdateUserPermissions(
+        userId,
+        permissions
+      );
+      return response.data;
+    },
+  });
+}
+
+// Get users with specific permission
+export function useUsersWithPermission(
+  permission?:
+    | 'canManageResources'
+    | 'canManageSystemConfiguration'
+    | 'canManageUsers',
+  page = 1,
+  limit = 10
+) {
+  return useQuery({
+    queryKey: [
+      ...usersKeys.list({ page, limit }),
+      'withPermission',
+      permission,
+    ],
+    queryFn: async () => {
+      const api = getApi();
+      const response = await api.users.usersControllerGetUsersWithPermission({
+        permission,
+        page,
+        limit,
+      });
+      return response.data;
+    },
+  });
+}
+
+// Bulk update user permissions
+export function useBulkUpdateUserPermissions() {
+  return useMutation({
+    mutationFn: async ({
+      updates,
+    }: {
+      updates: Array<{
+        userId: number;
+        permissions: {
+          canManageResources?: boolean;
+          canManageSystemConfiguration?: boolean;
+          canManageUsers?: boolean;
+        };
+      }>;
+    }) => {
+      const api = getApi();
+      const response = await api.users.usersControllerBulkUpdateUserPermissions(
+        {
+          updates,
+        }
+      );
+      return response.data;
+    },
+  });
+}

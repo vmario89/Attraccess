@@ -28,6 +28,13 @@ export class SystemPermissions {
     example: false,
   })
   canManageSystemConfiguration!: boolean;
+
+  @Column({ default: false })
+  @ApiProperty({
+    description: 'Whether the user can manage users',
+    example: false,
+  })
+  canManageUsers!: boolean;
 }
 
 export type SystemPermission = keyof SystemPermissions;
@@ -75,6 +82,7 @@ export class User {
     example: {
       canManageResources: true,
       canManageSystemConfiguration: false,
+      canManageUsers: false,
     },
   })
   systemPermissions!: SystemPermissions;

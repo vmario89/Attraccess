@@ -43,6 +43,11 @@ export interface SystemPermissions {
    * @example false
    */
   canManageSystemConfiguration: boolean;
+  /**
+   * Whether the user can manage users
+   * @example false
+   */
+  canManageUsers: boolean;
 }
 
 export interface User {
@@ -63,7 +68,7 @@ export interface User {
   isEmailVerified: boolean;
   /**
    * System-wide permissions for the user
-   * @example {"canManageResources":true,"canManageSystemConfiguration":false}
+   * @example {"canManageResources":true,"canManageSystemConfiguration":false,"canManageUsers":false}
    */
   systemPermissions: SystemPermissions;
   /**
@@ -99,6 +104,42 @@ export interface PaginatedUsersResponseDto {
   limit: number;
   totalPages: number;
   data: User[];
+}
+
+export interface UpdateUserPermissionsDto {
+  /**
+   * Whether the user can manage resources
+   * @example false
+   */
+  canManageResources?: boolean;
+  /**
+   * Whether the user can manage system configuration
+   * @example false
+   */
+  canManageSystemConfiguration?: boolean;
+  /**
+   * Whether the user can manage users
+   * @example false
+   */
+  canManageUsers?: boolean;
+}
+
+export interface UserPermissionsUpdateItem {
+  /**
+   * The user ID
+   * @example 1
+   */
+  userId: number;
+  /**
+   * The permission updates to apply
+   * @example {"canManageResources":true,"canManageSystemConfiguration":false,"canManageUsers":false}
+   */
+  permissions: UpdateUserPermissionsDto;
+}
+
+export interface BulkUpdateUserPermissionsDto {
+  /** Array of user permission updates */
+  updates: UserPermissionsUpdateItem[];
 }
 
 export interface CreateSessionResponse {
@@ -1121,6 +1162,27 @@ export type UsersControllerGetUserByIdData = User;
 
 export type UsersControllerGetUserByIdError = UserNotFoundException;
 
+export type UsersControllerUpdateUserPermissionsData = User;
+
+export interface UsersControllerGetUserPermissionsData {
+  canManageResources?: boolean;
+  canManageSystemConfiguration?: boolean;
+  canManageUsers?: boolean;
+}
+
+export type UsersControllerBulkUpdateUserPermissionsData = User[];
+
+export interface UsersControllerGetUsersWithPermissionParams {
+  /** Page number (1-based) */
+  page?: number;
+  /** Number of items per page */
+  limit?: number;
+  /** Filter users by permission */
+  permission?: 'canManageResources' | 'canManageSystemConfiguration' | 'canManageUsers';
+}
+
+export type UsersControllerGetUsersWithPermissionData = PaginatedUsersResponseDto;
+
 export interface AuthControllerPostSessionPayload {
   username?: string;
   password?: string;
@@ -1407,6 +1469,81 @@ export namespace Users {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = UsersControllerGetUserByIdData;
+  }
+
+  /**
+   * No description
+   * @tags users
+   * @name UsersControllerUpdateUserPermissions
+   * @summary Update a user's system permissions
+   * @request PATCH:/api/users/{id}/permissions
+   * @secure
+   */
+  export namespace UsersControllerUpdateUserPermissions {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateUserPermissionsDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsersControllerUpdateUserPermissionsData;
+  }
+
+  /**
+   * No description
+   * @tags users
+   * @name UsersControllerGetUserPermissions
+   * @summary Get a user's system permissions
+   * @request GET:/api/users/{id}/permissions
+   * @secure
+   */
+  export namespace UsersControllerGetUserPermissions {
+    export type RequestParams = {
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsersControllerGetUserPermissionsData;
+  }
+
+  /**
+   * No description
+   * @tags users
+   * @name UsersControllerBulkUpdateUserPermissions
+   * @summary Bulk update user permissions
+   * @request POST:/api/users/permissions
+   * @secure
+   */
+  export namespace UsersControllerBulkUpdateUserPermissions {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = BulkUpdateUserPermissionsDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsersControllerBulkUpdateUserPermissionsData;
+  }
+
+  /**
+   * No description
+   * @tags users
+   * @name UsersControllerGetUsersWithPermission
+   * @summary Get users with a specific permission
+   * @request GET:/api/users/with-permission
+   * @secure
+   */
+  export namespace UsersControllerGetUsersWithPermission {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Page number (1-based) */
+      page?: number;
+      /** Number of items per page */
+      limit?: number;
+      /** Filter users by permission */
+      permission?: 'canManageResources' | 'canManageSystemConfiguration' | 'canManageUsers';
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsersControllerGetUsersWithPermissionData;
   }
 }
 
@@ -2732,6 +2869,86 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<UsersControllerGetUserByIdData, UsersControllerGetUserByIdError>({
         path: `/api/users/${id}`,
         method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersControllerUpdateUserPermissions
+     * @summary Update a user's system permissions
+     * @request PATCH:/api/users/{id}/permissions
+     * @secure
+     */
+    usersControllerUpdateUserPermissions: (id: number, data: UpdateUserPermissionsDto, params: RequestParams = {}) =>
+      this.request<UsersControllerUpdateUserPermissionsData, void>({
+        path: `/api/users/${id}/permissions`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersControllerGetUserPermissions
+     * @summary Get a user's system permissions
+     * @request GET:/api/users/{id}/permissions
+     * @secure
+     */
+    usersControllerGetUserPermissions: (id: number, params: RequestParams = {}) =>
+      this.request<UsersControllerGetUserPermissionsData, void>({
+        path: `/api/users/${id}/permissions`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersControllerBulkUpdateUserPermissions
+     * @summary Bulk update user permissions
+     * @request POST:/api/users/permissions
+     * @secure
+     */
+    usersControllerBulkUpdateUserPermissions: (data: BulkUpdateUserPermissionsDto, params: RequestParams = {}) =>
+      this.request<UsersControllerBulkUpdateUserPermissionsData, void>({
+        path: `/api/users/permissions`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersControllerGetUsersWithPermission
+     * @summary Get users with a specific permission
+     * @request GET:/api/users/with-permission
+     * @secure
+     */
+    usersControllerGetUsersWithPermission: (
+      query: UsersControllerGetUsersWithPermissionParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<UsersControllerGetUsersWithPermissionData, void>({
+        path: `/api/users/with-permission`,
+        method: 'GET',
+        query: query,
         secure: true,
         format: 'json',
         ...params,
