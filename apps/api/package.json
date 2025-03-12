@@ -1,0 +1,6 @@
+{
+  "name": "@attraccess/api",
+  "dependencies": {
+    "passport-openidconnect": "^0.1.2"
+  }
+}
