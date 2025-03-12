@@ -298,8 +298,8 @@ export class RoleMapping {
   @ApiProperty({
     description: 'The system permissions to grant for this role',
     example: {
-      canManageUsers: true,
       canManageResources: true,
+      canManageSystemConfiguration: false,
     },
   })
   systemPermissions!: Record<string, boolean>;

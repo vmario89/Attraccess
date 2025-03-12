@@ -1,12 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CreateSessionResponse, CreateUserDto } from '@attraccess/api-client';
+import {
+  CreateSessionResponse,
+  CreateUserDto,
+  SystemPermissions,
+} from '@attraccess/api-client';
 import getApi from '../api';
 import { useNavigate } from 'react-router-dom';
-
-interface SystemPermissions {
-  canManageResources: boolean;
-  canManageUsers: boolean;
-}
 
 interface LoginCredentials {
   username: string;

@@ -82,9 +82,8 @@ describe('UsersService', () => {
           id: 1,
           ...data,
           systemPermissions: {
-            canManageUsers: false,
             canManageResources: false,
-            canManagePermissions: false,
+            canManageSystemConfiguration: false,
             ...(data.systemPermissions || {}),
           },
         } as User;
@@ -97,9 +96,8 @@ describe('UsersService', () => {
         username: 'test',
         email: 'test@example.com',
         systemPermissions: {
-          canManageUsers: true,
           canManageResources: true,
-          canManagePermissions: true,
+          canManageSystemConfiguration: true,
         },
       });
     });
@@ -111,9 +109,8 @@ describe('UsersService', () => {
           id: 1,
           ...data,
           systemPermissions: {
-            canManageUsers: false,
             canManageResources: false,
-            canManagePermissions: false,
+            canManageSystemConfiguration: false,
             ...(data.systemPermissions || {}),
           },
         } as User;
@@ -126,9 +123,8 @@ describe('UsersService', () => {
         username: 'test',
         email: 'test@example.com',
         systemPermissions: {
-          canManageUsers: false,
           canManageResources: false,
-          canManagePermissions: false,
+          canManageSystemConfiguration: false,
         },
       });
     });

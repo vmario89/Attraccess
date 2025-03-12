@@ -24,18 +24,13 @@ export class SystemPermissions {
 
   @Column({ default: false })
   @ApiProperty({
-    description: 'Whether the user can manage users',
+    description: 'Whether the user can manage system configuration',
     example: false,
   })
-  canManageUsers!: boolean;
-
-  @Column({ default: false })
-  @ApiProperty({
-    description: 'Whether the user can manage permissions',
-    example: false,
-  })
-  canManagePermissions!: boolean;
+  canManageSystemConfiguration!: boolean;
 }
+
+export type SystemPermission = keyof SystemPermissions;
 
 @Entity()
 export class User {
@@ -79,7 +74,7 @@ export class User {
     description: 'System-wide permissions for the user',
     example: {
       canManageResources: true,
-      canManageUsers: false,
+      canManageSystemConfiguration: false,
     },
   })
   systemPermissions!: SystemPermissions;

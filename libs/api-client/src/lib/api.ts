@@ -29,7 +29,7 @@ export interface CreateUserDto {
    * The authentication strategy to use
    * @example "local_password"
    */
-  strategy: 'local_password' | 'google' | 'github';
+  strategy: 'local_password' | 'sso';
 }
 
 export interface SystemPermissions {
@@ -39,15 +39,10 @@ export interface SystemPermissions {
    */
   canManageResources: boolean;
   /**
-   * Whether the user can manage users
+   * Whether the user can manage system configuration
    * @example false
    */
-  canManageUsers: boolean;
-  /**
-   * Whether the user can manage permissions
-   * @example false
-   */
-  canManagePermissions: boolean;
+  canManageSystemConfiguration: boolean;
 }
 
 export interface User {
@@ -68,7 +63,7 @@ export interface User {
   isEmailVerified: boolean;
   /**
    * System-wide permissions for the user
-   * @example {"canManageResources":true,"canManageUsers":false}
+   * @example {"canManageResources":true,"canManageSystemConfiguration":false}
    */
   systemPermissions: SystemPermissions;
   /**
@@ -107,8 +102,44 @@ export interface PaginatedUsersResponseDto {
 }
 
 export interface CreateSessionResponse {
+  /**
+   * The user that has been logged in
+   * @example {"id":1,"username":"testuser"}
+   */
   user: User;
+  /**
+   * The authentication token
+   * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+   */
   authToken: string;
+}
+
+export interface SSOProvider {
+  /**
+   * The unique identifier of the provider
+   * @example 1
+   */
+  id: number;
+  /**
+   * The internal name of the provider
+   * @example "Keycloak"
+   */
+  name: string;
+  /**
+   * The type of the provider
+   * @example "OIDC"
+   */
+  type: string;
+  /**
+   * When the user was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the user was last updated
+   * @format date-time
+   */
+  updatedAt: string;
 }
 
 export interface CreateResourceDto {
@@ -945,15 +976,25 @@ export type UsersControllerGetUserByIdData = User;
 export type UsersControllerGetUserByIdError = UserNotFoundException;
 
 export interface AuthControllerPostSessionPayload {
-  /** The username for authentication */
-  username: string;
-  /** The password for authentication */
-  password: string;
+  username?: string;
+  password?: string;
 }
 
 export type AuthControllerPostSessionData = CreateSessionResponse;
 
 export type AuthControllerDeleteSessionData = object;
+
+export type SsoControllerGetProvidersData = SSOProvider[];
+
+export interface SsoControllerOidcLoginParams {
+  /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
+  callbackURL?: string;
+  providerId: string;
+}
+
+export type SsoControllerOidcLoginData = any;
+
+export type SsoControllerOidcLoginCallbackData = CreateSessionResponse;
 
 export type ResourcesControllerCreateResourceData = Resource;
 
@@ -1234,6 +1275,60 @@ export namespace Authentication {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = AuthControllerDeleteSessionData;
+  }
+}
+
+export namespace Sso {
+  /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerGetProviders
+   * @summary Get all SSO providers
+   * @request GET:/api/auth/sso/providers
+   */
+  export namespace SsoControllerGetProviders {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerGetProvidersData;
+  }
+
+  /**
+   * @description Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
+   * @tags SSO
+   * @name SsoControllerOidcLogin
+   * @summary Login with OIDC
+   * @request GET:/api/auth/sso/OIDC/{providerId}/login
+   */
+  export namespace SsoControllerOidcLogin {
+    export type RequestParams = {
+      providerId: string;
+    };
+    export type RequestQuery = {
+      /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
+      callbackURL?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerOidcLoginData;
+  }
+
+  /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerOidcLoginCallback
+   * @summary Callback for OIDC login
+   * @request GET:/api/auth/sso/OIDC/{providerId}/callback
+   */
+  export namespace SsoControllerOidcLoginCallback {
+    export type RequestParams = {
+      providerId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerOidcLoginCallbackData;
   }
 }
 
@@ -2429,6 +2524,55 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/auth/session`,
         method: 'DELETE',
         secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  sso = {
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerGetProviders
+     * @summary Get all SSO providers
+     * @request GET:/api/auth/sso/providers
+     */
+    ssoControllerGetProviders: (params: RequestParams = {}) =>
+      this.request<SsoControllerGetProvidersData, any>({
+        path: `/api/auth/sso/providers`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
+     *
+     * @tags SSO
+     * @name SsoControllerOidcLogin
+     * @summary Login with OIDC
+     * @request GET:/api/auth/sso/OIDC/{providerId}/login
+     */
+    ssoControllerOidcLogin: ({ providerId, ...query }: SsoControllerOidcLoginParams, params: RequestParams = {}) =>
+      this.request<SsoControllerOidcLoginData, any>({
+        path: `/api/auth/sso/OIDC/${providerId}/login`,
+        method: 'GET',
+        query: query,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerOidcLoginCallback
+     * @summary Callback for OIDC login
+     * @request GET:/api/auth/sso/OIDC/{providerId}/callback
+     */
+    ssoControllerOidcLoginCallback: (providerId: string, params: RequestParams = {}) =>
+      this.request<SsoControllerOidcLoginCallbackData, any>({
+        path: `/api/auth/sso/OIDC/${providerId}/callback`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),

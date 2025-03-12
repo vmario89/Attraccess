@@ -18,14 +18,11 @@ import {
   MqttServerStatusDto,
   AllMqttServerStatusesDto,
 } from './dtos/mqtt-server.dto';
-import {
-  Auth,
-  SystemPermission,
-} from '../../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { MqttClientService } from '../mqtt-client.service';
 
 @ApiTags('MQTT Servers')
-@Auth(SystemPermission.canManageResources)
+@Auth('canManageResources')
 @Controller('mqtt/servers')
 export class MqttServerController {
   constructor(

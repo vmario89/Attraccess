@@ -7,7 +7,6 @@ import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { ResourceIntroductionService } from '../introduction/resourceIntroduction.service';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
-import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   ResourceUsageStartedEvent,
@@ -37,7 +36,7 @@ export class ResourceUsageService {
 
     // Skip introduction check for users with resource management permission
     const canManageResources =
-      user.systemPermissions?.[SystemPermission.canManageResources] || false;
+      user.systemPermissions?.canManageResources || false;
 
     let canStartSession = canManageResources;
 

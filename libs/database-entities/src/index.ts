@@ -10,3 +10,5 @@ export * from './lib/entities/resourceIntroductionHistoryItem.entity';
 export * from './lib/entities/mqttServer.entity';
 export * from './lib/entities/mqttResourceConfig.entity';
 export * from './lib/entities/webhookConfig.entity';
+export * from './lib/entities/ssoProvider.entity';
+export * from './lib/entities/ssoProvider.oidc';

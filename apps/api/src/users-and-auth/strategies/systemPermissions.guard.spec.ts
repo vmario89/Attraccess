@@ -1,7 +1,4 @@
-import {
-  SystemPermissionsGuard,
-  SystemPermission,
-} from './systemPermissions.guard';
+import { SystemPermissionsGuard } from './systemPermissions.guard';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
 import { User } from '@attraccess/database-entities';
@@ -42,7 +39,7 @@ describe('SystemPermissionsGuard', () => {
   it('should allow access when required permission is present', () => {
     const mockUser = {
       systemPermissions: {
-        [SystemPermission.canManageUsers]: true,
+        canManageResources: true,
       },
     } as User;
 
@@ -53,9 +50,7 @@ describe('SystemPermissionsGuard', () => {
       }),
     } as unknown as ExecutionContext;
 
-    jest
-      .spyOn(reflector, 'get')
-      .mockReturnValue([SystemPermission.canManageUsers]);
+    jest.spyOn(reflector, 'get').mockReturnValue('canManageResources');
 
     const result = guard.canActivate(mockContextWithUser);
 
@@ -65,7 +60,7 @@ describe('SystemPermissionsGuard', () => {
   it('should deny access when required permission is missing', () => {
     const mockUser = {
       systemPermissions: {
-        [SystemPermission.canManageUsers]: false,
+        canManageResources: false,
       },
     } as User;
 
@@ -76,9 +71,7 @@ describe('SystemPermissionsGuard', () => {
       }),
     } as unknown as ExecutionContext;
 
-    jest
-      .spyOn(reflector, 'get')
-      .mockReturnValue([SystemPermission.canManageUsers]);
+    jest.spyOn(reflector, 'get').mockReturnValue('canManageResources');
 
     const result = guard.canActivate(mockContextWithUser);
 
@@ -97,9 +90,7 @@ describe('SystemPermissionsGuard', () => {
       }),
     } as unknown as ExecutionContext;
 
-    jest
-      .spyOn(reflector, 'get')
-      .mockReturnValue([SystemPermission.canManageUsers]);
+    jest.spyOn(reflector, 'get').mockReturnValue('canManageResources');
 
     const result = guard.canActivate(mockContextWithUser);
 

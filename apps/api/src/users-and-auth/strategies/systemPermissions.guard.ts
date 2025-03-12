@@ -9,14 +9,9 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { User } from '@attraccess/database-entities';
+import { SystemPermission, User } from '@attraccess/database-entities';
 import { JwtGuard } from './jwt.guard';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
-
-export enum SystemPermission {
-  canManageUsers = 'canManageUsers',
-  canManageResources = 'canManageResources',
-}
 
 const NeedsSystemPermissions = Reflector.createDecorator<SystemPermission[]>();
 
@@ -59,10 +54,15 @@ export class SystemPermissionsGuard implements CanActivate {
   }
 
   private matchPermissions(
-    requiredPermissions: SystemPermission[],
+    requiredPermissions: SystemPermission | SystemPermission[],
     user: User
   ): boolean {
-    return requiredPermissions.every(
+    // Convert single permission to array if it's not already an array
+    const permissionsArray = Array.isArray(requiredPermissions)
+      ? requiredPermissions
+      : [requiredPermissions];
+
+    return permissionsArray.every(
       (permission) => user.systemPermissions[permission] === true
     );
   }

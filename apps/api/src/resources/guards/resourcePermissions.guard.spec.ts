@@ -3,7 +3,6 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ResourcePermissionsGuard } from './resourcePermissions.guard';
 import { ResourcesService } from '../resources.service';
-import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { createMock } from '@golevelup/ts-jest';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
@@ -80,7 +79,7 @@ describe('ResourcePermissionsGuard', () => {
 
     it('should allow access if user has system-wide resource management permission', async () => {
       mockRequest.user.systemPermissions = {
-        [SystemPermission.canManageResources]: true,
+        canManageResources: true,
       };
 
       const result = await guard.canActivate(mockContext);

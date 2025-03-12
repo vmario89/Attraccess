@@ -126,8 +126,7 @@ export class UsersService {
 
       const permissions: Record<permissionKeys, true> = {
         canManageResources: true,
-        canManageUsers: true,
-        canManagePermissions: true,
+        canManageSystemConfiguration: true,
       };
 
       user.systemPermissions = permissions;

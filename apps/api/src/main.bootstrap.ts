@@ -9,6 +9,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import session from 'express-session';
+import { loadEnv } from '@attraccess/env';
+
+const env = loadEnv((z) => ({
+  AUTH_SESSION_SECRET: z.string(),
+}));
 
 export async function bootstrap() {
   // Parse log levels from environment variable
@@ -25,6 +31,14 @@ export async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   app.enableCors();
+
+  app.use(
+    session({
+      secret: env.AUTH_SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
   const logger = new Logger('Bootstrap');
   logger.log(`🚀 Application is running with global prefix: ${globalPrefix}`);

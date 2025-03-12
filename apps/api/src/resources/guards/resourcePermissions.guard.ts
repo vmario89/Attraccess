@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ResourcesService } from '../resources.service';
-import { SystemPermission } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { User } from '@attraccess/database-entities';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
@@ -36,7 +35,7 @@ export class ResourcePermissionsGuard implements CanActivate {
     }
 
     // If user has system-wide resource management permission, allow access
-    if (user.systemPermissions[SystemPermission.canManageResources]) {
+    if (user.systemPermissions.canManageResources) {
       return true;
     }
 

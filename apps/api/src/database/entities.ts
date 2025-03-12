@@ -11,6 +11,8 @@ import {
   MqttServer,
   MqttResourceConfig,
   WebhookConfig,
+  SSOProvider,
+  SSOProviderOIDCConfiguration,
 } from '@attraccess/database-entities';
 
 export const entities = {
@@ -26,4 +28,6 @@ export const entities = {
   MqttServer,
   MqttResourceConfig,
   WebhookConfig,
+  SSOProvider,
+  SSOProviderOIDCConfiguration,
 };

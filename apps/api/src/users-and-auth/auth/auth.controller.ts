@@ -32,16 +32,9 @@ export class AuthController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['username', 'password'],
       properties: {
-        username: {
-          type: 'string',
-          description: 'The username for authentication',
-        },
-        password: {
-          type: 'string',
-          description: 'The password for authentication',
-        },
+        username: { type: 'string' },
+        password: { type: 'string' },
       },
     },
   })

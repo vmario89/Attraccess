@@ -14,10 +14,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import { ResourceIntroductionUser } from '@attraccess/database-entities';
-import {
-  Auth,
-  SystemPermission,
-} from '../../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { AuthenticatedRequest } from '../../types/request';
 import { UsersService } from '../../users-and-auth/users/users.service';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
@@ -131,7 +128,7 @@ export class ResourceIntroducersController {
     const user = req.user;
 
     // User has system-wide resource management permission
-    if (user.systemPermissions[SystemPermission.canManageResources]) {
+    if (user.systemPermissions.canManageResources) {
       return { canManageIntroducers: true };
     }
 

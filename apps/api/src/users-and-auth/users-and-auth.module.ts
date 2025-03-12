@@ -19,12 +19,25 @@ import {
   User,
   AuthenticationDetail,
   RevokedToken,
+  SSOProviderOIDCConfiguration,
+  SSOProvider,
 } from '@attraccess/database-entities';
 import { EmailModule } from '../email/email.module';
+import { SSOService } from './auth/sso/sso.service';
+import { SSOOIDCStrategy } from './auth/sso/oidc/oidc.strategy';
+import { ModuleRef } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import { SSOController } from './auth/sso/sso.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, AuthenticationDetail, RevokedToken]),
+    TypeOrmModule.forFeature([
+      User,
+      AuthenticationDetail,
+      RevokedToken,
+      SSOProvider,
+      SSOProviderOIDCConfiguration,
+    ]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -32,8 +45,34 @@ import { EmailModule } from '../email/email.module';
     }),
     EmailModule,
   ],
-  providers: [UsersService, AuthService, LocalStrategy, JwtStrategy],
-  controllers: [UsersController, AuthController],
+  providers: [
+    UsersService,
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    SSOService,
+    {
+      provide: SSOOIDCStrategy,
+      useFactory: (moduleRef: ModuleRef, configService: ConfigService) => {
+        // This is a placeholder - you'll need to retrieve an actual configuration
+        // from the database or environment variables
+        const config = new SSOProviderOIDCConfiguration();
+        config.issuer = 'placeholder';
+        config.authorizationURL = 'placeholder';
+        config.tokenURL = 'placeholder';
+        config.userInfoURL = 'placeholder';
+        config.clientId = 'placeholder';
+        config.clientSecret = 'placeholder';
+
+        const callbackURL =
+          configService.get<string>('FRONTEND_URL') + '/api/sso/OIDC/callback';
+
+        return new SSOOIDCStrategy(moduleRef, config, callbackURL);
+      },
+      inject: [ModuleRef, ConfigService],
+    },
+  ],
+  controllers: [UsersController, AuthController, SSOController],
   exports: [UsersService, AuthService],
 })
 export class UsersAndAuthModule {}

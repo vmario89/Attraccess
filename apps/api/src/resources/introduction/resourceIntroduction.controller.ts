@@ -14,10 +14,7 @@ import {
   ResourceIntroduction,
   ResourceIntroductionHistoryItem,
 } from '@attraccess/database-entities';
-import {
-  Auth,
-  SystemPermission,
-} from '../../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { AuthenticatedRequest } from '../../types/request';
 import { PaginatedResponseDto } from '../../types/response';
 import { GetResourceIntroductionsQueryDto } from './dtos/getResourceIntroductionsQuery.dto';
@@ -375,7 +372,7 @@ export class ResourceIntroductionController {
     const user = req.user;
 
     // User has system-wide resource management permission
-    if (user.systemPermissions[SystemPermission.canManageResources]) {
+    if (user.systemPermissions.canManageResources) {
       return { canManageIntroductions: true };
     }
 
