@@ -1,0 +1,27 @@
+AUTH_JWT_ORIGIN=ENV
+AUTH_JWT_SECRET=super-secret-key
+AUTH_SESSION_SECRET=super-secret-key
+
+# DB_TYPE=postgres
+# DB_HOST=localhost
+# DB_PORT=2345
+# DB_USERNAME=attraccess
+# DB_PASSWORD=attraccess
+# DB_DATABASE=attraccess
+
+DB_TYPE=sqlite
+# the path to the sqlite file, needs to be relative to the root of the project, absolute paths are not supported
+#DB_FILE=dev.sqlite
+
+VITE_API_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:4200
+
+SMTP_SERVICE=Outlook365
+SMTP_USER=no-reply@attraktor.org
+SMTP_PASS=DbjqNe7zsETcgMfoJso28k3VG3j4myma
+SMTP_FROM=no-reply@attraktor.org
+
+# Comma-separated list of enabled log levels: error,warn,log,debug,verbose
+LOG_LEVELS=error,warn,log,debug
+
+VITE_ESPHOME_HOST=http://localhost:6052
