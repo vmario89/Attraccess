@@ -142,6 +142,97 @@ export interface SSOProvider {
   updatedAt: string;
 }
 
+export interface CreateOIDCConfigurationDto {
+  /**
+   * The issuer of the provider
+   * @example "https://sso.example.com/auth/realms/example"
+   */
+  issuer: string;
+  /**
+   * The authorization URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/auth"
+   */
+  authorizationURL: string;
+  /**
+   * The token URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/token"
+   */
+  tokenURL: string;
+  /**
+   * The user info URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/userinfo"
+   */
+  userInfoURL: string;
+  /**
+   * The client ID of the provider
+   * @example "attraccess-client"
+   */
+  clientId: string;
+  /**
+   * The client secret of the provider
+   * @example "client-secret"
+   */
+  clientSecret: string;
+}
+
+export interface CreateSSOProviderDto {
+  /**
+   * The name of the SSO provider
+   * @example "Company Keycloak"
+   */
+  name: string;
+  /**
+   * The type of SSO provider
+   * @example "OIDC"
+   */
+  type: 'OIDC';
+  /** The OIDC configuration for the provider */
+  oidcConfiguration?: CreateOIDCConfigurationDto;
+}
+
+export interface UpdateOIDCConfigurationDto {
+  /**
+   * The issuer of the provider
+   * @example "https://sso.example.com/auth/realms/example"
+   */
+  issuer?: string;
+  /**
+   * The authorization URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/auth"
+   */
+  authorizationURL?: string;
+  /**
+   * The token URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/token"
+   */
+  tokenURL?: string;
+  /**
+   * The user info URL of the provider
+   * @example "https://sso.example.com/auth/realms/example/protocol/openid-connect/userinfo"
+   */
+  userInfoURL?: string;
+  /**
+   * The client ID of the provider
+   * @example "attraccess-client"
+   */
+  clientId?: string;
+  /**
+   * The client secret of the provider
+   * @example "client-secret"
+   */
+  clientSecret?: string;
+}
+
+export interface UpdateSSOProviderDto {
+  /**
+   * The name of the SSO provider
+   * @example "Company Keycloak"
+   */
+  name?: string;
+  /** The OIDC configuration for the provider */
+  oidcConfiguration?: UpdateOIDCConfigurationDto;
+}
+
 export interface CreateResourceDto {
   /**
    * The name of the resource
@@ -986,9 +1077,18 @@ export type AuthControllerDeleteSessionData = object;
 
 export type SsoControllerGetProvidersData = SSOProvider[];
 
+export type SsoControllerCreateProviderData = SSOProvider;
+
+export type SsoControllerGetProviderByIdData = SSOProvider;
+
+export type SsoControllerUpdateProviderData = SSOProvider;
+
+export type SsoControllerDeleteProviderData = any;
+
 export interface SsoControllerOidcLoginParams {
   /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
-  callbackURL?: string;
+  callbackURL?: any;
+  /** The ID of the SSO provider */
   providerId: string;
 }
 
@@ -1295,6 +1395,78 @@ export namespace Sso {
   }
 
   /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerCreateProvider
+   * @summary Create a new SSO provider
+   * @request POST:/api/auth/sso/providers
+   * @secure
+   */
+  export namespace SsoControllerCreateProvider {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateSSOProviderDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerCreateProviderData;
+  }
+
+  /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerGetProviderById
+   * @summary Get SSO provider by ID
+   * @request GET:/api/auth/sso/providers/{id}
+   */
+  export namespace SsoControllerGetProviderById {
+    export type RequestParams = {
+      /** The ID of the SSO provider */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerGetProviderByIdData;
+  }
+
+  /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerUpdateProvider
+   * @summary Update an existing SSO provider
+   * @request PUT:/api/auth/sso/providers/{id}
+   * @secure
+   */
+  export namespace SsoControllerUpdateProvider {
+    export type RequestParams = {
+      /** The ID of the SSO provider */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateSSOProviderDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerUpdateProviderData;
+  }
+
+  /**
+   * No description
+   * @tags SSO
+   * @name SsoControllerDeleteProvider
+   * @summary Delete an SSO provider
+   * @request DELETE:/api/auth/sso/providers/{id}
+   * @secure
+   */
+  export namespace SsoControllerDeleteProvider {
+    export type RequestParams = {
+      /** The ID of the SSO provider */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SsoControllerDeleteProviderData;
+  }
+
+  /**
    * @description Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
    * @tags SSO
    * @name SsoControllerOidcLogin
@@ -1303,11 +1475,12 @@ export namespace Sso {
    */
   export namespace SsoControllerOidcLogin {
     export type RequestParams = {
+      /** The ID of the SSO provider */
       providerId: string;
     };
     export type RequestQuery = {
       /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
-      callbackURL?: string;
+      callbackURL?: any;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -1323,6 +1496,7 @@ export namespace Sso {
    */
   export namespace SsoControllerOidcLoginCallback {
     export type RequestParams = {
+      /** The ID of the SSO provider */
       providerId: string;
     };
     export type RequestQuery = {};
@@ -2542,6 +2716,79 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/auth/sso/providers`,
         method: 'GET',
         format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerCreateProvider
+     * @summary Create a new SSO provider
+     * @request POST:/api/auth/sso/providers
+     * @secure
+     */
+    ssoControllerCreateProvider: (data: CreateSSOProviderDto, params: RequestParams = {}) =>
+      this.request<SsoControllerCreateProviderData, void>({
+        path: `/api/auth/sso/providers`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerGetProviderById
+     * @summary Get SSO provider by ID
+     * @request GET:/api/auth/sso/providers/{id}
+     */
+    ssoControllerGetProviderById: (id: string, params: RequestParams = {}) =>
+      this.request<SsoControllerGetProviderByIdData, void>({
+        path: `/api/auth/sso/providers/${id}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerUpdateProvider
+     * @summary Update an existing SSO provider
+     * @request PUT:/api/auth/sso/providers/{id}
+     * @secure
+     */
+    ssoControllerUpdateProvider: (id: string, data: UpdateSSOProviderDto, params: RequestParams = {}) =>
+      this.request<SsoControllerUpdateProviderData, void>({
+        path: `/api/auth/sso/providers/${id}`,
+        method: 'PUT',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags SSO
+     * @name SsoControllerDeleteProvider
+     * @summary Delete an SSO provider
+     * @request DELETE:/api/auth/sso/providers/{id}
+     * @secure
+     */
+    ssoControllerDeleteProvider: (id: string, params: RequestParams = {}) =>
+      this.request<SsoControllerDeleteProviderData, void>({
+        path: `/api/auth/sso/providers/${id}`,
+        method: 'DELETE',
+        secure: true,
         ...params,
       }),
 

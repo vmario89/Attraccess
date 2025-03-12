@@ -33,6 +33,9 @@
 {"type":"entity","name":"OIDC Auth Flow","entityType":"Process","observations":["Uses SSOOIDCGuard for authentication","Requires exact URL matching between registered callback and runtime callback","Sensitive to query parameters in callback URLs","Uses passport-openidconnect library under the hood"]}
 {"type":"entity","name":"SystemPermissionsGuard","entityType":"Class","observations":["Class that implements CanActivate in NestJS to check system permissions","Had a bug where requiredPermissions.every was not a function when a single permission string was passed instead of an array","Fixed by updating the matchPermissions method to handle both array and string input","The matchPermissions method now converts single permission to array using Array.isArray() check"]}
 {"type":"entity","name":"Permission Handling","entityType":"Concept","observations":["When a function expects to use array methods on a parameter, normalize the input to ensure it's always an array","Use Array.isArray() to check if a value is already an array before trying to use array methods","The pattern of converting a single value to an array with [value] is common when handling flexible inputs"]}
+{"type":"entity","name":"Auth Decorator","entityType":"CodePattern","observations":["Located in apps/api/src/users-and-auth/strategies/systemPermissions.guard.ts","Uses the NeedsSystemPermissions decorator to specify required permissions","Combines UseGuards(JwtGuard, SystemPermissionsGuard) with Swagger decorators for documentation","Accepts SystemPermission type parameters which are keys of the SystemPermissions class"]}
+{"type":"entity","name":"SSOController","entityType":"Controller","observations":["Handles SSO provider management endpoints","Now uses @Auth('canManageSystemConfiguration') decorator for permission checks","Previously used manual permission checks with if statements and ForbiddenException","Contains endpoints for CRUD operations on SSO providers"]}
+{"type":"entity","name":"SystemPermission","entityType":"Type","observations":["Defined as keyof SystemPermissions","Includes canManageSystemConfiguration which is relevant for SSO management","Used by Auth decorator to specify required permissions"]}
 {"type":"relation","from":"Attraccess API","to":"Swagger Documentation","relationType":"includes"}
 {"type":"relation","from":"Session Notes Feature","to":"Attraccess API","relationType":"extends"}
 {"type":"relation","from":"IntroductionHistoryDialog Component","to":"HistoryItem Component","relationType":"contains"}
@@ -84,3 +87,5 @@
 {"type":"relation","from":"Docker Compose Development Environment","to":"Keycloak Container","relationType":"contains"}
 {"type":"relation","from":"OIDC Auth Flow","to":"SSOOIDCGuard","relationType":"implements authentication via"}
 {"type":"relation","from":"SystemPermissionsGuard","to":"Permission Handling","relationType":"implements"}
+{"type":"relation","from":"SSOController","to":"Auth Decorator","relationType":"uses"}
+{"type":"relation","from":"Auth Decorator","to":"SystemPermission","relationType":"requires"}

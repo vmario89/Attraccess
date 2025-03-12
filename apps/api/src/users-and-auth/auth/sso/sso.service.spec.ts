@@ -1,12 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SSOService } from './sso.service';
-import { SSOProvider } from '@attraccess/database-entities';
+import {
+  SSOProvider,
+  SSOProviderOIDCConfiguration,
+  SSOProviderType,
+} from '@attraccess/database-entities';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 const SSOProviderRepository = getRepositoryToken(SSOProvider);
+const SSOProviderOIDCConfigurationRepository = getRepositoryToken(
+  SSOProviderOIDCConfiguration
+);
 
 describe('SsoService', () => {
   let service: SSOService;
+  let ssoProviderRepository: Repository<SSOProvider>;
+  let oidcConfigRepository: Repository<SSOProviderOIDCConfiguration>;
+
+  const mockOIDCConfig = {
+    id: 1,
+    ssoProviderId: 1,
+    issuer: 'https://test-issuer.com',
+    authorizationURL: 'https://test-issuer.com/auth',
+    tokenURL: 'https://test-issuer.com/token',
+    userInfoURL: 'https://test-issuer.com/userinfo',
+    clientId: 'test-client-id',
+    clientSecret: 'test-client-secret',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ssoProvider: null,
+  } as SSOProviderOIDCConfiguration;
+
+  const mockSSOProvider = {
+    id: 1,
+    name: 'Test Provider',
+    type: SSOProviderType.OIDC,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    oidcConfiguration: mockOIDCConfig,
+  } as SSOProvider;
+
+  mockOIDCConfig.ssoProvider = mockSSOProvider;
+
+  const mockSSOProviderWithOIDCConfig = { ...mockSSOProvider };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,15 +52,212 @@ describe('SsoService', () => {
         SSOService,
         {
           provide: SSOProviderRepository,
-          useValue: {},
+          useValue: {
+            find: jest.fn().mockResolvedValue([mockSSOProvider]),
+            findOne: jest.fn().mockResolvedValue(mockSSOProviderWithOIDCConfig),
+            create: jest.fn().mockReturnValue(mockSSOProvider),
+            save: jest.fn().mockResolvedValue(mockSSOProvider),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+          },
+        },
+        {
+          provide: SSOProviderOIDCConfigurationRepository,
+          useValue: {
+            create: jest.fn().mockReturnValue(mockOIDCConfig),
+            save: jest.fn().mockResolvedValue(mockOIDCConfig),
+            findOne: jest.fn().mockResolvedValue(mockOIDCConfig),
+            delete: jest.fn().mockResolvedValue({ affected: 1 }),
+          },
         },
       ],
     }).compile();
 
     service = module.get<SSOService>(SSOService);
+    ssoProviderRepository = module.get<Repository<SSOProvider>>(
+      SSOProviderRepository
+    );
+    oidcConfigRepository = module.get<Repository<SSOProviderOIDCConfiguration>>(
+      SSOProviderOIDCConfigurationRepository
+    );
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getAllProviders', () => {
+    it('should return an array of SSO providers', async () => {
+      const result = await service.getAllProviders();
+      expect(result).toEqual([mockSSOProvider]);
+      expect(ssoProviderRepository.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('getProviderByTypeAndId', () => {
+    it('should return a single SSO provider with OIDC configuration', async () => {
+      const result = await service.getProviderByTypeAndId(
+        SSOProviderType.OIDC,
+        1
+      );
+      expect(result).toEqual(mockSSOProviderWithOIDCConfig);
+      expect(ssoProviderRepository.findOne).toHaveBeenCalledWith({
+        where: { type: SSOProviderType.OIDC, id: 1 },
+        relations: ['oidcConfiguration'],
+      });
+    });
+  });
+
+  describe('getProviderById', () => {
+    it('should return a single SSO provider by ID', async () => {
+      const result = await service.getProviderById(1);
+      expect(result).toEqual(mockSSOProviderWithOIDCConfig);
+      expect(ssoProviderRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
+
+    it('should throw NotFoundException if provider not found', async () => {
+      jest.spyOn(ssoProviderRepository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.getProviderById(999)).rejects.toThrow(
+        NotFoundException
+      );
+    });
+  });
+
+  describe('createProvider', () => {
+    it('should create a new OIDC provider with configuration', async () => {
+      const createProviderDto = {
+        name: 'New Provider',
+        type: SSOProviderType.OIDC,
+        oidcConfiguration: {
+          issuer: 'https://new-issuer.com',
+          authorizationURL: 'https://new-issuer.com/auth',
+          tokenURL: 'https://new-issuer.com/token',
+          userInfoURL: 'https://new-issuer.com/userinfo',
+          clientId: 'new-client-id',
+          clientSecret: 'new-client-secret',
+        },
+      };
+
+      jest
+        .spyOn(service, 'createOIDCConfiguration')
+        .mockResolvedValueOnce(mockOIDCConfig);
+
+      const result = await service.createProvider(createProviderDto);
+
+      expect(ssoProviderRepository.create).toHaveBeenCalledWith({
+        name: createProviderDto.name,
+        type: createProviderDto.type,
+      });
+      expect(ssoProviderRepository.save).toHaveBeenCalled();
+      expect(result).toEqual(mockSSOProviderWithOIDCConfig);
+    });
+  });
+
+  describe('updateProvider', () => {
+    it('should update an existing provider', async () => {
+      const updateDto = { name: 'Updated Provider' };
+      const updatedProvider = {
+        ...mockSSOProvider,
+        name: 'Updated Provider',
+      };
+
+      jest
+        .spyOn(ssoProviderRepository, 'save')
+        .mockResolvedValueOnce(updatedProvider);
+
+      const result = await service.updateProvider(1, updateDto);
+
+      expect(ssoProviderRepository.save).toHaveBeenCalled();
+      expect(result).toEqual(mockSSOProviderWithOIDCConfig);
+    });
+
+    it('should update OIDC configuration if provided', async () => {
+      const updateDto = {
+        name: 'Updated Provider',
+        oidcConfiguration: {
+          clientId: 'updated-client-id',
+          clientSecret: 'updated-client-secret',
+        },
+      };
+
+      const updatedConfig = {
+        ...mockOIDCConfig,
+        clientId: 'updated-client-id',
+        clientSecret: 'updated-client-secret',
+      } as SSOProviderOIDCConfiguration;
+
+      jest
+        .spyOn(oidcConfigRepository, 'save')
+        .mockResolvedValueOnce(updatedConfig);
+
+      await service.updateProvider(1, updateDto);
+
+      expect(oidcConfigRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteProvider', () => {
+    it('should delete a provider', async () => {
+      await service.deleteProvider(1);
+
+      expect(ssoProviderRepository.delete).toHaveBeenCalledWith(1);
+    });
+
+    it('should throw NotFoundException if provider not found', async () => {
+      jest.spyOn(ssoProviderRepository, 'findOne').mockResolvedValueOnce(null);
+
+      await expect(service.deleteProvider(999)).rejects.toThrow(
+        NotFoundException
+      );
+    });
+  });
+
+  // Tests for OIDC configuration
+  describe('createOIDCConfiguration', () => {
+    it('should create OIDC configuration for a provider', async () => {
+      const oidcConfig = {
+        issuer: 'https://test-issuer.com',
+        authorizationURL: 'https://test-issuer.com/auth',
+        tokenURL: 'https://test-issuer.com/token',
+        userInfoURL: 'https://test-issuer.com/userinfo',
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+      };
+
+      const result = await service.createOIDCConfiguration(1, oidcConfig);
+
+      expect(oidcConfigRepository.create).toHaveBeenCalledWith({
+        ...oidcConfig,
+        ssoProviderId: 1,
+      });
+      expect(oidcConfigRepository.save).toHaveBeenCalled();
+      expect(result).toEqual(mockOIDCConfig);
+    });
+  });
+
+  describe('updateOIDCConfiguration', () => {
+    it('should update OIDC configuration', async () => {
+      const updateConfig = {
+        clientId: 'updated-client-id',
+        clientSecret: 'updated-client-secret',
+      };
+
+      const updatedConfig = {
+        ...mockOIDCConfig,
+        ...updateConfig,
+      } as SSOProviderOIDCConfiguration;
+
+      jest
+        .spyOn(oidcConfigRepository, 'save')
+        .mockResolvedValueOnce(updatedConfig);
+
+      await service.updateOIDCConfiguration(mockOIDCConfig, updateConfig);
+
+      expect(oidcConfigRepository.save).toHaveBeenCalledWith({
+        ...mockOIDCConfig,
+        ...updateConfig,
+      });
+    });
   });
 });

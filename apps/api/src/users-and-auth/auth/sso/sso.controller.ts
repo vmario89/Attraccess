@@ -1,9 +1,12 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
-  Query,
+  Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -14,8 +17,19 @@ import { AuthenticatedRequest } from '../../../types/request';
 import { CreateSessionResponse } from '../auth.types';
 import { AuthService } from '../auth.service';
 import { SSOService } from './sso.service';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
+import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
+import { Auth } from '../../../users-and-auth/strategies/systemPermissions.guard';
 
+@ApiTags('SSO')
 @Controller('auth/sso')
 export class SSOController {
   constructor(
@@ -33,6 +47,98 @@ export class SSOController {
   })
   async getProviders(): Promise<SSOProvider[]> {
     return this.ssoService.getAllProviders();
+  }
+
+  @Get('providers/:id')
+  @ApiOperation({ summary: 'Get SSO provider by ID' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the SSO provider',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The SSO provider',
+    type: SSOProvider,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Provider not found',
+  })
+  async getProviderById(@Param('id') id: string): Promise<SSOProvider> {
+    return this.ssoService.getProviderById(parseInt(id, 10));
+  }
+
+  @Post('providers')
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Create a new SSO provider' })
+  @ApiBody({ type: CreateSSOProviderDto })
+  @ApiResponse({
+    status: 201,
+    description: 'The SSO provider has been created',
+    type: SSOProvider,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  async createProvider(
+    @Body() createDto: CreateSSOProviderDto
+  ): Promise<SSOProvider> {
+    return this.ssoService.createProvider(createDto);
+  }
+
+  @Put('providers/:id')
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Update an existing SSO provider' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the SSO provider',
+  })
+  @ApiBody({ type: UpdateSSOProviderDto })
+  @ApiResponse({
+    status: 200,
+    description: 'The SSO provider has been updated',
+    type: SSOProvider,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Provider not found',
+  })
+  async updateProvider(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateSSOProviderDto
+  ): Promise<SSOProvider> {
+    return this.ssoService.updateProvider(parseInt(id, 10), updateDto);
+  }
+
+  @Delete('providers/:id')
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Delete an SSO provider' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the SSO provider',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The SSO provider has been deleted',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Provider not found',
+  })
+  async deleteProvider(@Param('id') id: string): Promise<void> {
+    return this.ssoService.deleteProvider(parseInt(id, 10));
   }
 
   @Get(`/${SSOProviderType.OIDC}/:providerId/login`)
@@ -55,13 +161,13 @@ export class SSOController {
       ' your frontend should pass the query parameters back to the sso callback endpoint' +
       ' to retreive a JWT token for furhter authentication',
   })
+  @ApiParam({
+    name: 'providerId',
+    type: 'string',
+    description: 'The ID of the SSO provider',
+  })
   @UseGuards(SSOOIDCGuard, AuthGuard('sso-oidc'))
-  async oidcLogin(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('providerId') providerId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Query('callbackURL') callbackURL?: string
-  ): Promise<HttpStatus.OK> {
+  async oidcLogin(): Promise<HttpStatus.OK> {
     return HttpStatus.OK;
   }
 
@@ -72,11 +178,14 @@ export class SSOController {
     description: 'The user has been logged in',
     type: CreateSessionResponse,
   })
+  @ApiParam({
+    name: 'providerId',
+    type: 'string',
+    description: 'The ID of the SSO provider',
+  })
   @UseGuards(SSOOIDCGuard, AuthGuard('sso-oidc'))
   async oidcLoginCallback(
-    @Req() request: AuthenticatedRequest,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('providerId') providerId: string
+    @Req() request: AuthenticatedRequest
   ): Promise<CreateSessionResponse> {
     const authToken = await this.authService.createJWT(request.user);
 
