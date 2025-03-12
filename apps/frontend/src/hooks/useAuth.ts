@@ -99,6 +99,26 @@ export function useAuth() {
     },
   });
 
+  const jwtTokenLogin = useMutation({
+    mutationFn: async (auth: CreateSessionResponse) => {
+      // TODO: determine this somehow
+      const persist = true;
+
+      // Store the auth data in the appropriate storage
+      if (persist) {
+        localStorage.setItem('auth', JSON.stringify(auth));
+      } else {
+        sessionStorage.setItem('auth', JSON.stringify(auth));
+      }
+
+      return auth;
+    },
+    onSuccess: (data) => {
+      // Update the auth query data
+      queryClient.setQueryData(AUTH_QUERY_KEY, data);
+    },
+  });
+
   const signup = useMutation({
     mutationFn: async ({
       username,
@@ -146,6 +166,7 @@ export function useAuth() {
     error,
     isAuthenticated: !!session?.user,
     login,
+    jwtTokenLogin,
     signup,
     logout,
     hasPermission: (permission: keyof SystemPermissions) => {

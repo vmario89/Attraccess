@@ -5,6 +5,7 @@ import { UnauthorizedLayout } from './layout';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/unauthorized.en';
 import * as de from './translations/unauthorized.de';
+import { SSOLogin } from './ssoLogin';
 
 export const Unauthorized = memo(function UnauthorizedComponent() {
   const { t } = useTranslations('unauthorized', {
@@ -27,6 +28,7 @@ export const Unauthorized = memo(function UnauthorizedComponent() {
       {formToShow === 'register' && (
         <RegistrationForm onHasAccount={() => setFormToShow('login')} />
       )}
+      <SSOLogin />
     </UnauthorizedLayout>
   );
 });

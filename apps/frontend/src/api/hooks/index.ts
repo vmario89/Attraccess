@@ -5,6 +5,7 @@ export { usersKeys } from './users';
 export { resourceUsageKeys } from './resourceUsage';
 export { resourceIntroductionKeys } from './resourceIntroduction';
 export { webhookConfigKeys } from './webhookConfig';
+export { ssoProviderKeys } from './ssoProviders';
 
 // Export all hooks
 export * from './resources';
@@ -12,3 +13,4 @@ export * from './users';
 export * from './resourceUsage';
 export * from './resourceIntroduction';
 export * from './webhookConfig';
+export * from './ssoProviders';

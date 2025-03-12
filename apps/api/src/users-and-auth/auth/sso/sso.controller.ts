@@ -3,12 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Query,
   HttpStatus,
   Param,
   Post,
   Put,
   Req,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { SSOOIDCGuard } from './oidc/oidc.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -28,6 +30,7 @@ import {
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
 import { Auth } from '../../../users-and-auth/strategies/systemPermissions.guard';
+import { Response } from 'express';
 
 @ApiTags('SSO')
 @Controller('auth/sso')
@@ -154,7 +157,7 @@ export class SSOController {
     description: 'The user has been logged in',
   })
   @ApiQuery({
-    name: 'callbackURL',
+    name: 'redirectTo',
     required: false,
     description:
       'The URL to redirect to after login (optional), if you intend to redirect to your frontned,' +
@@ -183,15 +186,40 @@ export class SSOController {
     type: 'string',
     description: 'The ID of the SSO provider',
   })
+  @ApiQuery({
+    name: 'state',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'session-state',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'iss',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'code',
+    required: true,
+  })
   @UseGuards(SSOOIDCGuard, AuthGuard('sso-oidc'))
   async oidcLoginCallback(
-    @Req() request: AuthenticatedRequest
-  ): Promise<CreateSessionResponse> {
+    @Req() request: AuthenticatedRequest,
+    @Query('redirectTo') redirectTo: string,
+    @Res() response: Response
+  ): Promise<CreateSessionResponse | void> {
     const authToken = await this.authService.createJWT(request.user);
-
-    return {
+    const auth: CreateSessionResponse = {
       user: request.user,
       authToken,
     };
+
+    if (redirectTo) {
+      const urlWithAuth = new URL(redirectTo);
+      urlWithAuth.searchParams.set('auth', JSON.stringify(auth));
+      return response.redirect(urlWithAuth.toString());
+    }
+
+    return auth;
   }
 }

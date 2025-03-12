@@ -69,7 +69,7 @@ export class User {
   @Exclude()
   emailVerificationTokenExpiresAt!: Date | null;
 
-  @Column(() => SystemPermissions)
+  @Column(() => SystemPermissions, { prefix: '' })
   @ApiProperty({
     description: 'System-wide permissions for the user',
     example: {

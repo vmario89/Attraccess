@@ -6,12 +6,8 @@
   "projectType": "application",
   "tags": [],
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["api-client:build"]
-    },
-    "serve": {
-      "dependsOn": ["api-client:build"]
-    },
+    "build": {},
+    "serve": {},
     "lint": {
       "dependsOn": ["frontend:typecheck"]
     }

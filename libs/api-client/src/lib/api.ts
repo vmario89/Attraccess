@@ -1087,12 +1087,22 @@ export type SsoControllerDeleteProviderData = any;
 
 export interface SsoControllerOidcLoginParams {
   /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
-  callbackURL?: any;
+  redirectTo?: any;
   /** The ID of the SSO provider */
   providerId: string;
 }
 
 export type SsoControllerOidcLoginData = any;
+
+export interface SsoControllerOidcLoginCallbackParams {
+  redirectTo: string;
+  code: any;
+  iss: any;
+  'session-state': any;
+  state: any;
+  /** The ID of the SSO provider */
+  providerId: string;
+}
 
 export type SsoControllerOidcLoginCallbackData = CreateSessionResponse;
 
@@ -1480,7 +1490,7 @@ export namespace Sso {
     };
     export type RequestQuery = {
       /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
-      callbackURL?: any;
+      redirectTo?: any;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -1499,7 +1509,13 @@ export namespace Sso {
       /** The ID of the SSO provider */
       providerId: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      redirectTo: string;
+      code: any;
+      iss: any;
+      'session-state': any;
+      state: any;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = SsoControllerOidcLoginCallbackData;
@@ -2816,10 +2832,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Callback for OIDC login
      * @request GET:/api/auth/sso/OIDC/{providerId}/callback
      */
-    ssoControllerOidcLoginCallback: (providerId: string, params: RequestParams = {}) =>
+    ssoControllerOidcLoginCallback: (
+      { providerId, ...query }: SsoControllerOidcLoginCallbackParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SsoControllerOidcLoginCallbackData, any>({
         path: `/api/auth/sso/OIDC/${providerId}/callback`,
         method: 'GET',
+        query: query,
         format: 'json',
         ...params,
       }),

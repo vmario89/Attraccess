@@ -36,6 +36,10 @@
 {"type":"entity","name":"Auth Decorator","entityType":"CodePattern","observations":["Located in apps/api/src/users-and-auth/strategies/systemPermissions.guard.ts","Uses the NeedsSystemPermissions decorator to specify required permissions","Combines UseGuards(JwtGuard, SystemPermissionsGuard) with Swagger decorators for documentation","Accepts SystemPermission type parameters which are keys of the SystemPermissions class"]}
 {"type":"entity","name":"SSOController","entityType":"Controller","observations":["Handles SSO provider management endpoints","Now uses @Auth('canManageSystemConfiguration') decorator for permission checks","Previously used manual permission checks with if statements and ForbiddenException","Contains endpoints for CRUD operations on SSO providers"]}
 {"type":"entity","name":"SystemPermission","entityType":"Type","observations":["Defined as keyof SystemPermissions","Includes canManageSystemConfiguration which is relevant for SSO management","Used by Auth decorator to specify required permissions"]}
+{"type":"entity","name":"SSOProviderHooks","entityType":"React Query Hooks","observations":["Implemented hooks for CRUD operations on SSO providers","Created useSSOproviders hook for fetching all providers","Created useSSOprovider hook for fetching a single provider by ID","Created useCreateSSOprovider for creating new providers","Created useUpdateSSOprovider for updating existing providers","Created useDeleteSSOprovider for deleting providers","Used queryClient.invalidateQueries to refresh data after mutations"]}
+{"type":"entity","name":"SSOProviderList","entityType":"React Component","observations":["Created component to display and manage SSO providers","Implements complete CRUD functionality using React Query hooks","Contains form for creating and editing providers with OIDC configuration","Handles loading and error states","Shows a list of existing providers with edit and delete options","Includes proper TypeScript interfaces for form state and API types"]}
+{"type":"entity","name":"SSOProvidersPage","entityType":"React Page Component","observations":["Page component for the SSO providers route","Contains a header and the SSOProviderList component","Serves as the main container for the SSO providers management interface"]}
+{"type":"entity","name":"SSO Provider Route","entityType":"React Router Route","observations":["Path: /sso/providers","Requires canManageSystemConfiguration permission","Has a sidebar entry with a key icon","Shows up in navigation menu only for users with appropriate permissions"]}
 {"type":"relation","from":"Attraccess API","to":"Swagger Documentation","relationType":"includes"}
 {"type":"relation","from":"Session Notes Feature","to":"Attraccess API","relationType":"extends"}
 {"type":"relation","from":"IntroductionHistoryDialog Component","to":"HistoryItem Component","relationType":"contains"}
@@ -89,3 +93,8 @@
 {"type":"relation","from":"SystemPermissionsGuard","to":"Permission Handling","relationType":"implements"}
 {"type":"relation","from":"SSOController","to":"Auth Decorator","relationType":"uses"}
 {"type":"relation","from":"Auth Decorator","to":"SystemPermission","relationType":"requires"}
+{"type":"relation","from":"SSOProviderHooks","relationType":"supports","to":"SSOProviderList"}
+{"type":"relation","from":"SSOProviderHooks","relationType":"uses","to":"@tanstack/react-query"}
+{"type":"relation","from":"SSOProvidersPage","relationType":"uses","to":"SSOProviderList"}
+{"type":"relation","from":"SSO Provider Route","relationType":"renders","to":"SSOProvidersPage"}
+{"type":"relation","from":"SSOProviderList","relationType":"uses","to":"SSOProviderHooks"}

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -33,12 +34,12 @@ export class SSOOIDCGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
 
     this.logger.debug(`Request URL: ${req.url}`);
-    const url = new URL(env.VITE_API_URL + req.url);
+    const requestURL = new URL(env.VITE_API_URL + req.url);
 
     // e.g. something/sso/oidc/156/login
-    const urlPathParts = url.pathname.split('/');
+    const urlPathParts = requestURL.pathname.split('/');
     this.logger.debug(`URL path parts: ${JSON.stringify(urlPathParts)}`);
-    const [, providerIdString, ssoType] = urlPathParts.reverse();
+    const [routeAction, providerIdString, ssoType] = urlPathParts.reverse();
     const providerId = parseInt(providerIdString);
     this.logger.debug(
       `Extracted providerId: ${providerId}, ssoType: ${ssoType}, from URL: ${req.url}`
@@ -48,19 +49,6 @@ export class SSOOIDCGuard implements CanActivate {
       this.logger.error(`Invalid SSO provider ID: ${providerIdString}`);
       throw new InvalidSSOProviderIdException();
     }
-
-    this.logger.debug(`URL: ${url}`);
-    this.logger.debug(`search params: ${url.searchParams}`);
-    let callbackURL: string;
-    if (url.searchParams.has('callbackURL')) {
-      callbackURL = url.searchParams.get('callbackURL');
-      this.logger.debug(`Callback URL from query params: ${callbackURL}`);
-    } else {
-      const baseUrl = url.origin + url.pathname;
-      const callbackPath = baseUrl.replace('/login', '/callback');
-      callbackURL = `http://localhost:3000${callbackPath}`;
-    }
-    this.logger.debug(`Generated callback URL: ${callbackURL}`);
 
     if (ssoType !== SSOProviderType.OIDC) {
       this.logger.error(
@@ -93,11 +81,23 @@ export class SSOOIDCGuard implements CanActivate {
       throw new SSOProviderNotFoundException();
     }
 
+    if (!requestURL.searchParams.has('redirectTo')) {
+      throw new BadRequestException('No redirectTo found in query params');
+    }
+
+    const redirectTo = requestURL.searchParams.get('redirectTo');
+
+    const callbackURL = new URL(env.VITE_API_URL);
+    callbackURL.pathname = `/api/auth/sso/${ssoType}/${providerId}/callback`;
+    callbackURL.searchParams.set('redirectTo', redirectTo);
+
+    this.logger.debug(`Callback URL from query params: ${callbackURL}`);
+
     this.logger.debug(
-      `Initializing SSOOIDCStrategy with provider id: ${providerId}`
+      `Initializing SSOOIDCStrategy for ${routeAction} with provider id: ${providerId} and callbackURL: ${callbackURL}`
     );
-    new SSOOIDCStrategy(this.moduleRef, oidcConfig, callbackURL);
-    this.logger.log('OIDC Guard activation successful');
+    new SSOOIDCStrategy(this.moduleRef, oidcConfig, callbackURL.toString());
+    this.logger.log(`OIDC Guard activation for ${routeAction} successful`);
     return true;
   }
 }
