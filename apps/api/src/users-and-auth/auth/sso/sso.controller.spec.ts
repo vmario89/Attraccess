@@ -40,7 +40,7 @@ describe('SsoController', () => {
           useValue: {
             getAllProviders: jest.fn().mockResolvedValue([mockSSOProvider]),
             getProviderById: jest.fn().mockResolvedValue(mockSSOProvider),
-            getProviderByTypeAndId: jest
+            getProviderByTypeAndIdWithConfiguration: jest
               .fn()
               .mockResolvedValue(mockSSOProvider),
             createProvider: jest.fn().mockResolvedValue(mockSSOProvider),

@@ -95,7 +95,7 @@ describe('SsoService', () => {
 
   describe('getProviderByTypeAndId', () => {
     it('should return a single SSO provider with OIDC configuration', async () => {
-      const result = await service.getProviderByTypeAndId(
+      const result = await service.getProviderByTypeAndIdWithConfiguration(
         SSOProviderType.OIDC,
         1
       );

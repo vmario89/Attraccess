@@ -35,7 +35,7 @@ export class SSOService {
     return provider;
   }
 
-  public getProviderByTypeAndId(
+  public getProviderByTypeAndIdWithConfiguration(
     ssoType: SSOProviderType,
     providerId: number
   ): Promise<SSOProvider> {
@@ -71,7 +71,10 @@ export class SSOService {
       );
     }
 
-    return this.getProviderByTypeAndId(savedProvider.type, savedProvider.id);
+    return this.getProviderByTypeAndIdWithConfiguration(
+      savedProvider.type,
+      savedProvider.id
+    );
   }
 
   public async updateProvider(
@@ -97,7 +100,10 @@ export class SSOService {
 
     await this.ssoProviderRepository.save(provider);
 
-    return this.getProviderByTypeAndId(provider.type, provider.id);
+    return this.getProviderByTypeAndIdWithConfiguration(
+      provider.type,
+      provider.id
+    );
   }
 
   public async deleteProvider(id: number): Promise<void> {

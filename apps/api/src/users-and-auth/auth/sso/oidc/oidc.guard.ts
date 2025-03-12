@@ -60,10 +60,11 @@ export class SSOOIDCGuard implements CanActivate {
     this.logger.debug(
       `Fetching provider with type: ${ssoType} and id: ${providerId}`
     );
-    const provider = await this.ssoService.getProviderByTypeAndId(
-      ssoType,
-      providerId
-    );
+    const provider =
+      await this.ssoService.getProviderByTypeAndIdWithConfiguration(
+        ssoType,
+        providerId
+      );
 
     if (!provider) {
       this.logger.error(

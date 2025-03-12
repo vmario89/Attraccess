@@ -55,5 +55,9 @@ export class SSOProvider {
     () => SSOProviderOIDCConfiguration,
     (oidcConfiguration) => oidcConfiguration.ssoProvider
   )
+  @ApiProperty({
+    description: 'The OIDC configuration of the provider',
+    type: SSOProviderOIDCConfiguration,
+  })
   oidcConfiguration!: SSOProviderOIDCConfiguration;
 }

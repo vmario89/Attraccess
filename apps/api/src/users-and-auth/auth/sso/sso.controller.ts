@@ -53,7 +53,8 @@ export class SSOController {
   }
 
   @Get('providers/:id')
-  @ApiOperation({ summary: 'Get SSO provider by ID' })
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Get SSO provider by ID with full configuration' })
   @ApiParam({
     name: 'id',
     type: 'string',
@@ -61,15 +62,24 @@ export class SSOController {
   })
   @ApiResponse({
     status: 200,
-    description: 'The SSO provider',
+    description: 'The SSO provider with full configuration',
     type: SSOProvider,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
   })
   @ApiResponse({
     status: 404,
     description: 'Provider not found',
   })
   async getProviderById(@Param('id') id: string): Promise<SSOProvider> {
-    return this.ssoService.getProviderById(parseInt(id, 10));
+    const providerId = parseInt(id, 10);
+    const provider = await this.ssoService.getProviderById(providerId);
+    return this.ssoService.getProviderByTypeAndIdWithConfiguration(
+      provider.type,
+      providerId
+    );
   }
 
   @Post('providers')

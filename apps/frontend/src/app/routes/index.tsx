@@ -2,9 +2,10 @@ import { Navigate, PathRouteProps } from 'react-router-dom';
 import { ResourceList } from '../resources/list';
 import { ResourceDetails } from '../resources/resourceDetails';
 import { IoTSettings } from '../resources/iotSettings';
-import { Database, ServerIcon } from 'lucide-react';
+import { Database, ServerIcon, Key } from 'lucide-react';
 import React from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
+import { SSOProvidersPage } from '../sso/SSOProvidersPage';
 import { SystemPermissions } from '@attraccess/api-client';
 export * as de from './translations/de';
 export * as en from './translations/en';
@@ -54,5 +55,15 @@ export const routes: RouteConfig[] = [
       order: 2,
     },
     authRequired: 'canManageResources',
+  },
+  {
+    path: '/sso/providers',
+    element: <SSOProvidersPage />,
+    sidebar: {
+      translationKey: 'ssoProviders',
+      icon: <Key className="h-5 w-5 mr-3" />,
+      order: 3,
+    },
+    authRequired: 'canManageSystemConfiguration',
   },
 ];

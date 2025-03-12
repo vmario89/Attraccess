@@ -114,6 +114,59 @@ export interface CreateSessionResponse {
   authToken: string;
 }
 
+export interface SSOProviderOIDCConfiguration {
+  /**
+   * The unique identifier of the provider
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the SSO provider
+   * @example 1
+   */
+  ssoProviderId: number;
+  /**
+   * The issuer of the provider
+   * @example "https://sso.csh.rit.edu/auth/realms/csh"
+   */
+  issuer: string;
+  /**
+   * The authorization URL of the provider
+   * @example "https://sso.csh.rit.edu/auth/realms/csh/protocol/openid-connect/auth"
+   */
+  authorizationURL: string;
+  /**
+   * The token URL of the provider
+   * @example "https://sso.csh.rit.edu/auth/realms/csh/protocol/openid-connect/token"
+   */
+  tokenURL: string;
+  /**
+   * The user info URL of the provider
+   * @example "https://sso.csh.rit.edu/auth/realms/csh/protocol/openid-connect/userinfo"
+   */
+  userInfoURL: string;
+  /**
+   * The client ID of the provider
+   * @example "1234567890"
+   */
+  clientId: string;
+  /**
+   * The client secret of the provider
+   * @example "1234567890"
+   */
+  clientSecret: string;
+  /**
+   * When the user was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the user was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
 export interface SSOProvider {
   /**
    * The unique identifier of the provider
@@ -140,6 +193,8 @@ export interface SSOProvider {
    * @format date-time
    */
   updatedAt: string;
+  /** The OIDC configuration of the provider */
+  oidcConfiguration: SSOProviderOIDCConfiguration;
 }
 
 export interface CreateOIDCConfigurationDto {
@@ -1424,8 +1479,9 @@ export namespace Sso {
    * No description
    * @tags SSO
    * @name SsoControllerGetProviderById
-   * @summary Get SSO provider by ID
+   * @summary Get SSO provider by ID with full configuration
    * @request GET:/api/auth/sso/providers/{id}
+   * @secure
    */
   export namespace SsoControllerGetProviderById {
     export type RequestParams = {
@@ -2760,13 +2816,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags SSO
      * @name SsoControllerGetProviderById
-     * @summary Get SSO provider by ID
+     * @summary Get SSO provider by ID with full configuration
      * @request GET:/api/auth/sso/providers/{id}
+     * @secure
      */
     ssoControllerGetProviderById: (id: string, params: RequestParams = {}) =>
       this.request<SsoControllerGetProviderByIdData, void>({
         path: `/api/auth/sso/providers/${id}`,
         method: 'GET',
+        secure: true,
         format: 'json',
         ...params,
       }),
