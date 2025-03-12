@@ -50,14 +50,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm nx run-many --target=lint,typecheck,test,e2e
-
-      - name: Build Api
-        run: pnpm nx build api --skipNxCache
-
-      - name: Build Frontend
-        run: pnpm nx build frontend --skipNxCache
+      - name: Run everything
+        run: pnpm nx run-many --target=lint,typecheck,test,e2e,build
 
       # Upload build artifacts to be used in Docker build
       - name: Upload build artifacts
