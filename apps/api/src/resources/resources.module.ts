@@ -23,6 +23,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MqttModule } from '../mqtt/mqtt.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
 import { ResourcesCoreModule } from './resources-core.module';
+import { SSEModule } from './sse/sse.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ResourcesCoreModule } from './resources-core.module';
     ConfigModule,
     MqttModule,
     ResourcesCoreModule,
+    SSEModule,
     forwardRef(() => WebhooksModule),
   ],
   controllers: [

@@ -11,6 +11,29 @@ A comprehensive resource management system for tracking and managing access to s
   - Maintenance scheduling
   - Usage tracking and reporting
 
+## ESPHome Integration
+
+Attraccess provides [ESPHome components](https://github.com/jappyjan/Attraccess-esphome-components) for easily integrating IoT devices with your access control system:
+
+- Real-time resource status monitoring via Server-Sent Events (SSE)
+- No polling required - uses persistent connections for efficient updates
+- Automatic reconnection if connection is lost
+- Compatible with ESP8266/ESP32 devices
+- Enables automation based on resource status (availability, usage, etc.)
+- Provides both sensors and binary sensors for monitoring
+
+To integrate your IoT devices with Attraccess, add this to your ESPHome configuration:
+
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/jappyjan/Attraccess-esphome-components.git
+    components: [attraccess_resource]
+```
+
+See the [Attraccess ESPHome Components repository](https://github.com/jappyjan/Attraccess-esphome-components) for detailed documentation and examples.
+
 ## Image Support
 
 Resources can have associated images to help users identify them. The system supports:
@@ -138,4 +161,5 @@ And join the Nx community:
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)
 - [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
 # This is a test comment
