@@ -1350,6 +1350,8 @@ export type MqttServerControllerGetServerStatusData = MqttServerStatusDto;
 
 export type MqttServerControllerGetAllServerStatusesData = AllMqttServerStatusesDto;
 
+export type SseControllerStreamEventsData = any;
+
 export type WebhookConfigControllerFindAllData = WebhookConfigResponseDto[];
 
 export type WebhookConfigControllerCreateData = WebhookConfigResponseDto;
@@ -2378,6 +2380,24 @@ export namespace MqttServers {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = MqttServerControllerGetAllServerStatusesData;
+  }
+}
+
+export namespace Sse {
+  /**
+   * No description
+   * @tags SSE
+   * @name SseControllerStreamEvents
+   * @request GET:/api/resources/{resourceId}/events
+   */
+  export namespace SseControllerStreamEvents {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SseControllerStreamEventsData;
   }
 }
 
@@ -3789,6 +3809,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'GET',
         secure: true,
         format: 'json',
+        ...params,
+      }),
+  };
+  sse = {
+    /**
+     * No description
+     *
+     * @tags SSE
+     * @name SseControllerStreamEvents
+     * @request GET:/api/resources/{resourceId}/events
+     */
+    sseControllerStreamEvents: (resourceId: number, params: RequestParams = {}) =>
+      this.request<SseControllerStreamEventsData, any>({
+        path: `/api/resources/${resourceId}/events`,
+        method: 'GET',
         ...params,
       }),
   };
