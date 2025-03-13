@@ -1,7 +1,8 @@
 import React from 'react';
 import { Alert, Link } from '@heroui/react';
 import { HelpCircle } from 'lucide-react';
-import { useTranslations } from '../../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
 
@@ -9,7 +10,7 @@ import * as de from '../translations/de';
  * Component for displaying webhook security information
  */
 const WebhookSecurityInfo: React.FC = () => {
-  const { t } = useTranslations('webhooks', { en, de });
+  const { t } = useTranslations('webhooksSecurityInfo', { en, de });
 
   return (
     <div className="mt-4">

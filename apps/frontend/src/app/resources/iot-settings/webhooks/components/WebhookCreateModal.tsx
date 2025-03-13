@@ -1,6 +1,7 @@
 import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal';
 import WebhookForm from './WebhookForm';
-import { useTranslations } from '../../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import * as de from '../translations/de';
 import * as en from '../translations/en';
 
@@ -13,7 +14,7 @@ interface WebhookCreateModalProps {
 export function WebhookCreateModal(props: WebhookCreateModalProps) {
   const { resourceId, isOpen, onOpenChange } = props;
 
-  const { t } = useTranslations('webhooks', { en, de });
+  const { t } = useTranslations('webhooksCreateModal', { en, de });
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

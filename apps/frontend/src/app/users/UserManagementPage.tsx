@@ -12,7 +12,7 @@ import { Card } from '@heroui/react';
 import { Users, Loader } from 'lucide-react';
 
 export const UserManagementPage: React.FC = () => {
-  const { t } = useTranslations('userManagement', { en, de });
+  const { t } = useTranslations('userManagementPage', { en, de });
   const { hasPermission } = useAuth();
   const canManageUsers = hasPermission('canManageUsers');
 

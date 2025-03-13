@@ -5,7 +5,8 @@ import {
   CardBody,
   Button,
 } from '@heroui/react';
-import { useTranslations } from '../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import WebhookList from './components/WebhookList';
@@ -21,7 +22,7 @@ export function WebhookConfigurationPanel(
   props: WebhookConfigurationPanelProps
 ) {
   const { resourceId } = props;
-  const { t } = useTranslations('webhooks', { en, de });
+  const { t } = useTranslations('webhooksConfigurationPanel', { en, de });
 
   const [isOpen, setIsOpen] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -44,8 +45,8 @@ export function WebhookConfigurationPanel(
           key="webhooks"
           aria-label="Webhook Configuration"
           title={
-            <div className="flex justify-between items-center w-full pr-4">
-              <span className="text-lg font-semibold">{t('title')}</span>
+            <div className="flex justify-between items-center w-full px-4">
+              <span>{t('title')}</span>
 
               {isOpen && (
                 <Button

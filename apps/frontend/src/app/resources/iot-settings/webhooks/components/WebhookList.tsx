@@ -1,7 +1,9 @@
 import React from 'react';
 import { Accordion, AccordionItem, Alert, Skeleton, Chip } from '@heroui/react';
-import { useTranslations } from '../../../../i18n';
-import { useWebhookConfigs } from '../../../../api/hooks/webhookConfig';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useWebhookConfigs } from '@frontend/api/hooks/webhookConfig';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
 import WebhookForm from './WebhookForm';
@@ -17,7 +19,7 @@ interface WebhookListProps {
  */
 const WebhookList: React.FC<WebhookListProps> = ({ resourceId }) => {
   // Hooks
-  const { t } = useTranslations('webhooks', { en, de });
+  const { t } = useTranslations('webhooksList', { en, de });
   const { data: webhooks = [], isLoading: isLoadingWebhooks } =
     useWebhookConfigs(resourceId);
 

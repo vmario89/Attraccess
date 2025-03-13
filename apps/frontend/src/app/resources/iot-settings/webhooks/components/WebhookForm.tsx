@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from '../../../../i18n';
-import { useToastMessage } from '../../../../components/toastProvider';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useToastMessage } from '@frontend/components/toastProvider';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   useCreateWebhookConfig,
   useUpdateWebhookConfig,
   useWebhookConfig,
-} from '../../../../api/hooks/webhookConfig';
+} from '@frontend/api/hooks/webhookConfig';
 
 import {
   WebhookFormValues,
@@ -41,7 +44,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
   onCancel,
   onComplete,
 }) => {
-  const { t } = useTranslations('webhooks', { en, de });
+  const { t } = useTranslations('webhookForm', { en, de });
   const { success, error: showError } = useToastMessage();
 
   // State

@@ -1,7 +1,7 @@
 import { Navigate, PathRouteProps } from 'react-router-dom';
 import { ResourceList } from '../resources/list';
 import { ResourceDetails } from '../resources/resourceDetails';
-import { IoTSettings } from '../resources/iotSettings';
+import { IoTSettings } from '../resources/iot-settings/iotSettings';
 import { Database, ServerIcon, Key, Users } from 'lucide-react';
 import React from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';

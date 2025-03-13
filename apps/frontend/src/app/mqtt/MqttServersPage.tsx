@@ -12,7 +12,7 @@ import * as serverListDe from './servers/translations/de';
 export const MqttServersPage: React.FC = () => {
   const { hasPermission } = useAuth();
   const canManageMqtt = hasPermission('canManageResources');
-  const { t } = useTranslations('mqttServersList', {
+  const { t } = useTranslations('mqttServersPage', {
     en: serverListEn,
     de: serverListDe,
   });

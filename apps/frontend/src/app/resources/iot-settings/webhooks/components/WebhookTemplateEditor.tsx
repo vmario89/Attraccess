@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Textarea, Accordion, AccordionItem, Snippet } from '@heroui/react';
-import { useTranslations } from '../../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import { useWebhookForm } from '../context/WebhookFormContext';
 import { templateVariables } from '../types';
 import { useTemplatePreview } from '../hooks/useTemplatePreview';

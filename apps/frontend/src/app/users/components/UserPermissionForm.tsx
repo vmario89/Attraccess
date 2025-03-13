@@ -18,7 +18,7 @@ interface UserPermissionFormProps {
 export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
   user,
 }) => {
-  const { t } = useTranslations('userManagement', { en, de });
+  const { t } = useTranslations('userPermissionForm', { en, de });
   const { showToast } = useToastMessage();
 
   const { data: userPermissions, isLoading } = useUserPermissions(user.id);

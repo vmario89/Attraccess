@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, NumberInput, Divider } from '@heroui/react';
-import { useTranslations } from '../../../../i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only

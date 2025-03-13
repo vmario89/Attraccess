@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useResource } from '../../api/hooks/resources';
-import { useAuth } from '../../hooks/useAuth';
+import { useResource } from '../../../api/hooks/resources';
+import { useAuth } from '../../../hooks/useAuth';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Spinner } from '@heroui/react';
-import { PageHeader } from '../../components/pageHeader';
+import { PageHeader } from '../../../components/pageHeader';
 import { MqttConfigurationPanel } from './mqtt/MqttConfigurationPanel';
 import { WebhookConfigurationPanel } from './webhooks/WebhookConfigurationPanel';
+import { ESPHomeConfigurationPanel } from './esphome/ESPHomeConfigurationPanel';
 
 export function IoTSettings() {
   const { id } = useParams<{ id: string }>();
@@ -64,6 +65,7 @@ export function IoTSettings() {
       />
 
       <div className="space-y-8">
+        <ESPHomeConfigurationPanel resourceId={resourceId} />
         <MqttConfigurationPanel resourceId={resourceId} />
         <WebhookConfigurationPanel resourceId={resourceId} />
       </div>

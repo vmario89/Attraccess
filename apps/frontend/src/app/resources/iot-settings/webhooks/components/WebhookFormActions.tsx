@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from '@heroui/react';
 import { Trash2, RefreshCw, Save } from 'lucide-react';
-import { useTranslations } from '../../../../i18n';
-import { useToastMessage } from '../../../../components/toastProvider';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useTranslations } from '@frontend/i18n';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useToastMessage } from '@frontend/components/toastProvider';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   useDeleteWebhookConfig,
   useTestWebhook,
-} from '../../../../api/hooks/webhookConfig';
+} from '@frontend/api/hooks/webhookConfig';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only

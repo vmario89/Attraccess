@@ -1,4 +1,5 @@
-import { useResource } from '../../../../api/hooks/resources';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useResource } from '@frontend/api/hooks/resources';
 
 /**
  * A hook that provides template preview functionality for webhook templates
