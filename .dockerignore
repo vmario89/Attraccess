@@ -50,3 +50,5 @@ docs
 
 # Keep necessary files
 !.npmrc
+
+*.sqlite
