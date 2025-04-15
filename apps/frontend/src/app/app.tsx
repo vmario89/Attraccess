@@ -9,7 +9,7 @@ import { routes as allRoutes, RouteConfig } from './routes';
 import { VerifyEmail } from './verifyEmail';
 import { ToastProvider } from '../components/toastProvider';
 import { HeroUIProvider } from '@heroui/react';
-import { SystemPermissions } from '@attraccess/api-client';
+import { SystemPermissions } from '@attraccess/react-query-client';
 
 function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();

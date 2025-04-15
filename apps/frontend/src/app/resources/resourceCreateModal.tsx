@@ -1,7 +1,4 @@
-import { CreateResourceDto } from '@attraccess/api-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useCreateResource } from '@frontend/api/hooks';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
 import {
@@ -21,6 +18,7 @@ import { FileUpload } from '@frontend/components/fileUpload';
 import { useTranslations } from '@frontend/i18n';
 import * as en from './translations/resourceCreateModal.en';
 import * as de from './translations/resourceCreateModal.de';
+import { useResourcesServiceCreateOneResource, CreateResourceDto } from '@attraccess/react-query-client';
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -43,7 +41,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const modalCloseFn = useRef<(() => void) | null>(null);
 
-  const createResource = useCreateResource();
+  const createResource = useResourcesServiceCreateOneResource();
 
   useEffect(() => {
     if (createResource.isSuccess && isSubmitting) {
@@ -91,11 +89,12 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
     async (closeFn: () => void) => {
       modalCloseFn.current = closeFn;
       setIsSubmitting(true);
-      createResource.mutateAsync({
+
+      createResource.mutateAsync({formData: {
         name: formData.name,
         description: formData.description,
-        image: selectedImage || undefined,
-      });
+        image: selectedImage ?? undefined,
+      }});
     },
     [createResource, formData, selectedImage, setIsSubmitting]
   );

@@ -1133,14 +1133,14 @@ export interface WebhookTestResponseDto {
   message: string;
 }
 
-export interface AppControllerGetPingData {
+export interface Ping2Data {
   /** @example "pong" */
   message?: string;
 }
 
-export type UsersControllerCreateUserData = User;
+export type CreateOneUserData = User;
 
-export interface UsersControllerGetUsersParams {
+export interface GetAllUsersParams {
   /** Page number (1-based) */
   page?: number;
   /** Number of items per page */
@@ -1149,30 +1149,30 @@ export interface UsersControllerGetUsersParams {
   search?: string;
 }
 
-export type UsersControllerGetUsersData = PaginatedUsersResponseDto;
+export type GetAllUsersData = PaginatedUsersResponseDto;
 
-export interface UsersControllerVerifyEmailData {
+export interface VerifyEmailData {
   /** @example "Email verified successfully" */
   message?: string;
 }
 
-export type UsersControllerGetMeData = User;
+export type GetCurrentData = User;
 
-export type UsersControllerGetUserByIdData = User;
+export type GetOneUserByIdData = User;
 
-export type UsersControllerGetUserByIdError = UserNotFoundException;
+export type GetOneUserByIdError = UserNotFoundException;
 
-export type UsersControllerUpdateUserPermissionsData = User;
+export type UpdatePermissionsData = User;
 
-export interface UsersControllerGetUserPermissionsData {
+export interface GetPermissionsData {
   canManageResources?: boolean;
   canManageSystemConfiguration?: boolean;
   canManageUsers?: boolean;
 }
 
-export type UsersControllerBulkUpdateUserPermissionsData = User[];
+export type BulkUpdatePermissionsData = User[];
 
-export interface UsersControllerGetUsersWithPermissionParams {
+export interface GetAllWithPermissionParams {
   /** Page number (1-based) */
   page?: number;
   /** Number of items per page */
@@ -1181,37 +1181,37 @@ export interface UsersControllerGetUsersWithPermissionParams {
   permission?: 'canManageResources' | 'canManageSystemConfiguration' | 'canManageUsers';
 }
 
-export type UsersControllerGetUsersWithPermissionData = PaginatedUsersResponseDto;
+export type GetAllWithPermissionData = PaginatedUsersResponseDto;
 
-export interface AuthControllerPostSessionPayload {
+export interface CreateSessionPayload {
   username?: string;
   password?: string;
 }
 
-export type AuthControllerPostSessionData = CreateSessionResponse;
+export type CreateSessionData = CreateSessionResponse;
 
-export type AuthControllerDeleteSessionData = object;
+export type EndSessionData = object;
 
-export type SsoControllerGetProvidersData = SSOProvider[];
+export type GetAllSsoProvidersData = SSOProvider[];
 
-export type SsoControllerCreateProviderData = SSOProvider;
+export type CreateOneSsoProviderData = SSOProvider;
 
-export type SsoControllerGetProviderByIdData = SSOProvider;
+export type GetOneSsoProviderByIdData = SSOProvider;
 
-export type SsoControllerUpdateProviderData = SSOProvider;
+export type UpdateOneSsoProviderData = SSOProvider;
 
-export type SsoControllerDeleteProviderData = any;
+export type DeleteOneSsoProviderData = any;
 
-export interface SsoControllerOidcLoginParams {
+export interface LoginWithOidcParams {
   /** The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication */
   redirectTo?: any;
   /** The ID of the SSO provider */
   providerId: string;
 }
 
-export type SsoControllerOidcLoginData = any;
+export type LoginWithOidcData = any;
 
-export interface SsoControllerOidcLoginCallbackParams {
+export interface OidcLoginCallbackParams {
   redirectTo: string;
   code: any;
   iss: any;
@@ -1221,11 +1221,11 @@ export interface SsoControllerOidcLoginCallbackParams {
   providerId: string;
 }
 
-export type SsoControllerOidcLoginCallbackData = CreateSessionResponse;
+export type OidcLoginCallbackData = CreateSessionResponse;
 
-export type ResourcesControllerCreateResourceData = Resource;
+export type CreateOneResourceData = Resource;
 
-export interface ResourcesControllerGetResourcesParams {
+export interface GetAllResourcesParams {
   /**
    * Page number (1-based)
    * @min 1
@@ -1242,19 +1242,19 @@ export interface ResourcesControllerGetResourcesParams {
   search?: string;
 }
 
-export type ResourcesControllerGetResourcesData = PaginatedResourceResponseDto;
+export type GetAllResourcesData = PaginatedResourceResponseDto;
 
-export type ResourcesControllerGetResourceByIdData = Resource;
+export type GetOneResourceByIdData = Resource;
 
-export type ResourcesControllerUpdateResourceData = Resource;
+export type UpdateOneResourceData = Resource;
 
-export type ResourcesControllerDeleteResourceData = any;
+export type DeleteOneResourceData = any;
 
-export type ResourceUsageControllerStartSessionData = ResourceUsage;
+export type StartSessionData = ResourceUsage;
 
-export type ResourceUsageControllerEndSessionData = ResourceUsage;
+export type EndSessionResult = ResourceUsage;
 
-export interface ResourceUsageControllerGetResourceHistoryParams {
+export interface GetHistoryOfResourceUsageParams {
   /**
    * The page number to retrieve
    * @example 1
@@ -1273,13 +1273,13 @@ export interface ResourceUsageControllerGetResourceHistoryParams {
   resourceId: number;
 }
 
-export type ResourceUsageControllerGetResourceHistoryData = GetResourceHistoryResponseDto;
+export type GetHistoryOfResourceUsageData = GetResourceHistoryResponseDto;
 
-export type ResourceUsageControllerGetActiveSessionData = ResourceUsage;
+export type GetActiveSessionData = ResourceUsage;
 
-export type ResourceIntroductionControllerCompleteIntroductionData = ResourceIntroduction;
+export type MarkCompletedData = ResourceIntroduction;
 
-export interface ResourceIntroductionControllerGetResourceIntroductionsParams {
+export interface GetAllResourceIntroductionsParams {
   /**
    * Page number (1-based)
    * @min 1
@@ -1296,92 +1296,92 @@ export interface ResourceIntroductionControllerGetResourceIntroductionsParams {
   resourceId: number;
 }
 
-export type ResourceIntroductionControllerGetResourceIntroductionsData = PaginatedResourceIntroductionResponseDto;
+export type GetAllResourceIntroductionsData = PaginatedResourceIntroductionResponseDto;
 
-export interface ResourceIntroductionControllerCheckIntroductionStatusData {
+export interface CheckStatusData {
   hasValidIntroduction?: boolean;
 }
 
-export type ResourceIntroductionControllerRevokeIntroductionData = ResourceIntroductionHistoryItem;
+export type MarkRevokedData = ResourceIntroductionHistoryItem;
 
-export type ResourceIntroductionControllerUnrevokeIntroductionData = ResourceIntroductionHistoryItem;
+export type MarkUnrevokedData = ResourceIntroductionHistoryItem;
 
-export type ResourceIntroductionControllerGetIntroductionHistoryData = ResourceIntroductionHistoryItem[];
+export type GetHistoryOfIntroductionData = ResourceIntroductionHistoryItem[];
 
-export interface ResourceIntroductionControllerCheckIntroductionRevokedStatusData {
+export interface CheckIsRevokedStatusData {
   isRevoked?: boolean;
 }
 
-export type ResourceIntroductionControllerGetResourceIntroductionData = ResourceIntroduction;
+export type GetOneResourceIntroductionData = ResourceIntroduction;
 
-export interface ResourceIntroductionControllerCanManageIntroductionsData {
+export interface CheckCanManagePermissionData {
   canManageIntroductions?: boolean;
 }
 
-export type ResourceIntroducersControllerGetResourceIntroducersData = ResourceIntroductionUser[];
+export type GetAllResourceIntroducersData = ResourceIntroductionUser[];
 
-export type ResourceIntroducersControllerAddIntroducerData = ResourceIntroductionUser;
+export type AddOneData = ResourceIntroductionUser;
 
-export type ResourceIntroducersControllerRemoveIntroducerData = any;
+export type RemoveOneData = any;
 
-export type ResourceIntroducersControllerCanManageIntroducersData = CanManageIntroducersResponseDto;
+export type CheckCanManagePermissionResult = CanManageIntroducersResponseDto;
 
-export type MqttResourceConfigControllerGetMqttConfigData = MqttResourceConfig;
+export type GetOneMqttConfigurationData = MqttResourceConfig;
 
-export type MqttResourceConfigControllerCreateOrUpdateMqttConfigData = MqttResourceConfig;
+export type UpsertOneData = MqttResourceConfig;
 
-export type MqttResourceConfigControllerDeleteMqttConfigData = any;
+export type DeleteOneMqttConfigurationData = any;
 
-export type MqttResourceConfigControllerTestMqttConfigData = TestMqttConfigResponseDto;
+export type TestOneData = TestMqttConfigResponseDto;
 
-export type MqttServerControllerGetMqttServersData = MqttServer[];
+export type GetAllMqttServersData = MqttServer[];
 
-export type MqttServerControllerCreateMqttServerData = MqttServer;
+export type CreateOneMqttServerData = MqttServer;
 
-export type MqttServerControllerGetMqttServerByIdData = MqttServer;
+export type GetOneMqttServerByIdData = MqttServer;
 
-export type MqttServerControllerUpdateMqttServerData = MqttServer;
+export type UpdateOneMqttServerData = MqttServer;
 
-export type MqttServerControllerDeleteMqttServerData = any;
+export type DeleteOneMqttServerData = any;
 
-export type MqttServerControllerTestMqttServerConnectionData = TestConnectionResponseDto;
+export type TestConnectionData = TestConnectionResponseDto;
 
-export type MqttServerControllerGetServerStatusData = MqttServerStatusDto;
+export type GetStatusOfOneData = MqttServerStatusDto;
 
-export type MqttServerControllerGetAllServerStatusesData = AllMqttServerStatusesDto;
+export type GetStatusOfAllData = AllMqttServerStatusesDto;
 
 export type SseControllerStreamEventsData = any;
 
-export type WebhookConfigControllerFindAllData = WebhookConfigResponseDto[];
+export type GetAllWebhookConfigurationsData = WebhookConfigResponseDto[];
 
-export type WebhookConfigControllerCreateData = WebhookConfigResponseDto;
+export type CreateOneWebhookConfigurationData = WebhookConfigResponseDto;
 
-export type WebhookConfigControllerFindByIdData = WebhookConfigResponseDto;
+export type GetOneWebhookConfigurationByIdData = WebhookConfigResponseDto;
 
-export type WebhookConfigControllerUpdateData = WebhookConfigResponseDto;
+export type UpdateOneWebhookConfigurationData = WebhookConfigResponseDto;
 
-export type WebhookConfigControllerDeleteData = any;
+export type DeleteOneWebhookConfigurationData = any;
 
-export type WebhookConfigControllerUpdateStatusData = WebhookConfigResponseDto;
+export type UpdateStatusData = WebhookConfigResponseDto;
 
-export type WebhookConfigControllerTestWebhookData = WebhookTestResponseDto;
+export type TestData = WebhookTestResponseDto;
 
-export type WebhookConfigControllerRegenerateSecretData = WebhookConfigResponseDto;
+export type RegenerateSecretData = WebhookConfigResponseDto;
 
 export namespace Application {
   /**
    * No description
    * @tags Application
-   * @name AppControllerGetPing
+   * @name Ping2
    * @summary Check API availability
    * @request GET:/api/ping
    */
-  export namespace AppControllerGetPing {
+  export namespace Ping2 {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = AppControllerGetPingData;
+    export type ResponseBody = Ping2Data;
   }
 }
 
@@ -1389,27 +1389,27 @@ export namespace Users {
   /**
    * No description
    * @tags users
-   * @name UsersControllerCreateUser
+   * @name CreateOneUser
    * @summary Create a new user
    * @request POST:/api/users
    */
-  export namespace UsersControllerCreateUser {
+  export namespace CreateOneUser {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = CreateUserDto;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerCreateUserData;
+    export type ResponseBody = CreateOneUserData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerGetUsers
+   * @name GetAllUsers
    * @summary Get a paginated list of users
    * @request GET:/api/users
    * @secure
    */
-  export namespace UsersControllerGetUsers {
+  export namespace GetAllUsers {
     export type RequestParams = {};
     export type RequestQuery = {
       /** Page number (1-based) */
@@ -1421,119 +1421,119 @@ export namespace Users {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerGetUsersData;
+    export type ResponseBody = GetAllUsersData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerVerifyEmail
+   * @name VerifyEmail
    * @summary Verify a user email address
    * @request POST:/api/users/verify-email
    */
-  export namespace UsersControllerVerifyEmail {
+  export namespace VerifyEmail {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = VerifyEmailDto;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerVerifyEmailData;
+    export type ResponseBody = VerifyEmailData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerGetMe
+   * @name GetCurrent
    * @summary Get the current authenticated user
    * @request GET:/api/users/me
    * @secure
    */
-  export namespace UsersControllerGetMe {
+  export namespace GetCurrent {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerGetMeData;
+    export type ResponseBody = GetCurrentData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerGetUserById
+   * @name GetOneUserById
    * @summary Get a user by ID
    * @request GET:/api/users/{id}
    * @secure
    */
-  export namespace UsersControllerGetUserById {
+  export namespace GetOneUserById {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerGetUserByIdData;
+    export type ResponseBody = GetOneUserByIdData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerUpdateUserPermissions
+   * @name UpdatePermissions
    * @summary Update a user's system permissions
    * @request PATCH:/api/users/{id}/permissions
    * @secure
    */
-  export namespace UsersControllerUpdateUserPermissions {
+  export namespace UpdatePermissions {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = UpdateUserPermissionsDto;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerUpdateUserPermissionsData;
+    export type ResponseBody = UpdatePermissionsData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerGetUserPermissions
+   * @name GetPermissions
    * @summary Get a user's system permissions
    * @request GET:/api/users/{id}/permissions
    * @secure
    */
-  export namespace UsersControllerGetUserPermissions {
+  export namespace GetPermissions {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerGetUserPermissionsData;
+    export type ResponseBody = GetPermissionsData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerBulkUpdateUserPermissions
+   * @name BulkUpdatePermissions
    * @summary Bulk update user permissions
    * @request POST:/api/users/permissions
    * @secure
    */
-  export namespace UsersControllerBulkUpdateUserPermissions {
+  export namespace BulkUpdatePermissions {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = BulkUpdateUserPermissionsDto;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerBulkUpdateUserPermissionsData;
+    export type ResponseBody = BulkUpdatePermissionsData;
   }
 
   /**
    * No description
    * @tags users
-   * @name UsersControllerGetUsersWithPermission
+   * @name GetAllWithPermission
    * @summary Get users with a specific permission
    * @request GET:/api/users/with-permission
    * @secure
    */
-  export namespace UsersControllerGetUsersWithPermission {
+  export namespace GetAllWithPermission {
     export type RequestParams = {};
     export type RequestQuery = {
       /** Page number (1-based) */
@@ -1545,7 +1545,7 @@ export namespace Users {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = UsersControllerGetUsersWithPermissionData;
+    export type ResponseBody = GetAllWithPermissionData;
   }
 }
 
@@ -1553,32 +1553,32 @@ export namespace Authentication {
   /**
    * No description
    * @tags Authentication
-   * @name AuthControllerPostSession
+   * @name CreateSession
    * @summary Create a new session using local authentication
    * @request POST:/api/auth/session/local
    */
-  export namespace AuthControllerPostSession {
+  export namespace CreateSession {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = AuthControllerPostSessionPayload;
+    export type RequestBody = CreateSessionPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = AuthControllerPostSessionData;
+    export type ResponseBody = CreateSessionData;
   }
 
   /**
    * No description
    * @tags Authentication
-   * @name AuthControllerDeleteSession
+   * @name EndSession
    * @summary Logout and invalidate the current session
    * @request DELETE:/api/auth/session
    * @secure
    */
-  export namespace AuthControllerDeleteSession {
+  export namespace EndSession {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = AuthControllerDeleteSessionData;
+    export type ResponseBody = EndSessionData;
   }
 }
 
@@ -1586,99 +1586,99 @@ export namespace Sso {
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerGetProviders
+   * @name GetAllSsoProviders
    * @summary Get all SSO providers
    * @request GET:/api/auth/sso/providers
    */
-  export namespace SsoControllerGetProviders {
+  export namespace GetAllSsoProviders {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerGetProvidersData;
+    export type ResponseBody = GetAllSsoProvidersData;
   }
 
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerCreateProvider
+   * @name CreateOneSsoProvider
    * @summary Create a new SSO provider
    * @request POST:/api/auth/sso/providers
    * @secure
    */
-  export namespace SsoControllerCreateProvider {
+  export namespace CreateOneSsoProvider {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = CreateSSOProviderDto;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerCreateProviderData;
+    export type ResponseBody = CreateOneSsoProviderData;
   }
 
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerGetProviderById
+   * @name GetOneSsoProviderById
    * @summary Get SSO provider by ID with full configuration
    * @request GET:/api/auth/sso/providers/{id}
    * @secure
    */
-  export namespace SsoControllerGetProviderById {
+  export namespace GetOneSsoProviderById {
     export type RequestParams = {
       /** The ID of the SSO provider */
-      id: string;
+      id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerGetProviderByIdData;
+    export type ResponseBody = GetOneSsoProviderByIdData;
   }
 
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerUpdateProvider
+   * @name UpdateOneSsoProvider
    * @summary Update an existing SSO provider
    * @request PUT:/api/auth/sso/providers/{id}
    * @secure
    */
-  export namespace SsoControllerUpdateProvider {
+  export namespace UpdateOneSsoProvider {
     export type RequestParams = {
       /** The ID of the SSO provider */
-      id: string;
+      id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = UpdateSSOProviderDto;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerUpdateProviderData;
+    export type ResponseBody = UpdateOneSsoProviderData;
   }
 
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerDeleteProvider
+   * @name DeleteOneSsoProvider
    * @summary Delete an SSO provider
    * @request DELETE:/api/auth/sso/providers/{id}
    * @secure
    */
-  export namespace SsoControllerDeleteProvider {
+  export namespace DeleteOneSsoProvider {
     export type RequestParams = {
       /** The ID of the SSO provider */
-      id: string;
+      id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerDeleteProviderData;
+    export type ResponseBody = DeleteOneSsoProviderData;
   }
 
   /**
    * @description Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
    * @tags SSO
-   * @name SsoControllerOidcLogin
+   * @name LoginWithOidc
    * @summary Login with OIDC
    * @request GET:/api/auth/sso/OIDC/{providerId}/login
    */
-  export namespace SsoControllerOidcLogin {
+  export namespace LoginWithOidc {
     export type RequestParams = {
       /** The ID of the SSO provider */
       providerId: string;
@@ -1689,17 +1689,17 @@ export namespace Sso {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerOidcLoginData;
+    export type ResponseBody = LoginWithOidcData;
   }
 
   /**
    * No description
    * @tags SSO
-   * @name SsoControllerOidcLoginCallback
+   * @name OidcLoginCallback
    * @summary Callback for OIDC login
    * @request GET:/api/auth/sso/OIDC/{providerId}/callback
    */
-  export namespace SsoControllerOidcLoginCallback {
+  export namespace OidcLoginCallback {
     export type RequestParams = {
       /** The ID of the SSO provider */
       providerId: string;
@@ -1713,7 +1713,7 @@ export namespace Sso {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = SsoControllerOidcLoginCallbackData;
+    export type ResponseBody = OidcLoginCallbackData;
   }
 }
 
@@ -1721,28 +1721,28 @@ export namespace Resources {
   /**
    * No description
    * @tags Resources
-   * @name ResourcesControllerCreateResource
+   * @name CreateOneResource
    * @summary Create a new resource
    * @request POST:/api/resources
    * @secure
    */
-  export namespace ResourcesControllerCreateResource {
+  export namespace CreateOneResource {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = CreateResourceDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourcesControllerCreateResourceData;
+    export type ResponseBody = CreateOneResourceData;
   }
 
   /**
    * No description
    * @tags Resources
-   * @name ResourcesControllerGetResources
+   * @name GetAllResources
    * @summary Get all resources
    * @request GET:/api/resources
    * @secure
    */
-  export namespace ResourcesControllerGetResources {
+  export namespace GetAllResources {
     export type RequestParams = {};
     export type RequestQuery = {
       /**
@@ -1762,61 +1762,61 @@ export namespace Resources {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourcesControllerGetResourcesData;
+    export type ResponseBody = GetAllResourcesData;
   }
 
   /**
    * No description
    * @tags Resources
-   * @name ResourcesControllerGetResourceById
+   * @name GetOneResourceById
    * @summary Get a resource by ID
    * @request GET:/api/resources/{id}
    * @secure
    */
-  export namespace ResourcesControllerGetResourceById {
+  export namespace GetOneResourceById {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourcesControllerGetResourceByIdData;
+    export type ResponseBody = GetOneResourceByIdData;
   }
 
   /**
    * No description
    * @tags Resources
-   * @name ResourcesControllerUpdateResource
+   * @name UpdateOneResource
    * @summary Update a resource
    * @request PUT:/api/resources/{id}
    * @secure
    */
-  export namespace ResourcesControllerUpdateResource {
+  export namespace UpdateOneResource {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = UpdateResourceDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourcesControllerUpdateResourceData;
+    export type ResponseBody = UpdateOneResourceData;
   }
 
   /**
    * No description
    * @tags Resources
-   * @name ResourcesControllerDeleteResource
+   * @name DeleteOneResource
    * @summary Delete a resource
    * @request DELETE:/api/resources/{id}
    * @secure
    */
-  export namespace ResourcesControllerDeleteResource {
+  export namespace DeleteOneResource {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourcesControllerDeleteResourceData;
+    export type ResponseBody = DeleteOneResourceData;
   }
 }
 
@@ -1824,48 +1824,48 @@ export namespace ResourceUsage {
   /**
    * No description
    * @tags Resource Usage
-   * @name ResourceUsageControllerStartSession
+   * @name StartSession
    * @summary Start a resource usage session
    * @request POST:/api/resources/{resourceId}/usage/start
    * @secure
    */
-  export namespace ResourceUsageControllerStartSession {
+  export namespace StartSession {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = StartUsageSessionDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceUsageControllerStartSessionData;
+    export type ResponseBody = StartSessionData;
   }
 
   /**
    * No description
    * @tags Resource Usage
-   * @name ResourceUsageControllerEndSession
+   * @name EndSession
    * @summary End a resource usage session
    * @request PUT:/api/resources/{resourceId}/usage/end
    * @secure
    */
-  export namespace ResourceUsageControllerEndSession {
+  export namespace EndSession {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = EndUsageSessionDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceUsageControllerEndSessionData;
+    export type ResponseBody = EndSessionResult;
   }
 
   /**
    * No description
    * @tags Resource Usage
-   * @name ResourceUsageControllerGetResourceHistory
+   * @name GetHistoryOfResourceUsage
    * @summary Get usage history for a resource
    * @request GET:/api/resources/{resourceId}/usage/history
    * @secure
    */
-  export namespace ResourceUsageControllerGetResourceHistory {
+  export namespace GetHistoryOfResourceUsage {
     export type RequestParams = {
       resourceId: number;
     };
@@ -1888,56 +1888,56 @@ export namespace ResourceUsage {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceUsageControllerGetResourceHistoryData;
+    export type ResponseBody = GetHistoryOfResourceUsageData;
   }
 
   /**
    * No description
    * @tags Resource Usage
-   * @name ResourceUsageControllerGetActiveSession
+   * @name GetActiveSession
    * @summary Get active usage session for current user
    * @request GET:/api/resources/{resourceId}/usage/active
    * @secure
    */
-  export namespace ResourceUsageControllerGetActiveSession {
+  export namespace GetActiveSession {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceUsageControllerGetActiveSessionData;
+    export type ResponseBody = GetActiveSessionData;
   }
 }
 
-export namespace ResourceIntroductions {
+export namespace ResourceIntroduction {
   /**
    * @description Complete an introduction for a user identified by their user ID, username, or email.
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerCompleteIntroduction
+   * @tags ResourceIntroduction
+   * @name MarkCompleted
    * @summary Mark resource introduction as completed for a user
    * @request POST:/api/resources/{resourceId}/introductions/complete
    * @secure
    */
-  export namespace ResourceIntroductionControllerCompleteIntroduction {
+  export namespace MarkCompleted {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = CompleteIntroductionDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerCompleteIntroductionData;
+    export type ResponseBody = MarkCompletedData;
   }
 
   /**
    * No description
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerGetResourceIntroductions
+   * @tags ResourceIntroduction
+   * @name GetAllResourceIntroductions
    * @summary Get all introductions for a resource
    * @request GET:/api/resources/{resourceId}/introductions
    * @secure
    */
-  export namespace ResourceIntroductionControllerGetResourceIntroductions {
+  export namespace GetAllResourceIntroductions {
     export type RequestParams = {
       resourceId: number;
     };
@@ -1958,36 +1958,36 @@ export namespace ResourceIntroductions {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerGetResourceIntroductionsData;
+    export type ResponseBody = GetAllResourceIntroductionsData;
   }
 
   /**
    * @description Check if the current user has completed the introduction for this resource and it is not revoked
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerCheckIntroductionStatus
+   * @tags ResourceIntroduction
+   * @name CheckStatus
    * @summary Check if current user has a valid introduction
    * @request GET:/api/resources/{resourceId}/introductions/status
    * @secure
    */
-  export namespace ResourceIntroductionControllerCheckIntroductionStatus {
+  export namespace CheckStatus {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerCheckIntroductionStatusData;
+    export type ResponseBody = CheckStatusData;
   }
 
   /**
    * @description Revoke access for a user by marking their introduction as revoked
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerRevokeIntroduction
+   * @tags ResourceIntroduction
+   * @name MarkRevoked
    * @summary Revoke an introduction
    * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
    * @secure
    */
-  export namespace ResourceIntroductionControllerRevokeIntroduction {
+  export namespace MarkRevoked {
     export type RequestParams = {
       resourceId: number;
       introductionId: number;
@@ -1995,18 +1995,18 @@ export namespace ResourceIntroductions {
     export type RequestQuery = {};
     export type RequestBody = RevokeIntroductionDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerRevokeIntroductionData;
+    export type ResponseBody = MarkRevokedData;
   }
 
   /**
    * @description Restore access for a user by unrevoking their introduction
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerUnrevokeIntroduction
+   * @tags ResourceIntroduction
+   * @name MarkUnrevoked
    * @summary Unrevoke an introduction
    * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
    * @secure
    */
-  export namespace ResourceIntroductionControllerUnrevokeIntroduction {
+  export namespace MarkUnrevoked {
     export type RequestParams = {
       resourceId: number;
       introductionId: number;
@@ -2014,18 +2014,18 @@ export namespace ResourceIntroductions {
     export type RequestQuery = {};
     export type RequestBody = UnrevokeIntroductionDto;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerUnrevokeIntroductionData;
+    export type ResponseBody = MarkUnrevokedData;
   }
 
   /**
    * @description Retrieve the history of revoke/unrevoke actions for an introduction
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerGetIntroductionHistory
+   * @tags ResourceIntroduction
+   * @name GetHistoryOfIntroduction
    * @summary Get history for a specific introduction
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
    * @secure
    */
-  export namespace ResourceIntroductionControllerGetIntroductionHistory {
+  export namespace GetHistoryOfIntroduction {
     export type RequestParams = {
       resourceId: number;
       introductionId: number;
@@ -2033,18 +2033,18 @@ export namespace ResourceIntroductions {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerGetIntroductionHistoryData;
+    export type ResponseBody = GetHistoryOfIntroductionData;
   }
 
   /**
    * @description Determine if a specific introduction is currently revoked
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerCheckIntroductionRevokedStatus
+   * @tags ResourceIntroduction
+   * @name CheckIsRevokedStatus
    * @summary Check if an introduction is revoked
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
    * @secure
    */
-  export namespace ResourceIntroductionControllerCheckIntroductionRevokedStatus {
+  export namespace CheckIsRevokedStatus {
     export type RequestParams = {
       resourceId: number;
       introductionId: number;
@@ -2052,18 +2052,18 @@ export namespace ResourceIntroductions {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerCheckIntroductionRevokedStatusData;
+    export type ResponseBody = CheckIsRevokedStatusData;
   }
 
   /**
    * @description Retrieve detailed information about a specific introduction
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerGetResourceIntroduction
+   * @tags ResourceIntroduction
+   * @name GetOneResourceIntroduction
    * @summary Get a single resource introduction
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
    * @secure
    */
-  export namespace ResourceIntroductionControllerGetResourceIntroduction {
+  export namespace GetOneResourceIntroduction {
     export type RequestParams = {
       resourceId: number;
       introductionId: number;
@@ -2071,25 +2071,25 @@ export namespace ResourceIntroductions {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerGetResourceIntroductionData;
+    export type ResponseBody = GetOneResourceIntroductionData;
   }
 
   /**
    * No description
-   * @tags Resource Introductions
-   * @name ResourceIntroductionControllerCanManageIntroductions
+   * @tags ResourceIntroduction
+   * @name CheckCanManagePermission
    * @summary Check if user can manage introductions for the resource
    * @request GET:/api/resources/{resourceId}/introductions/permissions/manage
    * @secure
    */
-  export namespace ResourceIntroductionControllerCanManageIntroductions {
+  export namespace CheckCanManagePermission {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionControllerCanManageIntroductionsData;
+    export type ResponseBody = CheckCanManagePermissionData;
   }
 }
 
@@ -2097,30 +2097,30 @@ export namespace ResourceIntroducers {
   /**
    * No description
    * @tags Resource Introducers
-   * @name ResourceIntroducersControllerGetResourceIntroducers
+   * @name GetAllResourceIntroducers
    * @summary Get all authorized introducers for a resource
    * @request GET:/api/resources/{resourceId}/introducers
    * @secure
    */
-  export namespace ResourceIntroducersControllerGetResourceIntroducers {
+  export namespace GetAllResourceIntroducers {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroducersControllerGetResourceIntroducersData;
+    export type ResponseBody = GetAllResourceIntroducersData;
   }
 
   /**
    * No description
    * @tags Resource Introducers
-   * @name ResourceIntroducersControllerAddIntroducer
+   * @name AddOne
    * @summary Add a user as an introducer for a resource
    * @request POST:/api/resources/{resourceId}/introducers/{userId}
    * @secure
    */
-  export namespace ResourceIntroducersControllerAddIntroducer {
+  export namespace AddOne {
     export type RequestParams = {
       resourceId: number;
       userId: number;
@@ -2128,18 +2128,18 @@ export namespace ResourceIntroducers {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroducersControllerAddIntroducerData;
+    export type ResponseBody = AddOneData;
   }
 
   /**
    * No description
    * @tags Resource Introducers
-   * @name ResourceIntroducersControllerRemoveIntroducer
+   * @name RemoveOne
    * @summary Remove a user as an introducer for a resource
    * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
    * @secure
    */
-  export namespace ResourceIntroducersControllerRemoveIntroducer {
+  export namespace RemoveOne {
     export type RequestParams = {
       resourceId: number;
       userId: number;
@@ -2147,25 +2147,25 @@ export namespace ResourceIntroducers {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroducersControllerRemoveIntroducerData;
+    export type ResponseBody = RemoveOneData;
   }
 
   /**
    * No description
    * @tags Resource Introducers
-   * @name ResourceIntroducersControllerCanManageIntroducers
+   * @name CheckCanManagePermission
    * @summary Check if the current user can manage introducers for a resource
    * @request GET:/api/resources/{resourceId}/introducers/can-manage
    * @secure
    */
-  export namespace ResourceIntroducersControllerCanManageIntroducers {
+  export namespace CheckCanManagePermission {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroducersControllerCanManageIntroducersData;
+    export type ResponseBody = CheckCanManagePermissionResult;
   }
 }
 
@@ -2173,73 +2173,73 @@ export namespace MqttResourceConfiguration {
   /**
    * No description
    * @tags MQTT Resource Configuration
-   * @name MqttResourceConfigControllerGetMqttConfig
+   * @name GetOneMqttConfiguration
    * @summary Get MQTT configuration for a resource
    * @request GET:/api/resources/{resourceId}/mqtt/config
    * @secure
    */
-  export namespace MqttResourceConfigControllerGetMqttConfig {
+  export namespace GetOneMqttConfiguration {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttResourceConfigControllerGetMqttConfigData;
+    export type ResponseBody = GetOneMqttConfigurationData;
   }
 
   /**
    * No description
    * @tags MQTT Resource Configuration
-   * @name MqttResourceConfigControllerCreateOrUpdateMqttConfig
+   * @name UpsertOne
    * @summary Create or update MQTT configuration for a resource
    * @request POST:/api/resources/{resourceId}/mqtt/config
    * @secure
    */
-  export namespace MqttResourceConfigControllerCreateOrUpdateMqttConfig {
+  export namespace UpsertOne {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = CreateMqttResourceConfigDto;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttResourceConfigControllerCreateOrUpdateMqttConfigData;
+    export type ResponseBody = UpsertOneData;
   }
 
   /**
    * No description
    * @tags MQTT Resource Configuration
-   * @name MqttResourceConfigControllerDeleteMqttConfig
+   * @name DeleteOneMqttConfiguration
    * @summary Delete MQTT configuration for a resource
    * @request DELETE:/api/resources/{resourceId}/mqtt/config
    * @secure
    */
-  export namespace MqttResourceConfigControllerDeleteMqttConfig {
+  export namespace DeleteOneMqttConfiguration {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttResourceConfigControllerDeleteMqttConfigData;
+    export type ResponseBody = DeleteOneMqttConfigurationData;
   }
 
   /**
    * No description
    * @tags MQTT Resource Configuration
-   * @name MqttResourceConfigControllerTestMqttConfig
+   * @name TestOne
    * @summary Test MQTT configuration
    * @request POST:/api/resources/{resourceId}/mqtt/config/test
    * @secure
    */
-  export namespace MqttResourceConfigControllerTestMqttConfig {
+  export namespace TestOne {
     export type RequestParams = {
       resourceId: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttResourceConfigControllerTestMqttConfigData;
+    export type ResponseBody = TestOneData;
   }
 }
 
@@ -2247,139 +2247,139 @@ export namespace MqttServers {
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerGetMqttServers
+   * @name GetAllMqttServers
    * @summary Get all MQTT servers
    * @request GET:/api/mqtt/servers
    * @secure
    */
-  export namespace MqttServerControllerGetMqttServers {
+  export namespace GetAllMqttServers {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerGetMqttServersData;
+    export type ResponseBody = GetAllMqttServersData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerCreateMqttServer
+   * @name CreateOneMqttServer
    * @summary Create new MQTT server
    * @request POST:/api/mqtt/servers
    * @secure
    */
-  export namespace MqttServerControllerCreateMqttServer {
+  export namespace CreateOneMqttServer {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = CreateMqttServerDto;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerCreateMqttServerData;
+    export type ResponseBody = CreateOneMqttServerData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerGetMqttServerById
+   * @name GetOneMqttServerById
    * @summary Get MQTT server by ID
    * @request GET:/api/mqtt/servers/{id}
    * @secure
    */
-  export namespace MqttServerControllerGetMqttServerById {
+  export namespace GetOneMqttServerById {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerGetMqttServerByIdData;
+    export type ResponseBody = GetOneMqttServerByIdData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerUpdateMqttServer
+   * @name UpdateOneMqttServer
    * @summary Update MQTT server
    * @request PUT:/api/mqtt/servers/{id}
    * @secure
    */
-  export namespace MqttServerControllerUpdateMqttServer {
+  export namespace UpdateOneMqttServer {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = UpdateMqttServerDto;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerUpdateMqttServerData;
+    export type ResponseBody = UpdateOneMqttServerData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerDeleteMqttServer
+   * @name DeleteOneMqttServer
    * @summary Delete MQTT server
    * @request DELETE:/api/mqtt/servers/{id}
    * @secure
    */
-  export namespace MqttServerControllerDeleteMqttServer {
+  export namespace DeleteOneMqttServer {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerDeleteMqttServerData;
+    export type ResponseBody = DeleteOneMqttServerData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerTestMqttServerConnection
+   * @name TestConnection
    * @summary Test MQTT server connection
    * @request POST:/api/mqtt/servers/{id}/test
    * @secure
    */
-  export namespace MqttServerControllerTestMqttServerConnection {
+  export namespace TestConnection {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerTestMqttServerConnectionData;
+    export type ResponseBody = TestConnectionData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerGetServerStatus
+   * @name GetStatusOfOne
    * @summary Get MQTT server connection status and statistics
    * @request GET:/api/mqtt/servers/{id}/status
    * @secure
    */
-  export namespace MqttServerControllerGetServerStatus {
+  export namespace GetStatusOfOne {
     export type RequestParams = {
       id: number;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerGetServerStatusData;
+    export type ResponseBody = GetStatusOfOneData;
   }
 
   /**
    * No description
    * @tags MQTT Servers
-   * @name MqttServerControllerGetAllServerStatuses
+   * @name GetStatusOfAll
    * @summary Get all MQTT server connection statuses and statistics
    * @request GET:/api/mqtt/servers/status
    * @secure
    */
-  export namespace MqttServerControllerGetAllServerStatuses {
+  export namespace GetStatusOfAll {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = MqttServerControllerGetAllServerStatusesData;
+    export type ResponseBody = GetStatusOfAllData;
   }
 }
 
@@ -2405,12 +2405,12 @@ export namespace Webhooks {
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerFindAll
+   * @name GetAllWebhookConfigurations
    * @summary Get all webhook configurations for a resource
    * @request GET:/api/resources/{resourceId}/webhooks
    * @secure
    */
-  export namespace WebhookConfigControllerFindAll {
+  export namespace GetAllWebhookConfigurations {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2418,18 +2418,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerFindAllData;
+    export type ResponseBody = GetAllWebhookConfigurationsData;
   }
 
   /**
    * @description Creates a new webhook configuration for a resource. ## URL Templating The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `https://example.com/webhooks/{{id}}/{{event}}` ## Header Templating Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}` ## Available Template Variables Available template variables for URLs, headers, and payloads: - `id`: Resource ID - `name`: Resource name - `description`: Resource description - `timestamp`: ISO timestamp of the event - `user.id`: ID of the user who triggered the event - `event`: Either "started" or "ended" depending on the resource usage state
    * @tags Webhooks
-   * @name WebhookConfigControllerCreate
+   * @name CreateOneWebhookConfiguration
    * @summary Create a new webhook configuration
    * @request POST:/api/resources/{resourceId}/webhooks
    * @secure
    */
-  export namespace WebhookConfigControllerCreate {
+  export namespace CreateOneWebhookConfiguration {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2437,18 +2437,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = CreateWebhookConfigDto;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerCreateData;
+    export type ResponseBody = CreateOneWebhookConfigurationData;
   }
 
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerFindById
+   * @name GetOneWebhookConfigurationById
    * @summary Get webhook configuration by ID
    * @request GET:/api/resources/{resourceId}/webhooks/{id}
    * @secure
    */
-  export namespace WebhookConfigControllerFindById {
+  export namespace GetOneWebhookConfigurationById {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2458,18 +2458,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerFindByIdData;
+    export type ResponseBody = GetOneWebhookConfigurationByIdData;
   }
 
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerUpdate
+   * @name UpdateOneWebhookConfiguration
    * @summary Update webhook configuration
    * @request PUT:/api/resources/{resourceId}/webhooks/{id}
    * @secure
    */
-  export namespace WebhookConfigControllerUpdate {
+  export namespace UpdateOneWebhookConfiguration {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2479,18 +2479,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = UpdateWebhookConfigDto;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerUpdateData;
+    export type ResponseBody = UpdateOneWebhookConfigurationData;
   }
 
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerDelete
+   * @name DeleteOneWebhookConfiguration
    * @summary Delete webhook configuration
    * @request DELETE:/api/resources/{resourceId}/webhooks/{id}
    * @secure
    */
-  export namespace WebhookConfigControllerDelete {
+  export namespace DeleteOneWebhookConfiguration {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2500,18 +2500,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerDeleteData;
+    export type ResponseBody = DeleteOneWebhookConfigurationData;
   }
 
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerUpdateStatus
+   * @name UpdateStatus
    * @summary Enable or disable webhook
    * @request PUT:/api/resources/{resourceId}/webhooks/{id}/status
    * @secure
    */
-  export namespace WebhookConfigControllerUpdateStatus {
+  export namespace UpdateStatus {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2521,18 +2521,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = WebhookStatusDto;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerUpdateStatusData;
+    export type ResponseBody = UpdateStatusData;
   }
 
   /**
    * No description
    * @tags Webhooks
-   * @name WebhookConfigControllerTestWebhook
+   * @name Test
    * @summary Test webhook
    * @request POST:/api/resources/{resourceId}/webhooks/{id}/test
    * @secure
    */
-  export namespace WebhookConfigControllerTestWebhook {
+  export namespace Test {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2542,18 +2542,18 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerTestWebhookData;
+    export type ResponseBody = TestData;
   }
 
   /**
    * @description When signature verification is enabled, each webhook request includes: 1. A timestamp header (X-Webhook-Timestamp) 2. A signature header (configurable, default: X-Webhook-Signature) To verify the signature: 1. Extract the timestamp from the X-Webhook-Timestamp header 2. Combine the timestamp and payload as "${timestamp}.${payload}" 3. Compute the HMAC-SHA256 signature using your webhook secret 4. Compare the resulting signature with the value in the signature header Example (Node.js): ```javascript const crypto = require('crypto'); function verifySignature(payload, timestamp, signature, secret) { const signaturePayload = `${timestamp}.${payload}`; const expectedSignature = crypto .createHmac('sha256', secret) .update(signaturePayload) .digest('hex'); return crypto.timingSafeEqual( Buffer.from(signature), Buffer.from(expectedSignature) ); } ```
    * @tags Webhooks
-   * @name WebhookConfigControllerRegenerateSecret
+   * @name RegenerateSecret
    * @summary Regenerate webhook secret
    * @request POST:/api/resources/{resourceId}/webhooks/{id}/regenerate-secret
    * @secure
    */
-  export namespace WebhookConfigControllerRegenerateSecret {
+  export namespace RegenerateSecret {
     export type RequestParams = {
       /** Resource ID */
       resourceId: number;
@@ -2563,7 +2563,7 @@ export namespace Webhooks {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = WebhookConfigControllerRegenerateSecretData;
+    export type ResponseBody = RegenerateSecretData;
   }
 }
 
@@ -2790,12 +2790,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Application
-     * @name AppControllerGetPing
+     * @name Ping2
      * @summary Check API availability
      * @request GET:/api/ping
      */
-    appControllerGetPing: (params: RequestParams = {}) =>
-      this.request<AppControllerGetPingData, any>({
+    ping2: (params: RequestParams = {}) =>
+      this.request<Ping2Data, any>({
         path: `/api/ping`,
         method: 'GET',
         format: 'json',
@@ -2807,12 +2807,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerCreateUser
+     * @name CreateOneUser
      * @summary Create a new user
      * @request POST:/api/users
      */
-    usersControllerCreateUser: (data: CreateUserDto, params: RequestParams = {}) =>
-      this.request<UsersControllerCreateUserData, void>({
+    createOneUser: (data: CreateUserDto, params: RequestParams = {}) =>
+      this.request<CreateOneUserData, void>({
         path: `/api/users`,
         method: 'POST',
         body: data,
@@ -2825,13 +2825,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerGetUsers
+     * @name GetAllUsers
      * @summary Get a paginated list of users
      * @request GET:/api/users
      * @secure
      */
-    usersControllerGetUsers: (query: UsersControllerGetUsersParams, params: RequestParams = {}) =>
-      this.request<UsersControllerGetUsersData, void>({
+    getAllUsers: (query: GetAllUsersParams, params: RequestParams = {}) =>
+      this.request<GetAllUsersData, void>({
         path: `/api/users`,
         method: 'GET',
         query: query,
@@ -2844,12 +2844,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerVerifyEmail
+     * @name VerifyEmail
      * @summary Verify a user email address
      * @request POST:/api/users/verify-email
      */
-    usersControllerVerifyEmail: (data: VerifyEmailDto, params: RequestParams = {}) =>
-      this.request<UsersControllerVerifyEmailData, void>({
+    verifyEmail: (data: VerifyEmailDto, params: RequestParams = {}) =>
+      this.request<VerifyEmailData, void>({
         path: `/api/users/verify-email`,
         method: 'POST',
         body: data,
@@ -2862,13 +2862,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerGetMe
+     * @name GetCurrent
      * @summary Get the current authenticated user
      * @request GET:/api/users/me
      * @secure
      */
-    usersControllerGetMe: (params: RequestParams = {}) =>
-      this.request<UsersControllerGetMeData, void>({
+    getCurrent: (params: RequestParams = {}) =>
+      this.request<GetCurrentData, void>({
         path: `/api/users/me`,
         method: 'GET',
         secure: true,
@@ -2880,13 +2880,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerGetUserById
+     * @name GetOneUserById
      * @summary Get a user by ID
      * @request GET:/api/users/{id}
      * @secure
      */
-    usersControllerGetUserById: (id: number, params: RequestParams = {}) =>
-      this.request<UsersControllerGetUserByIdData, UsersControllerGetUserByIdError>({
+    getOneUserById: (id: number, params: RequestParams = {}) =>
+      this.request<GetOneUserByIdData, GetOneUserByIdError>({
         path: `/api/users/${id}`,
         method: 'GET',
         secure: true,
@@ -2898,13 +2898,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerUpdateUserPermissions
+     * @name UpdatePermissions
      * @summary Update a user's system permissions
      * @request PATCH:/api/users/{id}/permissions
      * @secure
      */
-    usersControllerUpdateUserPermissions: (id: number, data: UpdateUserPermissionsDto, params: RequestParams = {}) =>
-      this.request<UsersControllerUpdateUserPermissionsData, void>({
+    updatePermissions: (id: number, data: UpdateUserPermissionsDto, params: RequestParams = {}) =>
+      this.request<UpdatePermissionsData, void>({
         path: `/api/users/${id}/permissions`,
         method: 'PATCH',
         body: data,
@@ -2918,13 +2918,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerGetUserPermissions
+     * @name GetPermissions
      * @summary Get a user's system permissions
      * @request GET:/api/users/{id}/permissions
      * @secure
      */
-    usersControllerGetUserPermissions: (id: number, params: RequestParams = {}) =>
-      this.request<UsersControllerGetUserPermissionsData, void>({
+    getPermissions: (id: number, params: RequestParams = {}) =>
+      this.request<GetPermissionsData, void>({
         path: `/api/users/${id}/permissions`,
         method: 'GET',
         secure: true,
@@ -2936,13 +2936,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerBulkUpdateUserPermissions
+     * @name BulkUpdatePermissions
      * @summary Bulk update user permissions
      * @request POST:/api/users/permissions
      * @secure
      */
-    usersControllerBulkUpdateUserPermissions: (data: BulkUpdateUserPermissionsDto, params: RequestParams = {}) =>
-      this.request<UsersControllerBulkUpdateUserPermissionsData, void>({
+    bulkUpdatePermissions: (data: BulkUpdateUserPermissionsDto, params: RequestParams = {}) =>
+      this.request<BulkUpdatePermissionsData, void>({
         path: `/api/users/permissions`,
         method: 'POST',
         body: data,
@@ -2956,16 +2956,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags users
-     * @name UsersControllerGetUsersWithPermission
+     * @name GetAllWithPermission
      * @summary Get users with a specific permission
      * @request GET:/api/users/with-permission
      * @secure
      */
-    usersControllerGetUsersWithPermission: (
-      query: UsersControllerGetUsersWithPermissionParams,
-      params: RequestParams = {},
-    ) =>
-      this.request<UsersControllerGetUsersWithPermissionData, void>({
+    getAllWithPermission: (query: GetAllWithPermissionParams, params: RequestParams = {}) =>
+      this.request<GetAllWithPermissionData, void>({
         path: `/api/users/with-permission`,
         method: 'GET',
         query: query,
@@ -2979,12 +2976,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Authentication
-     * @name AuthControllerPostSession
+     * @name CreateSession
      * @summary Create a new session using local authentication
      * @request POST:/api/auth/session/local
      */
-    authControllerPostSession: (data: AuthControllerPostSessionPayload, params: RequestParams = {}) =>
-      this.request<AuthControllerPostSessionData, void>({
+    createSession: (data: CreateSessionPayload, params: RequestParams = {}) =>
+      this.request<CreateSessionData, void>({
         path: `/api/auth/session/local`,
         method: 'POST',
         body: data,
@@ -2997,13 +2994,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Authentication
-     * @name AuthControllerDeleteSession
+     * @name EndSession
      * @summary Logout and invalidate the current session
      * @request DELETE:/api/auth/session
      * @secure
      */
-    authControllerDeleteSession: (params: RequestParams = {}) =>
-      this.request<AuthControllerDeleteSessionData, void>({
+    endSession: (params: RequestParams = {}) =>
+      this.request<EndSessionData, void>({
         path: `/api/auth/session`,
         method: 'DELETE',
         secure: true,
@@ -3016,12 +3013,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerGetProviders
+     * @name GetAllSsoProviders
      * @summary Get all SSO providers
      * @request GET:/api/auth/sso/providers
      */
-    ssoControllerGetProviders: (params: RequestParams = {}) =>
-      this.request<SsoControllerGetProvidersData, any>({
+    getAllSsoProviders: (params: RequestParams = {}) =>
+      this.request<GetAllSsoProvidersData, any>({
         path: `/api/auth/sso/providers`,
         method: 'GET',
         format: 'json',
@@ -3032,13 +3029,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerCreateProvider
+     * @name CreateOneSsoProvider
      * @summary Create a new SSO provider
      * @request POST:/api/auth/sso/providers
      * @secure
      */
-    ssoControllerCreateProvider: (data: CreateSSOProviderDto, params: RequestParams = {}) =>
-      this.request<SsoControllerCreateProviderData, void>({
+    createOneSsoProvider: (data: CreateSSOProviderDto, params: RequestParams = {}) =>
+      this.request<CreateOneSsoProviderData, void>({
         path: `/api/auth/sso/providers`,
         method: 'POST',
         body: data,
@@ -3052,13 +3049,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerGetProviderById
+     * @name GetOneSsoProviderById
      * @summary Get SSO provider by ID with full configuration
      * @request GET:/api/auth/sso/providers/{id}
      * @secure
      */
-    ssoControllerGetProviderById: (id: string, params: RequestParams = {}) =>
-      this.request<SsoControllerGetProviderByIdData, void>({
+    getOneSsoProviderById: (id: number, params: RequestParams = {}) =>
+      this.request<GetOneSsoProviderByIdData, void>({
         path: `/api/auth/sso/providers/${id}`,
         method: 'GET',
         secure: true,
@@ -3070,13 +3067,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerUpdateProvider
+     * @name UpdateOneSsoProvider
      * @summary Update an existing SSO provider
      * @request PUT:/api/auth/sso/providers/{id}
      * @secure
      */
-    ssoControllerUpdateProvider: (id: string, data: UpdateSSOProviderDto, params: RequestParams = {}) =>
-      this.request<SsoControllerUpdateProviderData, void>({
+    updateOneSsoProvider: (id: number, data: UpdateSSOProviderDto, params: RequestParams = {}) =>
+      this.request<UpdateOneSsoProviderData, void>({
         path: `/api/auth/sso/providers/${id}`,
         method: 'PUT',
         body: data,
@@ -3090,13 +3087,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerDeleteProvider
+     * @name DeleteOneSsoProvider
      * @summary Delete an SSO provider
      * @request DELETE:/api/auth/sso/providers/{id}
      * @secure
      */
-    ssoControllerDeleteProvider: (id: string, params: RequestParams = {}) =>
-      this.request<SsoControllerDeleteProviderData, void>({
+    deleteOneSsoProvider: (id: number, params: RequestParams = {}) =>
+      this.request<DeleteOneSsoProviderData, void>({
         path: `/api/auth/sso/providers/${id}`,
         method: 'DELETE',
         secure: true,
@@ -3107,12 +3104,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
      *
      * @tags SSO
-     * @name SsoControllerOidcLogin
+     * @name LoginWithOidc
      * @summary Login with OIDC
      * @request GET:/api/auth/sso/OIDC/{providerId}/login
      */
-    ssoControllerOidcLogin: ({ providerId, ...query }: SsoControllerOidcLoginParams, params: RequestParams = {}) =>
-      this.request<SsoControllerOidcLoginData, any>({
+    loginWithOidc: ({ providerId, ...query }: LoginWithOidcParams, params: RequestParams = {}) =>
+      this.request<LoginWithOidcData, any>({
         path: `/api/auth/sso/OIDC/${providerId}/login`,
         method: 'GET',
         query: query,
@@ -3123,15 +3120,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags SSO
-     * @name SsoControllerOidcLoginCallback
+     * @name OidcLoginCallback
      * @summary Callback for OIDC login
      * @request GET:/api/auth/sso/OIDC/{providerId}/callback
      */
-    ssoControllerOidcLoginCallback: (
-      { providerId, ...query }: SsoControllerOidcLoginCallbackParams,
-      params: RequestParams = {},
-    ) =>
-      this.request<SsoControllerOidcLoginCallbackData, any>({
+    oidcLoginCallback: ({ providerId, ...query }: OidcLoginCallbackParams, params: RequestParams = {}) =>
+      this.request<OidcLoginCallbackData, any>({
         path: `/api/auth/sso/OIDC/${providerId}/callback`,
         method: 'GET',
         query: query,
@@ -3144,13 +3138,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resources
-     * @name ResourcesControllerCreateResource
+     * @name CreateOneResource
      * @summary Create a new resource
      * @request POST:/api/resources
      * @secure
      */
-    resourcesControllerCreateResource: (data: CreateResourceDto, params: RequestParams = {}) =>
-      this.request<ResourcesControllerCreateResourceData, void>({
+    createOneResource: (data: CreateResourceDto, params: RequestParams = {}) =>
+      this.request<CreateOneResourceData, void>({
         path: `/api/resources`,
         method: 'POST',
         body: data,
@@ -3164,13 +3158,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resources
-     * @name ResourcesControllerGetResources
+     * @name GetAllResources
      * @summary Get all resources
      * @request GET:/api/resources
      * @secure
      */
-    resourcesControllerGetResources: (query: ResourcesControllerGetResourcesParams, params: RequestParams = {}) =>
-      this.request<ResourcesControllerGetResourcesData, void>({
+    getAllResources: (query: GetAllResourcesParams, params: RequestParams = {}) =>
+      this.request<GetAllResourcesData, void>({
         path: `/api/resources`,
         method: 'GET',
         query: query,
@@ -3183,13 +3177,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resources
-     * @name ResourcesControllerGetResourceById
+     * @name GetOneResourceById
      * @summary Get a resource by ID
      * @request GET:/api/resources/{id}
      * @secure
      */
-    resourcesControllerGetResourceById: (id: number, params: RequestParams = {}) =>
-      this.request<ResourcesControllerGetResourceByIdData, void>({
+    getOneResourceById: (id: number, params: RequestParams = {}) =>
+      this.request<GetOneResourceByIdData, void>({
         path: `/api/resources/${id}`,
         method: 'GET',
         secure: true,
@@ -3201,13 +3195,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resources
-     * @name ResourcesControllerUpdateResource
+     * @name UpdateOneResource
      * @summary Update a resource
      * @request PUT:/api/resources/{id}
      * @secure
      */
-    resourcesControllerUpdateResource: (id: number, data: UpdateResourceDto, params: RequestParams = {}) =>
-      this.request<ResourcesControllerUpdateResourceData, void>({
+    updateOneResource: (id: number, data: UpdateResourceDto, params: RequestParams = {}) =>
+      this.request<UpdateOneResourceData, void>({
         path: `/api/resources/${id}`,
         method: 'PUT',
         body: data,
@@ -3221,13 +3215,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resources
-     * @name ResourcesControllerDeleteResource
+     * @name DeleteOneResource
      * @summary Delete a resource
      * @request DELETE:/api/resources/{id}
      * @secure
      */
-    resourcesControllerDeleteResource: (id: number, params: RequestParams = {}) =>
-      this.request<ResourcesControllerDeleteResourceData, void>({
+    deleteOneResource: (id: number, params: RequestParams = {}) =>
+      this.request<DeleteOneResourceData, void>({
         path: `/api/resources/${id}`,
         method: 'DELETE',
         secure: true,
@@ -3239,13 +3233,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Usage
-     * @name ResourceUsageControllerStartSession
+     * @name StartSession
      * @summary Start a resource usage session
      * @request POST:/api/resources/{resourceId}/usage/start
      * @secure
      */
-    resourceUsageControllerStartSession: (resourceId: number, data: StartUsageSessionDto, params: RequestParams = {}) =>
-      this.request<ResourceUsageControllerStartSessionData, void>({
+    startSession: (resourceId: number, data: StartUsageSessionDto, params: RequestParams = {}) =>
+      this.request<StartSessionData, void>({
         path: `/api/resources/${resourceId}/usage/start`,
         method: 'POST',
         body: data,
@@ -3259,13 +3253,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Usage
-     * @name ResourceUsageControllerEndSession
+     * @name EndSession
      * @summary End a resource usage session
      * @request PUT:/api/resources/{resourceId}/usage/end
      * @secure
      */
-    resourceUsageControllerEndSession: (resourceId: number, data: EndUsageSessionDto, params: RequestParams = {}) =>
-      this.request<ResourceUsageControllerEndSessionData, void>({
+    endSession: (resourceId: number, data: EndUsageSessionDto, params: RequestParams = {}) =>
+      this.request<EndSessionResult, void>({
         path: `/api/resources/${resourceId}/usage/end`,
         method: 'PUT',
         body: data,
@@ -3279,16 +3273,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Usage
-     * @name ResourceUsageControllerGetResourceHistory
+     * @name GetHistoryOfResourceUsage
      * @summary Get usage history for a resource
      * @request GET:/api/resources/{resourceId}/usage/history
      * @secure
      */
-    resourceUsageControllerGetResourceHistory: (
-      { resourceId, ...query }: ResourceUsageControllerGetResourceHistoryParams,
+    getHistoryOfResourceUsage: (
+      { resourceId, ...query }: GetHistoryOfResourceUsageParams,
       params: RequestParams = {},
     ) =>
-      this.request<ResourceUsageControllerGetResourceHistoryData, void>({
+      this.request<GetHistoryOfResourceUsageData, void>({
         path: `/api/resources/${resourceId}/usage/history`,
         method: 'GET',
         query: query,
@@ -3301,13 +3295,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Usage
-     * @name ResourceUsageControllerGetActiveSession
+     * @name GetActiveSession
      * @summary Get active usage session for current user
      * @request GET:/api/resources/{resourceId}/usage/active
      * @secure
      */
-    resourceUsageControllerGetActiveSession: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceUsageControllerGetActiveSessionData, void>({
+    getActiveSession: (resourceId: number, params: RequestParams = {}) =>
+      this.request<GetActiveSessionData, void>({
         path: `/api/resources/${resourceId}/usage/active`,
         method: 'GET',
         secure: true,
@@ -3315,22 +3309,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  resourceIntroductions = {
+  resourceIntroduction = {
     /**
      * @description Complete an introduction for a user identified by their user ID, username, or email.
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerCompleteIntroduction
+     * @tags ResourceIntroduction
+     * @name MarkCompleted
      * @summary Mark resource introduction as completed for a user
      * @request POST:/api/resources/{resourceId}/introductions/complete
      * @secure
      */
-    resourceIntroductionControllerCompleteIntroduction: (
-      resourceId: number,
-      data: CompleteIntroductionDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroductionControllerCompleteIntroductionData, void>({
+    markCompleted: (resourceId: number, data: CompleteIntroductionDto, params: RequestParams = {}) =>
+      this.request<MarkCompletedData, void>({
         path: `/api/resources/${resourceId}/introductions/complete`,
         method: 'POST',
         body: data,
@@ -3343,17 +3333,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerGetResourceIntroductions
+     * @tags ResourceIntroduction
+     * @name GetAllResourceIntroductions
      * @summary Get all introductions for a resource
      * @request GET:/api/resources/{resourceId}/introductions
      * @secure
      */
-    resourceIntroductionControllerGetResourceIntroductions: (
-      { resourceId, ...query }: ResourceIntroductionControllerGetResourceIntroductionsParams,
+    getAllResourceIntroductions: (
+      { resourceId, ...query }: GetAllResourceIntroductionsParams,
       params: RequestParams = {},
     ) =>
-      this.request<ResourceIntroductionControllerGetResourceIntroductionsData, void>({
+      this.request<GetAllResourceIntroductionsData, void>({
         path: `/api/resources/${resourceId}/introductions`,
         method: 'GET',
         query: query,
@@ -3365,14 +3355,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Check if the current user has completed the introduction for this resource and it is not revoked
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerCheckIntroductionStatus
+     * @tags ResourceIntroduction
+     * @name CheckStatus
      * @summary Check if current user has a valid introduction
      * @request GET:/api/resources/{resourceId}/introductions/status
      * @secure
      */
-    resourceIntroductionControllerCheckIntroductionStatus: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroductionControllerCheckIntroductionStatusData, void>({
+    checkStatus: (resourceId: number, params: RequestParams = {}) =>
+      this.request<CheckStatusData, void>({
         path: `/api/resources/${resourceId}/introductions/status`,
         method: 'GET',
         secure: true,
@@ -3383,19 +3373,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Revoke access for a user by marking their introduction as revoked
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerRevokeIntroduction
+     * @tags ResourceIntroduction
+     * @name MarkRevoked
      * @summary Revoke an introduction
      * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
      * @secure
      */
-    resourceIntroductionControllerRevokeIntroduction: (
+    markRevoked: (
       resourceId: number,
       introductionId: number,
       data: RevokeIntroductionDto,
       params: RequestParams = {},
     ) =>
-      this.request<ResourceIntroductionControllerRevokeIntroductionData, void>({
+      this.request<MarkRevokedData, void>({
         path: `/api/resources/${resourceId}/introductions/${introductionId}/revoke`,
         method: 'POST',
         body: data,
@@ -3408,19 +3398,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Restore access for a user by unrevoking their introduction
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerUnrevokeIntroduction
+     * @tags ResourceIntroduction
+     * @name MarkUnrevoked
      * @summary Unrevoke an introduction
      * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
      * @secure
      */
-    resourceIntroductionControllerUnrevokeIntroduction: (
+    markUnrevoked: (
       resourceId: number,
       introductionId: number,
       data: UnrevokeIntroductionDto,
       params: RequestParams = {},
     ) =>
-      this.request<ResourceIntroductionControllerUnrevokeIntroductionData, void>({
+      this.request<MarkUnrevokedData, void>({
         path: `/api/resources/${resourceId}/introductions/${introductionId}/unrevoke`,
         method: 'POST',
         body: data,
@@ -3433,18 +3423,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Retrieve the history of revoke/unrevoke actions for an introduction
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerGetIntroductionHistory
+     * @tags ResourceIntroduction
+     * @name GetHistoryOfIntroduction
      * @summary Get history for a specific introduction
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
      * @secure
      */
-    resourceIntroductionControllerGetIntroductionHistory: (
-      resourceId: number,
-      introductionId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroductionControllerGetIntroductionHistoryData, void>({
+    getHistoryOfIntroduction: (resourceId: number, introductionId: number, params: RequestParams = {}) =>
+      this.request<GetHistoryOfIntroductionData, void>({
         path: `/api/resources/${resourceId}/introductions/${introductionId}/history`,
         method: 'GET',
         secure: true,
@@ -3455,18 +3441,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Determine if a specific introduction is currently revoked
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerCheckIntroductionRevokedStatus
+     * @tags ResourceIntroduction
+     * @name CheckIsRevokedStatus
      * @summary Check if an introduction is revoked
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
      * @secure
      */
-    resourceIntroductionControllerCheckIntroductionRevokedStatus: (
-      resourceId: number,
-      introductionId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroductionControllerCheckIntroductionRevokedStatusData, void>({
+    checkIsRevokedStatus: (resourceId: number, introductionId: number, params: RequestParams = {}) =>
+      this.request<CheckIsRevokedStatusData, void>({
         path: `/api/resources/${resourceId}/introductions/${introductionId}/revoked`,
         method: 'GET',
         secure: true,
@@ -3477,18 +3459,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Retrieve detailed information about a specific introduction
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerGetResourceIntroduction
+     * @tags ResourceIntroduction
+     * @name GetOneResourceIntroduction
      * @summary Get a single resource introduction
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
      * @secure
      */
-    resourceIntroductionControllerGetResourceIntroduction: (
-      resourceId: number,
-      introductionId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroductionControllerGetResourceIntroductionData, void>({
+    getOneResourceIntroduction: (resourceId: number, introductionId: number, params: RequestParams = {}) =>
+      this.request<GetOneResourceIntroductionData, void>({
         path: `/api/resources/${resourceId}/introductions/${introductionId}`,
         method: 'GET',
         secure: true,
@@ -3499,14 +3477,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags Resource Introductions
-     * @name ResourceIntroductionControllerCanManageIntroductions
+     * @tags ResourceIntroduction
+     * @name CheckCanManagePermission
      * @summary Check if user can manage introductions for the resource
      * @request GET:/api/resources/{resourceId}/introductions/permissions/manage
      * @secure
      */
-    resourceIntroductionControllerCanManageIntroductions: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroductionControllerCanManageIntroductionsData, void>({
+    checkCanManagePermission: (resourceId: number, params: RequestParams = {}) =>
+      this.request<CheckCanManagePermissionData, void>({
         path: `/api/resources/${resourceId}/introductions/permissions/manage`,
         method: 'GET',
         secure: true,
@@ -3519,13 +3497,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Introducers
-     * @name ResourceIntroducersControllerGetResourceIntroducers
+     * @name GetAllResourceIntroducers
      * @summary Get all authorized introducers for a resource
      * @request GET:/api/resources/{resourceId}/introducers
      * @secure
      */
-    resourceIntroducersControllerGetResourceIntroducers: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroducersControllerGetResourceIntroducersData, void>({
+    getAllResourceIntroducers: (resourceId: number, params: RequestParams = {}) =>
+      this.request<GetAllResourceIntroducersData, void>({
         path: `/api/resources/${resourceId}/introducers`,
         method: 'GET',
         secure: true,
@@ -3537,13 +3515,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Introducers
-     * @name ResourceIntroducersControllerAddIntroducer
+     * @name AddOne
      * @summary Add a user as an introducer for a resource
      * @request POST:/api/resources/{resourceId}/introducers/{userId}
      * @secure
      */
-    resourceIntroducersControllerAddIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroducersControllerAddIntroducerData, void>({
+    addOne: (resourceId: number, userId: number, params: RequestParams = {}) =>
+      this.request<AddOneData, void>({
         path: `/api/resources/${resourceId}/introducers/${userId}`,
         method: 'POST',
         secure: true,
@@ -3555,13 +3533,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Introducers
-     * @name ResourceIntroducersControllerRemoveIntroducer
+     * @name RemoveOne
      * @summary Remove a user as an introducer for a resource
      * @request DELETE:/api/resources/{resourceId}/introducers/{userId}
      * @secure
      */
-    resourceIntroducersControllerRemoveIntroducer: (resourceId: number, userId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroducersControllerRemoveIntroducerData, void>({
+    removeOne: (resourceId: number, userId: number, params: RequestParams = {}) =>
+      this.request<RemoveOneData, void>({
         path: `/api/resources/${resourceId}/introducers/${userId}`,
         method: 'DELETE',
         secure: true,
@@ -3572,13 +3550,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Resource Introducers
-     * @name ResourceIntroducersControllerCanManageIntroducers
+     * @name CheckCanManagePermission
      * @summary Check if the current user can manage introducers for a resource
      * @request GET:/api/resources/{resourceId}/introducers/can-manage
      * @secure
      */
-    resourceIntroducersControllerCanManageIntroducers: (resourceId: number, params: RequestParams = {}) =>
-      this.request<ResourceIntroducersControllerCanManageIntroducersData, void>({
+    checkCanManagePermission: (resourceId: number, params: RequestParams = {}) =>
+      this.request<CheckCanManagePermissionResult, void>({
         path: `/api/resources/${resourceId}/introducers/can-manage`,
         method: 'GET',
         secure: true,
@@ -3591,13 +3569,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Resource Configuration
-     * @name MqttResourceConfigControllerGetMqttConfig
+     * @name GetOneMqttConfiguration
      * @summary Get MQTT configuration for a resource
      * @request GET:/api/resources/{resourceId}/mqtt/config
      * @secure
      */
-    mqttResourceConfigControllerGetMqttConfig: (resourceId: number, params: RequestParams = {}) =>
-      this.request<MqttResourceConfigControllerGetMqttConfigData, void>({
+    getOneMqttConfiguration: (resourceId: number, params: RequestParams = {}) =>
+      this.request<GetOneMqttConfigurationData, void>({
         path: `/api/resources/${resourceId}/mqtt/config`,
         method: 'GET',
         secure: true,
@@ -3609,17 +3587,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Resource Configuration
-     * @name MqttResourceConfigControllerCreateOrUpdateMqttConfig
+     * @name UpsertOne
      * @summary Create or update MQTT configuration for a resource
      * @request POST:/api/resources/{resourceId}/mqtt/config
      * @secure
      */
-    mqttResourceConfigControllerCreateOrUpdateMqttConfig: (
-      resourceId: number,
-      data: CreateMqttResourceConfigDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<MqttResourceConfigControllerCreateOrUpdateMqttConfigData, void>({
+    upsertOne: (resourceId: number, data: CreateMqttResourceConfigDto, params: RequestParams = {}) =>
+      this.request<UpsertOneData, void>({
         path: `/api/resources/${resourceId}/mqtt/config`,
         method: 'POST',
         body: data,
@@ -3633,13 +3607,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Resource Configuration
-     * @name MqttResourceConfigControllerDeleteMqttConfig
+     * @name DeleteOneMqttConfiguration
      * @summary Delete MQTT configuration for a resource
      * @request DELETE:/api/resources/{resourceId}/mqtt/config
      * @secure
      */
-    mqttResourceConfigControllerDeleteMqttConfig: (resourceId: number, params: RequestParams = {}) =>
-      this.request<MqttResourceConfigControllerDeleteMqttConfigData, void>({
+    deleteOneMqttConfiguration: (resourceId: number, params: RequestParams = {}) =>
+      this.request<DeleteOneMqttConfigurationData, void>({
         path: `/api/resources/${resourceId}/mqtt/config`,
         method: 'DELETE',
         secure: true,
@@ -3650,13 +3624,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Resource Configuration
-     * @name MqttResourceConfigControllerTestMqttConfig
+     * @name TestOne
      * @summary Test MQTT configuration
      * @request POST:/api/resources/{resourceId}/mqtt/config/test
      * @secure
      */
-    mqttResourceConfigControllerTestMqttConfig: (resourceId: number, params: RequestParams = {}) =>
-      this.request<MqttResourceConfigControllerTestMqttConfigData, void>({
+    testOne: (resourceId: number, params: RequestParams = {}) =>
+      this.request<TestOneData, void>({
         path: `/api/resources/${resourceId}/mqtt/config/test`,
         method: 'POST',
         secure: true,
@@ -3669,13 +3643,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerGetMqttServers
+     * @name GetAllMqttServers
      * @summary Get all MQTT servers
      * @request GET:/api/mqtt/servers
      * @secure
      */
-    mqttServerControllerGetMqttServers: (params: RequestParams = {}) =>
-      this.request<MqttServerControllerGetMqttServersData, void>({
+    getAllMqttServers: (params: RequestParams = {}) =>
+      this.request<GetAllMqttServersData, void>({
         path: `/api/mqtt/servers`,
         method: 'GET',
         secure: true,
@@ -3687,13 +3661,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerCreateMqttServer
+     * @name CreateOneMqttServer
      * @summary Create new MQTT server
      * @request POST:/api/mqtt/servers
      * @secure
      */
-    mqttServerControllerCreateMqttServer: (data: CreateMqttServerDto, params: RequestParams = {}) =>
-      this.request<MqttServerControllerCreateMqttServerData, void>({
+    createOneMqttServer: (data: CreateMqttServerDto, params: RequestParams = {}) =>
+      this.request<CreateOneMqttServerData, void>({
         path: `/api/mqtt/servers`,
         method: 'POST',
         body: data,
@@ -3707,13 +3681,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerGetMqttServerById
+     * @name GetOneMqttServerById
      * @summary Get MQTT server by ID
      * @request GET:/api/mqtt/servers/{id}
      * @secure
      */
-    mqttServerControllerGetMqttServerById: (id: number, params: RequestParams = {}) =>
-      this.request<MqttServerControllerGetMqttServerByIdData, void>({
+    getOneMqttServerById: (id: number, params: RequestParams = {}) =>
+      this.request<GetOneMqttServerByIdData, void>({
         path: `/api/mqtt/servers/${id}`,
         method: 'GET',
         secure: true,
@@ -3725,13 +3699,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerUpdateMqttServer
+     * @name UpdateOneMqttServer
      * @summary Update MQTT server
      * @request PUT:/api/mqtt/servers/{id}
      * @secure
      */
-    mqttServerControllerUpdateMqttServer: (id: number, data: UpdateMqttServerDto, params: RequestParams = {}) =>
-      this.request<MqttServerControllerUpdateMqttServerData, void>({
+    updateOneMqttServer: (id: number, data: UpdateMqttServerDto, params: RequestParams = {}) =>
+      this.request<UpdateOneMqttServerData, void>({
         path: `/api/mqtt/servers/${id}`,
         method: 'PUT',
         body: data,
@@ -3745,13 +3719,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerDeleteMqttServer
+     * @name DeleteOneMqttServer
      * @summary Delete MQTT server
      * @request DELETE:/api/mqtt/servers/{id}
      * @secure
      */
-    mqttServerControllerDeleteMqttServer: (id: number, params: RequestParams = {}) =>
-      this.request<MqttServerControllerDeleteMqttServerData, void>({
+    deleteOneMqttServer: (id: number, params: RequestParams = {}) =>
+      this.request<DeleteOneMqttServerData, void>({
         path: `/api/mqtt/servers/${id}`,
         method: 'DELETE',
         secure: true,
@@ -3762,13 +3736,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerTestMqttServerConnection
+     * @name TestConnection
      * @summary Test MQTT server connection
      * @request POST:/api/mqtt/servers/{id}/test
      * @secure
      */
-    mqttServerControllerTestMqttServerConnection: (id: number, params: RequestParams = {}) =>
-      this.request<MqttServerControllerTestMqttServerConnectionData, void>({
+    testConnection: (id: number, params: RequestParams = {}) =>
+      this.request<TestConnectionData, void>({
         path: `/api/mqtt/servers/${id}/test`,
         method: 'POST',
         secure: true,
@@ -3780,13 +3754,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerGetServerStatus
+     * @name GetStatusOfOne
      * @summary Get MQTT server connection status and statistics
      * @request GET:/api/mqtt/servers/{id}/status
      * @secure
      */
-    mqttServerControllerGetServerStatus: (id: number, params: RequestParams = {}) =>
-      this.request<MqttServerControllerGetServerStatusData, void>({
+    getStatusOfOne: (id: number, params: RequestParams = {}) =>
+      this.request<GetStatusOfOneData, void>({
         path: `/api/mqtt/servers/${id}/status`,
         method: 'GET',
         secure: true,
@@ -3798,13 +3772,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags MQTT Servers
-     * @name MqttServerControllerGetAllServerStatuses
+     * @name GetStatusOfAll
      * @summary Get all MQTT server connection statuses and statistics
      * @request GET:/api/mqtt/servers/status
      * @secure
      */
-    mqttServerControllerGetAllServerStatuses: (params: RequestParams = {}) =>
-      this.request<MqttServerControllerGetAllServerStatusesData, void>({
+    getStatusOfAll: (params: RequestParams = {}) =>
+      this.request<GetStatusOfAllData, void>({
         path: `/api/mqtt/servers/status`,
         method: 'GET',
         secure: true,
@@ -3832,13 +3806,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerFindAll
+     * @name GetAllWebhookConfigurations
      * @summary Get all webhook configurations for a resource
      * @request GET:/api/resources/{resourceId}/webhooks
      * @secure
      */
-    webhookConfigControllerFindAll: (resourceId: number, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerFindAllData, void>({
+    getAllWebhookConfigurations: (resourceId: number, params: RequestParams = {}) =>
+      this.request<GetAllWebhookConfigurationsData, void>({
         path: `/api/resources/${resourceId}/webhooks`,
         method: 'GET',
         secure: true,
@@ -3850,13 +3824,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Creates a new webhook configuration for a resource. ## URL Templating The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `https://example.com/webhooks/{{id}}/{{event}}` ## Header Templating Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered. Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}` ## Available Template Variables Available template variables for URLs, headers, and payloads: - `id`: Resource ID - `name`: Resource name - `description`: Resource description - `timestamp`: ISO timestamp of the event - `user.id`: ID of the user who triggered the event - `event`: Either "started" or "ended" depending on the resource usage state
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerCreate
+     * @name CreateOneWebhookConfiguration
      * @summary Create a new webhook configuration
      * @request POST:/api/resources/{resourceId}/webhooks
      * @secure
      */
-    webhookConfigControllerCreate: (resourceId: number, data: CreateWebhookConfigDto, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerCreateData, void>({
+    createOneWebhookConfiguration: (resourceId: number, data: CreateWebhookConfigDto, params: RequestParams = {}) =>
+      this.request<CreateOneWebhookConfigurationData, void>({
         path: `/api/resources/${resourceId}/webhooks`,
         method: 'POST',
         body: data,
@@ -3870,13 +3844,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerFindById
+     * @name GetOneWebhookConfigurationById
      * @summary Get webhook configuration by ID
      * @request GET:/api/resources/{resourceId}/webhooks/{id}
      * @secure
      */
-    webhookConfigControllerFindById: (resourceId: number, id: number, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerFindByIdData, void>({
+    getOneWebhookConfigurationById: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<GetOneWebhookConfigurationByIdData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}`,
         method: 'GET',
         secure: true,
@@ -3888,18 +3862,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerUpdate
+     * @name UpdateOneWebhookConfiguration
      * @summary Update webhook configuration
      * @request PUT:/api/resources/{resourceId}/webhooks/{id}
      * @secure
      */
-    webhookConfigControllerUpdate: (
+    updateOneWebhookConfiguration: (
       resourceId: number,
       id: number,
       data: UpdateWebhookConfigDto,
       params: RequestParams = {},
     ) =>
-      this.request<WebhookConfigControllerUpdateData, void>({
+      this.request<UpdateOneWebhookConfigurationData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}`,
         method: 'PUT',
         body: data,
@@ -3913,13 +3887,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerDelete
+     * @name DeleteOneWebhookConfiguration
      * @summary Delete webhook configuration
      * @request DELETE:/api/resources/{resourceId}/webhooks/{id}
      * @secure
      */
-    webhookConfigControllerDelete: (resourceId: number, id: number, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerDeleteData, void>({
+    deleteOneWebhookConfiguration: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<DeleteOneWebhookConfigurationData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}`,
         method: 'DELETE',
         secure: true,
@@ -3930,18 +3904,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerUpdateStatus
+     * @name UpdateStatus
      * @summary Enable or disable webhook
      * @request PUT:/api/resources/{resourceId}/webhooks/{id}/status
      * @secure
      */
-    webhookConfigControllerUpdateStatus: (
-      resourceId: number,
-      id: number,
-      data: WebhookStatusDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<WebhookConfigControllerUpdateStatusData, void>({
+    updateStatus: (resourceId: number, id: number, data: WebhookStatusDto, params: RequestParams = {}) =>
+      this.request<UpdateStatusData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}/status`,
         method: 'PUT',
         body: data,
@@ -3955,13 +3924,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerTestWebhook
+     * @name Test
      * @summary Test webhook
      * @request POST:/api/resources/{resourceId}/webhooks/{id}/test
      * @secure
      */
-    webhookConfigControllerTestWebhook: (resourceId: number, id: number, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerTestWebhookData, void>({
+    test: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<TestData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}/test`,
         method: 'POST',
         secure: true,
@@ -3973,13 +3942,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description When signature verification is enabled, each webhook request includes: 1. A timestamp header (X-Webhook-Timestamp) 2. A signature header (configurable, default: X-Webhook-Signature) To verify the signature: 1. Extract the timestamp from the X-Webhook-Timestamp header 2. Combine the timestamp and payload as "${timestamp}.${payload}" 3. Compute the HMAC-SHA256 signature using your webhook secret 4. Compare the resulting signature with the value in the signature header Example (Node.js): ```javascript const crypto = require('crypto'); function verifySignature(payload, timestamp, signature, secret) { const signaturePayload = `${timestamp}.${payload}`; const expectedSignature = crypto .createHmac('sha256', secret) .update(signaturePayload) .digest('hex'); return crypto.timingSafeEqual( Buffer.from(signature), Buffer.from(expectedSignature) ); } ```
      *
      * @tags Webhooks
-     * @name WebhookConfigControllerRegenerateSecret
+     * @name RegenerateSecret
      * @summary Regenerate webhook secret
      * @request POST:/api/resources/{resourceId}/webhooks/{id}/regenerate-secret
      * @secure
      */
-    webhookConfigControllerRegenerateSecret: (resourceId: number, id: number, params: RequestParams = {}) =>
-      this.request<WebhookConfigControllerRegenerateSecretData, void>({
+    regenerateSecret: (resourceId: number, id: number, params: RequestParams = {}) =>
+      this.request<RegenerateSecretData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}/regenerate-secret`,
         method: 'POST',
         secure: true,

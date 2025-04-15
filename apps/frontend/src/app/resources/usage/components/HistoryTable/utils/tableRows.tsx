@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { TableCell, Chip } from '@heroui/react';
-import { ResourceUsage } from '@attraccess/api-client';
+import { ResourceUsage } from '@attraccess/react-query-client';
 import { TFunction } from 'i18next';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { DurationDisplay } from '@frontend/components/DurationDisplay';

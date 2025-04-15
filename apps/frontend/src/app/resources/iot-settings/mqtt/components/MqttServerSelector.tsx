@@ -2,15 +2,12 @@ import { Alert, Link } from '@heroui/react';
 import { AlertTriangle } from 'lucide-react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useMqttServers } from '@frontend/api/hooks/mqttServers';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useMqttResourceConfig } from '@frontend/api/hooks/mqttResourceConfig';
 import { useEffect } from 'react';
 import * as en from './translations/server-selector/en';
 import * as de from './translations/server-selector/de';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Select } from '@frontend/components/select';
+import { useMqttResourceConfigurationServiceGetOneMqttConfiguration, useMqttServersServiceGetAllMqttServers } from '@attraccess/react-query-client';
 
 interface MqttServerSelectorProps {
   resourceId: number;
@@ -24,8 +21,8 @@ export default function MqttServerSelector({
   onChange,
 }: MqttServerSelectorProps) {
   const { t } = useTranslations('mqttServerSelector', { en, de });
-  const { data: servers, isLoading: isLoadingServers } = useMqttServers();
-  const { data: mqttConfig } = useMqttResourceConfig(resourceId);
+  const { data: servers, isLoading: isLoadingServers } = useMqttServersServiceGetAllMqttServers();
+  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
 
   // When the config loads, update the selected server
   useEffect(() => {

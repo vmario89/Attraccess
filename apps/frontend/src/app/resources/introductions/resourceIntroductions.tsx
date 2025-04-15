@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useResourceIntroductions } from '../../../api/hooks/resourceIntroduction';
 import { useTranslations } from '../../../i18n';
 import * as en from './translations/resourceIntroductions.en';
 import * as de from './translations/resourceIntroductions.de';
@@ -11,8 +10,7 @@ import {
   AddIntroductionForm,
   IntroductionsList,
 } from './components';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useCanManageIntroductions } from '@frontend/api/hooks/resourceIntroduction';
+import { useResourceIntroductionServiceCheckCanManagePermission, useResourceIntroductionServiceGetAllResourceIntroductions } from '@attraccess/react-query-client';
 
 // Main component
 export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
@@ -26,15 +24,12 @@ export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
   const [pageSize] = useState(5);
 
   const { data: introductionsData, isLoading: isLoadingIntroductions } =
-    useResourceIntroductions(resourceId, {
-      page: currentPage,
-      limit: pageSize,
-    });
+    useResourceIntroductionServiceGetAllResourceIntroductions({resourceId, limit: pageSize, page: currentPage});
 
   const {
     data: canManageIntroductions,
     isLoading: isLoadingCanManageIntroductions,
-  } = useCanManageIntroductions(resourceId);
+  } = useResourceIntroductionServiceCheckCanManagePermission({resourceId});
 
   const totalPages = useMemo(
     () => introductionsData?.totalPages || 1,

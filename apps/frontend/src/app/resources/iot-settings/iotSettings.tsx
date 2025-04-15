@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useResource } from '../../../api/hooks/resources';
 import { useAuth } from '../../../hooks/useAuth';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@heroui/button';
@@ -8,6 +7,7 @@ import { PageHeader } from '../../../components/pageHeader';
 import { MqttConfigurationPanel } from './mqtt/MqttConfigurationPanel';
 import { WebhookConfigurationPanel } from './webhooks/WebhookConfigurationPanel';
 import { ESPHomeConfigurationPanel } from './esphome/ESPHomeConfigurationPanel';
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
 
 export function IoTSettings() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ export function IoTSettings() {
     data: resource,
     isLoading: isLoadingResource,
     error: resourceError,
-  } = useResource(resourceId);
+  } = useResourcesServiceGetOneResourceById({id: resourceId});
 
   const canManageResources = hasPermission('canManageResources');
 

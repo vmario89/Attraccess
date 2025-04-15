@@ -1,4 +1,4 @@
-import { User } from '@attraccess/api-client';
+import { User } from '@attraccess/react-query-client';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
 import { User as UserComponent, UserProps } from '@heroui/react';

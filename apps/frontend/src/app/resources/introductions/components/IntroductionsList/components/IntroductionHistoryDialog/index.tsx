@@ -13,8 +13,8 @@ import * as en from './translations/en';
 import * as de from './translations/de';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
-import { useIntroductionHistory } from '../../../../../../../api/hooks/resourceIntroduction';
 import { Button } from '@heroui/react';
+import { useResourceIntroductionServiceGetHistoryOfIntroduction } from '@attraccess/react-query-client';
 
 export type IntroductionHistoryDialogProps = {
   isOpen: boolean;
@@ -35,10 +35,10 @@ export const IntroductionHistoryDialog = ({
   });
 
   // Note: If there is no introduction found with the given ID, this will return empty history
-  const { data: historyData, isLoading } = useIntroductionHistory(
+  const { data: historyData, isLoading } = useResourceIntroductionServiceGetHistoryOfIntroduction({
     resourceId,
     introductionId
-  );
+  });
   const history = historyData || [];
 
   return (

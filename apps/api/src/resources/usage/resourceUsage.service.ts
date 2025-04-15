@@ -69,7 +69,7 @@ export class ResourceUsageService {
     }
 
     // Check if user has an active session
-    const activeSession = await this.getActiveSession(resourceId, user.id);
+    const activeSession = await this.getActiveSession(resourceId);
     if (activeSession) {
       throw new BadRequestException('User already has an active session');
     }
@@ -106,7 +106,7 @@ export class ResourceUsageService {
     // Emit event after successful save
     this.eventEmitter.emit(
       'resource.usage.started',
-      new ResourceUsageStartedEvent(resourceId, user.id, usageData.startTime)
+      new ResourceUsageStartedEvent(resourceId, usageData.startTime)
     );
 
     return newSession;
@@ -114,11 +114,10 @@ export class ResourceUsageService {
 
   async endSession(
     resourceId: number,
-    user: User,
     dto: EndUsageSessionDto
   ): Promise<ResourceUsage> {
     // Find active session
-    const activeSession = await this.getActiveSession(resourceId, user.id);
+    const activeSession = await this.getActiveSession(resourceId);
     if (!activeSession) {
       throw new BadRequestException('No active session found');
     }
@@ -141,7 +140,6 @@ export class ResourceUsageService {
       'resource.usage.ended',
       new ResourceUsageEndedEvent(
         resourceId,
-        user.id,
         activeSession.startTime,
         endTime
       )
@@ -156,12 +154,10 @@ export class ResourceUsageService {
 
   async getActiveSession(
     resourceId: number,
-    userId: number
   ): Promise<ResourceUsage | null> {
     return await this.resourceUsageRepository.findOne({
       where: {
         resourceId,
-        userId,
         endTime: IsNull(),
       },
     });

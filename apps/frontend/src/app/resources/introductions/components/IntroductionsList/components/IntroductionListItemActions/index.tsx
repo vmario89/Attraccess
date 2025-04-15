@@ -9,10 +9,8 @@ import {
   RevokeConfirmationDialog,
   RevokeDialogMode,
 } from '../RevokeConfirmationDialog';
-import { ResourceIntroduction } from '@attraccess/api-client';
 import { IntroductionHistoryDialog } from '../IntroductionHistoryDialog';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useCheckIntroductionRevokedStatus } from '@frontend/api/hooks/resourceIntroduction';
+import { ResourceIntroduction, useResourceIntroductionServiceCheckIsRevokedStatus } from '@attraccess/react-query-client';
 
 interface IntroductionListItemActionsProps {
   resourceId: number;
@@ -35,10 +33,10 @@ export function IntroductionListItemActions(
   );
   const [showRevokeDialog, setShowRevokeDialog] = useState(false);
 
-  const { data: revokedData } = useCheckIntroductionRevokedStatus(
+  const { data: revokedData } = useResourceIntroductionServiceCheckIsRevokedStatus({
     resourceId,
-    introduction.id
-  );
+    introductionId: introduction.id
+  });
   const isRevoked = useMemo(
     () => revokedData?.isRevoked || false,
     [revokedData]

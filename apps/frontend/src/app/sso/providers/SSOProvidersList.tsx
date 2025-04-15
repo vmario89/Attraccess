@@ -30,22 +30,14 @@ import {
   Download,
 } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
-import {
-  useSSOproviders,
-  useSSOprovider,
-  useCreateSSOprovider,
-  useUpdateSSOprovider,
-  useDeleteSSOprovider,
-} from '../../../api/hooks/ssoProviders';
-import {
-  CreateSSOProviderDto,
-  SSOProvider,
-  UpdateSSOProviderDto,
-} from '@attraccess/api-client';
 import { SSOProviderType } from '@attraccess/database-entities';
 import { useTranslations } from '../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
+import { 
+  CreateSSOProviderDto,
+  SSOProvider,
+  UpdateSSOProviderDto, useSsoServiceCreateOneSsoProvider, useSsoServiceDeleteOneSsoProvider, useSsoServiceGetAllSsoProviders, useSsoServiceGetOneSsoProviderById, useSsoServiceUpdateOneSsoProvider } from '@attraccess/react-query-client';
 
 // Interface for the OpenID Configuration response
 interface OpenIDConfiguration {
@@ -78,7 +70,7 @@ export const SSOProvidersList = forwardRef<
   React.ComponentPropsWithoutRef<'div'>
 >((props, ref) => {
   const { t } = useTranslations('ssoProvidersList', { en, de });
-  const { data: providers, isLoading, error } = useSSOproviders();
+  const { data: providers, isLoading, error } = useSsoServiceGetAllSsoProviders();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [editingProvider, setEditingProvider] = useState<SSOProvider | null>(
     null
@@ -93,10 +85,10 @@ export const SSOProvidersList = forwardRef<
   const [isDiscoverDialogOpen, setIsDiscoverDialogOpen] = useState(false);
 
   const { success, error: showError } = useToastMessage();
-  const createSSOProvider = useCreateSSOprovider();
-  const updateSSOProvider = useUpdateSSOprovider();
-  const deleteSSOProvider = useDeleteSSOprovider();
-  const { data: providerDetails } = useSSOprovider(editingProvider?.id, {
+  const createSSOProvider = useSsoServiceCreateOneSsoProvider();
+  const updateSSOProvider = useSsoServiceUpdateOneSsoProvider();
+  const deleteSSOProvider = useSsoServiceDeleteOneSsoProvider();
+  const { data: providerDetails } = useSsoServiceGetOneSsoProviderById({id: editingProvider?.id as number}, undefined, {
     enabled: !!editingProvider,
   });
 
@@ -212,7 +204,7 @@ export const SSOProvidersList = forwardRef<
   const handleDelete = async (id: number) => {
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteSSOProvider.mutateAsync(id);
+        await deleteSSOProvider.mutateAsync({id: id as number});
         success({
           title: t('providerDeleted'),
           description: t('providerDeletedDesc'),
@@ -273,14 +265,14 @@ export const SSOProvidersList = forwardRef<
       if (editingProvider) {
         await updateSSOProvider.mutateAsync({
           id: editingProvider.id,
-          data: formValues as UpdateSSOProviderDto,
+          requestBody: formValues as UpdateSSOProviderDto,
         });
         success({
           title: t('providerUpdated'),
           description: t('providerUpdatedDesc'),
         });
       } else {
-        await createSSOProvider.mutateAsync(formValues);
+        await createSSOProvider.mutateAsync({requestBody: formValues});
         success({
           title: t('providerCreated'),
           description: t('providerCreatedDesc'),

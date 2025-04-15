@@ -12,17 +12,13 @@ import {
 } from '@heroui/modal';
 import { Button } from '@heroui/button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-  useRemoveIntroducer,
-  useResourceIntroducers,
-} from '@frontend/api/hooks/resourceIntroduction';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AttraccessUser } from '@frontend/components/AttraccessUser';
 
 import * as en from './translations/introducersList.en';
 import * as de from './translations/introducersList.de';
+import { useResourceIntroducersServiceGetAllResourceIntroducers, useResourceIntroducersServiceRemoveOne } from '@attraccess/react-query-client';
 
 export interface Introducer {
   id: number;
@@ -42,7 +38,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
     de,
   });
 
-  const { data: introducers } = useResourceIntroducers(resourceId);
+  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
 
   const { success, error: showError } = useToastMessage();
 
@@ -56,7 +52,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
     setIsConfirmModalOpen(true);
   }, []);
 
-  const removeIntroducer = useRemoveIntroducer();
+  const removeIntroducer = useResourceIntroducersServiceRemoveOne();
 
   const handleConfirmRemove = useCallback(async () => {
     if (!introducerToRemove) {

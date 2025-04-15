@@ -276,7 +276,7 @@ export class WebhookPublisherService {
   @OnEvent('resource.usage.started')
   async handleResourceUsageStarted(event: ResourceUsageStartedEvent) {
     try {
-      const { resourceId, userId, startTime } = event;
+      const { resourceId, startTime } = event;
 
       // Fetch all webhook configurations for this resource
       const webhooks = await this.webhookConfigRepository.find({
@@ -300,21 +300,12 @@ export class WebhookPublisherService {
         return;
       }
 
-      // If we have userId, include it in the context
-      let user = null;
-      if (userId) {
-        // This would need to fetch user details
-        // For now, just include the ID
-        user = { id: userId };
-      }
-
       // Prepare context for template
       const context = {
         id: resource.id,
         name: resource.name,
         description: resource.description,
         timestamp: startTime.toISOString(),
-        user,
         event: 'started',
       };
 
@@ -374,7 +365,7 @@ export class WebhookPublisherService {
   @OnEvent('resource.usage.ended')
   async handleResourceUsageEnded(event: ResourceUsageEndedEvent) {
     try {
-      const { resourceId, userId, endTime } = event;
+      const { resourceId, endTime } = event;
 
       // Fetch all webhook configurations for this resource
       const webhooks = await this.webhookConfigRepository.find({
@@ -397,21 +388,12 @@ export class WebhookPublisherService {
         return;
       }
 
-      // If we have userId, include it in the context
-      let user = null;
-      if (userId) {
-        // This would need to fetch user details
-        // For now, just include the ID
-        user = { id: userId };
-      }
-
       // Prepare context for template
       const context = {
         id: resource.id,
         name: resource.name,
         description: resource.description,
         timestamp: endTime.toISOString(),
-        user,
         event: 'ended',
       };
 

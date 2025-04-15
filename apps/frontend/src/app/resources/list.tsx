@@ -1,12 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useResources } from '../../api/hooks';
 import { ResourceCard, ResourceCardSkeletonLoader } from './resourceCard';
 import { Toolbar } from './toolbar';
-import { Resource } from '@attraccess/api-client';
 import { Alert, Pagination } from '@heroui/react';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/resourceList.en';
 import * as de from './translations/resourceList.de';
+import { useResourcesServiceGetAllResources, Resource } from '@attraccess/react-query-client';
 
 export function ResourceList() {
   const [searchInput, setSearchInput] = useState('');
@@ -18,7 +17,7 @@ export function ResourceList() {
     de,
   });
 
-  const resources = useResources({
+  const resources = useResourcesServiceGetAllResources({
     search: searchInput,
     page: currentPage,
     limit: pageSize,
@@ -57,7 +56,7 @@ export function ResourceList() {
     if (resources.isError) {
       return (
         <Alert
-          description={resources.error?.message}
+          description={(resources.error as Error)?.message}
           title={t('errorLoadingResources')}
           color="danger"
         />

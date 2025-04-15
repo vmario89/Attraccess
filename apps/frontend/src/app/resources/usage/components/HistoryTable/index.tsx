@@ -7,15 +7,16 @@ import {
   Pagination,
   Spinner,
 } from '@heroui/react';
-import { ResourceUsage } from '@attraccess/api-client';
 import { useTranslations } from '../../../../../i18n';
 import * as en from './utils/translations/en';
 import * as de from './utils/translations/de';
 import { generateHeaderColumns } from './utils/tableHeaders';
 import { generateRowCells } from './utils/tableRows';
-import { useResourceUsageHistory } from '../../../../../api/hooks/resourceUsage';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Select } from '@frontend/components/select';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { useAuth } from '@frontend/hooks/useAuth';
+import { useResourceUsageServiceGetHistoryOfResourceUsage, ResourceUsage } from '@attraccess/react-query-client';
 
 interface HistoryTableProps {
   resourceId: number;
@@ -32,6 +33,7 @@ export const HistoryTable = ({
   onSessionClick,
 }: HistoryTableProps) => {
   const { t } = useTranslations('historyTable', { en, de });
+  const { user } = useAuth();
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -59,7 +61,14 @@ export const HistoryTable = ({
     data: usageHistory,
     isLoading,
     error,
-  } = useResourceUsageHistory(resourceId, page, rowsPerPage, showAllUsers);
+  } = useResourceUsageServiceGetHistoryOfResourceUsage({
+    resourceId,
+    page,
+    limit: rowsPerPage,
+    userId: showAllUsers ? undefined : user?.id,
+  }, undefined, {
+    enabled: !!user,
+  });
 
   // Generate header columns
   const headerColumns = useMemo(

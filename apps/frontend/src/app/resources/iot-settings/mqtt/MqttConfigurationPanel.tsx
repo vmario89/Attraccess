@@ -15,8 +15,7 @@ import MqttServerSelector from './components/MqttServerSelector';
 import MqttTemplateSettings from './components/MqttTemplateSettings';
 import MqttActions from './components/MqttActions';
 import MqttDocumentation from './components/MqttDocumentation';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useMqttResourceConfig } from '@frontend/api/hooks/mqttResourceConfig';
+import { useMqttResourceConfigurationServiceGetOneMqttConfiguration } from '@attraccess/react-query-client';
 
 interface MqttConfigurationPanelProps {
   resourceId: number;
@@ -52,7 +51,7 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
   const { resourceId } = props;
   const { t } = useTranslations('mqtt', { en, de });
   const [isOpen, setIsOpen] = useState(false);
-  const { data: mqttConfig } = useMqttResourceConfig(resourceId);
+  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
   const [formData, setFormData] = useState<MqttFormData>({
     serverId: '',
     inUse: {

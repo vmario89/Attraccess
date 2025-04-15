@@ -20,21 +20,19 @@ import {
 } from '@heroui/react';
 import { Pencil, Trash, Globe, Webhook, Shield, RefreshCw } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
-import {
-  useMqttServers,
-  useCreateMqttServer,
-  useUpdateMqttServer,
-  useDeleteMqttServer,
-  useTestMqttServerConnection,
-} from '../../../api/hooks/mqttServers';
-import {
-  CreateMqttServerDto,
-  MqttServer,
-  UpdateMqttServerDto,
-} from '@attraccess/api-client';
 import { useTranslations } from '../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
+import { 
+  CreateMqttServerDto,
+  MqttServer,
+  UpdateMqttServerDto,
+  useMqttServersServiceCreateOneMqttServer,
+  useMqttServersServiceDeleteOneMqttServer,
+  useMqttServersServiceGetAllMqttServers,
+  useMqttServersServiceTestConnection,
+  useMqttServersServiceUpdateOneMqttServer,
+} from '@attraccess/react-query-client';
 
 const defaultServerValues: CreateMqttServerDto = {
   name: '',
@@ -55,7 +53,7 @@ export const MqttServersList = forwardRef<
   React.ComponentPropsWithoutRef<'div'>
 >((props, ref) => {
   const { t } = useTranslations('mqttServersList', { en, de });
-  const { data: servers, isLoading, error } = useMqttServers();
+  const { data: servers, isLoading, error } = useMqttServersServiceGetAllMqttServers();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [editingServer, setEditingServer] = useState<MqttServer | null>(null);
   const [formValues, setFormValues] = useState<CreateMqttServerDto>(
@@ -64,10 +62,10 @@ export const MqttServersList = forwardRef<
   const [testingId, setTestingId] = useState<number | null>(null);
 
   const { success, error: showError } = useToastMessage();
-  const createMqttServer = useCreateMqttServer();
-  const updateMqttServer = useUpdateMqttServer();
-  const deleteMqttServer = useDeleteMqttServer();
-  const testConnection = useTestMqttServerConnection();
+  const createMqttServer = useMqttServersServiceCreateOneMqttServer();
+  const updateMqttServer = useMqttServersServiceUpdateOneMqttServer();
+  const deleteMqttServer = useMqttServersServiceDeleteOneMqttServer();
+  const testConnection = useMqttServersServiceTestConnection();
 
   const handleAddNew = () => {
     setEditingServer(null);
@@ -97,7 +95,7 @@ export const MqttServersList = forwardRef<
   const handleDelete = async (id: number) => {
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteMqttServer.mutateAsync(id);
+        await deleteMqttServer.mutateAsync({id});
         success({
           title: t('serverDeleted'),
           description: t('serverDeletedDesc'),
@@ -131,14 +129,14 @@ export const MqttServersList = forwardRef<
       if (editingServer) {
         await updateMqttServer.mutateAsync({
           id: editingServer.id,
-          data: formValues as UpdateMqttServerDto,
+          requestBody: formValues as UpdateMqttServerDto,
         });
         success({
           title: t('serverUpdated'),
           description: t('serverUpdatedDesc'),
         });
       } else {
-        await createMqttServer.mutateAsync(formValues);
+        await createMqttServer.mutateAsync({requestBody: formValues as CreateMqttServerDto});
         success({
           title: t('serverCreated'),
           description: t('serverCreatedDesc'),
@@ -162,7 +160,7 @@ export const MqttServersList = forwardRef<
     setTestingId(id);
 
     try {
-      const result = await testConnection.mutateAsync(id);
+      const result = await testConnection.mutateAsync({id});
 
       if (result && typeof result.success === 'boolean') {
         if (result.success) {

@@ -41,23 +41,23 @@ export class SSOController {
   ) {}
 
   @Get('providers')
-  @ApiOperation({ summary: 'Get all SSO providers' })
+  @ApiOperation({ summary: 'Get all SSO providers', operationId: 'getAllSSOProviders' })
   @ApiResponse({
     status: 200,
     description: 'The list of SSO providers',
     type: SSOProvider,
     isArray: true,
   })
-  async getProviders(): Promise<SSOProvider[]> {
+  async getAll(): Promise<SSOProvider[]> {
     return this.ssoService.getAllProviders();
   }
 
   @Get('providers/:id')
   @Auth('canManageSystemConfiguration')
-  @ApiOperation({ summary: 'Get SSO provider by ID with full configuration' })
+  @ApiOperation({ summary: 'Get SSO provider by ID with full configuration', operationId: 'getOneSSOProviderById' })
   @ApiParam({
     name: 'id',
-    type: 'string',
+    type: 'number',
     description: 'The ID of the SSO provider',
   })
   @ApiResponse({
@@ -73,7 +73,7 @@ export class SSOController {
     status: 404,
     description: 'Provider not found',
   })
-  async getProviderById(@Param('id') id: string): Promise<SSOProvider> {
+  async getOneById(@Param('id') id: string): Promise<SSOProvider> {
     const providerId = parseInt(id, 10);
     const provider = await this.ssoService.getProviderById(providerId);
     return this.ssoService.getProviderByTypeAndIdWithConfiguration(
@@ -84,7 +84,7 @@ export class SSOController {
 
   @Post('providers')
   @Auth('canManageSystemConfiguration')
-  @ApiOperation({ summary: 'Create a new SSO provider' })
+  @ApiOperation({ summary: 'Create a new SSO provider', operationId: 'createOneSsoProvider' })
   @ApiBody({ type: CreateSSOProviderDto })
   @ApiResponse({
     status: 201,
@@ -95,7 +95,7 @@ export class SSOController {
     status: 403,
     description: 'Forbidden - Insufficient permissions',
   })
-  async createProvider(
+  async createOne(
     @Body() createDto: CreateSSOProviderDto
   ): Promise<SSOProvider> {
     return this.ssoService.createProvider(createDto);
@@ -103,10 +103,10 @@ export class SSOController {
 
   @Put('providers/:id')
   @Auth('canManageSystemConfiguration')
-  @ApiOperation({ summary: 'Update an existing SSO provider' })
+  @ApiOperation({ summary: 'Update an existing SSO provider', operationId: 'updateOneSSOProvider' })
   @ApiParam({
     name: 'id',
-    type: 'string',
+    type: 'number',
     description: 'The ID of the SSO provider',
   })
   @ApiBody({ type: UpdateSSOProviderDto })
@@ -123,7 +123,7 @@ export class SSOController {
     status: 404,
     description: 'Provider not found',
   })
-  async updateProvider(
+  async updateOne(
     @Param('id') id: string,
     @Body() updateDto: UpdateSSOProviderDto
   ): Promise<SSOProvider> {
@@ -132,10 +132,10 @@ export class SSOController {
 
   @Delete('providers/:id')
   @Auth('canManageSystemConfiguration')
-  @ApiOperation({ summary: 'Delete an SSO provider' })
+  @ApiOperation({ summary: 'Delete an SSO provider', operationId: 'deleteOneSSOProvider' })
   @ApiParam({
     name: 'id',
-    type: 'string',
+    type: 'number',
     description: 'The ID of the SSO provider',
   })
   @ApiResponse({
@@ -150,7 +150,7 @@ export class SSOController {
     status: 404,
     description: 'Provider not found',
   })
-  async deleteProvider(@Param('id') id: string): Promise<void> {
+  async deleteOne(@Param('id') id: string): Promise<void> {
     return this.ssoService.deleteProvider(parseInt(id, 10));
   }
 
@@ -161,6 +161,7 @@ export class SSOController {
       'Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned,' +
       ' your frontend should pass the query parameters back to the sso callback endpoint' +
       ' to retreive a JWT token for furhter authentication',
+    operationId: 'loginWithOidc',
   })
   @ApiResponse({
     status: 200,
@@ -180,12 +181,12 @@ export class SSOController {
     description: 'The ID of the SSO provider',
   })
   @UseGuards(SSOOIDCGuard, AuthGuard('sso-oidc'))
-  async oidcLogin(): Promise<HttpStatus.OK> {
+  async loginWithOidc(): Promise<HttpStatus.OK> {
     return HttpStatus.OK;
   }
 
   @Get(`/${SSOProviderType.OIDC}/:providerId/callback`)
-  @ApiOperation({ summary: 'Callback for OIDC login' })
+  @ApiOperation({ summary: 'Callback for OIDC login', operationId: 'oidcLoginCallback' })
   @ApiResponse({
     status: 200,
     description: 'The user has been logged in',

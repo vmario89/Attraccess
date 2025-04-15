@@ -49,7 +49,7 @@ export class ResourcesController {
   };
 
   @Post()
-  @ApiOperation({ summary: 'Create a new resource' })
+  @ApiOperation({ summary: 'Create a new resource', operationId: 'createOneResource' })
   @ApiResponse({
     status: 201,
     description: 'The resource has been successfully created.',
@@ -58,7 +58,7 @@ export class ResourcesController {
   @CanManageResources({ skipResourceCheck: true })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
-  async createResource(
+  async createOne(
     @Body() createDto: CreateResourceDto,
     @UploadedFile() image?: FileUpload
   ): Promise<Resource> {
@@ -71,7 +71,7 @@ export class ResourcesController {
 
   @Get()
   @Auth()
-  @ApiOperation({ summary: 'Get all resources' })
+  @ApiOperation({ summary: 'Get all resources', operationId: 'getAllResources' })
   @ApiResponse({
     status: 200,
     description: 'List of resources with pagination.',
@@ -81,7 +81,7 @@ export class ResourcesController {
     status: 401,
     description: 'Unauthorized - User is not authenticated',
   })
-  async getResources(
+  async getAll(
     @Query() query: ListResourcesDto
   ): Promise<PaginatedResponse<Resource>> {
     const resources = await this.resourcesService.listResources(
@@ -96,7 +96,7 @@ export class ResourcesController {
 
   @Get(':id')
   @Auth()
-  @ApiOperation({ summary: 'Get a resource by ID' })
+  @ApiOperation({ summary: 'Get a resource by ID', operationId: 'getOneResourceById' })
   @ApiResponse({
     status: 200,
     description: 'The found resource.',
@@ -110,7 +110,7 @@ export class ResourcesController {
     status: 404,
     description: 'Resource not found',
   })
-  async getResourceById(
+  async getOneById(
     @Param('id', ParseIntPipe) id: number
   ): Promise<Resource> {
     const resource = await this.resourcesService.getResourceById(id);
@@ -118,7 +118,7 @@ export class ResourcesController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a resource' })
+  @ApiOperation({ summary: 'Update a resource', operationId: 'updateOneResource' })
   @ApiResponse({
     status: 200,
     description: 'The resource has been successfully updated.',
@@ -127,7 +127,7 @@ export class ResourcesController {
   @CanManageResources({ paramName: 'id' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
-  async updateResource(
+  async updateOne(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateResourceDto,
     @UploadedFile() image?: FileUpload
@@ -141,13 +141,13 @@ export class ResourcesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a resource' })
+  @ApiOperation({ summary: 'Delete a resource', operationId: 'deleteOneResource' })
   @ApiResponse({
     status: 204,
     description: 'The resource has been successfully deleted.',
   })
   @CanManageResources({ paramName: 'id' })
-  async deleteResource(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async deleteOne(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.resourcesService.deleteResource(id);
   }
 }

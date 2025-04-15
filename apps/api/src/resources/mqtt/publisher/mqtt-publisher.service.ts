@@ -108,7 +108,7 @@ export class MqttPublisherService {
 
         // Try to publish
         try {
-          const serverStatus = await this.mqttClientService.getServerStatus(
+          const serverStatus = await this.mqttClientService.getStatusOfOne(
             queuedMessage.serverId
           );
 
@@ -228,7 +228,6 @@ export class MqttPublisherService {
         id: resource.id,
         name: resource.name,
         timestamp: new Date().toISOString(),
-        user: event.userId ? { id: event.userId } : null,
       };
 
       // Process templates
@@ -277,7 +276,6 @@ export class MqttPublisherService {
         id: resource.id,
         name: resource.name,
         timestamp: new Date().toISOString(),
-        user: event.userId ? { id: event.userId } : null,
       };
 
       // Process templates

@@ -28,14 +28,14 @@ export class MqttResourceConfigController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get MQTT configuration for a resource' })
+  @ApiOperation({ summary: 'Get MQTT configuration for a resource', operationId: 'getOneMQTTConfiguration' })
   @ApiResponse({
     status: 200,
     description: 'Returns the MQTT configuration for the resource',
     type: MqttResourceConfig,
   })
   @ApiResponse({ status: 404, description: 'Resource not found' })
-  async getMqttConfig(
+  async getOne(
     @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<MqttResourceConfig | null> {
     return this.mqttResourceConfigService.findByResourceId(resourceId);
@@ -44,6 +44,7 @@ export class MqttResourceConfigController {
   @Post()
   @ApiOperation({
     summary: 'Create or update MQTT configuration for a resource',
+    operationId: 'upsertOne',
   })
   @ApiResponse({
     status: 201,
@@ -51,7 +52,7 @@ export class MqttResourceConfigController {
     type: MqttResourceConfig,
   })
   @ApiResponse({ status: 404, description: 'Resource not found' })
-  async createOrUpdateMqttConfig(
+  async upsertOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() mqttConfigDto: CreateMqttResourceConfigDto
   ): Promise<MqttResourceConfig> {
@@ -62,7 +63,7 @@ export class MqttResourceConfigController {
   }
 
   @Delete()
-  @ApiOperation({ summary: 'Delete MQTT configuration for a resource' })
+  @ApiOperation({ summary: 'Delete MQTT configuration for a resource', operationId: 'deleteOneMQTTConfiguration' })
   @ApiResponse({
     status: 200,
     description: 'MQTT configuration deleted successfully',
@@ -71,14 +72,14 @@ export class MqttResourceConfigController {
     status: 404,
     description: 'Resource or MQTT configuration not found',
   })
-  async deleteMqttConfig(
+  async deleteOne(
     @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<void> {
     return this.mqttResourceConfigService.remove(resourceId);
   }
 
   @Post('test')
-  @ApiOperation({ summary: 'Test MQTT configuration' })
+  @ApiOperation({ summary: 'Test MQTT configuration', operationId: 'testOne' })
   @ApiResponse({
     status: 200,
     description: 'Test result',
@@ -88,7 +89,7 @@ export class MqttResourceConfigController {
     status: 404,
     description: 'Resource or MQTT configuration not found',
   })
-  async testMqttConfig(
+  async testOne(
     @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<TestMqttConfigResponseDto> {
     // Get the MQTT configuration for this resource

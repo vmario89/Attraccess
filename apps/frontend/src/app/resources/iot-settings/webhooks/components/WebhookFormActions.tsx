@@ -5,16 +5,12 @@ import { Trash2, RefreshCw, Save } from 'lucide-react';
 import { useTranslations } from '@frontend/i18n';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-  useDeleteWebhookConfig,
-  useTestWebhook,
-} from '@frontend/api/hooks/webhookConfig';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only
 import * as enActions from '../translations/components/form-actions/en';
 import * as deActions from '../translations/components/form-actions/de';
+import { useWebhooksServiceDeleteOneWebhookConfiguration, useWebhooksServiceTest } from '@attraccess/react-query-client';
 
 interface WebhookFormActionsProps {
   onCancel?: () => void;
@@ -34,8 +30,8 @@ const WebhookFormActions: React.FC<WebhookFormActionsProps> = ({
   const { success, error: showError } = useToastMessage();
 
   // API hooks specific to this component
-  const deleteWebhook = useDeleteWebhookConfig();
-  const testWebhook = useTestWebhook();
+  const deleteWebhook = useWebhooksServiceDeleteOneWebhookConfiguration();
+  const testWebhook = useWebhooksServiceTest();
 
   // Local state
   const [isTesting, setIsTesting] = useState(false);

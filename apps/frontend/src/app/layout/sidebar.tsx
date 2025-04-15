@@ -13,7 +13,7 @@ import {
   Link,
 } from '@heroui/react';
 import { routes, de as routesDe, en as routesEn } from '../routes';
-import { SystemPermissions } from '@attraccess/api-client';
+import { SystemPermissions } from '@attraccess/react-query-client';
 
 interface SidebarProps {
   isOpen: boolean;
