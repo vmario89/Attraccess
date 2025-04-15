@@ -5,15 +5,9 @@ import { useState } from 'react';
 import { useTranslations } from '@frontend/i18n';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-  useMqttResourceConfig,
-  useCreateOrUpdateMqttResourceConfig,
-  useDeleteMqttResourceConfig,
-  useTestMqttResourceConfig,
-} from '@frontend/api/hooks/mqttResourceConfig';
 import * as en from './translations/actions/en';
 import * as de from './translations/actions/de';
+import { useMqttResourceConfigurationServiceDeleteOneMqttConfiguration, useMqttResourceConfigurationServiceGetOneMqttConfiguration, useMqttResourceConfigurationServiceTestOne, useMqttResourceConfigurationServiceUpsertOne } from '@attraccess/react-query-client';
 
 interface MqttFormData {
   serverId: string;
@@ -39,13 +33,13 @@ export default function MqttActions({
   onReset,
 }: MqttActionsProps) {
   const { t } = useTranslations('mqttActions', { en, de });
-  const { data: mqttConfig } = useMqttResourceConfig(resourceId);
+  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
   const [isTesting, setIsTesting] = useState(false);
 
   const { success, error: showError } = useToastMessage();
-  const createOrUpdateConfig = useCreateOrUpdateMqttResourceConfig();
-  const deleteConfig = useDeleteMqttResourceConfig();
-  const testConfig = useTestMqttResourceConfig();
+  const createOrUpdateConfig = useMqttResourceConfigurationServiceUpsertOne();
+  const deleteConfig = useMqttResourceConfigurationServiceDeleteOneMqttConfiguration();
+  const testConfig = useMqttResourceConfigurationServiceTestOne();
 
   const handleSave = async () => {
     if (!formData.serverId) {
@@ -67,7 +61,7 @@ export default function MqttActions({
 
       await createOrUpdateConfig.mutateAsync({
         resourceId,
-        data: configData,
+        requestBody: configData,
       });
 
       success({
@@ -88,7 +82,7 @@ export default function MqttActions({
 
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteConfig.mutateAsync(resourceId);
+        await deleteConfig.mutateAsync({resourceId});
         onReset();
         success({
           title: t('configDeleted'),
@@ -107,7 +101,7 @@ export default function MqttActions({
   const handleTest = async () => {
     setIsTesting(true);
     try {
-      const result = await testConfig.mutateAsync(resourceId);
+      const result = await testConfig.mutateAsync({resourceId});
       if (result.success) {
         success({
           title: t('testSuccessful'),

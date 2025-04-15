@@ -28,7 +28,7 @@ export class ResourceUsageController {
 
   @Post('start')
   @Auth()
-  @ApiOperation({ summary: 'Start a resource usage session' })
+  @ApiOperation({ summary: 'Start a resource usage session', operationId: 'startSession' })
   @ApiResponse({
     status: 201,
     description: 'Usage session started successfully.',
@@ -56,7 +56,7 @@ export class ResourceUsageController {
 
   @Put('end')
   @Auth()
-  @ApiOperation({ summary: 'End a resource usage session' })
+  @ApiOperation({ summary: 'End a resource usage session', operationId: 'endSession' })
   @ApiResponse({
     status: 200,
     description: 'Usage session ended successfully.',
@@ -77,14 +77,13 @@ export class ResourceUsageController {
   async endSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() dto: EndUsageSessionDto,
-    @Req() req: AuthenticatedRequest
   ): Promise<ResourceUsage> {
-    return this.resourceUsageService.endSession(resourceId, req.user, dto);
+    return this.resourceUsageService.endSession(resourceId, dto);
   }
 
   @Get('history')
   @Auth()
-  @ApiOperation({ summary: 'Get usage history for a resource' })
+  @ApiOperation({ summary: 'Get usage history for a resource', operationId: 'getHistoryOfResourceUsage' })
   @ApiResponse({
     status: 200,
     description: 'Resource usage history retrieved successfully.',
@@ -102,7 +101,7 @@ export class ResourceUsageController {
     status: 404,
     description: 'Resource not found',
   })
-  async getResourceHistory(
+  async getHistory(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceHistoryQueryDto,
     @Req() req: AuthenticatedRequest
@@ -140,7 +139,7 @@ export class ResourceUsageController {
 
   @Get('active')
   @Auth()
-  @ApiOperation({ summary: 'Get active usage session for current user' })
+  @ApiOperation({ summary: 'Get active usage session for current user', operationId: 'getActiveSession' })
   @ApiResponse({
     status: 200,
     description: 'Active session retrieved successfully.',
@@ -156,8 +155,7 @@ export class ResourceUsageController {
   })
   async getActiveSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
-    @Req() req: AuthenticatedRequest
   ): Promise<ResourceUsage | null> {
-    return this.resourceUsageService.getActiveSession(resourceId, req.user.id);
+    return this.resourceUsageService.getActiveSession(resourceId);
   }
 }

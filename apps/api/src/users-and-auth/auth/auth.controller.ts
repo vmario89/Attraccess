@@ -19,7 +19,7 @@ export class AuthController {
 
   @Post('/session/local')
   @UseGuards(LoginGuard)
-  @ApiOperation({ summary: 'Create a new session using local authentication' })
+  @ApiOperation({ summary: 'Create a new session using local authentication', operationId: 'createSession' })
   @ApiResponse({
     status: 200,
     description: 'The session has been created',
@@ -38,7 +38,7 @@ export class AuthController {
       },
     },
   })
-  async postSession(
+  async createSession(
     @Req() request: AuthenticatedRequest
   ): Promise<CreateSessionResponse> {
     const authToken = await this.authService.createJWT(request.user);
@@ -51,7 +51,7 @@ export class AuthController {
 
   @Delete('/session')
   @Auth()
-  @ApiOperation({ summary: 'Logout and invalidate the current session' })
+  @ApiOperation({ summary: 'Logout and invalidate the current session', operationId: 'endSession' })
   @ApiOkResponse({
     description: 'The session has been deleted',
     schema: {
@@ -63,7 +63,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized - User is not authenticated',
   })
-  async deleteSession(@Req() request: AuthenticatedRequest): Promise<void> {
+  async endSession(@Req() request: AuthenticatedRequest): Promise<void> {
     const tokenId = request.authInfo?.tokenId;
     await new Promise<void>((resolve) => request.logout(resolve));
     if (tokenId) {

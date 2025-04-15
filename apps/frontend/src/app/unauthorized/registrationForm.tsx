@@ -12,9 +12,9 @@ import {
   useDisclosure,
 } from '@heroui/modal';
 import { useTranslations } from '../../i18n';
-import { useAuth } from '../../hooks/useAuth';
 import * as en from './translations/register.en';
 import * as de from './translations/register.de';
+import { useUsersServiceCreateOneUser } from '@attraccess/react-query-client';
 
 interface RegisterFormProps {
   onHasAccount: () => void;
@@ -26,7 +26,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
     de,
   });
 
-  const { signup } = useAuth();
+  const createUser = useUsersServiceCreateOneUser();
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string>('');
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -48,11 +48,13 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
       }
 
       try {
-        await signup.mutateAsync({
-          username,
-          password,
-          email,
-          strategy: 'local_password',
+        await createUser.mutateAsync({
+          requestBody: {
+            username,
+            password,
+            email,
+            strategy: 'local_password',
+          }
         });
         setRegisteredEmail(email);
         onOpen();
@@ -61,7 +63,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         setError(error.error?.message || 'An unexpected error occurred');
       }
     },
-    [signup, onOpen]
+    [createUser, onOpen]
   );
 
   return (
@@ -74,7 +76,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
             onPress={onHasAccount}
             variant="light"
             color="secondary"
-            isDisabled={signup.isPending}
+            isDisabled={createUser.isPending}
           >
             {t('signInButton')}
           </Button>
@@ -89,7 +91,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           label={t('username')}
           required
           variant="underlined"
-          isDisabled={signup.isPending}
+          isDisabled={createUser.isPending}
         />
 
         <Input
@@ -99,7 +101,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           label={t('email')}
           required
           variant="underlined"
-          isDisabled={signup.isPending}
+          isDisabled={createUser.isPending}
         />
 
         <Input
@@ -109,7 +111,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           label={t('password')}
           required
           variant="underlined"
-          isDisabled={signup.isPending}
+          isDisabled={createUser.isPending}
         />
 
         <Button
@@ -119,10 +121,10 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           endContent={
             <ArrowRight className="group-hover:translate-x-1 transition-transform" />
           }
-          isLoading={signup.isPending}
-          isDisabled={signup.isPending}
+          isLoading={createUser.isPending}
+          isDisabled={createUser.isPending}
         >
-          {signup.isPending ? t('creatingAccount') : t('createAccountButton')}
+          {createUser.isPending ? t('creatingAccount') : t('createAccountButton')}
         </Button>
 
         {error && (

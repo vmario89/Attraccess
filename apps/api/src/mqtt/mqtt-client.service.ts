@@ -202,7 +202,7 @@ export class MqttClientService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async getServerStatus(serverId: number): Promise<MqttServerStatusDto> {
+  async getStatusOfOne(serverId: number): Promise<MqttServerStatusDto> {
     const client = this.clients.get(serverId);
     const connected = client?.connected || false;
     const healthStatus =
@@ -218,7 +218,7 @@ export class MqttClientService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  async getAllServerStatuses(): Promise<Record<string, MqttServerStatusDto>> {
+  async getStatusOfAll(): Promise<Record<string, MqttServerStatusDto>> {
     const result: Record<string, MqttServerStatusDto> = {};
     const allStats = this.monitoringService.getAllServerStats();
 

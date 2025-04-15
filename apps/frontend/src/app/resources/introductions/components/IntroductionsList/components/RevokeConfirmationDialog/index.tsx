@@ -12,11 +12,7 @@ import { useTranslations } from '../../../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useToastMessage } from '../../../../../../../components/toastProvider';
-import {
-  useResourceIntroduction,
-  useUnrevokeIntroduction,
-} from '../../../../../../../api/hooks/resourceIntroduction';
-import { useRevokeIntroduction } from '../../../../../../../api/hooks/resourceIntroduction';
+import { useResourceIntroductionServiceGetOneResourceIntroduction, useResourceIntroductionServiceMarkRevoked, useResourceIntroductionServiceMarkUnrevoked } from '@attraccess/react-query-client';
 
 export enum RevokeDialogMode {
   REVOKE = 'revoke',
@@ -45,12 +41,12 @@ export const RevokeConfirmationDialog = ({
 
   const [comment, setComment] = useState('');
 
-  const revokeIntroduction = useRevokeIntroduction();
-  const unrevokeIntroduction = useUnrevokeIntroduction();
+  const revokeIntroduction = useResourceIntroductionServiceMarkRevoked();
+  const unrevokeIntroduction = useResourceIntroductionServiceMarkUnrevoked();
 
   const { success, error: showError } = useToastMessage();
 
-  const { data: intro } = useResourceIntroduction(resourceId, introductionId);
+  const { data: intro } = useResourceIntroductionServiceGetOneResourceIntroduction({resourceId, introductionId});
 
   const isSubmitting = useMemo(() => {
     return revokeIntroduction.isPending || unrevokeIntroduction.isPending;
@@ -65,7 +61,7 @@ export const RevokeConfirmationDialog = ({
       {
         resourceId: resourceId,
         introductionId: introductionId,
-        comment,
+        requestBody: {comment},
       },
       {
         onSuccess: () => {
@@ -103,7 +99,7 @@ export const RevokeConfirmationDialog = ({
       {
         resourceId: resourceId,
         introductionId: introductionId,
-        comment,
+        requestBody: {comment},
       },
       {
         onSuccess: () => {

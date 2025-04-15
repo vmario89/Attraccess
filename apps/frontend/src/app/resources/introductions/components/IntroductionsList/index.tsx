@@ -2,9 +2,9 @@ import { useTranslations } from '../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { Listbox, ListboxItem } from '@heroui/listbox';
-import { useResourceIntroductions } from '../../../../../api/hooks/resourceIntroduction';
 import { IntroductionListItemContent } from './components/IntroductionListItemContent';
 import { IntroductionListItemActions } from './components/IntroductionListItemActions';
+import { useResourceIntroductionServiceGetAllResourceIntroductions } from '@attraccess/react-query-client';
 
 interface IntroductionsListProps {
   resourceId: number;
@@ -18,7 +18,8 @@ export function IntroductionsList(props: IntroductionsListProps) {
     de,
   });
 
-  const { data: introductions } = useResourceIntroductions(resourceId);
+  // TODO: Add pagination
+  const { data: introductions } = useResourceIntroductionServiceGetAllResourceIntroductions({resourceId, limit: 100, page: 1});
 
   return (
     <div>

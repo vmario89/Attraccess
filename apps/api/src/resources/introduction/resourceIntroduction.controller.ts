@@ -8,7 +8,7 @@ import {
   Body,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import {
   ResourceIntroduction,
@@ -41,7 +41,7 @@ class CompleteIntroductionDto {
   userId: number;
 }
 
-@ApiTags('Resource Introductions')
+
 @Controller('resources/:resourceId/introductions')
 export class ResourceIntroductionController {
   constructor(
@@ -55,6 +55,7 @@ export class ResourceIntroductionController {
     summary: 'Mark resource introduction as completed for a user',
     description:
       'Complete an introduction for a user identified by their user ID, username, or email.',
+    operationId: 'markCompleted',
   })
   @ApiResponse({
     status: 201,
@@ -69,7 +70,7 @@ export class ResourceIntroductionController {
     status: 404,
     description: 'User not found with the provided identifier',
   })
-  async completeIntroduction(
+  async markCompleted(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() dto: CompleteIntroductionDto,
     @Req() req: AuthenticatedRequest
@@ -83,13 +84,16 @@ export class ResourceIntroductionController {
 
   @Get()
   @CanManageResources()
-  @ApiOperation({ summary: 'Get all introductions for a resource' })
+  @ApiOperation({
+    summary: 'Get all introductions for a resource',
+    operationId: 'getAllResourceIntroductions',
+  })
   @ApiResponse({
     status: 200,
     description: 'Resource introductions',
     type: PaginatedResourceIntroductionResponseDto,
   })
-  async getResourceIntroductions(
+  async getAll(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceIntroductionsQueryDto
   ): Promise<PaginatedResponseDto<ResourceIntroduction>> {
@@ -115,6 +119,7 @@ export class ResourceIntroductionController {
     summary: 'Check if current user has a valid introduction',
     description:
       'Check if the current user has completed the introduction for this resource and it is not revoked',
+      operationId: 'checkStatus',
   })
   @ApiResponse({
     status: 200,
@@ -134,7 +139,7 @@ export class ResourceIntroductionController {
     status: 404,
     description: 'Resource not found',
   })
-  async checkIntroductionStatus(
+  async checkStatus(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Req() req: AuthenticatedRequest
   ): Promise<{ hasValidIntroduction: boolean }> {
@@ -153,13 +158,14 @@ export class ResourceIntroductionController {
     summary: 'Revoke an introduction',
     description:
       'Revoke access for a user by marking their introduction as revoked',
+    operationId: 'markRevoked',
   })
   @ApiResponse({
     status: 201,
     description: 'Introduction revoked successfully',
     type: ResourceIntroductionHistoryItem,
   })
-  async revokeIntroduction(
+  async markRevoked(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('introductionId', ParseIntPipe) introductionId: number,
     @Body() dto: RevokeIntroductionDto,
@@ -190,13 +196,14 @@ export class ResourceIntroductionController {
   @ApiOperation({
     summary: 'Unrevoke an introduction',
     description: 'Restore access for a user by unrevoking their introduction',
+    operationId: 'markUnrevoked',
   })
   @ApiResponse({
     status: 201,
     description: 'Introduction unrevoked successfully',
     type: ResourceIntroductionHistoryItem,
   })
-  async unrevokeIntroduction(
+  async markUnrevoked(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('introductionId', ParseIntPipe) introductionId: number,
     @Body() dto: UnrevokeIntroductionDto,
@@ -228,13 +235,14 @@ export class ResourceIntroductionController {
     summary: 'Get history for a specific introduction',
     description:
       'Retrieve the history of revoke/unrevoke actions for an introduction',
+    operationId: 'getHistoryOfIntroduction',
   })
   @ApiResponse({
     status: 200,
     description: 'Introduction history',
     type: [ResourceIntroductionHistoryItem],
   })
-  async getIntroductionHistory(
+  async getHistory(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('introductionId', ParseIntPipe) introductionId: number,
     @Req() req: AuthenticatedRequest
@@ -265,6 +273,7 @@ export class ResourceIntroductionController {
   @ApiOperation({
     summary: 'Check if an introduction is revoked',
     description: 'Determine if a specific introduction is currently revoked',
+    operationId: 'checkIsRevokedStatus',
   })
   @ApiResponse({
     status: 200,
@@ -276,7 +285,7 @@ export class ResourceIntroductionController {
       },
     },
   })
-  async checkIntroductionRevokedStatus(
+  async checkIsRevokedStatus(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('introductionId', ParseIntPipe) introductionId: number,
     @Req() req: AuthenticatedRequest
@@ -307,6 +316,7 @@ export class ResourceIntroductionController {
   @ApiOperation({
     summary: 'Get a single resource introduction',
     description: 'Retrieve detailed information about a specific introduction',
+    operationId: 'getOneResourceIntroduction',
   })
   @ApiResponse({
     status: 200,
@@ -326,7 +336,7 @@ export class ResourceIntroductionController {
     status: 404,
     description: 'Introduction not found',
   })
-  async getResourceIntroduction(
+  async getOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('introductionId', ParseIntPipe) introductionId: number,
     @Req() req: AuthenticatedRequest
@@ -354,6 +364,7 @@ export class ResourceIntroductionController {
   @Auth()
   @ApiOperation({
     summary: 'Check if user can manage introductions for the resource',
+    operationId: 'checkCanManagePermission',
   })
   @ApiResponse({
     status: 200,
@@ -365,7 +376,7 @@ export class ResourceIntroductionController {
       },
     },
   })
-  async canManageIntroductions(
+  async checkCanManagePermission(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Req() req: AuthenticatedRequest
   ): Promise<{ canManageIntroductions: boolean }> {

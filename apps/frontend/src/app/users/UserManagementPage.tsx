@@ -3,13 +3,13 @@ import { PageHeader } from '../../components/pageHeader';
 import { useTranslations } from '../../i18n';
 import { useAuth } from '../../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { useUserDetails } from '../../api/hooks/users';
 import { UserPermissionForm } from './components/UserPermissionForm';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { UserSearch } from '../../components/userSearch';
 import { Card } from '@heroui/react';
 import { Users, Loader } from 'lucide-react';
+import { useUsersServiceGetOneUserById } from '@attraccess/react-query-client';
 
 export const UserManagementPage: React.FC = () => {
   const { t } = useTranslations('userManagementPage', { en, de });
@@ -20,7 +20,7 @@ export const UserManagementPage: React.FC = () => {
 
   // Fetch user details directly by ID rather than searching
   const { data: selectedUser, isLoading: isLoadingUser } =
-    useUserDetails(selectedUserId);
+    useUsersServiceGetOneUserById({id: selectedUserId as number}, undefined, {enabled: !!selectedUserId});
 
   // Redirect if user doesn't have permissions
   if (!canManageUsers) {

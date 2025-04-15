@@ -1,13 +1,11 @@
+import { useResourcesServiceGetOneResourceById } from "@attraccess/react-query-client";
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { useResource } from '@frontend/api/hooks/resources';
+import { useAuth } from "@frontend/hooks/useAuth";
 
-/**
- * A hook that provides template preview functionality for webhook templates
- * Creates a preview context and returns a function to preview templates
- */
 export const useTemplatePreview = (resourceId: number) => {
   // Fetch the resource data
-  const { data: resource } = useResource(resourceId);
+  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
+  const { user } = useAuth();
 
   // Create a preview context for rendering templates
   const previewContext = resource
@@ -15,7 +13,7 @@ export const useTemplatePreview = (resourceId: number) => {
         id: resource.id,
         name: resource.name,
         timestamp: new Date().toISOString(),
-        user: { id: 123, username: 'johndoe' },
+        user: { id: user?.id as number, username: user?.username as string },
       }
     : null;
 

@@ -2,15 +2,13 @@
 import { useTranslations } from '@frontend/i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useCheckIntroductionRevokedStatus } from '@frontend/api/hooks/resourceIntroduction';
 import { Chip } from '@heroui/chip';
 import { useMemo } from 'react';
-import { ResourceIntroduction } from '@attraccess/api-client';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AttraccessUser } from '@frontend/components/AttraccessUser';
+import { useResourceIntroductionServiceCheckIsRevokedStatus, ResourceIntroduction } from '@attraccess/react-query-client';
 
 interface IntroductionListItemContentProps {
   introduction: ResourceIntroduction;
@@ -27,9 +25,8 @@ export function IntroductionListItemContent(
 
   const { introduction, resourceId } = props;
 
-  const { data: revokedData } = useCheckIntroductionRevokedStatus(
-    resourceId,
-    introduction.id
+  const { data: revokedData } = useResourceIntroductionServiceCheckIsRevokedStatus(
+    {resourceId, introductionId: introduction.id},
   );
   const isRevoked = useMemo(
     () => revokedData?.isRevoked || false,

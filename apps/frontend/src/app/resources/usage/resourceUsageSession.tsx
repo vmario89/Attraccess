@@ -9,15 +9,6 @@ import {
   Alert,
 } from '@heroui/react';
 import { Play, StopCircle, Clock, Users } from 'lucide-react';
-import {
-  useActiveSession,
-  useStartSession,
-  useEndSession,
-} from '../../../api/hooks/resourceUsage';
-import {
-  useCheckIntroductionStatus,
-  useResourceIntroducers,
-} from '../../../api/hooks/resourceIntroduction';
 import { useToastMessage } from '../../../components/toastProvider';
 import { useTranslations } from '../../../i18n';
 import * as en from './translations/resourceUsageSession.en';
@@ -30,6 +21,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { AttraccessUser } from '../../../components/AttraccessUser';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
+import { useResourceIntroducersServiceGetAllResourceIntroducers, useResourceIntroductionServiceCheckStatus, useResourceUsageServiceEndSession, useResourceUsageServiceGetActiveSession, useResourceUsageServiceStartSession } from '@attraccess/react-query-client';
 
 interface ResourceUsageSessionProps {
   resourceId: number;
@@ -46,17 +38,17 @@ export function ResourceUsageSession({
 
   // Check if user has completed the introduction
   const { data: hasCompletedIntroduction, isLoading: isLoadingIntroStatus } =
-    useCheckIntroductionStatus(resourceId);
+    useResourceIntroductionServiceCheckStatus({resourceId});
 
   // Get list of users who can give introductions
   const { data: introducers, isLoading: isLoadingIntroducers } =
-    useResourceIntroducers(resourceId);
+    useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
 
   // Get active session
   const { data: activeSession, isLoading: isLoadingSession } =
-    useActiveSession(resourceId);
-  const startSession = useStartSession();
-  const endSession = useEndSession();
+    useResourceUsageServiceGetActiveSession({resourceId});
+  const startSession = useResourceUsageServiceStartSession();
+  const endSession = useResourceUsageServiceEndSession();
 
   // State to track elapsed time for display
   const [elapsedTime, setElapsedTime] = useState<string>('00:00:00');
@@ -113,7 +105,7 @@ export function ResourceUsageSession({
     try {
       await startSession.mutateAsync({
         resourceId,
-        dto: { notes },
+        requestBody: { notes },
       });
       success({
         title: t('sessionStarted'),
@@ -131,10 +123,9 @@ export function ResourceUsageSession({
 
   const handleEndSession = async (notes: string) => {
     try {
-      // End the session
       await endSession.mutateAsync({
         resourceId,
-        dto: { notes },
+        requestBody: { notes },
       });
 
       success({

@@ -1,4 +1,4 @@
-import { WebhookConfigResponseDto } from '@attraccess/api-client';
+import { WebhookConfigResponseDto } from '@attraccess/react-query-client';
 
 // Define WebhookHttpMethod enum matching the backend
 export enum WebhookHttpMethod {

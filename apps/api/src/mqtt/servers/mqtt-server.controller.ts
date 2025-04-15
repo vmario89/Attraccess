@@ -31,52 +31,52 @@ export class MqttServerController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all MQTT servers' })
+  @ApiOperation({ summary: 'Get all MQTT servers', operationId: 'getAllMqttServers' })
   @ApiResponse({
     status: 200,
     description: 'Returns all MQTT servers',
     type: [MqttServer],
   })
-  async getMqttServers(): Promise<MqttServer[]> {
+  async getAll(): Promise<MqttServer[]> {
     return this.mqttServerService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get MQTT server by ID' })
+  @ApiOperation({ summary: 'Get MQTT server by ID', operationId: 'getOneMQTTServerById' })
   @ApiResponse({
     status: 200,
     description: 'Returns the MQTT server with the specified ID',
     type: MqttServer,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async getMqttServerById(
+  async getOneById(
     @Param('id', ParseIntPipe) id: number
   ): Promise<MqttServer> {
     return this.mqttServerService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create new MQTT server' })
+  @ApiOperation({ summary: 'Create new MQTT server', operationId: 'createOneMqttServer' })
   @ApiResponse({
     status: 201,
     description: 'MQTT server created successfully',
     type: MqttServer,
   })
-  async createMqttServer(
+  async createOne(
     @Body() createMqttServerDto: CreateMqttServerDto
   ): Promise<MqttServer> {
     return this.mqttServerService.create(createMqttServerDto);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update MQTT server' })
+  @ApiOperation({ summary: 'Update MQTT server', operationId: 'updateOneMQTTServer' })
   @ApiResponse({
     status: 200,
     description: 'MQTT server updated successfully',
     type: MqttServer,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async updateMqttServer(
+  async updateOne(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMqttServerDto: UpdateMqttServerDto
   ): Promise<MqttServer> {
@@ -84,22 +84,25 @@ export class MqttServerController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete MQTT server' })
+  @ApiOperation({ summary: 'Delete MQTT server', operationId: 'deleteOneMQTTServer' })
   @ApiResponse({ status: 200, description: 'MQTT server deleted successfully' })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async deleteMqttServer(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async deleteOne(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.mqttServerService.remove(id);
   }
 
   @Post(':id/test')
-  @ApiOperation({ summary: 'Test MQTT server connection' })
+  @ApiOperation({
+    summary: 'Test MQTT server connection',
+    operationId: 'testConnection',
+  })
   @ApiResponse({
     status: 200,
     description: 'Connection test result',
     type: TestConnectionResponseDto,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async testMqttServerConnection(
+  async testConnection(
     @Param('id', ParseIntPipe) id: number
   ): Promise<TestConnectionResponseDto> {
     try {
@@ -128,29 +131,33 @@ export class MqttServerController {
   }
 
   @Get(':id/status')
-  @ApiOperation({ summary: 'Get MQTT server connection status and statistics' })
+  @ApiOperation({
+    summary: 'Get MQTT server connection status and statistics',
+    operationId: 'getStatusOfOne',
+  })
   @ApiResponse({
     status: 200,
     description: 'MQTT server connection status and statistics',
     type: MqttServerStatusDto,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async getServerStatus(
+  async getStatusOfOne(
     @Param('id', ParseIntPipe) id: number
   ): Promise<MqttServerStatusDto> {
-    return this.mqttClientService.getServerStatus(id);
+    return this.mqttClientService.getStatusOfOne(id);
   }
 
   @Get('status')
   @ApiOperation({
     summary: 'Get all MQTT server connection statuses and statistics',
+    operationId: 'getStatusOfAll',
   })
   @ApiResponse({
     status: 200,
     description: 'All MQTT server connection statuses and statistics',
     type: AllMqttServerStatusesDto,
   })
-  async getAllServerStatuses(): Promise<Record<string, MqttServerStatusDto>> {
-    return this.mqttClientService.getAllServerStatuses();
+  async getStatusOfAll(): Promise<Record<string, MqttServerStatusDto>> {
+    return this.mqttClientService.getStatusOfAll();
   }
 }

@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Button, Card } from '@heroui/react';
-import { User } from '@attraccess/api-client';
 import { useTranslations } from '../../../i18n';
-import {
-  useUpdateUserPermissions,
-  useUserPermissions,
-} from '../../../api/hooks/users';
+
 import { useToastMessage } from '../../../components/toastProvider';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
 import { AttraccessUser } from '../../../components/AttraccessUser';
+import { User, useUsersServiceGetPermissions, useUsersServiceUpdatePermissions } from '@attraccess/react-query-client';
 
 interface UserPermissionFormProps {
   user: User;
@@ -21,8 +18,8 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
   const { t } = useTranslations('userPermissionForm', { en, de });
   const { showToast } = useToastMessage();
 
-  const { data: userPermissions, isLoading } = useUserPermissions(user.id);
-  const updatePermissions = useUpdateUserPermissions();
+  const { data: userPermissions, isLoading } = useUsersServiceGetPermissions({id: user.id});
+  const updatePermissions = useUsersServiceUpdatePermissions();
 
   const [permissions, setPermissions] = useState({
     canManageResources: false,
@@ -52,8 +49,8 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
   const handleSave = async () => {
     try {
       await updatePermissions.mutateAsync({
-        userId: user.id,
-        permissions,
+        id: user.id,
+        requestBody: permissions,
       });
       showToast({
         title: t('userPermissionsSaved'),

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useUrlQuery } from '../hooks/useUrlQuery';
-import { useVerifyEmail } from '../api/hooks/users';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from './loading';
 import {
@@ -15,6 +14,7 @@ import {
 import { useTranslations } from '../i18n';
 import * as en from './translations/verifyEmail.en';
 import * as de from './translations/verifyEmail.de';
+import { useUsersServiceVerifyEmail } from '@attraccess/react-query-client';
 
 export function VerifyEmail() {
   const query = useUrlQuery();
@@ -26,7 +26,7 @@ export function VerifyEmail() {
   const token = useMemo(() => query.get('token'), [query]);
   const email = useMemo(() => query.get('email'), [query]);
 
-  const verifyEmail = useVerifyEmail();
+  const verifyEmail = useUsersServiceVerifyEmail();
 
   const activateEmail = useCallback(async () => {
     if (!token || !email) {
@@ -35,7 +35,7 @@ export function VerifyEmail() {
     }
 
     try {
-      await verifyEmail.mutateAsync({ token, email });
+      await verifyEmail.mutateAsync({requestBody: { token, email }});
       setIsSuccess(true);
       setError(null);
     } catch (err) {

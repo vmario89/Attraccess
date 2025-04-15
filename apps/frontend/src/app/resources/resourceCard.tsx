@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { Resource } from '@attraccess/api-client';
 import { filenameToUrl } from '../../api';
 import {
   Card,
@@ -11,6 +10,7 @@ import {
   Skeleton,
   Link,
 } from '@heroui/react';
+import { Resource } from '@attraccess/react-query-client';
 
 interface ResourceCardSkeletonProps extends CardProps {
   header?: ReactNode;

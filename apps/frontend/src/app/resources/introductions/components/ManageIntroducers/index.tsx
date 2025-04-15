@@ -1,6 +1,4 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { useResourceIntroducers } from '@frontend/api/hooks/resourceIntroduction';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
 import { Card, CardHeader, CardBody } from '@heroui/card';
 import { Divider } from '@heroui/divider';
@@ -10,6 +8,7 @@ import * as de from './translations/de';
 import { TFunction } from 'i18next';
 import { IntroducersList } from './components/IntroducersList';
 import { memo } from 'react';
+import { useResourceIntroducersServiceGetAllResourceIntroducers } from '@attraccess/react-query-client';
 
 interface IntroducersListProps {
   resourceId: number;
@@ -17,7 +16,7 @@ interface IntroducersListProps {
 }
 
 function IntroducersListCard({ resourceId, t }: IntroducersListProps) {
-  const { data: introducers } = useResourceIntroducers(resourceId);
+  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
 
   return introducers && introducers.length > 0 ? (
     <>

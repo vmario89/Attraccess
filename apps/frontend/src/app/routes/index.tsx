@@ -6,7 +6,7 @@ import { Database, ServerIcon, Key, Users } from 'lucide-react';
 import React from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
 import { SSOProvidersPage } from '../sso/SSOProvidersPage';
-import { SystemPermissions } from '@attraccess/api-client';
+import { SystemPermissions } from '@attraccess/react-query-client';
 import { UserManagementPage } from '../users/UserManagementPage';
 export * as de from './translations/de';
 export * as en from './translations/en';

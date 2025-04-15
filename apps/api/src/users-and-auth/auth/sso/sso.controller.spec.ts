@@ -66,7 +66,7 @@ describe('SsoController', () => {
 
   describe('getProviders', () => {
     it('should return an array of providers', async () => {
-      const result = await controller.getProviders();
+      const result = await controller.getAll();
       expect(result).toEqual([mockSSOProvider]);
       expect(ssoService.getAllProviders).toHaveBeenCalled();
     });
@@ -74,7 +74,7 @@ describe('SsoController', () => {
 
   describe('getProviderById', () => {
     it('should return a single provider', async () => {
-      const result = await controller.getProviderById('1');
+      const result = await controller.getOneById('1');
       expect(result).toEqual(mockSSOProvider);
       expect(ssoService.getProviderById).toHaveBeenCalledWith(1);
     });
@@ -83,7 +83,7 @@ describe('SsoController', () => {
       jest
         .spyOn(ssoService, 'getProviderById')
         .mockRejectedValueOnce(new NotFoundException());
-      await expect(controller.getProviderById('999')).rejects.toThrow(
+      await expect(controller.getOneById('999')).rejects.toThrow(
         NotFoundException
       );
     });
@@ -104,7 +104,7 @@ describe('SsoController', () => {
         },
       };
 
-      const result = await controller.createProvider(createDto);
+      const result = await controller.createOne(createDto);
 
       expect(result).toEqual(mockSSOProvider);
       expect(ssoService.createProvider).toHaveBeenCalledWith(createDto);
@@ -117,7 +117,7 @@ describe('SsoController', () => {
         name: 'Updated Provider',
       };
 
-      const result = await controller.updateProvider('1', updateDto);
+      const result = await controller.updateOne('1', updateDto);
 
       expect(result).toEqual(mockSSOProvider);
       expect(ssoService.updateProvider).toHaveBeenCalledWith(1, updateDto);
@@ -126,7 +126,7 @@ describe('SsoController', () => {
 
   describe('deleteProvider', () => {
     it('should delete a provider when user has permission', async () => {
-      await controller.deleteProvider('1');
+      await controller.deleteOne('1');
 
       expect(ssoService.deleteProvider).toHaveBeenCalledWith(1);
     });

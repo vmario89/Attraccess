@@ -1,4 +1,4 @@
-import { Api, AuthControllerPostSessionData } from '@attraccess/api-client';
+import { OpenAPI, CreateSessionResponse } from '@attraccess/react-query-client';
 
 function getInferredApiUrl() {
   const frontendUrl = new URL(window.location.href);
@@ -11,21 +11,12 @@ function getInferredApiUrl() {
   return `${frontendUrl.protocol}//${frontendUrl.hostname}${port}`;
 }
 
-function getBaseUrl() {
+export function getBaseUrl() {
   return import.meta.env.VITE_API_URL || getInferredApiUrl();
 }
 
-const getApi = () => {
-  const api = new Api<{ token?: string }>({
-    baseUrl: getBaseUrl(),
-    securityWorker: (config) => {
-      return {
-        headers: {
-          Authorization: `Bearer ${config?.token}`,
-        },
-      };
-    },
-  });
+const setupApiParameters = () => {
+  OpenAPI.BASE = getBaseUrl();
 
   // Check both storage locations
   const authFromLocalStorage = localStorage.getItem('auth');
@@ -33,17 +24,13 @@ const getApi = () => {
   const authData = authFromLocalStorage || authFromSessionStorage;
 
   if (authData) {
-    const auth = JSON.parse(authData) as AuthControllerPostSessionData;
-    api.setSecurityData({
-      token: auth.authToken,
-    });
+    const auth = JSON.parse(authData) as CreateSessionResponse;
+    OpenAPI.TOKEN = auth.authToken;
   }
-
-  return api;
 };
 
 export function filenameToUrl(name: string) {
   return `${getBaseUrl()}${name}`;
 }
 
-export default getApi;
+export default setupApiParameters;

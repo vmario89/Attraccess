@@ -1,10 +1,4 @@
-import { mockResourceHooks, mockToastHooks } from './mocks';
-
-// Configure mocks for integration tests
-jest.mock('../api/hooks/resources', () => ({
-  __esModule: true,
-  ...mockResourceHooks,
-}));
+import { mockToastHooks } from './mocks';
 
 jest.mock('../components/toastProvider', () => ({
   __esModule: true,

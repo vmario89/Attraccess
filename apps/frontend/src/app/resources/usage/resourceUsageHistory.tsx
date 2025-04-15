@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslations } from '../../../i18n';
 import { useAuth } from '../../../hooks/useAuth';
 import { Card, CardHeader, CardBody } from '@heroui/react';
-import { ResourceUsage } from '@attraccess/api-client';
+import { ResourceUsage } from '@attraccess/react-query-client';
 import { HistoryTable } from './components/HistoryTable';
 import { HistoryHeader } from './components/HistoryHeader';
 import { UsageNotesModal } from './components/UsageNotesModal';

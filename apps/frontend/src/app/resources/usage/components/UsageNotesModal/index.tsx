@@ -9,7 +9,7 @@ import {
   Spinner,
   Textarea,
 } from '@heroui/react';
-import { ResourceUsage } from '@attraccess/api-client';
+import { ResourceUsage } from '@attraccess/react-query-client';
 import { useTranslations } from '../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';

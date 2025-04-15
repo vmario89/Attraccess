@@ -34,13 +34,13 @@ export class ResourceIntroducersController {
 
   @Get()
   @Auth()
-  @ApiOperation({ summary: 'Get all authorized introducers for a resource' })
+  @ApiOperation({ summary: 'Get all authorized introducers for a resource', operationId: 'getAllResourceIntroducers' })
   @ApiResponse({
     status: 200,
     description: 'List of resource introducers',
     type: [ResourceIntroductionUser],
   })
-  async getResourceIntroducers(
+  async getAll(
     @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<ResourceIntroductionUser[]> {
     try {
@@ -81,13 +81,13 @@ export class ResourceIntroducersController {
 
   @Post(':userId')
   @CanManageResources()
-  @ApiOperation({ summary: 'Add a user as an introducer for a resource' })
+  @ApiOperation({ summary: 'Add a user as an introducer for a resource', operationId: 'addOne' })
   @ApiResponse({
     status: 201,
     description: 'User added as an introducer',
     type: ResourceIntroductionUser,
   })
-  async addIntroducer(
+  async addOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
   ): Promise<ResourceIntroductionUser> {
@@ -96,12 +96,12 @@ export class ResourceIntroducersController {
 
   @Delete(':userId')
   @CanManageResources()
-  @ApiOperation({ summary: 'Remove a user as an introducer for a resource' })
+  @ApiOperation({ summary: 'Remove a user as an introducer for a resource', operationId: 'removeOne' })
   @ApiResponse({
     status: 204,
     description: 'User removed as an introducer',
   })
-  async removeIntroducer(
+  async removeOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
   ): Promise<void> {
@@ -115,13 +115,14 @@ export class ResourceIntroducersController {
   @Auth()
   @ApiOperation({
     summary: 'Check if the current user can manage introducers for a resource',
+    operationId: 'checkCanManagePermission',
   })
   @ApiResponse({
     status: 200,
     description: 'Permission check result',
     type: CanManageIntroducersResponseDto,
   })
-  async canManageIntroducers(
+  async checkCanManagePermission(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Req() req: AuthenticatedRequest
   ): Promise<CanManageIntroducersResponseDto> {

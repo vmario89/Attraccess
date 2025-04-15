@@ -8,7 +8,8 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist/api-client"],
+      "cache": true,
+      "outputs": ["{projectRoot}/src/lib/api.ts"],
       "options": {
         "command": "ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
       },

@@ -3,12 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations } from '@frontend/i18n';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-  useCreateWebhookConfig,
-  useUpdateWebhookConfig,
-  useWebhookConfig,
-} from '@frontend/api/hooks/webhookConfig';
 
 import {
   WebhookFormValues,
@@ -23,6 +17,11 @@ import WebhookFormActions from './WebhookFormActions';
 
 import * as en from '../translations/en';
 import * as de from '../translations/de';
+import {
+  useWebhooksServiceCreateOneWebhookConfiguration,
+  useWebhooksServiceGetOneWebhookConfigurationById,
+  useWebhooksServiceUpdateOneWebhookConfiguration,
+} from '@attraccess/react-query-client';
 
 export interface WebhookFormProps {
   webhookId?: number;
@@ -54,14 +53,14 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
   const [isLoaded, setIsLoaded] = useState(!!initialValues);
 
   // API hooks - main form only needs create and update
-  const createWebhook = useCreateWebhookConfig();
-  const updateWebhook = useUpdateWebhookConfig();
+  const createWebhook = useWebhooksServiceCreateOneWebhookConfiguration();
+  const updateWebhook = useWebhooksServiceUpdateOneWebhookConfiguration();
 
   // Data fetching hook - only used when webhookId is provided and no initialValues
-  const { data: webhookData, isFetching } = useWebhookConfig(
+  const { data: webhookData, isFetching } = useWebhooksServiceGetOneWebhookConfigurationById({
     resourceId,
-    webhookId || 0
-  );
+    id: webhookId ?? 0,
+  });
 
   // Disable fetching if we already have initial values or no webhook ID
   const shouldFetch = !!webhookId && !initialValues;
@@ -108,7 +107,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
         await updateWebhook.mutateAsync({
           resourceId,
           id: webhookId,
-          data: values,
+          requestBody: values,
         });
         success({
           title: t('webhookUpdated'),
@@ -118,7 +117,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
         // Create new webhook
         const result = await createWebhook.mutateAsync({
           resourceId,
-          data: values,
+          requestBody: values,
         });
         success({
           title: t('webhookCreated'),

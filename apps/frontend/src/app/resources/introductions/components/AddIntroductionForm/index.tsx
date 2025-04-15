@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from '../../../../../i18n';
 import { UserSearch } from '../../../../../components/userSearch';
-import { useCompleteIntroduction } from '../../../../../api/hooks/resourceIntroduction';
 import { Button } from '@heroui/button';
 import { PlusCircle } from 'lucide-react';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useToastMessage } from '../../../../../components/toastProvider';
+import { useResourceIntroductionServiceMarkCompleted } from '@attraccess/react-query-client';
 
 export type AddIntroductionFormProps = {
   resourceId: number;
@@ -29,7 +29,7 @@ export const AddIntroductionForm = ({
     isPending: isSubmitting,
     status,
     error,
-  } = useCompleteIntroduction();
+  } = useResourceIntroductionServiceMarkCompleted();
 
   const submitIntroduction = useCallback(async () => {
     if (!selectedUserId) {
@@ -38,7 +38,9 @@ export const AddIntroductionForm = ({
 
     createIntroduction({
       resourceId,
-      userId: selectedUserId,
+      requestBody: {
+        userId: selectedUserId
+      },
     });
   }, [createIntroduction, resourceId, selectedUserId]);
 
@@ -53,7 +55,7 @@ export const AddIntroductionForm = ({
     if (status === 'error') {
       showError({
         title: t('addNew.error'),
-        description: error?.message,
+        description: (error as Error)?.message,
       });
     }
   }, [status, t, error, showError, showSuccess]);

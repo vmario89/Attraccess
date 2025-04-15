@@ -2,11 +2,10 @@ import { Input, Textarea, Snippet } from '@heroui/react';
 import { Code } from 'lucide-react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useResource } from '@frontend/api/hooks/resources';
 import { useMemo } from 'react';
 import * as en from './translations/template-form/en';
 import * as de from './translations/template-form/de';
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
 
 interface MqttTemplateFormProps {
   topicTemplate: string;
@@ -24,7 +23,7 @@ export default function MqttTemplateForm({
   resourceId,
 }: MqttTemplateFormProps) {
   const { t } = useTranslations('mqttTemplateForm', { en, de });
-  const { data: resource } = useResource(resourceId);
+  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
 
   // Create a preview context for rendering templates
   const previewContext = useMemo(() => {

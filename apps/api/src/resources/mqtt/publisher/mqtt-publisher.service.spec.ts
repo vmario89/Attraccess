@@ -102,7 +102,7 @@ describe('MqttPublisherService', () => {
 
   describe('handleResourceUsageStarted', () => {
     it('should publish a message when resource usage starts', async () => {
-      const event = new ResourceUsageStartedEvent(1, 123, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date());
 
       await service.handleResourceUsageStarted(event);
 
@@ -127,7 +127,7 @@ describe('MqttPublisherService', () => {
         .fn()
         .mockResolvedValue(null);
 
-      const event = new ResourceUsageStartedEvent(999, 123, new Date());
+      const event = new ResourceUsageStartedEvent(999, new Date());
 
       await service.handleResourceUsageStarted(event);
 
@@ -137,7 +137,7 @@ describe('MqttPublisherService', () => {
     it('should not publish a message if no resource is found', async () => {
       mockResourceRepository.findOne = jest.fn().mockResolvedValue(null);
 
-      const event = new ResourceUsageStartedEvent(1, 123, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date());
 
       await service.handleResourceUsageStarted(event);
 
@@ -151,7 +151,7 @@ describe('MqttPublisherService', () => {
         .mockRejectedValue(new Error('Publish error'));
 
       // Skip checking the logger and just verify that the method doesn't throw
-      const event = new ResourceUsageStartedEvent(1, 123, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date());
 
       // The key test is that it should not throw an exception
       await expect(
@@ -167,7 +167,7 @@ describe('MqttPublisherService', () => {
     it('should publish a message when resource usage ends', async () => {
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + 3600000); // 1 hour later
-      const event = new ResourceUsageEndedEvent(1, 123, startTime, endTime);
+      const event = new ResourceUsageEndedEvent(1, startTime, endTime);
 
       await service.handleResourceUsageEnded(event);
 
@@ -194,7 +194,7 @@ describe('MqttPublisherService', () => {
 
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + 3600000);
-      const event = new ResourceUsageEndedEvent(999, 123, startTime, endTime);
+      const event = new ResourceUsageEndedEvent(999, startTime, endTime);
 
       await service.handleResourceUsageEnded(event);
 

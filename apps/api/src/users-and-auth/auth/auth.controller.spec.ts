@@ -43,7 +43,7 @@ describe('AuthController', () => {
       logout: jest.fn().mockResolvedValue(undefined),
     } as AuthenticatedRequest;
 
-    const result = await authController.postSession(mockRequest);
+    const result = await authController.createSession(mockRequest);
 
     expect(result).toEqual({
       authToken: 'test-token',
@@ -62,7 +62,7 @@ describe('AuthController', () => {
       logout: jest.fn().mockImplementation((cb) => cb()),
     } as AuthenticatedRequest;
 
-    await authController.deleteSession(mockRequest);
+    await authController.endSession(mockRequest);
 
     expect(mockRequest.logout).toHaveBeenCalled();
     expect(authService.revokeJWT).toHaveBeenCalledWith('test-token-id');

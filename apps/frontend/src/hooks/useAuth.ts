@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  CreateSessionResponse,
-  CreateUserDto,
-  SystemPermissions,
-} from '@attraccess/api-client';
-import getApi from '../api';
 import { useNavigate } from 'react-router-dom';
+import { CreateSessionResponse, OpenAPI, SystemPermissions, useAuthenticationServiceCreateSession, useAuthenticationServiceEndSession, User, useUsersServiceGetCurrent } from '@attraccess/react-query-client';
 
 interface LoginCredentials {
   username: string;
@@ -18,6 +13,8 @@ const AUTH_QUERY_KEY = ['auth', 'session'] as const;
 export function useAuth() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const curentUser = useUsersServiceGetCurrent();
 
   const {
     data: session,
@@ -47,11 +44,9 @@ export function useAuth() {
       }
 
       try {
-        // Verify the session with the API
-        const api = getApi();
-        const me = await api.users.usersControllerGetMe();
+        const response = await curentUser.refetch();
 
-        auth.user = me.data;
+        auth.user = response.data as User;
 
         if (persistedInLocalStorage) {
           localStorage.setItem('auth', JSON.stringify(auth));
@@ -75,23 +70,22 @@ export function useAuth() {
     refetchOnWindowFocus: true,
   });
 
+  const createSession = useAuthenticationServiceCreateSession();
+
   const login = useMutation({
     mutationFn: async ({ username, password, persist }: LoginCredentials) => {
-      const api = getApi();
-      const response = await api.authentication.authControllerPostSession({
-        username,
-        password,
-      });
-      const auth = response.data;
+      const response = await createSession.mutateAsync({requestBody: {username, password}});
 
       // Store the auth data in the appropriate storage
       if (persist) {
-        localStorage.setItem('auth', JSON.stringify(auth));
+        localStorage.setItem('auth', JSON.stringify(response));
       } else {
-        sessionStorage.setItem('auth', JSON.stringify(auth));
+        sessionStorage.setItem('auth', JSON.stringify(response));
       }
 
-      return auth;
+      OpenAPI.TOKEN = response.authToken;
+
+      return response;
     },
     onSuccess: (data) => {
       // Update the auth query data
@@ -119,30 +113,16 @@ export function useAuth() {
     },
   });
 
-  const signup = useMutation({
-    mutationFn: async ({
-      username,
-      password,
-      email,
-      strategy,
-    }: CreateUserDto) => {
-      const api = getApi();
-      const response = await api.users.usersControllerCreateUser({
-        username,
-        password,
-        email,
-        strategy,
-      });
-      return response.data;
-    },
-  });
+  const deleteSession = useAuthenticationServiceEndSession();
 
   const logout = useMutation({
     mutationFn: async () => {
-      const api = getApi();
-      await api.authentication.authControllerDeleteSession();
+      await deleteSession.mutateAsync();
+
       localStorage.removeItem('auth');
       sessionStorage.removeItem('auth');
+
+      OpenAPI.TOKEN = '';
     },
     onSuccess: () => {
       // First set auth state to null to update UI immediately
@@ -167,7 +147,6 @@ export function useAuth() {
     isAuthenticated: !!session?.user,
     login,
     jwtTokenLogin,
-    signup,
     logout,
     hasPermission: (permission: keyof SystemPermissions) => {
       const user = session?.user;

@@ -79,7 +79,7 @@ describe('UsersController', () => {
         logout: jest.fn(),
       };
 
-      const response = await controller.getUserById(
+      const response = await controller.getOneById(
         user.id,
         mockRequest as AuthenticatedRequest
       );
@@ -125,7 +125,7 @@ describe('UsersController', () => {
         strategy: AuthenticationType.LOCAL_PASSWORD,
       };
 
-      const response = await controller.createUser(createUserDto);
+      const response = await controller.createOne(createUserDto);
       expect(response).toEqual(user);
       expect(authService.addAuthenticationDetails).toHaveBeenCalledWith(
         user.id,

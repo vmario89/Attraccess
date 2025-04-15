@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useResource, useDeleteResource } from '../../api/hooks/resources';
 import { useAuth } from '../../hooks/useAuth';
 import { useToastMessage } from '../../components/toastProvider';
 import { ArrowLeft, Trash, Wifi } from 'lucide-react';
@@ -16,10 +15,7 @@ import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
 import { ManageIntroducers } from './introductions/components/ManageIntroducers';
 import { memo, useMemo } from 'react';
-import {
-  useCanManageIntroductions,
-  useCanManageIntroducers,
-} from '../../api/hooks/resourceIntroduction';
+import { useResourceIntroducersServiceCheckCanManagePermission, useResourceIntroductionServiceCheckCanManagePermission, useResourcesServiceDeleteOneResource, useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -40,13 +36,13 @@ function ResourceDetailsComponent() {
     data: resource,
     isLoading: isLoadingResource,
     error: resourceError,
-  } = useResource(resourceId);
+  } = useResourcesServiceGetOneResourceById({id: resourceId});
 
-  const deleteResource = useDeleteResource();
+  const deleteResource = useResourcesServiceDeleteOneResource();
 
   const handleDelete = async () => {
     try {
-      await deleteResource.mutateAsync(resourceId);
+      await deleteResource.mutateAsync({id: resourceId});
       success({
         title: 'Resource deleted',
         description: `${resource?.name} has been successfully deleted`,
@@ -65,8 +61,8 @@ function ResourceDetailsComponent() {
 
   const canManageResources = hasPermission('canManageResources');
   const { data: canManageIntroductions } =
-    useCanManageIntroductions(resourceId);
-  const { data: canManageIntroducers } = useCanManageIntroducers(resourceId);
+    useResourceIntroductionServiceCheckCanManagePermission({resourceId});
+  const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({resourceId});
 
   const showIntroductionsManagement = useMemo(
     () => canManageResources || canManageIntroductions,

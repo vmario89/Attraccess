@@ -73,7 +73,7 @@ export class UsersController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Create a new user', operationId: 'createOneUser' })
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully created.',
@@ -83,7 +83,7 @@ export class UsersController {
     status: 400,
     description: 'Invalid input data.',
   })
-  async createUser(@Body() body: CreateUserDto): Promise<User> {
+  async createOne(@Body() body: CreateUserDto): Promise<User> {
     this.logger.debug(
       `Creating new user with username: ${body.username} and email: ${body.email}`
     );
@@ -147,7 +147,7 @@ export class UsersController {
   }
 
   @Post('verify-email')
-  @ApiOperation({ summary: 'Verify a user email address' })
+  @ApiOperation({ summary: 'Verify a user email address', operationId: 'verifyEmail' })
   @ApiResponse({
     status: 200,
     description: 'Email verified successfully.',
@@ -176,7 +176,7 @@ export class UsersController {
 
   @Auth()
   @Get('me')
-  @ApiOperation({ summary: 'Get the current authenticated user' })
+  @ApiOperation({ summary: 'Get the current authenticated user', operationId: 'getCurrent' })
   @ApiResponse({
     status: 200,
     description: 'The current user.',
@@ -186,14 +186,14 @@ export class UsersController {
     status: 401,
     description: 'User is not authenticated.',
   })
-  async getMe(@Req() request: AuthenticatedRequest) {
+  async getCurrent(@Req() request: AuthenticatedRequest) {
     this.logger.debug(`Getting current user, ID: ${request.user.id}`);
     return request.user;
   }
 
   @Auth()
   @Get(':id')
-  @ApiOperation({ summary: 'Get a user by ID' })
+  @ApiOperation({ summary: 'Get a user by ID', operationId: 'getOneUserById' })
   @ApiResponse({
     status: 200,
     description: 'The user with the specified ID.',
@@ -209,7 +209,7 @@ export class UsersController {
     description: 'User not found.',
     type: UserNotFoundException,
   })
-  async getUserById(
+  async getOneById(
     @Param('id', ParseIntPipe) id: number,
     @Req() request: AuthenticatedRequest
   ): Promise<User> {
@@ -242,7 +242,7 @@ export class UsersController {
 
   @Get()
   @Auth()
-  @ApiOperation({ summary: 'Get a paginated list of users' })
+  @ApiOperation({ summary: 'Get a paginated list of users', operationId: 'getAllUsers' })
   @ApiResponse({
     status: 200,
     description: 'List of users.',
@@ -252,7 +252,7 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - User does not have permission to manage users.',
   })
-  async getUsers(
+  async getAll(
     @Query() query: GetUsersQueryDto
   ): Promise<PaginatedUsersResponseDto> {
     this.logger.debug(
@@ -273,7 +273,7 @@ export class UsersController {
 
   @Patch(':id/permissions')
   @Auth('canManageUsers')
-  @ApiOperation({ summary: "Update a user's system permissions" })
+  @ApiOperation({ summary: "Update a user's system permissions", operationId: 'updatePermissions' })
   @ApiResponse({
     status: 200,
     description: 'The user permissions have been successfully updated.',
@@ -291,7 +291,7 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  async updateUserPermissions(
+  async updatePermissions(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateUserPermissionsDto,
     @Req() request: AuthenticatedRequest
@@ -352,7 +352,7 @@ export class UsersController {
 
   @Post('permissions')
   @Auth('canManageUsers')
-  @ApiOperation({ summary: 'Bulk update user permissions' })
+  @ApiOperation({ summary: 'Bulk update user permissions', operationId: 'bulkUpdatePermissions' })
   @ApiResponse({
     status: 200,
     description: 'The user permissions have been successfully updated.',
@@ -366,7 +366,7 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - User does not have permission to manage users.',
   })
-  async bulkUpdateUserPermissions(
+  async bulkUpdatePermissions(
     @Body() body: BulkUpdateUserPermissionsDto,
     @Req() request: AuthenticatedRequest
   ): Promise<User[]> {
@@ -453,7 +453,7 @@ export class UsersController {
 
   @Get(':id/permissions')
   @Auth('canManageUsers')
-  @ApiOperation({ summary: "Get a user's system permissions" })
+  @ApiOperation({ summary: "Get a user's system permissions", operationId: 'getPermissions' })
   @ApiResponse({
     status: 200,
     description: "The user's permissions.",
@@ -474,7 +474,7 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  async getUserPermissions(
+  async getPermissions(
     @Param('id', ParseIntPipe) id: number
   ): Promise<SystemPermissions> {
     this.logger.debug(`Getting permissions for user ID: ${id}`);
@@ -492,7 +492,7 @@ export class UsersController {
 
   @Get('with-permission')
   @Auth('canManageUsers')
-  @ApiOperation({ summary: 'Get users with a specific permission' })
+  @ApiOperation({ summary: 'Get users with a specific permission', operationId: 'getAllWithPermission' })
   @ApiResponse({
     status: 200,
     description: 'List of users with the specified permission.',
@@ -502,7 +502,7 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - User does not have permission to manage users.',
   })
-  async getUsersWithPermission(
+  async getAllWithPermission(
     @Query() query: GetUsersWithPermissionQueryDto
   ): Promise<PaginatedResponseDto<User>> {
     const permission = query.permission || PermissionFilter.canManageUsers;

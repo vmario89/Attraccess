@@ -29,21 +29,21 @@ export class WebhookConfigController {
   constructor(private readonly webhookConfigService: WebhookConfigService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all webhook configurations for a resource' })
+  @ApiOperation({ summary: 'Get all webhook configurations for a resource', operationId: 'getAllWebhookConfigurations' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiResponse({
     status: 200,
     description: 'List of webhook configurations for the resource',
     type: [WebhookConfigResponseDto],
   })
-  async findAll(
+  async getAll(
     @Param('resourceId', ParseIntPipe) resourceId: number
   ): Promise<WebhookConfig[]> {
     return this.webhookConfigService.findAllByResourceId(resourceId);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get webhook configuration by ID' })
+  @ApiOperation({ summary: 'Get webhook configuration by ID', operationId: 'getOneWebhookConfigurationById' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',
@@ -56,7 +56,7 @@ export class WebhookConfigController {
     type: WebhookConfigResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Webhook configuration not found' })
-  async findById(
+  async getOneById(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('id', ParseIntPipe) id: number
   ): Promise<WebhookConfig> {
@@ -91,6 +91,7 @@ export class WebhookConfigController {
       - \`user.id\`: ID of the user who triggered the event
       - \`event\`: Either "started" or "ended" depending on the resource usage state
     `,
+    operationId: 'createOneWebhookConfiguration',
   })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiResponse({
@@ -100,7 +101,7 @@ export class WebhookConfigController {
   })
   @ApiResponse({ status: 400, description: 'Invalid input' })
   @ApiResponse({ status: 404, description: 'Resource not found' })
-  async create(
+  async createOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() createWebhookConfigDto: CreateWebhookConfigDto
   ): Promise<WebhookConfig> {
@@ -108,7 +109,7 @@ export class WebhookConfigController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update webhook configuration' })
+  @ApiOperation({ summary: 'Update webhook configuration', operationId: 'updateOneWebhookConfiguration' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',
@@ -122,7 +123,7 @@ export class WebhookConfigController {
   })
   @ApiResponse({ status: 400, description: 'Invalid input' })
   @ApiResponse({ status: 404, description: 'Webhook configuration not found' })
-  async update(
+  async updateOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWebhookConfigDto: UpdateWebhookConfigDto
@@ -135,7 +136,7 @@ export class WebhookConfigController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete webhook configuration' })
+  @ApiOperation({ summary: 'Delete webhook configuration', operationId: 'deleteOneWebhookConfiguration' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',
@@ -148,7 +149,7 @@ export class WebhookConfigController {
   })
   @ApiResponse({ status: 404, description: 'Webhook configuration not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(
+  async deleteOne(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
@@ -156,7 +157,7 @@ export class WebhookConfigController {
   }
 
   @Put(':id/status')
-  @ApiOperation({ summary: 'Enable or disable webhook' })
+  @ApiOperation({ summary: 'Enable or disable webhook', operationId: 'updateStatus' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',
@@ -183,7 +184,7 @@ export class WebhookConfigController {
   }
 
   @Post(':id/test')
-  @ApiOperation({ summary: 'Test webhook' })
+  @ApiOperation({ summary: 'Test webhook', operationId: 'test' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',
@@ -196,7 +197,7 @@ export class WebhookConfigController {
     type: WebhookTestResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Webhook configuration not found' })
-  async testWebhook(
+  async test(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('id', ParseIntPipe) id: number
   ): Promise<WebhookTestResponseDto> {
@@ -204,7 +205,7 @@ export class WebhookConfigController {
   }
 
   @Post(':id/regenerate-secret')
-  @ApiOperation({ summary: 'Regenerate webhook secret' })
+  @ApiOperation({ summary: 'Regenerate webhook secret', operationId: 'regenerateSecret' })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiParam({
     name: 'id',

@@ -12,16 +12,16 @@ import * as en from './translations/en';
 import * as de from './translations/de';
 import { useMemo, useState } from 'react';
 import { ExternalLink, InfoIcon } from 'lucide-react';
-import { useResource } from '../../../../api/hooks/resources';
-import getApi from '../../../../api';
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { getBaseUrl } from '@frontend/api';
 
 function useEspHomeConfigSnippet(resourceId: number) {
   // Get the resource details to use in the configuration
-  const { data: resource } = useResource(resourceId);
+  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
 
   // Generate the API base URL from the window location
-  const api = getApi();
-  const apiBaseUrl = api.baseUrl;
+  const apiBaseUrl = getBaseUrl();
 
   // Helper function to format resource name for ESPHome component IDs
   const formatEspHomeId = (name?: string, fallback = 'resource') => {
