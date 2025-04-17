@@ -65,7 +65,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts-${{ github.run_id }} # Match the upload name
-          path: . # Download artifacts to the root, preserving structure within 'dist/'
+          path: dist
+
+      # Debug: List directory contents after download
+      - name: List files after download
+        run: ls -la
 
       # Set up Docker Buildx for GHA cache support
       - name: Set up Docker Buildx
