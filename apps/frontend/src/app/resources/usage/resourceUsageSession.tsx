@@ -1,36 +1,31 @@
 import { useState, useEffect, useMemo } from 'react';
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Spinner,
-  Divider,
-  Alert,
-} from '@heroui/react';
+import { Button, Card, CardBody, CardHeader, Spinner, Divider, Alert } from '@heroui/react';
 import { Play, StopCircle, Clock, Users } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
 import { useTranslations } from '../../../i18n';
 import * as en from './translations/resourceUsageSession.en';
 import * as de from './translations/resourceUsageSession.de';
-import {
-  SessionNotesModal,
-  SessionModalMode,
-} from './components/SessionNotesModal';
+import { SessionNotesModal, SessionModalMode } from './components/SessionNotesModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { AttraccessUser } from '../../../components/AttraccessUser';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
-import { useResourceIntroducersServiceGetAllResourceIntroducers, useResourceIntroductionServiceCheckStatus, useResourceUsageServiceEndSession, useResourceUsageServiceGetActiveSession, useResourceUsageServiceStartSession, UseResourceUsageServiceGetActiveSessionKeyFn, UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn } from '@attraccess/react-query-client';
+import {
+  useResourceIntroducersServiceGetAllResourceIntroducers,
+  useResourceIntroductionsServiceCheckStatus,
+  useResourceUsageServiceEndSession,
+  useResourceUsageServiceGetActiveSession,
+  useResourceUsageServiceStartSession,
+  UseResourceUsageServiceGetActiveSessionKeyFn,
+  UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn,
+} from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface ResourceUsageSessionProps {
   resourceId: number;
 }
 
-export function ResourceUsageSession({
-  resourceId,
-}: ResourceUsageSessionProps) {
+export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) {
   const { t } = useTranslations('resourceUsageSession', { en, de });
   const { success, error: showError } = useToastMessage();
   const { hasPermission } = useAuth();
@@ -40,15 +35,15 @@ export function ResourceUsageSession({
 
   // Check if user has completed the introduction
   const { data: hasCompletedIntroduction, isLoading: isLoadingIntroStatus } =
-    useResourceIntroductionServiceCheckStatus({resourceId});
+    useResourceIntroductionsServiceCheckStatus({ resourceId });
 
   // Get list of users who can give introductions
-  const { data: introducers, isLoading: isLoadingIntroducers } =
-    useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
+  const { data: introducers, isLoading: isLoadingIntroducers } = useResourceIntroducersServiceGetAllResourceIntroducers(
+    { resourceId }
+  );
 
   // Get active session
-  const { data: activeSession, isLoading: isLoadingSession } =
-    useResourceUsageServiceGetActiveSession({resourceId});
+  const { data: activeSession, isLoading: isLoadingSession } = useResourceUsageServiceGetActiveSession({ resourceId });
 
   const startSession = useResourceUsageServiceStartSession({
     onSuccess: () => {
@@ -58,23 +53,23 @@ export function ResourceUsageSession({
       });
       // Invalidate the history query to refetch data
       queryClient.invalidateQueries({
-        queryKey: UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn({resourceId}),
+        queryKey: UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn({ resourceId }),
       });
-    }
+    },
   });
   const endSession = useResourceUsageServiceEndSession({
     onSuccess: () => {
-       // Invalidate the history query to refetch data (using generated key function)
-       queryClient.invalidateQueries({
-         queryKey: UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn({ resourceId }),
-       });
-       // Reset active session query instead of just invalidating
-       queryClient.resetQueries({
-         queryKey: UseResourceUsageServiceGetActiveSessionKeyFn({ resourceId }),
-       });
-       // Explicitly reset timer display on success
-       setElapsedTime('00:00:00');
-    }
+      // Invalidate the history query to refetch data (using generated key function)
+      queryClient.invalidateQueries({
+        queryKey: UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn({ resourceId }),
+      });
+      // Reset active session query instead of just invalidating
+      queryClient.resetQueries({
+        queryKey: UseResourceUsageServiceGetActiveSessionKeyFn({ resourceId }),
+      });
+      // Explicitly reset timer display on success
+      setElapsedTime('00:00:00');
+    },
   });
 
   // State to track elapsed time for display
@@ -82,9 +77,7 @@ export function ResourceUsageSession({
 
   // States for session notes modal
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
-  const [notesModalMode, setNotesModalMode] = useState<SessionModalMode>(
-    SessionModalMode.START
-  );
+  const [notesModalMode, setNotesModalMode] = useState<SessionModalMode>(SessionModalMode.START);
 
   // Update elapsed time every second when session is active
   useEffect(() => {
@@ -105,9 +98,9 @@ export function ResourceUsageSession({
       const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
 
       setElapsedTime(
-        `${hours.toString().padStart(2, '0')}:${minutes
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
           .toString()
-          .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+          .padStart(2, '0')}`
       );
     };
 
@@ -177,16 +170,14 @@ export function ResourceUsageSession({
     }
   };
 
-  const isLoading =
-    isLoadingSession || isLoadingIntroStatus || isLoadingIntroducers;
+  const isLoading = isLoadingSession || isLoadingIntroStatus || isLoadingIntroducers;
 
   const isIntroducer = useMemo(() => {
     return introducers?.some((introducer) => introducer.user?.id === user?.id);
   }, [introducers, user]);
 
   // Users with canManageResources permission can always start a session
-  const canStartSession =
-    canManageResources || hasCompletedIntroduction || isIntroducer;
+  const canStartSession = canManageResources || hasCompletedIntroduction || isIntroducer;
 
   return (
     <>
@@ -194,9 +185,7 @@ export function ResourceUsageSession({
         <CardHeader>
           <div className="flex items-center">
             <Clock className="w-5 h-5 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {t('usageSession')}:{' '}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('usageSession')}: </h3>
           </div>
         </CardHeader>
         <CardBody>
@@ -211,20 +200,14 @@ export function ResourceUsageSession({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {t('sessionStarted')}:
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('sessionStarted')}:</p>
                     <p className="font-medium text-gray-900 dark:text-white">
                       <DateTimeDisplay date={activeSession.startTime} />
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {t('elapsedTime')}:
-                    </p>
-                    <p className="font-medium text-xl text-gray-900 dark:text-white">
-                      {elapsedTime}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('elapsedTime')}:</p>
+                    <p className="font-medium text-xl text-gray-900 dark:text-white">{elapsedTime}</p>
                   </div>
                 </div>
                 <Button
@@ -241,19 +224,17 @@ export function ResourceUsageSession({
             ) : (
               // Active session belongs to another user: Show info message
               <div className="space-y-2 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t('resourceInUseBy')}
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('resourceInUseBy')}</p>
                 {activeSession.user ? (
-                   <AttraccessUser user={activeSession.user} />
+                  <AttraccessUser user={activeSession.user} />
                 ) : (
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
-                     {t('unknownUser')} {/* Add a fallback translation if needed */}
+                    {t('unknownUser')} {/* Add a fallback translation if needed */}
                   </p>
                 )}
 
-                 {/* Optional: Display start time for the other user's session */} 
-                 <p className="text-xs text-gray-400 dark:text-gray-500">
+                {/* Optional: Display start time for the other user's session */}
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   ({t('sessionStarted')} <DateTimeDisplay date={activeSession.startTime} />)
                 </p>
               </div>
@@ -271,24 +252,17 @@ export function ResourceUsageSession({
                   <Divider className="my-2" />
                   <div className="space-y-2 mt-2">
                     {introducers.map((introducer) => (
-                      <AttraccessUser
-                        key={introducer.id}
-                        user={introducer.user}
-                      />
+                      <AttraccessUser key={introducer.id} user={introducer.user} />
                     ))}
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400 italic">
-                  {t('noIntroducersAvailable')}
-                </p>
+                <p className="text-gray-500 dark:text-gray-400 italic">{t('noIntroducersAvailable')}</p>
               )}
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-gray-500 dark:text-gray-400">
-                {t('noActiveSession')}
-              </p>
+              <p className="text-gray-500 dark:text-gray-400">{t('noActiveSession')}</p>
               <Button
                 color="primary"
                 variant="solid"
@@ -310,11 +284,7 @@ export function ResourceUsageSession({
         onClose={() => setIsNotesModalOpen(false)}
         onConfirm={handleNotesSubmit}
         mode={notesModalMode}
-        isSubmitting={
-          notesModalMode === SessionModalMode.START
-            ? startSession.isPending
-            : endSession.isPending
-        }
+        isSubmitting={notesModalMode === SessionModalMode.START ? startSession.isPending : endSession.isPending}
       />
     </>
   );

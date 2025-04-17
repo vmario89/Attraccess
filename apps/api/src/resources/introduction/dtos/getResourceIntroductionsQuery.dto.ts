@@ -7,6 +7,7 @@ export class GetResourceIntroductionsQueryDto {
     description: 'Page number (1-based)',
     minimum: 1,
     default: 1,
+    required: false,
     type: Number,
   })
   @Type(() => Number)

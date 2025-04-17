@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, ResourceIntroducersService, ResourceIntroductionService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
 export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useApplicationServicePing2Key = "ApplicationServicePing2";
@@ -66,14 +66,29 @@ export const UseSsoServiceOidcLoginCallbackKeyFn = ({ code, iss, providerId, red
   sessionState: unknown;
   state: unknown;
 }, queryKey?: Array<unknown>) => [useSsoServiceOidcLoginCallbackKey, ...(queryKey ?? [{ code, iss, providerId, redirectTo, sessionState, state }])];
-export type ResourcesServiceGetAllResourcesDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getAllResources>>;
-export type ResourcesServiceGetAllResourcesQueryResult<TData = ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourcesServiceGetAllResourcesKey = "ResourcesServiceGetAllResources";
-export const UseResourcesServiceGetAllResourcesKeyFn = ({ limit, page, search }: {
+export type ResourceGroupsServiceGetAllResourceGroupsDefaultResponse = Awaited<ReturnType<typeof ResourceGroupsService.getAllResourceGroups>>;
+export type ResourceGroupsServiceGetAllResourceGroupsQueryResult<TData = ResourceGroupsServiceGetAllResourceGroupsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceGroupsServiceGetAllResourceGroupsKey = "ResourceGroupsServiceGetAllResourceGroups";
+export const UseResourceGroupsServiceGetAllResourceGroupsKeyFn = ({ limit, page, search }: {
   limit?: number;
   page?: number;
   search?: string;
-} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ limit, page, search }])];
+} = {}, queryKey?: Array<unknown>) => [useResourceGroupsServiceGetAllResourceGroupsKey, ...(queryKey ?? [{ limit, page, search }])];
+export type ResourceGroupsServiceGetOneResourceGroupByIdDefaultResponse = Awaited<ReturnType<typeof ResourceGroupsService.getOneResourceGroupById>>;
+export type ResourceGroupsServiceGetOneResourceGroupByIdQueryResult<TData = ResourceGroupsServiceGetOneResourceGroupByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceGroupsServiceGetOneResourceGroupByIdKey = "ResourceGroupsServiceGetOneResourceGroupById";
+export const UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn = ({ id }: {
+  id: number;
+}, queryKey?: Array<unknown>) => [useResourceGroupsServiceGetOneResourceGroupByIdKey, ...(queryKey ?? [{ id }])];
+export type ResourcesServiceGetAllResourcesDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getAllResources>>;
+export type ResourcesServiceGetAllResourcesQueryResult<TData = ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourcesServiceGetAllResourcesKey = "ResourcesServiceGetAllResources";
+export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, limit, page, search }: {
+  groupId?: number;
+  limit?: number;
+  page?: number;
+  search?: string;
+} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, limit, page, search }])];
 export type ResourcesServiceGetOneResourceByIdDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getOneResourceById>>;
 export type ResourcesServiceGetOneResourceByIdQueryResult<TData = ResourcesServiceGetOneResourceByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetOneResourceByIdKey = "ResourcesServiceGetOneResourceById";
@@ -95,47 +110,47 @@ export const useResourceUsageServiceGetActiveSessionKey = "ResourceUsageServiceG
 export const UseResourceUsageServiceGetActiveSessionKeyFn = ({ resourceId }: {
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useResourceUsageServiceGetActiveSessionKey, ...(queryKey ?? [{ resourceId }])];
-export type ResourceIntroductionServiceGetAllResourceIntroductionsDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.getAllResourceIntroductions>>;
-export type ResourceIntroductionServiceGetAllResourceIntroductionsQueryResult<TData = ResourceIntroductionServiceGetAllResourceIntroductionsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceGetAllResourceIntroductionsKey = "ResourceIntroductionServiceGetAllResourceIntroductions";
-export const UseResourceIntroductionServiceGetAllResourceIntroductionsKeyFn = ({ limit, page, resourceId }: {
+export type ResourceIntroductionsServiceGetAllResourceIntroductionsDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.getAllResourceIntroductions>>;
+export type ResourceIntroductionsServiceGetAllResourceIntroductionsQueryResult<TData = ResourceIntroductionsServiceGetAllResourceIntroductionsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceGetAllResourceIntroductionsKey = "ResourceIntroductionsServiceGetAllResourceIntroductions";
+export const UseResourceIntroductionsServiceGetAllResourceIntroductionsKeyFn = ({ limit, page, resourceId }: {
   limit: number;
-  page: number;
+  page?: number;
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceGetAllResourceIntroductionsKey, ...(queryKey ?? [{ limit, page, resourceId }])];
-export type ResourceIntroductionServiceCheckStatusDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.checkStatus>>;
-export type ResourceIntroductionServiceCheckStatusQueryResult<TData = ResourceIntroductionServiceCheckStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceCheckStatusKey = "ResourceIntroductionServiceCheckStatus";
-export const UseResourceIntroductionServiceCheckStatusKeyFn = ({ resourceId }: {
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceGetAllResourceIntroductionsKey, ...(queryKey ?? [{ limit, page, resourceId }])];
+export type ResourceIntroductionsServiceCheckStatusDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.checkStatus>>;
+export type ResourceIntroductionsServiceCheckStatusQueryResult<TData = ResourceIntroductionsServiceCheckStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceCheckStatusKey = "ResourceIntroductionsServiceCheckStatus";
+export const UseResourceIntroductionsServiceCheckStatusKeyFn = ({ resourceId }: {
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceCheckStatusKey, ...(queryKey ?? [{ resourceId }])];
-export type ResourceIntroductionServiceGetHistoryOfIntroductionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.getHistoryOfIntroduction>>;
-export type ResourceIntroductionServiceGetHistoryOfIntroductionQueryResult<TData = ResourceIntroductionServiceGetHistoryOfIntroductionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceGetHistoryOfIntroductionKey = "ResourceIntroductionServiceGetHistoryOfIntroduction";
-export const UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn = ({ introductionId, resourceId }: {
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceCheckStatusKey, ...(queryKey ?? [{ resourceId }])];
+export type ResourceIntroductionsServiceGetHistoryOfIntroductionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.getHistoryOfIntroduction>>;
+export type ResourceIntroductionsServiceGetHistoryOfIntroductionQueryResult<TData = ResourceIntroductionsServiceGetHistoryOfIntroductionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceGetHistoryOfIntroductionKey = "ResourceIntroductionsServiceGetHistoryOfIntroduction";
+export const UseResourceIntroductionsServiceGetHistoryOfIntroductionKeyFn = ({ introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceGetHistoryOfIntroductionKey, ...(queryKey ?? [{ introductionId, resourceId }])];
-export type ResourceIntroductionServiceCheckIsRevokedStatusDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.checkIsRevokedStatus>>;
-export type ResourceIntroductionServiceCheckIsRevokedStatusQueryResult<TData = ResourceIntroductionServiceCheckIsRevokedStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceCheckIsRevokedStatusKey = "ResourceIntroductionServiceCheckIsRevokedStatus";
-export const UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn = ({ introductionId, resourceId }: {
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceGetHistoryOfIntroductionKey, ...(queryKey ?? [{ introductionId, resourceId }])];
+export type ResourceIntroductionsServiceCheckIsRevokedStatusDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.checkIsRevokedStatus>>;
+export type ResourceIntroductionsServiceCheckIsRevokedStatusQueryResult<TData = ResourceIntroductionsServiceCheckIsRevokedStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceCheckIsRevokedStatusKey = "ResourceIntroductionsServiceCheckIsRevokedStatus";
+export const UseResourceIntroductionsServiceCheckIsRevokedStatusKeyFn = ({ introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceCheckIsRevokedStatusKey, ...(queryKey ?? [{ introductionId, resourceId }])];
-export type ResourceIntroductionServiceGetOneResourceIntroductionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.getOneResourceIntroduction>>;
-export type ResourceIntroductionServiceGetOneResourceIntroductionQueryResult<TData = ResourceIntroductionServiceGetOneResourceIntroductionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceGetOneResourceIntroductionKey = "ResourceIntroductionServiceGetOneResourceIntroduction";
-export const UseResourceIntroductionServiceGetOneResourceIntroductionKeyFn = ({ introductionId, resourceId }: {
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceCheckIsRevokedStatusKey, ...(queryKey ?? [{ introductionId, resourceId }])];
+export type ResourceIntroductionsServiceGetOneResourceIntroductionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.getOneResourceIntroduction>>;
+export type ResourceIntroductionsServiceGetOneResourceIntroductionQueryResult<TData = ResourceIntroductionsServiceGetOneResourceIntroductionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceGetOneResourceIntroductionKey = "ResourceIntroductionsServiceGetOneResourceIntroduction";
+export const UseResourceIntroductionsServiceGetOneResourceIntroductionKeyFn = ({ introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceGetOneResourceIntroductionKey, ...(queryKey ?? [{ introductionId, resourceId }])];
-export type ResourceIntroductionServiceCheckCanManagePermissionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionService.checkCanManagePermission>>;
-export type ResourceIntroductionServiceCheckCanManagePermissionQueryResult<TData = ResourceIntroductionServiceCheckCanManagePermissionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useResourceIntroductionServiceCheckCanManagePermissionKey = "ResourceIntroductionServiceCheckCanManagePermission";
-export const UseResourceIntroductionServiceCheckCanManagePermissionKeyFn = ({ resourceId }: {
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceGetOneResourceIntroductionKey, ...(queryKey ?? [{ introductionId, resourceId }])];
+export type ResourceIntroductionsServiceCheckCanManagePermissionDefaultResponse = Awaited<ReturnType<typeof ResourceIntroductionsService.checkCanManagePermission>>;
+export type ResourceIntroductionsServiceCheckCanManagePermissionQueryResult<TData = ResourceIntroductionsServiceCheckCanManagePermissionDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourceIntroductionsServiceCheckCanManagePermissionKey = "ResourceIntroductionsServiceCheckCanManagePermission";
+export const UseResourceIntroductionsServiceCheckCanManagePermissionKeyFn = ({ resourceId }: {
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useResourceIntroductionServiceCheckCanManagePermissionKey, ...(queryKey ?? [{ resourceId }])];
+}, queryKey?: Array<unknown>) => [useResourceIntroductionsServiceCheckCanManagePermissionKey, ...(queryKey ?? [{ resourceId }])];
 export type ResourceIntroducersServiceGetAllResourceIntroducersDefaultResponse = Awaited<ReturnType<typeof ResourceIntroducersService.getAllResourceIntroducers>>;
 export type ResourceIntroducersServiceGetAllResourceIntroducersQueryResult<TData = ResourceIntroducersServiceGetAllResourceIntroducersDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourceIntroducersServiceGetAllResourceIntroducersKey = "ResourceIntroducersServiceGetAllResourceIntroducers";
@@ -198,11 +213,13 @@ export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof Us
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;
 export type AuthenticationServiceCreateSessionMutationResult = Awaited<ReturnType<typeof AuthenticationService.createSession>>;
 export type SsoServiceCreateOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.createOneSsoProvider>>;
+export type ResourceGroupsServiceCreateOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.createOneResourceGroup>>;
 export type ResourcesServiceCreateOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.createOneResource>>;
+export type ResourcesServiceAddResourceToGroupMutationResult = Awaited<ReturnType<typeof ResourcesService.addResourceToGroup>>;
 export type ResourceUsageServiceStartSessionMutationResult = Awaited<ReturnType<typeof ResourceUsageService.startSession>>;
-export type ResourceIntroductionServiceMarkCompletedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionService.markCompleted>>;
-export type ResourceIntroductionServiceMarkRevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionService.markRevoked>>;
-export type ResourceIntroductionServiceMarkUnrevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionService.markUnrevoked>>;
+export type ResourceIntroductionsServiceMarkCompletedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionsService.markCompleted>>;
+export type ResourceIntroductionsServiceMarkRevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionsService.markRevoked>>;
+export type ResourceIntroductionsServiceMarkUnrevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionsService.markUnrevoked>>;
 export type ResourceIntroducersServiceAddOneMutationResult = Awaited<ReturnType<typeof ResourceIntroducersService.addOne>>;
 export type MqttResourceConfigurationServiceUpsertOneMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.upsertOne>>;
 export type MqttResourceConfigurationServiceTestOneMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.testOne>>;
@@ -218,9 +235,12 @@ export type MqttServersServiceUpdateOneMqttServerMutationResult = Awaited<Return
 export type WebhooksServiceUpdateOneWebhookConfigurationMutationResult = Awaited<ReturnType<typeof WebhooksService.updateOneWebhookConfiguration>>;
 export type WebhooksServiceUpdateStatusMutationResult = Awaited<ReturnType<typeof WebhooksService.updateStatus>>;
 export type UsersServiceUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.updatePermissions>>;
+export type ResourceGroupsServiceUpdateOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.updateOneResourceGroup>>;
 export type AuthenticationServiceEndSessionMutationResult = Awaited<ReturnType<typeof AuthenticationService.endSession>>;
 export type SsoServiceDeleteOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.deleteOneSsoProvider>>;
+export type ResourceGroupsServiceDeleteOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.deleteOneResourceGroup>>;
 export type ResourcesServiceDeleteOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.deleteOneResource>>;
+export type ResourcesServiceRemoveResourceFromGroupMutationResult = Awaited<ReturnType<typeof ResourcesService.removeResourceFromGroup>>;
 export type ResourceIntroducersServiceRemoveOneMutationResult = Awaited<ReturnType<typeof ResourceIntroducersService.removeOne>>;
 export type MqttResourceConfigurationServiceDeleteOneMqttConfigurationMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.deleteOneMqttConfiguration>>;
 export type MqttServersServiceDeleteOneMqttServerMutationResult = Awaited<ReturnType<typeof MqttServersService.deleteOneMqttServer>>;

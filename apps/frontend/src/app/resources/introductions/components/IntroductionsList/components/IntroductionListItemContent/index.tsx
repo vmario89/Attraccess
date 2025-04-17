@@ -8,16 +8,17 @@ import { useMemo } from 'react';
 import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AttraccessUser } from '@frontend/components/AttraccessUser';
-import { useResourceIntroductionServiceCheckIsRevokedStatus, ResourceIntroduction } from '@attraccess/react-query-client';
+import {
+  useResourceIntroductionsServiceCheckIsRevokedStatus,
+  ResourceIntroduction,
+} from '@attraccess/react-query-client';
 
 interface IntroductionListItemContentProps {
   introduction: ResourceIntroduction;
   resourceId: number;
 }
 
-export function IntroductionListItemContent(
-  props: IntroductionListItemContentProps
-) {
+export function IntroductionListItemContent(props: IntroductionListItemContentProps) {
   const { t } = useTranslations('introductionListItemContent', {
     en,
     de,
@@ -25,20 +26,15 @@ export function IntroductionListItemContent(
 
   const { introduction, resourceId } = props;
 
-  const { data: revokedData } = useResourceIntroductionServiceCheckIsRevokedStatus(
-    {resourceId, introductionId: introduction.id},
-  );
-  const isRevoked = useMemo(
-    () => revokedData?.isRevoked || false,
-    [revokedData]
-  );
+  const { data: revokedData } = useResourceIntroductionsServiceCheckIsRevokedStatus({
+    resourceId,
+    introductionId: introduction.id,
+  });
+  const isRevoked = useMemo(() => revokedData?.isRevoked || false, [revokedData]);
 
   const tutorname = useMemo(() => {
     return (
-      introduction.tutorUser?.username ||
-      (introduction.tutorUserId
-        ? `User ${introduction.tutorUserId}`
-        : t('unknown'))
+      introduction.tutorUser?.username || (introduction.tutorUserId ? `User ${introduction.tutorUserId}` : t('unknown'))
     );
   }, [introduction, t]);
 

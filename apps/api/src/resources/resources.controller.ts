@@ -12,19 +12,14 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiConsumes,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { ResourcesService } from './resources.service';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { ListResourcesDto } from './dtos/listResources.dto';
 import { Resource } from '@attraccess/database-entities';
 import { Auth } from '../users-and-auth/strategies/systemPermissions.guard';
-import { PaginatedResponse } from '../types/pagination';
+import { PaginatedResponse } from '../types/response';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';
 import { ResourceImageService } from '../common/services/resource-image.service';
@@ -41,10 +36,7 @@ export class ResourcesController {
   private transformResource = (resource: Resource): Resource => {
     return {
       ...resource,
-      imageFilename: this.resourceImageService.getPublicPath(
-        resource.id,
-        resource.imageFilename
-      ),
+      imageFilename: this.resourceImageService.getPublicPath(resource.id, resource.imageFilename),
     };
   };
 
@@ -58,14 +50,8 @@ export class ResourcesController {
   @CanManageResources({ skipResourceCheck: true })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
-  async createOne(
-    @Body() createDto: CreateResourceDto,
-    @UploadedFile() image?: FileUpload
-  ): Promise<Resource> {
-    const resource = await this.resourcesService.createResource(
-      createDto,
-      image
-    );
+  async createOne(@Body() createDto: CreateResourceDto, @UploadedFile() image?: FileUpload): Promise<Resource> {
+    const resource = await this.resourcesService.createResource(createDto, image);
     return this.transformResource(resource);
   }
 
@@ -81,14 +67,13 @@ export class ResourcesController {
     status: 401,
     description: 'Unauthorized - User is not authenticated',
   })
-  async getAll(
-    @Query() query: ListResourcesDto
-  ): Promise<PaginatedResponse<Resource>> {
-    const resources = await this.resourcesService.listResources(
+  async getAll(@Query() query: ListResourcesDto): Promise<PaginatedResponse<Resource>> {
+    const resources = (await this.resourcesService.listResources(
       query.page,
       query.limit,
-      query.search
-    );
+      query.search,
+      query.groupId
+    )) as PaginatedResourceResponseDto;
 
     resources.data = resources.data.map(this.transformResource);
     return resources;
@@ -110,9 +95,7 @@ export class ResourcesController {
     status: 404,
     description: 'Resource not found',
   })
-  async getOneById(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<Resource> {
+  async getOneById(@Param('id', ParseIntPipe) id: number): Promise<Resource> {
     const resource = await this.resourcesService.getResourceById(id);
     return this.transformResource(resource);
   }
@@ -132,11 +115,7 @@ export class ResourcesController {
     @Body() updateDto: UpdateResourceDto,
     @UploadedFile() image?: FileUpload
   ): Promise<Resource> {
-    const resource = await this.resourcesService.updateResource(
-      id,
-      updateDto,
-      image
-    );
+    const resource = await this.resourcesService.updateResource(id, updateDto, image);
     return this.transformResource(resource);
   }
 
@@ -149,5 +128,38 @@ export class ResourcesController {
   @CanManageResources({ paramName: 'id' })
   async deleteOne(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.resourcesService.deleteResource(id);
+  }
+
+  @Post(':id/groups/:groupId')
+  @ApiOperation({ summary: 'Add a resource to a group', operationId: 'addResourceToGroup' })
+  @ApiResponse({
+    status: 200,
+    description: 'The resource has been successfully added to the group.',
+    type: Resource, // Assuming you might return the updated resource or related info
+  })
+  @ApiResponse({ status: 404, description: 'Resource or Group not found' })
+  @CanManageResources({ paramName: 'id' }) // Protect based on resource management permission
+  async addResourceToGroup(
+    @Param('id', ParseIntPipe) resourceId: number,
+    @Param('groupId', ParseIntPipe) groupId: number
+  ): Promise<void> {
+    // Adjust return type if service returns something meaningful
+    await this.resourcesService.addResourceToGroup(resourceId, groupId);
+    // Optionally return updated resource or confirmation
+  }
+
+  @Delete(':id/groups/:groupId')
+  @ApiOperation({ summary: 'Remove a resource from a group', operationId: 'removeResourceFromGroup' })
+  @ApiResponse({
+    status: 204,
+    description: 'The resource has been successfully removed from the group.',
+  })
+  @ApiResponse({ status: 404, description: 'Resource or Group not found, or resource not in group' })
+  @CanManageResources({ paramName: 'id' }) // Protect based on resource management permission
+  async removeResourceFromGroup(
+    @Param('id', ParseIntPipe) resourceId: number,
+    @Param('groupId', ParseIntPipe) groupId: number
+  ): Promise<void> {
+    await this.resourcesService.removeResourceFromGroup(resourceId, groupId);
   }
 }

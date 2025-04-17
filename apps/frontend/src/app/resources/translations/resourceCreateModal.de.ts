@@ -7,6 +7,10 @@ export default {
   successTitle: 'Ressource erstellt',
   successDescription: '{{name}} wurde erfolgreich erstellt',
   errorTitle: 'Fehler beim Erstellen der Ressource',
-  errorDescription:
-    'Beim Erstellen der Ressource ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+  errorDescription: 'Beim Erstellen der Ressource ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+  createCloseButton: 'Erstellen',
+  createClearButton: 'Erstellen & Neu',
+  createOpenButton: 'Erstellen & Öffnen',
+  validationErrorTitle: 'Validierungsfehler',
+  nameRequiredError: 'Name ist erforderlich.',
 };

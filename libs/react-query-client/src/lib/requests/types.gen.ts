@@ -88,6 +88,10 @@ export type PaginatedUsersResponseDto = {
     total: number;
     page: number;
     limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
     totalPages: number;
     data: Array<User>;
 };
@@ -293,6 +297,51 @@ export type UpdateSSOProviderDto = {
     oidcConfiguration?: UpdateOIDCConfigurationDto;
 };
 
+export type CreateResourceGroupDto = {
+    name: string;
+    description?: string;
+};
+
+export type ResourceGroup = {
+    /**
+     * The unique identifier of the resource group
+     */
+    id: number;
+    /**
+     * The name of the resource
+     */
+    name: string;
+    /**
+     * A detailed description of the resource
+     */
+    description?: string;
+    /**
+     * When the resource was created
+     */
+    createdAt: string;
+    /**
+     * When the resource was last updated
+     */
+    updatedAt: string;
+};
+
+export type PaginatedResourceGroupResponseDto = {
+    total: number;
+    page: number;
+    limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
+    totalPages: number;
+    data: Array<ResourceGroup>;
+};
+
+export type UpdateResourceGroupDto = {
+    name?: string;
+    description?: string;
+};
+
 export type CreateResourceDto = {
     /**
      * The name of the resource
@@ -333,12 +382,20 @@ export type Resource = {
      * When the resource was last updated
      */
     updatedAt: string;
+    /**
+     * The groups the resource belongs to
+     */
+    groups: Array<ResourceGroup>;
 };
 
 export type PaginatedResourceResponseDto = {
     total: number;
     page: number;
     limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
     totalPages: number;
     data: Array<Resource>;
 };
@@ -419,6 +476,10 @@ export type GetResourceHistoryResponseDto = {
     total: number;
     page: number;
     limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
     totalPages: number;
     data: Array<ResourceUsage>;
 };
@@ -512,6 +573,10 @@ export type PaginatedResourceIntroductionResponseDto = {
     total: number;
     page: number;
     limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
     totalPages: number;
     data: Array<ResourceIntroduction>;
 };
@@ -1178,6 +1243,57 @@ export type OidcLoginCallbackData = {
 
 export type OidcLoginCallbackResponse = CreateSessionResponse;
 
+export type CreateOneResourceGroupData = {
+    requestBody: CreateResourceGroupDto;
+};
+
+export type CreateOneResourceGroupResponse = ResourceGroup;
+
+export type GetAllResourceGroupsData = {
+    /**
+     * Number of items per page
+     */
+    limit?: number;
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Search term for name or description
+     */
+    search?: string;
+};
+
+export type GetAllResourceGroupsResponse = PaginatedResourceGroupResponseDto;
+
+export type GetOneResourceGroupByIdData = {
+    /**
+     * Resource Group ID
+     */
+    id: number;
+};
+
+export type GetOneResourceGroupByIdResponse = ResourceGroup;
+
+export type UpdateOneResourceGroupData = {
+    /**
+     * Resource Group ID
+     */
+    id: number;
+    requestBody: UpdateResourceGroupDto;
+};
+
+export type UpdateOneResourceGroupResponse = ResourceGroup;
+
+export type DeleteOneResourceGroupData = {
+    /**
+     * Resource Group ID
+     */
+    id: number;
+};
+
+export type DeleteOneResourceGroupResponse = void;
+
 export type CreateOneResourceData = {
     formData: CreateResourceDto;
 };
@@ -1185,6 +1301,10 @@ export type CreateOneResourceData = {
 export type CreateOneResourceResponse = Resource;
 
 export type GetAllResourcesData = {
+    /**
+     * Group ID to filter resources. Send -1 to find ungrouped resources.
+     */
+    groupId?: number;
     /**
      * Number of items per page
      */
@@ -1219,6 +1339,20 @@ export type DeleteOneResourceData = {
 };
 
 export type DeleteOneResourceResponse = void;
+
+export type AddResourceToGroupData = {
+    groupId: number;
+    id: number;
+};
+
+export type AddResourceToGroupResponse = Resource;
+
+export type RemoveResourceFromGroupData = {
+    groupId: number;
+    id: number;
+};
+
+export type RemoveResourceFromGroupResponse = void;
 
 export type StartSessionData = {
     requestBody: StartUsageSessionDto;
@@ -1271,7 +1405,7 @@ export type GetAllResourceIntroductionsData = {
     /**
      * Page number (1-based)
      */
-    page: number;
+    page?: number;
     resourceId: number;
 };
 
@@ -1861,6 +1995,103 @@ export type $OpenApiTs = {
             };
         };
     };
+    '/api/resources/groups': {
+        post: {
+            req: CreateOneResourceGroupData;
+            res: {
+                /**
+                 * The resource group has been successfully created.
+                 */
+                201: ResourceGroup;
+                /**
+                 * Bad Request.
+                 */
+                400: unknown;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+            };
+        };
+        get: {
+            req: GetAllResourceGroupsData;
+            res: {
+                /**
+                 * List of resource groups with pagination.
+                 */
+                200: PaginatedResourceGroupResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resources/groups/{id}': {
+        get: {
+            req: GetOneResourceGroupByIdData;
+            res: {
+                /**
+                 * The resource group details.
+                 */
+                200: ResourceGroup;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource group not found.
+                 */
+                404: unknown;
+            };
+        };
+        patch: {
+            req: UpdateOneResourceGroupData;
+            res: {
+                /**
+                 * The resource group has been successfully updated.
+                 */
+                200: ResourceGroup;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource group not found.
+                 */
+                404: unknown;
+            };
+        };
+        delete: {
+            req: DeleteOneResourceGroupData;
+            res: {
+                /**
+                 * The resource group has been successfully deleted.
+                 */
+                204: void;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource group not found.
+                 */
+                404: unknown;
+            };
+        };
+    };
     '/api/resources': {
         post: {
             req: CreateOneResourceData;
@@ -1943,6 +2174,50 @@ export type $OpenApiTs = {
                  * User does not have permission to manage this resource
                  */
                 403: unknown;
+            };
+        };
+    };
+    '/api/resources/{id}/groups/{groupId}': {
+        post: {
+            req: AddResourceToGroupData;
+            res: {
+                /**
+                 * The resource has been successfully added to the group.
+                 */
+                200: Resource;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource or Group not found
+                 */
+                404: unknown;
+            };
+        };
+        delete: {
+            req: RemoveResourceFromGroupData;
+            res: {
+                /**
+                 * The resource has been successfully removed from the group.
+                 */
+                204: void;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource or Group not found, or resource not in group
+                 */
+                404: unknown;
             };
         };
     };

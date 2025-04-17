@@ -8,6 +8,8 @@ import {
   ViewEntity,
   ViewColumn,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResourceIntroduction } from './resourceIntroduction.entity';
@@ -15,6 +17,7 @@ import { ResourceUsage } from './resourceUsage.entity';
 import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
 import { MqttResourceConfig } from './mqttResourceConfig.entity';
 import { WebhookConfig } from './webhookConfig.entity';
+import { ResourceGroup } from './resourceGroup.entity';
 
 @Entity()
 export class Resource {
@@ -60,19 +63,13 @@ export class Resource {
   })
   updatedAt!: Date;
 
-  @OneToMany(
-    () => ResourceIntroduction,
-    (introduction) => introduction.resource
-  )
+  @OneToMany(() => ResourceIntroduction, (introduction) => introduction.resource)
   introductions!: ResourceIntroduction[];
 
   @OneToMany(() => ResourceUsage, (usage) => usage.resource)
   usages!: ResourceUsage[];
 
-  @OneToMany(
-    () => ResourceIntroductionUser,
-    (introducer) => introducer.resource
-  )
+  @OneToMany(() => ResourceIntroductionUser, (introducer) => introducer.resource)
   introducers!: ResourceIntroductionUser[];
 
   @OneToOne(() => MqttResourceConfig, (config) => config.resource)
@@ -80,6 +77,15 @@ export class Resource {
 
   @OneToMany(() => WebhookConfig, (config) => config.resource)
   webhookConfigs!: WebhookConfig[];
+
+  @ManyToMany(() => ResourceGroup, (group) => group.resources)
+  @JoinTable()
+  @ApiProperty({
+    description: 'The groups the resource belongs to',
+    type: ResourceGroup,
+    isArray: true,
+  })
+  groups!: ResourceGroup[];
 }
 
 @ViewEntity({

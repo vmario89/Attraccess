@@ -7,9 +7,9 @@ import * as en from './translations/en';
 import * as de from './translations/de';
 import { useToastMessage } from '../../../../../components/toastProvider';
 import {
-  useResourceIntroductionServiceMarkCompleted,
-  UseResourceIntroductionServiceCheckStatusKeyFn,
-  useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+  useResourceIntroductionsServiceMarkCompleted,
+  UseResourceIntroductionsServiceCheckStatusKeyFn,
+  useResourceIntroductionsServiceGetAllResourceIntroductionsKey,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -17,9 +17,7 @@ export type AddIntroductionFormProps = {
   resourceId: number;
 };
 
-export const AddIntroductionForm = ({
-  resourceId,
-}: AddIntroductionFormProps) => {
+export const AddIntroductionForm = ({ resourceId }: AddIntroductionFormProps) => {
   const { t } = useTranslations('addIntroductionForm', {
     en,
     de,
@@ -35,7 +33,7 @@ export const AddIntroductionForm = ({
     isPending: isSubmitting,
     status,
     error,
-  } = useResourceIntroductionServiceMarkCompleted();
+  } = useResourceIntroductionsServiceMarkCompleted();
 
   const submitIntroduction = useCallback(async () => {
     if (!selectedUserId) {
@@ -45,7 +43,7 @@ export const AddIntroductionForm = ({
     createIntroduction({
       resourceId,
       requestBody: {
-        userId: selectedUserId
+        userId: selectedUserId,
       },
     });
   }, [createIntroduction, resourceId, selectedUserId]);
@@ -57,13 +55,10 @@ export const AddIntroductionForm = ({
         title: t('addNew.success'),
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          useResourceIntroductionServiceGetAllResourceIntroductionsKey,
-          { resourceId },
-        ],
+        queryKey: [useResourceIntroductionsServiceGetAllResourceIntroductionsKey, { resourceId }],
       });
       queryClient.invalidateQueries({
-        queryKey: UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }),
+        queryKey: UseResourceIntroductionsServiceCheckStatusKeyFn({ resourceId }),
       });
     }
 

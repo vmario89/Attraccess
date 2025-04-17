@@ -7,7 +7,10 @@
   "tags": [],
   "targetDefaults": {
     "build": {},
-    "serve": {},
+    "serve": {
+      "port": 4200,
+      "strictPort": true
+    },
     "lint": {
       "dependsOn": ["frontend:typecheck"]
     }

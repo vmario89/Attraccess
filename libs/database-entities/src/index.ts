@@ -3,6 +3,7 @@ export * from './lib/entities/user.entity';
 export * from './lib/entities/resourceUsage.entity';
 export * from './lib/entities/resourceIntroduction.entity';
 export * from './lib/entities/resourceIntroductionUser.entity';
+export * from './lib/entities/resourceGroup.entity';
 export * from './lib/entities/revokedToken.entity';
 export * from './lib/entities/authenticationDetail.entity';
 export * from './lib/types/authenticationType.enum';

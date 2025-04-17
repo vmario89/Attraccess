@@ -11,6 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { User } from './user.entity';
 import { ResourceIntroductionHistoryItem } from './resourceIntroductionHistoryItem.entity';
+import { ResourceGroup } from './resourceGroup.entity';
 
 @Entity()
 export class ResourceIntroduction {
@@ -85,4 +86,8 @@ export class ResourceIntroduction {
     type: () => [ResourceIntroductionHistoryItem],
   })
   history!: ResourceIntroductionHistoryItem[];
+
+  @ManyToOne(() => ResourceGroup, (group) => group.introductions)
+  @JoinColumn({ name: 'resourceGroupId' })
+  resourceGroup!: ResourceGroup;
 }
