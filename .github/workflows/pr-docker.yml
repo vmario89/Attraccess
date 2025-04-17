@@ -16,6 +16,7 @@ env:
 permissions:
   contents: read # Needed to checkout the code
   packages: write # Needed to push images to GHCR
+  pull-requests: write # Needed to post comments on the PR
 
 jobs:
   # Build and test to ensure everything is working before building the image
