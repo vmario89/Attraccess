@@ -14,7 +14,11 @@ import {
 import { useTranslations } from '../../i18n';
 import * as en from './translations/register.en';
 import * as de from './translations/register.de';
-import { useUsersServiceCreateOneUser } from '@attraccess/react-query-client';
+import {
+  useUsersServiceCreateOneUser,
+  UseUsersServiceGetAllUsersKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface RegisterFormProps {
   onHasAccount: () => void;
@@ -26,7 +30,14 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
     de,
   });
 
-  const createUser = useUsersServiceCreateOneUser();
+  const createUser = useUsersServiceCreateOneUser({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [UseUsersServiceGetAllUsersKeyFn()[0]],
+      });
+    },
+  });
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string>('');
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

@@ -21,4 +21,5 @@ export default {
   availableIntroducers: 'Verfügbare Einführer',
   noIntroducersAvailable:
     'Für diese Ressource sind derzeit keine Einführer verfügbar. Bitte kontaktieren Sie einen Administrator.',
+  resourceInUseBy: 'Ressource wird derzeit verwendet von:',
 };

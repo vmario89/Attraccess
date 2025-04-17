@@ -1,6 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { CreateSessionResponse, OpenAPI, SystemPermissions, useAuthenticationServiceCreateSession, useAuthenticationServiceEndSession, User, useUsersServiceGetCurrent } from '@attraccess/react-query-client';
+import {
+  CreateSessionResponse,
+  OpenAPI,
+  SystemPermissions,
+  useAuthenticationServiceCreateSession,
+  useAuthenticationServiceEndSession,
+  User,
+  useUsersServiceGetCurrent,
+  UseUsersServiceGetCurrentKeyFn,
+} from '@attraccess/react-query-client';
 
 interface LoginCredentials {
   username: string;
@@ -90,6 +99,8 @@ export function useAuth() {
     onSuccess: (data) => {
       // Update the auth query data
       queryClient.setQueryData(AUTH_QUERY_KEY, data);
+      // Invalidate current user data to refetch after login
+      queryClient.invalidateQueries({ queryKey: [UseUsersServiceGetCurrentKeyFn()[0]] });
     },
   });
 
@@ -105,11 +116,15 @@ export function useAuth() {
         sessionStorage.setItem('auth', JSON.stringify(auth));
       }
 
+      OpenAPI.TOKEN = auth.authToken;
+
       return auth;
     },
     onSuccess: (data) => {
       // Update the auth query data
       queryClient.setQueryData(AUTH_QUERY_KEY, data);
+      // Invalidate current user data to refetch after login
+      queryClient.invalidateQueries({ queryKey: [UseUsersServiceGetCurrentKeyFn()[0]] });
     },
   });
 

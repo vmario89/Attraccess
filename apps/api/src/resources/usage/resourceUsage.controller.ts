@@ -77,8 +77,9 @@ export class ResourceUsageController {
   async endSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() dto: EndUsageSessionDto,
+    @Req() req: AuthenticatedRequest
   ): Promise<ResourceUsage> {
-    return this.resourceUsageService.endSession(resourceId, dto);
+    return this.resourceUsageService.endSession(resourceId, req.user, dto);
   }
 
   @Get('history')
@@ -156,6 +157,6 @@ export class ResourceUsageController {
   async getActiveSession(
     @Param('resourceId', ParseIntPipe) resourceId: number,
   ): Promise<ResourceUsage | null> {
-    return this.resourceUsageService.getActiveSession(resourceId);
+    return await this.resourceUsageService.getActiveSession(resourceId);
   }
 }

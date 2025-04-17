@@ -15,10 +15,15 @@ import { Button } from '@heroui/button';
 import { useToastMessage } from '@frontend/components/toastProvider';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AttraccessUser } from '@frontend/components/AttraccessUser';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  useResourceIntroducersServiceGetAllResourceIntroducers,
+  useResourceIntroducersServiceRemoveOne,
+  UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn,
+} from '@attraccess/react-query-client';
 
 import * as en from './translations/introducersList.en';
 import * as de from './translations/introducersList.de';
-import { useResourceIntroducersServiceGetAllResourceIntroducers, useResourceIntroducersServiceRemoveOne } from '@attraccess/react-query-client';
 
 export interface Introducer {
   id: number;
@@ -39,6 +44,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
   });
 
   const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
+  const queryClient = useQueryClient();
 
   const { success, error: showError } = useToastMessage();
 
@@ -68,6 +74,12 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
         title: t('success.removed.title'),
         description: t('success.removed.description'),
       });
+
+      queryClient.invalidateQueries({
+        queryKey: UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn({
+          resourceId,
+        }),
+      });
     } catch (err) {
       showError({
         title: t('error.removeFailed.title'),
@@ -78,7 +90,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
 
     setIsConfirmModalOpen(false);
     setIntroducerToRemove(null);
-  }, [introducerToRemove, removeIntroducer, resourceId, success, showError, t]);
+  }, [introducerToRemove, removeIntroducer, resourceId, success, showError, t, queryClient]);
 
   const handleCancelRemove = useCallback(() => {
     setIsConfirmModalOpen(false);

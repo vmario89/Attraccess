@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, FindOneOptions } from 'typeorm';
 import { ResourceUsage, User } from '@attraccess/database-entities';
@@ -114,12 +114,23 @@ export class ResourceUsageService {
 
   async endSession(
     resourceId: number,
+    user: User,
     dto: EndUsageSessionDto
   ): Promise<ResourceUsage> {
     // Find active session
     const activeSession = await this.getActiveSession(resourceId);
     if (!activeSession) {
       throw new BadRequestException('No active session found');
+    }
+
+    // Check if the user is authorized to end the session
+    const canManageResources = user.systemPermissions?.canManageResources || false;
+    const isSessionOwner = activeSession.userId === user.id;
+
+    if (!isSessionOwner && !canManageResources) {
+      throw new ForbiddenException(
+        'You are not authorized to end this session'
+      );
     }
 
     const endTime = new Date();
@@ -160,6 +171,7 @@ export class ResourceUsageService {
         resourceId,
         endTime: IsNull(),
       },
+      relations: ['user'],
     });
   }
 

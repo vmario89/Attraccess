@@ -37,7 +37,15 @@ import * as de from './translations/de';
 import { 
   CreateSSOProviderDto,
   SSOProvider,
-  UpdateSSOProviderDto, useSsoServiceCreateOneSsoProvider, useSsoServiceDeleteOneSsoProvider, useSsoServiceGetAllSsoProviders, useSsoServiceGetOneSsoProviderById, useSsoServiceUpdateOneSsoProvider } from '@attraccess/react-query-client';
+  UpdateSSOProviderDto,
+  useSsoServiceCreateOneSsoProvider,
+  useSsoServiceDeleteOneSsoProvider,
+  useSsoServiceGetAllSsoProviders,
+  useSsoServiceGetOneSsoProviderById,
+  useSsoServiceUpdateOneSsoProvider,
+  UseSsoServiceGetAllSsoProvidersKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Interface for the OpenID Configuration response
 interface OpenIDConfiguration {
@@ -83,11 +91,30 @@ export const SSOProvidersList = forwardRef<
   const [keycloakHost, setKeycloakHost] = useState('');
   const [keycloakRealm, setKeycloakRealm] = useState('');
   const [isDiscoverDialogOpen, setIsDiscoverDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { success, error: showError } = useToastMessage();
-  const createSSOProvider = useSsoServiceCreateOneSsoProvider();
-  const updateSSOProvider = useSsoServiceUpdateOneSsoProvider();
-  const deleteSSOProvider = useSsoServiceDeleteOneSsoProvider();
+  const createSSOProvider = useSsoServiceCreateOneSsoProvider({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [UseSsoServiceGetAllSsoProvidersKeyFn()[0]],
+      });
+    },
+  });
+  const updateSSOProvider = useSsoServiceUpdateOneSsoProvider({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [UseSsoServiceGetAllSsoProvidersKeyFn()[0]],
+      });
+    },
+  });
+  const deleteSSOProvider = useSsoServiceDeleteOneSsoProvider({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [UseSsoServiceGetAllSsoProvidersKeyFn()[0]],
+      });
+    },
+  });
   const { data: providerDetails } = useSsoServiceGetOneSsoProviderById({id: editingProvider?.id as number}, undefined, {
     enabled: !!editingProvider,
   });
@@ -279,6 +306,11 @@ export const SSOProvidersList = forwardRef<
         });
       }
       onClose();
+
+      // Invalidate query after successful submission - Already handled by onSuccess handlers
+      // queryClient.invalidateQueries({
+      //   queryKey: UseSsoServiceGetAllSsoProvidersKeyFn(),
+      // });
     } catch (err) {
       showError({
         title: t('errorGeneric'),

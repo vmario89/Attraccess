@@ -12,7 +12,16 @@ import { useTranslations } from '../../../../../../../i18n';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useToastMessage } from '../../../../../../../components/toastProvider';
-import { useResourceIntroductionServiceGetOneResourceIntroduction, useResourceIntroductionServiceMarkRevoked, useResourceIntroductionServiceMarkUnrevoked } from '@attraccess/react-query-client';
+import {
+  useResourceIntroductionServiceGetOneResourceIntroduction,
+  useResourceIntroductionServiceMarkRevoked,
+  useResourceIntroductionServiceMarkUnrevoked,
+  useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+  UseResourceIntroductionServiceCheckStatusKeyFn,
+  UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn,
+  UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 export enum RevokeDialogMode {
   REVOKE = 'revoke',
@@ -40,6 +49,7 @@ export const RevokeConfirmationDialog = ({
   });
 
   const [comment, setComment] = useState('');
+  const queryClient = useQueryClient();
 
   const revokeIntroduction = useResourceIntroductionServiceMarkRevoked();
   const unrevokeIntroduction = useResourceIntroductionServiceMarkUnrevoked();
@@ -72,6 +82,28 @@ export const RevokeConfirmationDialog = ({
               username,
             }),
           });
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+              { resourceId },
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
         },
         onError: (err) => {
           showError({
@@ -79,6 +111,28 @@ export const RevokeConfirmationDialog = ({
             description: t('revoke.error.description'),
           });
           console.error('Failed to revoke introduction:', err);
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+              { resourceId },
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
         },
       }
     );
@@ -92,6 +146,7 @@ export const RevokeConfirmationDialog = ({
     revokeIntroduction,
     showError,
     username,
+    queryClient,
   ]);
 
   const handleUnrevoke = useCallback(() => {
@@ -110,6 +165,28 @@ export const RevokeConfirmationDialog = ({
               username,
             }),
           });
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+              { resourceId },
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
         },
         onError: (err) => {
           showError({
@@ -117,6 +194,28 @@ export const RevokeConfirmationDialog = ({
             description: t('unrevoke.error.description'),
           });
           console.error('Failed to unrevoke introduction:', err);
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              useResourceIntroductionServiceGetAllResourceIntroductionsKey,
+              { resourceId },
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({
+              resourceId,
+              introductionId,
+            }),
+          });
         },
       }
     );
@@ -130,6 +229,7 @@ export const RevokeConfirmationDialog = ({
     introductionId,
     resourceId,
     username,
+    queryClient,
   ]);
 
   const handleConfirm = useCallback(() => {

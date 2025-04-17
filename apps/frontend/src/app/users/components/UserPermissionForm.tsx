@@ -6,7 +6,13 @@ import { useToastMessage } from '../../../components/toastProvider';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
 import { AttraccessUser } from '../../../components/AttraccessUser';
-import { User, useUsersServiceGetPermissions, useUsersServiceUpdatePermissions } from '@attraccess/react-query-client';
+import {
+  User,
+  useUsersServiceGetPermissions,
+  useUsersServiceUpdatePermissions,
+  UseUsersServiceGetAllUsersKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UserPermissionFormProps {
   user: User;
@@ -17,6 +23,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
 }) => {
   const { t } = useTranslations('userPermissionForm', { en, de });
   const { showToast } = useToastMessage();
+  const queryClient = useQueryClient();
 
   const { data: userPermissions, isLoading } = useUsersServiceGetPermissions({id: user.id});
   const updatePermissions = useUsersServiceUpdatePermissions();
@@ -52,6 +59,11 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
         id: user.id,
         requestBody: permissions,
       });
+
+      queryClient.invalidateQueries({
+        queryKey: [UseUsersServiceGetAllUsersKeyFn()[0]],
+      });
+
       showToast({
         title: t('userPermissionsSaved'),
         type: 'success',

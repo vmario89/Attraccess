@@ -15,7 +15,8 @@ import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
 import { ManageIntroducers } from './introductions/components/ManageIntroducers';
 import { memo, useMemo } from 'react';
-import { useResourceIntroducersServiceCheckCanManagePermission, useResourceIntroductionServiceCheckCanManagePermission, useResourcesServiceDeleteOneResource, useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
+import { useResourceIntroducersServiceCheckCanManagePermission, useResourceIntroductionServiceCheckCanManagePermission, useResourcesServiceDeleteOneResource, useResourcesServiceGetOneResourceById, UseResourcesServiceGetAllResourcesKeyFn } from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,7 @@ function ResourceDetailsComponent() {
   const { hasPermission } = useAuth();
   const { success, error: showError } = useToastMessage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { t } = useTranslations('resourceDetails', {
     en,
@@ -47,6 +49,9 @@ function ResourceDetailsComponent() {
         title: 'Resource deleted',
         description: `${resource?.name} has been successfully deleted`,
       });
+      queryClient.invalidateQueries({
+        queryKey: [UseResourcesServiceGetAllResourcesKeyFn()[0]],
+      });
       navigate('/resources');
     } catch (err) {
       showError({
@@ -65,12 +70,12 @@ function ResourceDetailsComponent() {
   const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({resourceId});
 
   const showIntroductionsManagement = useMemo(
-    () => canManageResources || canManageIntroductions,
+    () => canManageResources || canManageIntroductions?.canManageIntroductions,
     [canManageResources, canManageIntroductions]
   );
 
   const showIntroducersManagement = useMemo(
-    () => canManageResources || canManageIntroducers,
+    () => canManageResources || canManageIntroducers?.canManageIntroductions,
     [canManageResources, canManageIntroducers]
   );
 

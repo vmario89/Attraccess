@@ -7,7 +7,14 @@ import { useTranslations } from '@frontend/i18n';
 import { useToastMessage } from '@frontend/components/toastProvider';
 import * as en from './translations/actions/en';
 import * as de from './translations/actions/de';
-import { useMqttResourceConfigurationServiceDeleteOneMqttConfiguration, useMqttResourceConfigurationServiceGetOneMqttConfiguration, useMqttResourceConfigurationServiceTestOne, useMqttResourceConfigurationServiceUpsertOne } from '@attraccess/react-query-client';
+import {
+  useMqttResourceConfigurationServiceDeleteOneMqttConfiguration,
+  useMqttResourceConfigurationServiceGetOneMqttConfiguration,
+  useMqttResourceConfigurationServiceTestOne,
+  useMqttResourceConfigurationServiceUpsertOne,
+  UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MqttFormData {
   serverId: string;
@@ -35,6 +42,7 @@ export default function MqttActions({
   const { t } = useTranslations('mqttActions', { en, de });
   const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
   const [isTesting, setIsTesting] = useState(false);
+  const queryClient = useQueryClient();
 
   const { success, error: showError } = useToastMessage();
   const createOrUpdateConfig = useMqttResourceConfigurationServiceUpsertOne();
@@ -68,6 +76,12 @@ export default function MqttActions({
         title: t('configSaved'),
         description: t('configSavedDesc'),
       });
+
+      queryClient.invalidateQueries({
+        queryKey: UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn({
+          resourceId,
+        }),
+      });
     } catch (error) {
       console.error('Failed to save MQTT configuration:', error);
       showError({
@@ -87,6 +101,12 @@ export default function MqttActions({
         success({
           title: t('configDeleted'),
           description: t('configDeletedDesc'),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn({
+            resourceId,
+          }),
         });
       } catch (error) {
         console.error('Failed to delete MQTT configuration:', error);

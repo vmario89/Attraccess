@@ -21,4 +21,5 @@ export default {
   availableIntroducers: 'Available Introducers',
   noIntroducersAvailable:
     'No introducers are currently available for this resource. Please contact an administrator.',
+  resourceInUseBy: 'Resource currently in use by:',
 };

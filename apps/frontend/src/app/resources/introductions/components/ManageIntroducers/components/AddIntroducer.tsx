@@ -11,7 +11,11 @@ import { useToastMessage } from '@frontend/components/toastProvider';
 // Import translations
 import * as en from './translations/addIntroducer.en';
 import * as de from './translations/addIntroducer.de';
-import { useResourceIntroducersServiceAddOne } from '@attraccess/react-query-client';
+import {
+  useResourceIntroducersServiceAddOne,
+  UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AddIntroducerProps {
   resourceId: number;
@@ -26,6 +30,7 @@ function AddIntroducerComponent(props: AddIntroducerProps) {
   });
 
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
   const addIntroducer = useResourceIntroducersServiceAddOne();
   const { success, error: showError } = useToastMessage();
@@ -46,6 +51,12 @@ function AddIntroducerComponent(props: AddIntroducerProps) {
         description: t('success.added.description'),
       });
 
+      queryClient.invalidateQueries({
+        queryKey: UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn({
+          resourceId,
+        }),
+      });
+
       setSelectedUserId(null);
     } catch (err) {
       showError({
@@ -54,7 +65,7 @@ function AddIntroducerComponent(props: AddIntroducerProps) {
       });
       console.error('Failed to add introducer:', err);
     }
-  }, [selectedUserId, addIntroducer, resourceId, showError, success, t]);
+  }, [selectedUserId, addIntroducer, resourceId, showError, success, t, queryClient]);
 
   return (
     <>

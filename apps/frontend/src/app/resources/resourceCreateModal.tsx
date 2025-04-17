@@ -18,7 +18,12 @@ import { FileUpload } from '@frontend/components/fileUpload';
 import { useTranslations } from '@frontend/i18n';
 import * as en from './translations/resourceCreateModal.en';
 import * as de from './translations/resourceCreateModal.de';
-import { useResourcesServiceCreateOneResource, CreateResourceDto } from '@attraccess/react-query-client';
+import {
+  useResourcesServiceCreateOneResource,
+  CreateResourceDto,
+  UseResourcesServiceGetAllResourcesKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -42,6 +47,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const modalCloseFn = useRef<(() => void) | null>(null);
 
   const createResource = useResourcesServiceCreateOneResource();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (createResource.isSuccess && isSubmitting) {
@@ -62,6 +68,10 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
       if (modalCloseFn.current) {
         modalCloseFn.current();
       }
+
+      queryClient.invalidateQueries({
+        queryKey: [UseResourcesServiceGetAllResourcesKeyFn()[0]],
+      });
     }
   }, [
     isSubmitting,
@@ -71,6 +81,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
     props,
     success,
     t,
+    queryClient,
   ]);
 
   useEffect(() => {

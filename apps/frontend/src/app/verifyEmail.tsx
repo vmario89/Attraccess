@@ -14,7 +14,11 @@ import {
 import { useTranslations } from '../i18n';
 import * as en from './translations/verifyEmail.en';
 import * as de from './translations/verifyEmail.de';
-import { useUsersServiceVerifyEmail } from '@attraccess/react-query-client';
+import {
+  useUsersServiceVerifyEmail,
+  UseUsersServiceGetCurrentKeyFn,
+} from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function VerifyEmail() {
   const query = useUrlQuery();
@@ -27,6 +31,7 @@ export function VerifyEmail() {
   const email = useMemo(() => query.get('email'), [query]);
 
   const verifyEmail = useUsersServiceVerifyEmail();
+  const queryClient = useQueryClient();
 
   const activateEmail = useCallback(async () => {
     if (!token || !email) {
@@ -38,6 +43,10 @@ export function VerifyEmail() {
       await verifyEmail.mutateAsync({requestBody: { token, email }});
       setIsSuccess(true);
       setError(null);
+
+      queryClient.invalidateQueries({
+        queryKey: [UseUsersServiceGetCurrentKeyFn()[0]],
+      });
     } catch (err) {
       const error = err as { error?: { message?: string } };
       const errorMessage =
@@ -55,7 +64,7 @@ export function VerifyEmail() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, email, t]);
+  }, [token, email, t, queryClient]);
 
   useEffect(() => {
     activateEmail();

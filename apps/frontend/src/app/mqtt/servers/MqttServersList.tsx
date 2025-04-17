@@ -32,7 +32,9 @@ import {
   useMqttServersServiceGetAllMqttServers,
   useMqttServersServiceTestConnection,
   useMqttServersServiceUpdateOneMqttServer,
+  UseMqttServersServiceGetAllMqttServersKeyFn,
 } from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const defaultServerValues: CreateMqttServerDto = {
   name: '',
@@ -60,6 +62,7 @@ export const MqttServersList = forwardRef<
     defaultServerValues as CreateMqttServerDto
   );
   const [testingId, setTestingId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
   const { success, error: showError } = useToastMessage();
   const createMqttServer = useMqttServersServiceCreateOneMqttServer();
@@ -99,6 +102,9 @@ export const MqttServersList = forwardRef<
         success({
           title: t('serverDeleted'),
           description: t('serverDeletedDesc'),
+        });
+        queryClient.invalidateQueries({
+          queryKey: [UseMqttServersServiceGetAllMqttServersKeyFn()[0]],
         });
       } catch (err) {
         showError({
@@ -142,6 +148,9 @@ export const MqttServersList = forwardRef<
           description: t('serverCreatedDesc'),
         });
       }
+      queryClient.invalidateQueries({
+        queryKey: [UseMqttServersServiceGetAllMqttServersKeyFn()[0]],
+      });
       onClose();
     } catch (err) {
       showError({
