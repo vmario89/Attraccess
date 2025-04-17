@@ -5,3 +5,5 @@ export * from './1741719940175-sso';
 export * from './1741787666610-settings-permission';
 export * from './1741793486503-shorter-permissions-db-column-names';
 export * from './1741806539678-user-management-permission';
+export * from './1744911268510-resource-groups';
+export * from './1744912425272-resource-groups-2';

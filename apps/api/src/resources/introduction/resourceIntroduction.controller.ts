@@ -8,7 +8,7 @@ import {
   Body,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import {
   ResourceIntroduction,
@@ -16,7 +16,7 @@ import {
 } from '@attraccess/database-entities';
 import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
 import { AuthenticatedRequest } from '../../types/request';
-import { PaginatedResponseDto } from '../../types/response';
+import { PaginatedResponse, makePaginatedResponse } from '../../types/response';
 import { GetResourceIntroductionsQueryDto } from './dtos/getResourceIntroductionsQuery.dto';
 import { PaginatedResourceIntroductionResponseDto } from './dtos/paginatedResourceIntroductionResponse.dto';
 import { UsersService } from '../../users-and-auth/users/users.service';
@@ -41,8 +41,8 @@ class CompleteIntroductionDto {
   userId: number;
 }
 
-
 @Controller('resources/:resourceId/introductions')
+@ApiTags('Resource Introductions')
 export class ResourceIntroductionController {
   constructor(
     private readonly resourceIntroductionService: ResourceIntroductionService,
@@ -85,8 +85,10 @@ export class ResourceIntroductionController {
   @Get()
   @CanManageResources()
   @ApiOperation({
-    summary: 'Get all introductions for a resource',
-    operationId: 'getAllResourceIntroductions',
+    summary: 'Get introductions for a specific resource',
+    description:
+      'Retrieve introductions for a resource, possibly paginated',
+      operationId: 'getAllResourceIntroductions',
   })
   @ApiResponse({
     status: 200,
@@ -96,7 +98,7 @@ export class ResourceIntroductionController {
   async getAll(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceIntroductionsQueryDto
-  ): Promise<PaginatedResponseDto<ResourceIntroduction>> {
+  ): Promise<PaginatedResponse<ResourceIntroduction>> {
     const { data, total } =
       await this.resourceIntroductionService.getResourceIntroductions(
         resourceId,
@@ -104,13 +106,7 @@ export class ResourceIntroductionController {
         query.limit
       );
 
-    return {
-      data,
-      total,
-      page: query.page,
-      limit: query.limit,
-      totalPages: Math.ceil(total / query.limit),
-    };
+    return makePaginatedResponse({ page: query.page, limit: query.limit }, data, total);
   }
 
   @Get('status')

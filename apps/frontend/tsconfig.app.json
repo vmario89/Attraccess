@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "skipLibCheck": true,
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -18,7 +19,7 @@
     "src/**/*.test.js",
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx",
-    "jest.config.ts"
+    "jest.config.ts",
   ],
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 }

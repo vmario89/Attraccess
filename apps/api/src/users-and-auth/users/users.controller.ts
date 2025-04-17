@@ -32,7 +32,6 @@ import {
   GetUsersWithPermissionQueryDto,
   PermissionFilter,
 } from './dtos/getUsersWithPermissionQuery.dto';
-import { PaginatedResponseDto } from '../../types/response';
 
 @ApiTags('users')
 @Controller('users')
@@ -255,16 +254,12 @@ export class UsersController {
   async getAll(
     @Query() query: GetUsersQueryDto
   ): Promise<PaginatedUsersResponseDto> {
-    this.logger.debug(
-      `Getting users list with page: ${query.page}, limit: ${
-        query.limit
-      }, search: ${query.search || 'none'}`
-    );
-    const result = await this.usersService.findAll({
+    this.logger.debug(`Getting all users with query: ${JSON.stringify(query)}`);
+    const result = (await this.usersService.findAll({
       page: query.page,
       limit: query.limit,
       search: query.search,
-    });
+    })) as PaginatedUsersResponseDto;
     this.logger.debug(
       `Found ${result.total} users total, returning ${result.data.length} users`
     );
@@ -504,17 +499,17 @@ export class UsersController {
   })
   async getAllWithPermission(
     @Query() query: GetUsersWithPermissionQueryDto
-  ): Promise<PaginatedResponseDto<User>> {
+  ): Promise<PaginatedUsersResponseDto> {
     const permission = query.permission || PermissionFilter.canManageUsers;
 
     this.logger.debug(
       `Getting users with permission: ${permission}, page: ${query.page}, limit: ${query.limit}`
     );
 
-    const result = await this.usersService.findByPermission(permission, {
+    const result = (await this.usersService.findByPermission(permission, {
       page: query.page,
       limit: query.limit,
-    });
+    })) as PaginatedUsersResponseDto;
 
     this.logger.debug(
       `Found ${result.total} users with permission ${permission}, returning ${result.data.length} users`

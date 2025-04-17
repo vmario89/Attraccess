@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse } from './types.gen';
+import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse } from './types.gen';
 
 export class ApplicationService {
     /**
@@ -409,6 +409,122 @@ export class SsoService {
     
 }
 
+export class ResourceGroupsService {
+    /**
+     * Create a new resource group
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ResourceGroup The resource group has been successfully created.
+     * @throws ApiError
+     */
+    public static createOneResourceGroup(data: CreateOneResourceGroupData): CancelablePromise<CreateOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/groups',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request.',
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Retrieve all resource groups
+     * @param data The data for the request.
+     * @param data.page Page number
+     * @param data.limit Number of items per page
+     * @param data.search Search term for name or description
+     * @returns PaginatedResourceGroupResponseDto List of resource groups with pagination.
+     * @throws ApiError
+     */
+    public static getAllResourceGroups(data: GetAllResourceGroupsData = {}): CancelablePromise<GetAllResourceGroupsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/groups',
+            query: {
+                page: data.page,
+                limit: data.limit,
+                search: data.search
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Retrieve a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @returns ResourceGroup The resource group details.
+     * @throws ApiError
+     */
+    public static getOneResourceGroupById(data: GetOneResourceGroupByIdData): CancelablePromise<GetOneResourceGroupByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
+    /**
+     * Update a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @param data.requestBody
+     * @returns ResourceGroup The resource group has been successfully updated.
+     * @throws ApiError
+     */
+    public static updateOneResourceGroup(data: UpdateOneResourceGroupData): CancelablePromise<UpdateOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
+    /**
+     * Delete a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @returns void The resource group has been successfully deleted.
+     * @throws ApiError
+     */
+    public static deleteOneResourceGroup(data: DeleteOneResourceGroupData): CancelablePromise<DeleteOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
+}
+
 export class ResourcesService {
     /**
      * Create a new resource
@@ -436,6 +552,7 @@ export class ResourcesService {
      * @param data.page Page number (1-based)
      * @param data.limit Number of items per page
      * @param data.search Search term to filter resources
+     * @param data.groupId Group ID to filter resources. Send -1 to find ungrouped resources.
      * @returns PaginatedResourceResponseDto List of resources with pagination.
      * @throws ApiError
      */
@@ -446,7 +563,8 @@ export class ResourcesService {
             query: {
                 page: data.page,
                 limit: data.limit,
-                search: data.search
+                search: data.search,
+                groupId: data.groupId
             },
             errors: {
                 401: 'Unauthorized'
@@ -516,6 +634,54 @@ export class ResourcesService {
             errors: {
                 401: 'User is not authenticated',
                 403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Add a resource to a group
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.groupId
+     * @returns Resource The resource has been successfully added to the group.
+     * @throws ApiError
+     */
+    public static addResourceToGroup(data: AddResourceToGroupData): CancelablePromise<AddResourceToGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{id}/groups/{groupId}',
+            path: {
+                id: data.id,
+                groupId: data.groupId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or Group not found'
+            }
+        });
+    }
+    
+    /**
+     * Remove a resource from a group
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.groupId
+     * @returns void The resource has been successfully removed from the group.
+     * @throws ApiError
+     */
+    public static removeResourceFromGroup(data: RemoveResourceFromGroupData): CancelablePromise<RemoveResourceFromGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{id}/groups/{groupId}',
+            path: {
+                id: data.id,
+                groupId: data.groupId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or Group not found, or resource not in group'
             }
         });
     }
@@ -626,7 +792,7 @@ export class ResourceUsageService {
     
 }
 
-export class ResourceIntroductionService {
+export class ResourceIntroductionsService {
     /**
      * Mark resource introduction as completed for a user
      * Complete an introduction for a user identified by their user ID, username, or email.
@@ -654,7 +820,8 @@ export class ResourceIntroductionService {
     }
     
     /**
-     * Get all introductions for a resource
+     * Get introductions for a specific resource
+     * Retrieve introductions for a resource, possibly paginated
      * @param data The data for the request.
      * @param data.resourceId
      * @param data.page Page number (1-based)

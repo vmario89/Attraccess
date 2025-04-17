@@ -11,6 +11,7 @@ export function createMockResource(overrides?: Partial<Resource>): Resource {
     imageFilename: 'test.jpg',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    groups: [],
     ...overrides,
   };
 }

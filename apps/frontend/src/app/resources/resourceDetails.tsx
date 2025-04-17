@@ -15,8 +15,26 @@ import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
 import { ManageIntroducers } from './introductions/components/ManageIntroducers';
 import { memo, useMemo } from 'react';
-import { useResourceIntroducersServiceCheckCanManagePermission, useResourceIntroductionServiceCheckCanManagePermission, useResourcesServiceDeleteOneResource, useResourcesServiceGetOneResourceById, UseResourcesServiceGetAllResourcesKeyFn } from '@attraccess/react-query-client';
+import {
+  useResourceIntroducersServiceCheckCanManagePermission,
+  useResourceIntroductionsServiceCheckCanManagePermission,
+  useResourcesServiceDeleteOneResource,
+  useResourcesServiceGetOneResourceById,
+  UseResourcesServiceGetAllResourcesKeyFn,
+} from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
+import { ManageResourceGroups } from './groups/ManageResourceGroups';
+
+// Placeholder hook - replace with actual implementation
+const useResourceGroupsServiceCheckCanManagePermission = (params: { resourceId: number }) => {
+  console.warn('Placeholder hook used: useResourceGroupsServiceCheckCanManagePermission', params);
+  // Replace with actual API call - default to true for now
+  return {
+    data: { canManageResourceGroups: true },
+    isLoading: false,
+    error: null,
+  };
+};
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -38,13 +56,13 @@ function ResourceDetailsComponent() {
     data: resource,
     isLoading: isLoadingResource,
     error: resourceError,
-  } = useResourcesServiceGetOneResourceById({id: resourceId});
+  } = useResourcesServiceGetOneResourceById({ id: resourceId });
 
   const deleteResource = useResourcesServiceDeleteOneResource();
 
   const handleDelete = async () => {
     try {
-      await deleteResource.mutateAsync({id: resourceId});
+      await deleteResource.mutateAsync({ id: resourceId });
       success({
         title: 'Resource deleted',
         description: `${resource?.name} has been successfully deleted`,
@@ -56,8 +74,7 @@ function ResourceDetailsComponent() {
     } catch (err) {
       showError({
         title: 'Failed to delete resource',
-        description:
-          'An error occurred while deleting the resource. Please try again.',
+        description: 'An error occurred while deleting the resource. Please try again.',
       });
       console.error('Failed to delete resource:', err);
       throw err;
@@ -65,9 +82,10 @@ function ResourceDetailsComponent() {
   };
 
   const canManageResources = hasPermission('canManageResources');
-  const { data: canManageIntroductions } =
-    useResourceIntroductionServiceCheckCanManagePermission({resourceId});
-  const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({resourceId});
+  const { data: canManageIntroductions } = useResourceIntroductionsServiceCheckCanManagePermission({ resourceId });
+  const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({ resourceId });
+  const { data: canManageResourceGroupsData } = useResourceGroupsServiceCheckCanManagePermission({ resourceId });
+  const canManageResourceGroups = canManageResourceGroupsData?.canManageResourceGroups;
 
   const showIntroductionsManagement = useMemo(
     () => canManageResources || canManageIntroductions?.canManageIntroductions,
@@ -77,6 +95,11 @@ function ResourceDetailsComponent() {
   const showIntroducersManagement = useMemo(
     () => canManageResources || canManageIntroducers?.canManageIntroductions,
     [canManageResources, canManageIntroducers]
+  );
+
+  const showGroupsManagement = useMemo(
+    () => canManageResources || canManageResourceGroups,
+    [canManageResources, canManageResourceGroups]
   );
 
   if (isLoadingResource) {
@@ -92,14 +115,9 @@ function ResourceDetailsComponent() {
       <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-xl font-semibold mb-2">Resource not found</h2>
         <p className="text-gray-500 mb-4">
-          The requested resource could not be found or you don't have permission
-          to view it.
+          The requested resource could not be found or you don't have permission to view it.
         </p>
-        <Button
-          onPress={() => navigate('/resources')}
-          variant="light"
-          startContent={<ArrowLeft className="w-4 h-4" />}
-        >
+        <Button onPress={() => navigate('/resources')} variant="light" startContent={<ArrowLeft className="w-4 h-4" />}>
           Back to Resources
         </Button>
       </div>
@@ -116,19 +134,11 @@ function ResourceDetailsComponent() {
           canManageResources && (
             <div className="flex space-x-2">
               <Link href={`/resources/${resourceId}/iot`}>
-                <Button
-                  variant="light"
-                  startContent={<Wifi className="w-4 h-4" />}
-                >
+                <Button variant="light" startContent={<Wifi className="w-4 h-4" />}>
                   {t('iotSettings')}
                 </Button>
               </Link>
-              <Button
-                onPress={onOpen}
-                color="danger"
-                variant="light"
-                startContent={<Trash className="w-4 h-4" />}
-              >
+              <Button onPress={onOpen} color="danger" variant="light" startContent={<Trash className="w-4 h-4" />}>
                 {t('delete')}
               </Button>
             </div>
@@ -156,6 +166,13 @@ function ResourceDetailsComponent() {
               <ManageIntroducers resourceId={resourceId} />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Add the ManageResourceGroups component */}
+      {showGroupsManagement && (
+        <div className="mt-8 w-full">
+          <ManageResourceGroups resourceId={resourceId} />
         </div>
       )}
 

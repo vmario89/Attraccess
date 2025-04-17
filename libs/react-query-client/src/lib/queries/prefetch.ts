@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceIntroducersService, ResourceIntroductionService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const prefetchUseApplicationServicePing2 = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const prefetchUseUsersServiceGetAllUsers = (queryClient: QueryClient, { limit, page, search }: {
@@ -37,11 +37,20 @@ export const prefetchUseSsoServiceOidcLoginCallback = (queryClient: QueryClient,
   sessionState: unknown;
   state: unknown;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseSsoServiceOidcLoginCallbackKeyFn({ code, iss, providerId, redirectTo, sessionState, state }), queryFn: () => SsoService.oidcLoginCallback({ code, iss, providerId, redirectTo, sessionState, state }) });
-export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { limit, page, search }: {
+export const prefetchUseResourceGroupsServiceGetAllResourceGroups = (queryClient: QueryClient, { limit, page, search }: {
   limit?: number;
   page?: number;
   search?: string;
-} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ limit, page, search }), queryFn: () => ResourcesService.getAllResources({ limit, page, search }) });
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceGroupsServiceGetAllResourceGroupsKeyFn({ limit, page, search }), queryFn: () => ResourceGroupsService.getAllResourceGroups({ limit, page, search }) });
+export const prefetchUseResourceGroupsServiceGetOneResourceGroupById = (queryClient: QueryClient, { id }: {
+  id: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn({ id }), queryFn: () => ResourceGroupsService.getOneResourceGroupById({ id }) });
+export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { groupId, limit, page, search }: {
+  groupId?: number;
+  limit?: number;
+  page?: number;
+  search?: string;
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, limit, page, search }) });
 export const prefetchUseResourcesServiceGetOneResourceById = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetOneResourceByIdKeyFn({ id }), queryFn: () => ResourcesService.getOneResourceById({ id }) });
@@ -54,29 +63,29 @@ export const prefetchUseResourceUsageServiceGetHistoryOfResourceUsage = (queryCl
 export const prefetchUseResourceUsageServiceGetActiveSession = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourceUsageServiceGetActiveSessionKeyFn({ resourceId }), queryFn: () => ResourceUsageService.getActiveSession({ resourceId }) });
-export const prefetchUseResourceIntroductionServiceGetAllResourceIntroductions = (queryClient: QueryClient, { limit, page, resourceId }: {
+export const prefetchUseResourceIntroductionsServiceGetAllResourceIntroductions = (queryClient: QueryClient, { limit, page, resourceId }: {
   limit: number;
-  page: number;
+  page?: number;
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceGetAllResourceIntroductionsKeyFn({ limit, page, resourceId }), queryFn: () => ResourceIntroductionService.getAllResourceIntroductions({ limit, page, resourceId }) });
-export const prefetchUseResourceIntroductionServiceCheckStatus = (queryClient: QueryClient, { resourceId }: {
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceGetAllResourceIntroductionsKeyFn({ limit, page, resourceId }), queryFn: () => ResourceIntroductionsService.getAllResourceIntroductions({ limit, page, resourceId }) });
+export const prefetchUseResourceIntroductionsServiceCheckStatus = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }), queryFn: () => ResourceIntroductionService.checkStatus({ resourceId }) });
-export const prefetchUseResourceIntroductionServiceGetHistoryOfIntroduction = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceCheckStatusKeyFn({ resourceId }), queryFn: () => ResourceIntroductionsService.checkStatus({ resourceId }) });
+export const prefetchUseResourceIntroductionsServiceGetHistoryOfIntroduction = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.getHistoryOfIntroduction({ introductionId, resourceId }) });
-export const prefetchUseResourceIntroductionServiceCheckIsRevokedStatus = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceGetHistoryOfIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.getHistoryOfIntroduction({ introductionId, resourceId }) });
+export const prefetchUseResourceIntroductionsServiceCheckIsRevokedStatus = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.checkIsRevokedStatus({ introductionId, resourceId }) });
-export const prefetchUseResourceIntroductionServiceGetOneResourceIntroduction = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceCheckIsRevokedStatusKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.checkIsRevokedStatus({ introductionId, resourceId }) });
+export const prefetchUseResourceIntroductionsServiceGetOneResourceIntroduction = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceGetOneResourceIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.getOneResourceIntroduction({ introductionId, resourceId }) });
-export const prefetchUseResourceIntroductionServiceCheckCanManagePermission = (queryClient: QueryClient, { resourceId }: {
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceGetOneResourceIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.getOneResourceIntroduction({ introductionId, resourceId }) });
+export const prefetchUseResourceIntroductionsServiceCheckCanManagePermission = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionServiceCheckCanManagePermissionKeyFn({ resourceId }), queryFn: () => ResourceIntroductionService.checkCanManagePermission({ resourceId }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroductionsServiceCheckCanManagePermissionKeyFn({ resourceId }), queryFn: () => ResourceIntroductionsService.checkCanManagePermission({ resourceId }) });
 export const prefetchUseResourceIntroducersServiceGetAllResourceIntroducers = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn({ resourceId }), queryFn: () => ResourceIntroducersService.getAllResourceIntroducers({ resourceId }) });

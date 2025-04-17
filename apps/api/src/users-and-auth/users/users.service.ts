@@ -9,7 +9,7 @@ import { SystemPermissions, User } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   makePaginatedResponse,
-  PaginatedResponseDto,
+  PaginatedResponse,
 } from '../../types/response';
 import {
   PaginationOptions,
@@ -197,7 +197,7 @@ export class UsersService {
 
   async findAll(
     options: PaginationOptions & { search?: string }
-  ): Promise<PaginatedResponseDto<User>> {
+  ): Promise<PaginatedResponse<User>> {
     this.logger.debug(
       `Finding all users with options: ${JSON.stringify(options)}`
     );
@@ -241,7 +241,7 @@ export class UsersService {
   async findByPermission(
     permission: keyof SystemPermissions,
     options: PaginationOptions & { search?: string }
-  ): Promise<PaginatedResponseDto<User>> {
+  ): Promise<PaginatedResponse<User>> {
     this.logger.debug(
       `Finding users with permission "${permission}" and options: ${JSON.stringify(
         options

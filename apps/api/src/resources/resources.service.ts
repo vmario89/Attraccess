@@ -1,28 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
-import { Resource, User } from '@attraccess/database-entities';
+import { Repository, ILike, FindOptionsWhere, IsNull } from 'typeorm';
+import { Resource } from '@attraccess/database-entities';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
-import { PaginatedResponse } from '../types/pagination';
+import { PaginatedResponse, makePaginatedResponse } from '../types/response';
 import { ResourceImageService } from '../common/services/resource-image.service';
 import { FileUpload } from '../common/types/file-upload.types';
 import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
+import { ResourceGroupsService } from './groups/resourceGroups.service';
 
 @Injectable()
 export class ResourcesService {
   constructor(
     @InjectRepository(Resource)
     private resourceRepository: Repository<Resource>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    private resourceImageService: ResourceImageService
+    private resourceImageService: ResourceImageService,
+    private resourceGroupsService: ResourceGroupsService
   ) {}
 
-  async createResource(
-    dto: CreateResourceDto,
-    image?: FileUpload
-  ): Promise<Resource> {
+  async createResource(dto: CreateResourceDto, image?: FileUpload): Promise<Resource> {
     const resource = this.resourceRepository.create({
       name: dto.name,
       description: dto.description,
@@ -32,10 +29,7 @@ export class ResourcesService {
     await this.resourceRepository.save(resource);
 
     if (image) {
-      resource.imageFilename = await this.resourceImageService.saveImage(
-        resource.id,
-        image
-      );
+      resource.imageFilename = await this.resourceImageService.saveImage(resource.id, image);
       await this.resourceRepository.save(resource).catch(async (error) => {
         // delete the resource if the image save fails
         await this.resourceRepository.delete(resource.id);
@@ -49,8 +43,10 @@ export class ResourcesService {
   async getResourceById(id: number): Promise<Resource | null> {
     const resource = await this.resourceRepository.findOne({
       where: { id },
-      relations: ['introductions', 'usages'],
+      relations: ['introductions', 'usages', 'groups'],
     });
+
+    console.log('resource', resource);
 
     if (!resource) {
       throw new ResourceNotFoundException(id);
@@ -59,11 +55,7 @@ export class ResourcesService {
     return resource;
   }
 
-  async updateResource(
-    id: number,
-    dto: UpdateResourceDto,
-    image?: FileUpload
-  ): Promise<Resource> {
+  async updateResource(id: number, dto: UpdateResourceDto, image?: FileUpload): Promise<Resource> {
     const resource = await this.getResourceById(id);
 
     // Update only provided fields
@@ -75,10 +67,7 @@ export class ResourcesService {
       if (resource.imageFilename) {
         await this.resourceImageService.deleteImage(id, resource.imageFilename);
       }
-      resource.imageFilename = await this.resourceImageService.saveImage(
-        id,
-        image
-      );
+      resource.imageFilename = await this.resourceImageService.saveImage(id, image);
     }
 
     return this.resourceRepository.save(resource);
@@ -98,17 +87,41 @@ export class ResourcesService {
     }
   }
 
-  async listResources(
-    page = 1,
-    limit = 10,
-    search?: string
-  ): Promise<PaginatedResponse<Resource>> {
-    const where = search
-      ? [{ name: ILike(`%${search}%`) }, { description: ILike(`%${search}%`) }]
-      : {};
+  async listResources(page = 1, limit = 10, search?: string, groupId?: number): Promise<PaginatedResponse<Resource>> {
+    let where: FindOptionsWhere<Resource> | FindOptionsWhere<Resource>[] = [];
+
+    if (search) {
+      where = [
+        {
+          name: ILike(`%${search}%`),
+        },
+        {
+          description: ILike(`%${search}%`),
+        },
+      ];
+    }
+
+    let groupFilter: ReturnType<typeof IsNull> | number | undefined;
+
+    if (groupId === -1) {
+      groupFilter = IsNull();
+    } else if (groupId !== undefined) {
+      groupFilter = groupId;
+    }
+
+    if (groupFilter) {
+      if (!search) {
+        where = { groups: { id: groupFilter } };
+      } else {
+        where.forEach((condition) => {
+          condition.groups = { id: groupFilter };
+        });
+      }
+    }
 
     const [resources, total] = await this.resourceRepository.findAndCount({
       where,
+      relations: ['groups'],
       skip: (page - 1) * limit,
       take: limit,
       order: {
@@ -116,11 +129,20 @@ export class ResourcesService {
       },
     });
 
-    return {
-      data: resources,
-      total,
-      page,
-      limit,
-    };
+    return makePaginatedResponse({ page, limit }, resources, total);
+  }
+
+  async addResourceToGroup(resourceId: number, groupId: number): Promise<void> {
+    // Ensure resource exists first (optional, group service might also check)
+    await this.getResourceById(resourceId);
+    // Call the method in ResourceGroupsService
+    await this.resourceGroupsService.addResourceToGroup(resourceId, groupId);
+  }
+
+  async removeResourceFromGroup(resourceId: number, groupId: number): Promise<void> {
+    // Ensure resource exists first (optional, group service might also check)
+    await this.getResourceById(resourceId);
+    // Call the method in ResourceGroupsService
+    await this.resourceGroupsService.removeResourceFromGroup(resourceId, groupId);
   }
 }

@@ -34,4 +34,14 @@ export class ListResourcesDto {
   @IsString()
   @IsOptional()
   search?: string;
+
+  @ApiProperty({
+    description: 'Group ID to filter resources. Send -1 to find ungrouped resources.',
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  groupId?: number;
 }

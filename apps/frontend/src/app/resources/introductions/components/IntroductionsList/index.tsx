@@ -4,7 +4,7 @@ import * as de from './translations/de';
 import { Listbox, ListboxItem } from '@heroui/listbox';
 import { IntroductionListItemContent } from './components/IntroductionListItemContent';
 import { IntroductionListItemActions } from './components/IntroductionListItemActions';
-import { useResourceIntroductionServiceGetAllResourceIntroductions } from '@attraccess/react-query-client';
+import { useResourceIntroductionsServiceGetAllResourceIntroductions } from '@attraccess/react-query-client';
 
 interface IntroductionsListProps {
   resourceId: number;
@@ -19,7 +19,11 @@ export function IntroductionsList(props: IntroductionsListProps) {
   });
 
   // TODO: Add pagination
-  const { data: introductions } = useResourceIntroductionServiceGetAllResourceIntroductions({resourceId, limit: 100, page: 1});
+  const { data: introductions } = useResourceIntroductionsServiceGetAllResourceIntroductions({
+    resourceId,
+    limit: 100,
+    page: 1,
+  });
 
   return (
     <div>
@@ -30,33 +34,22 @@ export function IntroductionsList(props: IntroductionsListProps) {
           {introductions.data.map((introduction) => (
             <ListboxItem
               key={introduction.id}
-              textValue={
-                introduction.receiverUser?.username ||
-                `User ${introduction.receiverUserId}`
-              }
+              textValue={introduction.receiverUser?.username || `User ${introduction.receiverUserId}`}
             >
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center w-full">
-                  <IntroductionListItemContent
-                    resourceId={resourceId}
-                    introduction={introduction}
-                  />
+                  <IntroductionListItemContent resourceId={resourceId} introduction={introduction} />
                 </div>
 
                 <div className="flex justify-end">
-                  <IntroductionListItemActions
-                    resourceId={resourceId}
-                    introduction={introduction}
-                  />
+                  <IntroductionListItemActions resourceId={resourceId} introduction={introduction} />
                 </div>
               </div>
             </ListboxItem>
           ))}
         </Listbox>
       ) : (
-        <p className="text-gray-500 py-4 text-center italic">
-          {t('noIntroductions')}
-        </p>
+        <p className="text-gray-500 py-4 text-center italic">{t('noIntroductions')}</p>
       )}
     </div>
   );

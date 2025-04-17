@@ -1,5 +1,5 @@
 import { Navigate, PathRouteProps } from 'react-router-dom';
-import { ResourceList } from '../resources/list';
+import { ResourceList } from '../resources/list.group';
 import { ResourceDetails } from '../resources/resourceDetails';
 import { IoTSettings } from '../resources/iot-settings/iotSettings';
 import { Database, ServerIcon, Key, Users } from 'lucide-react';

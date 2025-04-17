@@ -102,6 +102,8 @@ export interface PaginatedUsersResponseDto {
   total: number;
   page: number;
   limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
   totalPages: number;
   data: User[];
 }
@@ -329,6 +331,54 @@ export interface UpdateSSOProviderDto {
   oidcConfiguration?: UpdateOIDCConfigurationDto;
 }
 
+export interface CreateResourceGroupDto {
+  name: string;
+  description?: string;
+}
+
+export interface ResourceGroup {
+  /**
+   * The unique identifier of the resource group
+   * @example 1
+   */
+  id: number;
+  /**
+   * The name of the resource
+   * @example "3D Printer"
+   */
+  name: string;
+  /**
+   * A detailed description of the resource
+   * @example "Prusa i3 MK3S+ 3D printer with 0.4mm nozzle"
+   */
+  description?: string;
+  /**
+   * When the resource was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the resource was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface PaginatedResourceGroupResponseDto {
+  total: number;
+  page: number;
+  limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
+  totalPages: number;
+  data: ResourceGroup[];
+}
+
+export interface UpdateResourceGroupDto {
+  name?: string;
+  description?: string;
+}
+
 export interface CreateResourceDto {
   /**
    * The name of the resource
@@ -378,12 +428,16 @@ export interface Resource {
    * @format date-time
    */
   updatedAt: string;
+  /** The groups the resource belongs to */
+  groups: ResourceGroup[];
 }
 
 export interface PaginatedResourceResponseDto {
   total: number;
   page: number;
   limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
   totalPages: number;
   data: Resource[];
 }
@@ -479,6 +533,8 @@ export interface GetResourceHistoryResponseDto {
   total: number;
   page: number;
   limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
   totalPages: number;
   data: ResourceUsage[];
 }
@@ -572,6 +628,8 @@ export interface PaginatedResourceIntroductionResponseDto {
   total: number;
   page: number;
   limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
   totalPages: number;
   data: ResourceIntroduction[];
 }
@@ -1223,6 +1281,34 @@ export interface OidcLoginCallbackParams {
 
 export type OidcLoginCallbackData = CreateSessionResponse;
 
+export type CreateOneResourceGroupData = ResourceGroup;
+
+export interface GetAllResourceGroupsParams {
+  /**
+   * Page number
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * Number of items per page
+   * @min 1
+   * @max 100
+   * @default 10
+   */
+  limit?: number;
+  /** Search term for name or description */
+  search?: string;
+}
+
+export type GetAllResourceGroupsData = PaginatedResourceGroupResponseDto;
+
+export type GetOneResourceGroupByIdData = ResourceGroup;
+
+export type UpdateOneResourceGroupData = ResourceGroup;
+
+export type DeleteOneResourceGroupData = any;
+
 export type CreateOneResourceData = Resource;
 
 export interface GetAllResourcesParams {
@@ -1240,6 +1326,8 @@ export interface GetAllResourcesParams {
   limit?: number;
   /** Search term to filter resources */
   search?: string;
+  /** Group ID to filter resources. Send -1 to find ungrouped resources. */
+  groupId?: number;
 }
 
 export type GetAllResourcesData = PaginatedResourceResponseDto;
@@ -1249,6 +1337,10 @@ export type GetOneResourceByIdData = Resource;
 export type UpdateOneResourceData = Resource;
 
 export type DeleteOneResourceData = any;
+
+export type AddResourceToGroupData = Resource;
+
+export type RemoveResourceFromGroupData = any;
 
 export type StartSessionData = ResourceUsage;
 
@@ -1717,6 +1809,113 @@ export namespace Sso {
   }
 }
 
+export namespace ResourceGroups {
+  /**
+   * No description
+   * @tags Resource Groups
+   * @name CreateOneResourceGroup
+   * @summary Create a new resource group
+   * @request POST:/api/resources/groups
+   * @secure
+   */
+  export namespace CreateOneResourceGroup {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateResourceGroupDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateOneResourceGroupData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Groups
+   * @name GetAllResourceGroups
+   * @summary Retrieve all resource groups
+   * @request GET:/api/resources/groups
+   * @secure
+   */
+  export namespace GetAllResourceGroups {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /**
+       * Page number
+       * @min 1
+       * @default 1
+       */
+      page?: number;
+      /**
+       * Number of items per page
+       * @min 1
+       * @max 100
+       * @default 10
+       */
+      limit?: number;
+      /** Search term for name or description */
+      search?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetAllResourceGroupsData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Groups
+   * @name GetOneResourceGroupById
+   * @summary Retrieve a specific resource group by ID
+   * @request GET:/api/resources/groups/{id}
+   * @secure
+   */
+  export namespace GetOneResourceGroupById {
+    export type RequestParams = {
+      /** Resource Group ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOneResourceGroupByIdData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Groups
+   * @name UpdateOneResourceGroup
+   * @summary Update a specific resource group by ID
+   * @request PATCH:/api/resources/groups/{id}
+   * @secure
+   */
+  export namespace UpdateOneResourceGroup {
+    export type RequestParams = {
+      /** Resource Group ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateResourceGroupDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateOneResourceGroupData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Groups
+   * @name DeleteOneResourceGroup
+   * @summary Delete a specific resource group by ID
+   * @request DELETE:/api/resources/groups/{id}
+   * @secure
+   */
+  export namespace DeleteOneResourceGroup {
+    export type RequestParams = {
+      /** Resource Group ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteOneResourceGroupData;
+  }
+}
+
 export namespace Resources {
   /**
    * No description
@@ -1759,6 +1958,8 @@ export namespace Resources {
       limit?: number;
       /** Search term to filter resources */
       search?: string;
+      /** Group ID to filter resources. Send -1 to find ungrouped resources. */
+      groupId?: number;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -1817,6 +2018,44 @@ export namespace Resources {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = DeleteOneResourceData;
+  }
+
+  /**
+   * No description
+   * @tags Resources
+   * @name AddResourceToGroup
+   * @summary Add a resource to a group
+   * @request POST:/api/resources/{id}/groups/{groupId}
+   * @secure
+   */
+  export namespace AddResourceToGroup {
+    export type RequestParams = {
+      id: number;
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AddResourceToGroupData;
+  }
+
+  /**
+   * No description
+   * @tags Resources
+   * @name RemoveResourceFromGroup
+   * @summary Remove a resource from a group
+   * @request DELETE:/api/resources/{id}/groups/{groupId}
+   * @secure
+   */
+  export namespace RemoveResourceFromGroup {
+    export type RequestParams = {
+      id: number;
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RemoveResourceFromGroupData;
   }
 }
 
@@ -1910,10 +2149,10 @@ export namespace ResourceUsage {
   }
 }
 
-export namespace ResourceIntroduction {
+export namespace ResourceIntroductions {
   /**
    * @description Complete an introduction for a user identified by their user ID, username, or email.
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name MarkCompleted
    * @summary Mark resource introduction as completed for a user
    * @request POST:/api/resources/{resourceId}/introductions/complete
@@ -1930,10 +2169,10 @@ export namespace ResourceIntroduction {
   }
 
   /**
-   * No description
-   * @tags ResourceIntroduction
+   * @description Retrieve introductions for a resource, possibly paginated
+   * @tags Resource Introductions
    * @name GetAllResourceIntroductions
-   * @summary Get all introductions for a resource
+   * @summary Get introductions for a specific resource
    * @request GET:/api/resources/{resourceId}/introductions
    * @secure
    */
@@ -1963,7 +2202,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Check if the current user has completed the introduction for this resource and it is not revoked
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name CheckStatus
    * @summary Check if current user has a valid introduction
    * @request GET:/api/resources/{resourceId}/introductions/status
@@ -1981,7 +2220,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Revoke access for a user by marking their introduction as revoked
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name MarkRevoked
    * @summary Revoke an introduction
    * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
@@ -2000,7 +2239,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Restore access for a user by unrevoking their introduction
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name MarkUnrevoked
    * @summary Unrevoke an introduction
    * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
@@ -2019,7 +2258,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Retrieve the history of revoke/unrevoke actions for an introduction
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name GetHistoryOfIntroduction
    * @summary Get history for a specific introduction
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
@@ -2038,7 +2277,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Determine if a specific introduction is currently revoked
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name CheckIsRevokedStatus
    * @summary Check if an introduction is revoked
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
@@ -2057,7 +2296,7 @@ export namespace ResourceIntroduction {
 
   /**
    * @description Retrieve detailed information about a specific introduction
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name GetOneResourceIntroduction
    * @summary Get a single resource introduction
    * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
@@ -2076,7 +2315,7 @@ export namespace ResourceIntroduction {
 
   /**
    * No description
-   * @tags ResourceIntroduction
+   * @tags Resource Introductions
    * @name CheckCanManagePermission
    * @summary Check if user can manage introductions for the resource
    * @request GET:/api/resources/{resourceId}/introductions/permissions/manage
@@ -3133,6 +3372,101 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
+  resourceGroups = {
+    /**
+     * No description
+     *
+     * @tags Resource Groups
+     * @name CreateOneResourceGroup
+     * @summary Create a new resource group
+     * @request POST:/api/resources/groups
+     * @secure
+     */
+    createOneResourceGroup: (data: CreateResourceGroupDto, params: RequestParams = {}) =>
+      this.request<CreateOneResourceGroupData, void>({
+        path: `/api/resources/groups`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Groups
+     * @name GetAllResourceGroups
+     * @summary Retrieve all resource groups
+     * @request GET:/api/resources/groups
+     * @secure
+     */
+    getAllResourceGroups: (query: GetAllResourceGroupsParams, params: RequestParams = {}) =>
+      this.request<GetAllResourceGroupsData, void>({
+        path: `/api/resources/groups`,
+        method: 'GET',
+        query: query,
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Groups
+     * @name GetOneResourceGroupById
+     * @summary Retrieve a specific resource group by ID
+     * @request GET:/api/resources/groups/{id}
+     * @secure
+     */
+    getOneResourceGroupById: (id: number, params: RequestParams = {}) =>
+      this.request<GetOneResourceGroupByIdData, void>({
+        path: `/api/resources/groups/${id}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Groups
+     * @name UpdateOneResourceGroup
+     * @summary Update a specific resource group by ID
+     * @request PATCH:/api/resources/groups/{id}
+     * @secure
+     */
+    updateOneResourceGroup: (id: number, data: UpdateResourceGroupDto, params: RequestParams = {}) =>
+      this.request<UpdateOneResourceGroupData, void>({
+        path: `/api/resources/groups/${id}`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Groups
+     * @name DeleteOneResourceGroup
+     * @summary Delete a specific resource group by ID
+     * @request DELETE:/api/resources/groups/{id}
+     * @secure
+     */
+    deleteOneResourceGroup: (id: number, params: RequestParams = {}) =>
+      this.request<DeleteOneResourceGroupData, void>({
+        path: `/api/resources/groups/${id}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+  };
   resources = {
     /**
      * No description
@@ -3227,6 +3561,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name AddResourceToGroup
+     * @summary Add a resource to a group
+     * @request POST:/api/resources/{id}/groups/{groupId}
+     * @secure
+     */
+    addResourceToGroup: (id: number, groupId: number, params: RequestParams = {}) =>
+      this.request<AddResourceToGroupData, void>({
+        path: `/api/resources/${id}/groups/${groupId}`,
+        method: 'POST',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name RemoveResourceFromGroup
+     * @summary Remove a resource from a group
+     * @request DELETE:/api/resources/{id}/groups/{groupId}
+     * @secure
+     */
+    removeResourceFromGroup: (id: number, groupId: number, params: RequestParams = {}) =>
+      this.request<RemoveResourceFromGroupData, void>({
+        path: `/api/resources/${id}/groups/${groupId}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
   };
   resourceUsage = {
     /**
@@ -3309,11 +3678,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  resourceIntroduction = {
+  resourceIntroductions = {
     /**
      * @description Complete an introduction for a user identified by their user ID, username, or email.
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name MarkCompleted
      * @summary Mark resource introduction as completed for a user
      * @request POST:/api/resources/{resourceId}/introductions/complete
@@ -3331,11 +3700,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * No description
+     * @description Retrieve introductions for a resource, possibly paginated
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name GetAllResourceIntroductions
-     * @summary Get all introductions for a resource
+     * @summary Get introductions for a specific resource
      * @request GET:/api/resources/{resourceId}/introductions
      * @secure
      */
@@ -3355,7 +3724,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Check if the current user has completed the introduction for this resource and it is not revoked
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name CheckStatus
      * @summary Check if current user has a valid introduction
      * @request GET:/api/resources/{resourceId}/introductions/status
@@ -3373,7 +3742,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Revoke access for a user by marking their introduction as revoked
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name MarkRevoked
      * @summary Revoke an introduction
      * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/revoke
@@ -3398,7 +3767,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Restore access for a user by unrevoking their introduction
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name MarkUnrevoked
      * @summary Unrevoke an introduction
      * @request POST:/api/resources/{resourceId}/introductions/{introductionId}/unrevoke
@@ -3423,7 +3792,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Retrieve the history of revoke/unrevoke actions for an introduction
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name GetHistoryOfIntroduction
      * @summary Get history for a specific introduction
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/history
@@ -3441,7 +3810,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Determine if a specific introduction is currently revoked
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name CheckIsRevokedStatus
      * @summary Check if an introduction is revoked
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}/revoked
@@ -3459,7 +3828,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Retrieve detailed information about a specific introduction
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name GetOneResourceIntroduction
      * @summary Get a single resource introduction
      * @request GET:/api/resources/{resourceId}/introductions/{introductionId}
@@ -3477,7 +3846,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags ResourceIntroduction
+     * @tags Resource Introductions
      * @name CheckCanManagePermission
      * @summary Check if user can manage introductions for the resource
      * @request GET:/api/resources/{resourceId}/introductions/permissions/manage

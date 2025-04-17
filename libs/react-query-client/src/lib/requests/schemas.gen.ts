@@ -129,6 +129,11 @@ export const $PaginatedUsersResponseDto = {
         limit: {
             type: 'number'
         },
+        nextPage: {
+            type: 'integer',
+            nullable: true,
+            description: 'The next page number, or null if it is the last page.'
+        },
         totalPages: {
             type: 'number'
         },
@@ -139,7 +144,7 @@ export const $PaginatedUsersResponseDto = {
             }
         }
     },
-    required: ['total', 'page', 'limit', 'totalPages', 'data']
+    required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
 export const $UpdateUserPermissionsDto = {
@@ -441,6 +446,93 @@ export const $UpdateSSOProviderDto = {
     }
 } as const;
 
+export const $CreateResourceGroupDto = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string'
+        },
+        description: {
+            type: 'string'
+        }
+    },
+    required: ['name']
+} as const;
+
+export const $ResourceGroup = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'number',
+            description: 'The unique identifier of the resource group',
+            example: 1
+        },
+        name: {
+            type: 'string',
+            description: 'The name of the resource',
+            example: '3D Printer'
+        },
+        description: {
+            type: 'string',
+            description: 'A detailed description of the resource',
+            example: 'Prusa i3 MK3S+ 3D printer with 0.4mm nozzle'
+        },
+        createdAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'When the resource was created'
+        },
+        updatedAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'When the resource was last updated'
+        }
+    },
+    required: ['id', 'name', 'createdAt', 'updatedAt']
+} as const;
+
+export const $PaginatedResourceGroupResponseDto = {
+    type: 'object',
+    properties: {
+        total: {
+            type: 'number'
+        },
+        page: {
+            type: 'number'
+        },
+        limit: {
+            type: 'number'
+        },
+        nextPage: {
+            type: 'integer',
+            nullable: true,
+            description: 'The next page number, or null if it is the last page.'
+        },
+        totalPages: {
+            type: 'number'
+        },
+        data: {
+            type: 'array',
+            items: {
+                '$ref': '#/components/schemas/ResourceGroup'
+            }
+        }
+    },
+    required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
+} as const;
+
+export const $UpdateResourceGroupDto = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string'
+        },
+        description: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const $CreateResourceDto = {
     type: 'object',
     properties: {
@@ -495,9 +587,16 @@ export const $Resource = {
             format: 'date-time',
             type: 'string',
             description: 'When the resource was last updated'
+        },
+        groups: {
+            description: 'The groups the resource belongs to',
+            type: 'array',
+            items: {
+                '$ref': '#/components/schemas/ResourceGroup'
+            }
         }
     },
-    required: ['id', 'name', 'createdAt', 'updatedAt']
+    required: ['id', 'name', 'createdAt', 'updatedAt', 'groups']
 } as const;
 
 export const $PaginatedResourceResponseDto = {
@@ -512,6 +611,11 @@ export const $PaginatedResourceResponseDto = {
         limit: {
             type: 'number'
         },
+        nextPage: {
+            type: 'integer',
+            nullable: true,
+            description: 'The next page number, or null if it is the last page.'
+        },
         totalPages: {
             type: 'number'
         },
@@ -522,7 +626,7 @@ export const $PaginatedResourceResponseDto = {
             }
         }
     },
-    required: ['total', 'page', 'limit', 'totalPages', 'data']
+    required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
 export const $UpdateResourceDto = {
@@ -641,6 +745,11 @@ export const $GetResourceHistoryResponseDto = {
         limit: {
             type: 'number'
         },
+        nextPage: {
+            type: 'integer',
+            nullable: true,
+            description: 'The next page number, or null if it is the last page.'
+        },
         totalPages: {
             type: 'number'
         },
@@ -651,7 +760,7 @@ export const $GetResourceHistoryResponseDto = {
             }
         }
     },
-    required: ['total', 'page', 'limit', 'totalPages', 'data']
+    required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
 export const $CompleteIntroductionDto = {
@@ -786,6 +895,11 @@ export const $PaginatedResourceIntroductionResponseDto = {
         limit: {
             type: 'number'
         },
+        nextPage: {
+            type: 'integer',
+            nullable: true,
+            description: 'The next page number, or null if it is the last page.'
+        },
         totalPages: {
             type: 'number'
         },
@@ -796,7 +910,7 @@ export const $PaginatedResourceIntroductionResponseDto = {
             }
         }
     },
-    required: ['total', 'page', 'limit', 'totalPages', 'data']
+    required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
 export const $RevokeIntroductionDto = {

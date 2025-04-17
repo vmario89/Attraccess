@@ -1,10 +1,4 @@
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@heroui/modal';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
 
 import { HistoryItem } from './components/HistoryItem';
 import { EmptyState } from './components/EmptyState';
@@ -14,7 +8,7 @@ import * as de from './translations/de';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useTranslations } from '@frontend/i18n';
 import { Button } from '@heroui/react';
-import { useResourceIntroductionServiceGetHistoryOfIntroduction } from '@attraccess/react-query-client';
+import { useResourceIntroductionsServiceGetHistoryOfIntroduction } from '@attraccess/react-query-client';
 
 export type IntroductionHistoryDialogProps = {
   isOpen: boolean;
@@ -35,9 +29,9 @@ export const IntroductionHistoryDialog = ({
   });
 
   // Note: If there is no introduction found with the given ID, this will return empty history
-  const { data: historyData, isLoading } = useResourceIntroductionServiceGetHistoryOfIntroduction({
+  const { data: historyData, isLoading } = useResourceIntroductionsServiceGetHistoryOfIntroduction({
     resourceId,
-    introductionId
+    introductionId,
   });
   const history = historyData || [];
 
@@ -48,9 +42,7 @@ export const IntroductionHistoryDialog = ({
         <ModalBody>
           {isLoading ? (
             <div className="text-center py-10 px-4">
-              <div className="text-gray-500 dark:text-gray-400">
-                {t('loading')}
-              </div>
+              <div className="text-gray-500 dark:text-gray-400">{t('loading')}</div>
             </div>
           ) : history.length === 0 ? (
             <EmptyState />

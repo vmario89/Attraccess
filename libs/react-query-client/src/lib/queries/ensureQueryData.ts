@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceIntroducersService, ResourceIntroductionService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const ensureUseApplicationServicePing2Data = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const ensureUseUsersServiceGetAllUsersData = (queryClient: QueryClient, { limit, page, search }: {
@@ -37,11 +37,20 @@ export const ensureUseSsoServiceOidcLoginCallbackData = (queryClient: QueryClien
   sessionState: unknown;
   state: unknown;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseSsoServiceOidcLoginCallbackKeyFn({ code, iss, providerId, redirectTo, sessionState, state }), queryFn: () => SsoService.oidcLoginCallback({ code, iss, providerId, redirectTo, sessionState, state }) });
-export const ensureUseResourcesServiceGetAllResourcesData = (queryClient: QueryClient, { limit, page, search }: {
+export const ensureUseResourceGroupsServiceGetAllResourceGroupsData = (queryClient: QueryClient, { limit, page, search }: {
   limit?: number;
   page?: number;
   search?: string;
-} = {}) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ limit, page, search }), queryFn: () => ResourcesService.getAllResources({ limit, page, search }) });
+} = {}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupsServiceGetAllResourceGroupsKeyFn({ limit, page, search }), queryFn: () => ResourceGroupsService.getAllResourceGroups({ limit, page, search }) });
+export const ensureUseResourceGroupsServiceGetOneResourceGroupByIdData = (queryClient: QueryClient, { id }: {
+  id: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn({ id }), queryFn: () => ResourceGroupsService.getOneResourceGroupById({ id }) });
+export const ensureUseResourcesServiceGetAllResourcesData = (queryClient: QueryClient, { groupId, limit, page, search }: {
+  groupId?: number;
+  limit?: number;
+  page?: number;
+  search?: string;
+} = {}) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, limit, page, search }) });
 export const ensureUseResourcesServiceGetOneResourceByIdData = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetOneResourceByIdKeyFn({ id }), queryFn: () => ResourcesService.getOneResourceById({ id }) });
@@ -54,29 +63,29 @@ export const ensureUseResourceUsageServiceGetHistoryOfResourceUsageData = (query
 export const ensureUseResourceUsageServiceGetActiveSessionData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourceUsageServiceGetActiveSessionKeyFn({ resourceId }), queryFn: () => ResourceUsageService.getActiveSession({ resourceId }) });
-export const ensureUseResourceIntroductionServiceGetAllResourceIntroductionsData = (queryClient: QueryClient, { limit, page, resourceId }: {
+export const ensureUseResourceIntroductionsServiceGetAllResourceIntroductionsData = (queryClient: QueryClient, { limit, page, resourceId }: {
   limit: number;
-  page: number;
+  page?: number;
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceGetAllResourceIntroductionsKeyFn({ limit, page, resourceId }), queryFn: () => ResourceIntroductionService.getAllResourceIntroductions({ limit, page, resourceId }) });
-export const ensureUseResourceIntroductionServiceCheckStatusData = (queryClient: QueryClient, { resourceId }: {
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceGetAllResourceIntroductionsKeyFn({ limit, page, resourceId }), queryFn: () => ResourceIntroductionsService.getAllResourceIntroductions({ limit, page, resourceId }) });
+export const ensureUseResourceIntroductionsServiceCheckStatusData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceCheckStatusKeyFn({ resourceId }), queryFn: () => ResourceIntroductionService.checkStatus({ resourceId }) });
-export const ensureUseResourceIntroductionServiceGetHistoryOfIntroductionData = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceCheckStatusKeyFn({ resourceId }), queryFn: () => ResourceIntroductionsService.checkStatus({ resourceId }) });
+export const ensureUseResourceIntroductionsServiceGetHistoryOfIntroductionData = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceGetHistoryOfIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.getHistoryOfIntroduction({ introductionId, resourceId }) });
-export const ensureUseResourceIntroductionServiceCheckIsRevokedStatusData = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceGetHistoryOfIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.getHistoryOfIntroduction({ introductionId, resourceId }) });
+export const ensureUseResourceIntroductionsServiceCheckIsRevokedStatusData = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceCheckIsRevokedStatusKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.checkIsRevokedStatus({ introductionId, resourceId }) });
-export const ensureUseResourceIntroductionServiceGetOneResourceIntroductionData = (queryClient: QueryClient, { introductionId, resourceId }: {
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceCheckIsRevokedStatusKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.checkIsRevokedStatus({ introductionId, resourceId }) });
+export const ensureUseResourceIntroductionsServiceGetOneResourceIntroductionData = (queryClient: QueryClient, { introductionId, resourceId }: {
   introductionId: number;
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceGetOneResourceIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionService.getOneResourceIntroduction({ introductionId, resourceId }) });
-export const ensureUseResourceIntroductionServiceCheckCanManagePermissionData = (queryClient: QueryClient, { resourceId }: {
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceGetOneResourceIntroductionKeyFn({ introductionId, resourceId }), queryFn: () => ResourceIntroductionsService.getOneResourceIntroduction({ introductionId, resourceId }) });
+export const ensureUseResourceIntroductionsServiceCheckCanManagePermissionData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionServiceCheckCanManagePermissionKeyFn({ resourceId }), queryFn: () => ResourceIntroductionService.checkCanManagePermission({ resourceId }) });
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroductionsServiceCheckCanManagePermissionKeyFn({ resourceId }), queryFn: () => ResourceIntroductionsService.checkCanManagePermission({ resourceId }) });
 export const ensureUseResourceIntroducersServiceGetAllResourceIntroducersData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroducersServiceGetAllResourceIntroducersKeyFn({ resourceId }), queryFn: () => ResourceIntroducersService.getAllResourceIntroducers({ resourceId }) });

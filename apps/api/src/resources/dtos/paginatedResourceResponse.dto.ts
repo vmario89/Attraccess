@@ -1,8 +1,8 @@
 import { Resource } from '@attraccess/database-entities';
-import { PaginatedResponseDto } from '../../types/response';
+import { PaginatedResponse } from '../../types/response';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PaginatedResourceResponseDto extends PaginatedResponseDto<Resource> {
+export class PaginatedResourceResponseDto extends PaginatedResponse<Resource> {
   @ApiProperty({ type: [Resource] })
   data: Resource[];
 }

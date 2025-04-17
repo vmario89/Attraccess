@@ -7,6 +7,10 @@ export default {
   successTitle: 'Resource created',
   successDescription: '{{name}} has been successfully created',
   errorTitle: 'Failed to create resource',
-  errorDescription:
-    'An error occurred while creating the resource. Please try again.',
+  errorDescription: 'An error occurred while creating the resource. Please try again.',
+  createCloseButton: 'Create',
+  createClearButton: 'Create and New',
+  createOpenButton: 'Create and Open',
+  validationErrorTitle: 'Validation Error',
+  nameRequiredError: 'Name is required.',
 };

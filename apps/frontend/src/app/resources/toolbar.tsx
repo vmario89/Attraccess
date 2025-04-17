@@ -3,6 +3,7 @@ import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
 import { Search, Plus } from 'lucide-react';
 import { ResourceCreateModal } from './resourceCreateModal';
+import { ResourceGroupUpsertModal } from './resourceGroupUpsertModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/toolbar.en';
@@ -28,21 +29,33 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
   }, [searchValue, onSearch]);
 
   return (
-    <div className="mb-6 flex flex-col w-full gap-2">
-      <div className="relative w-full">
+    <div className="mb-6 flex flex-row w-full items-center justify-between gap-4 rounded-full bg-white p-2 shadow-sm dark:bg-zinc-800">
+      <div className="relative flex-grow">
         <Input
+          radius="full"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          className={`w-full ${searchIsLoading ? 'animate-pulse' : ''}`}
-          startContent={<Search />}
+          className={` ${searchIsLoading ? 'animate-pulse' : ''}`}
+          startContent={<Search size={18} />}
+          classNames={{
+            inputWrapper: 'bg-transparent border-none shadow-none focus-within:ring-0 pl-2',
+            input: 'text-sm',
+          }}
         />
       </div>
       {canManageResources && (
-        <div className="flex justify-end">
+        <div className="flex items-center gap-2 mr-1">
+          <ResourceGroupUpsertModal>
+            {(onOpen: () => void) => (
+              <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="secondary" size="sm">
+                {t('addGroup')}
+              </Button>
+            )}
+          </ResourceGroupUpsertModal>
           <ResourceCreateModal>
-            {(onOpen) => (
-              <Button onPress={onOpen} startContent={<Plus />} color="primary">
+            {(onOpen: () => void) => (
+              <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="primary" size="sm">
                 {t('addResource')}
               </Button>
             )}

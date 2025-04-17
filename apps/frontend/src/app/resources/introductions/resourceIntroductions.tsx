@@ -5,12 +5,11 @@ import * as de from './translations/resourceIntroductions.de';
 import { Card, CardBody, CardFooter, CardHeader } from '@heroui/card';
 import { Divider } from '@heroui/divider';
 import { Pagination } from '@heroui/pagination';
+import { IntroductionsSkeleton, AddIntroductionForm, IntroductionsList } from './components';
 import {
-  IntroductionsSkeleton,
-  AddIntroductionForm,
-  IntroductionsList,
-} from './components';
-import { useResourceIntroductionServiceCheckCanManagePermission, useResourceIntroductionServiceGetAllResourceIntroductions } from '@attraccess/react-query-client';
+  useResourceIntroductionsServiceCheckCanManagePermission,
+  useResourceIntroductionsServiceGetAllResourceIntroductions,
+} from '@attraccess/react-query-client';
 
 // Main component
 export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
@@ -24,17 +23,12 @@ export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
   const [pageSize] = useState(5);
 
   const { data: introductionsData, isLoading: isLoadingIntroductions } =
-    useResourceIntroductionServiceGetAllResourceIntroductions({resourceId, limit: pageSize, page: currentPage});
+    useResourceIntroductionsServiceGetAllResourceIntroductions({ resourceId, limit: pageSize, page: currentPage });
 
-  const {
-    data: canManageIntroductions,
-    isLoading: isLoadingCanManageIntroductions,
-  } = useResourceIntroductionServiceCheckCanManagePermission({resourceId});
+  const { data: canManageIntroductions, isLoading: isLoadingCanManageIntroductions } =
+    useResourceIntroductionsServiceCheckCanManagePermission({ resourceId });
 
-  const totalPages = useMemo(
-    () => introductionsData?.totalPages || 1,
-    [introductionsData]
-  );
+  const totalPages = useMemo(() => introductionsData?.totalPages || 1, [introductionsData]);
 
   if (isLoadingIntroductions || isLoadingCanManageIntroductions) {
     return <IntroductionsSkeleton />;
@@ -59,12 +53,7 @@ export function ResourceIntroductions({ resourceId }: { resourceId: number }) {
       </CardBody>
 
       <CardFooter className="flex justify-center items-center pt-4">
-        <Pagination
-          total={totalPages}
-          page={currentPage}
-          showControls
-          onChange={setCurrentPage}
-        />
+        <Pagination total={totalPages} page={currentPage} showControls onChange={setCurrentPage} />
       </CardFooter>
     </Card>
   );

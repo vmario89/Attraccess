@@ -1,15 +1,6 @@
 import { ReactNode } from 'react';
 import { filenameToUrl } from '../../api';
-import {
-  Card,
-  CardBody,
-  Image,
-  CardHeader,
-  CardFooter,
-  CardProps,
-  Skeleton,
-  Link,
-} from '@heroui/react';
+import { Card, CardBody, Image, CardHeader, CardFooter, CardProps, Skeleton, Link } from '@heroui/react';
 import { Resource } from '@attraccess/react-query-client';
 
 interface ResourceCardSkeletonProps extends CardProps {
@@ -21,9 +12,7 @@ interface ResourceCardSkeletonProps extends CardProps {
 function ResourceCardSkeleton(props: ResourceCardSkeletonProps) {
   return (
     <Card {...props}>
-      <CardHeader className="pb-0 pt-2 px-4 flex-row justify-between items-center">
-        {props.header}
-      </CardHeader>
+      <CardHeader className="pb-0 pt-2 px-4 flex-row justify-between items-center">{props.header}</CardHeader>
       <CardBody className="overflow-visible py-2">{props.body}</CardBody>
       <CardFooter>{props.footer}</CardFooter>
     </Card>
@@ -41,9 +30,7 @@ export function ResourceCardSkeletonLoader() {
   );
 }
 
-function ActualResourceCard(
-  props: ResourceCardProps & { isPressable?: boolean }
-) {
+function ActualResourceCard(props: ResourceCardProps & { isPressable?: boolean }) {
   const { resource, badges, isPressable = false, ...rest } = props;
   return (
     <ResourceCardSkeleton
@@ -61,7 +48,7 @@ function ActualResourceCard(
               alt={resource.name}
               className="object-cover rounded-xl"
               src={filenameToUrl(resource.imageFilename)}
-              width={270}
+              style={{ maxHeight: '200px' }}
             />
           </div>
         )
@@ -78,10 +65,6 @@ interface ResourceCardProps extends Omit<CardProps, 'resource'> {
 
 export function ResourceCard(props: ResourceCardProps & { href?: string }) {
   return (
-    <ActualResourceCard
-      {...props}
-      isPressable={!!props.href || props.isPressable}
-      as={props.href ? Link : undefined}
-    />
+    <ActualResourceCard {...props} isPressable={!!props.href || props.isPressable} as={props.href ? Link : undefined} />
   );
 }
