@@ -1,0 +1,9 @@
+{
+    "name": "plugin-demo",
+    "main": "main.js",
+    "version": "1.0.0",
+    "description": "A simple example plugin.",
+    "attraccessVersion": {
+        "min": "0.0.0"
+    }
+}

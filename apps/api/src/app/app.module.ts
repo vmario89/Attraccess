@@ -12,6 +12,7 @@ import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MqttModule } from '../mqtt/mqtt.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
+import { PluginModule } from '../plugin-system/plugin.module';
 
 @Module({
   imports: [
@@ -20,15 +21,14 @@ import { WebhooksModule } from '../webhooks/webhooks.module';
       isGlobal: true,
     }),
     EventEmitterModule.forRoot(),
+    PluginModule.forRootAsync(),
     UsersAndAuthModule,
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
     MqttModule,
     WebhooksModule,
     ServeStaticModule.forRoot({
-      rootPath:
-        process.env.STATIC_FRONTEND_FILE_PATH ||
-        resolve(join(__dirname, 'public')),
+      rootPath: process.env.STATIC_FRONTEND_FILE_PATH || resolve(join(__dirname, 'public')),
     }),
   ],
   controllers: [AppController],

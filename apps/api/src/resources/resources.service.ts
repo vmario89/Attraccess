@@ -46,8 +46,6 @@ export class ResourcesService {
       relations: ['introductions', 'usages', 'groups'],
     });
 
-    console.log('resource', resource);
-
     if (!resource) {
       throw new ResourceNotFoundException(id);
     }
