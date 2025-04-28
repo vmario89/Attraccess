@@ -20,21 +20,21 @@ export class MqttResourceConfig {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the resource this configuration is for',
     example: 1,
   })
   resourceId!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the MQTT server to publish to',
     example: 1,
   })
   serverId!: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'Topic template using Handlebars for in-use status',
     example: 'resources/{{id}}/status',
@@ -44,12 +44,11 @@ export class MqttResourceConfig {
   @Column({ type: 'text' })
   @ApiProperty({
     description: 'Message template using Handlebars for in-use status',
-    example:
-      '{"status": "in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}',
+    example: '{"status": "in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}',
   })
   inUseMessage!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'Topic template using Handlebars for not-in-use status',
     example: 'resources/{{id}}/status',
@@ -59,8 +58,7 @@ export class MqttResourceConfig {
   @Column({ type: 'text' })
   @ApiProperty({
     description: 'Message template using Handlebars for not-in-use status',
-    example:
-      '{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}',
+    example: '{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}',
   })
   notInUseMessage!: string;
 

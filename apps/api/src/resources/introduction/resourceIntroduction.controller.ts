@@ -1,20 +1,8 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  ParseIntPipe,
-  Req,
-  Body,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Get, Param, ParseIntPipe, Req, Body, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
-import {
-  ResourceIntroduction,
-  ResourceIntroductionHistoryItem,
-} from '@attraccess/database-entities';
-import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
+import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
+import { Auth } from '@attraccess/api-utils';
 import { AuthenticatedRequest } from '../../types/request';
 import { PaginatedResponse, makePaginatedResponse } from '../../types/response';
 import { GetResourceIntroductionsQueryDto } from './dtos/getResourceIntroductionsQuery.dto';
@@ -23,10 +11,7 @@ import { UsersService } from '../../users-and-auth/users/users.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  RevokeIntroductionDto,
-  UnrevokeIntroductionDto,
-} from './dtos/revokeIntroduction.dto';
+import { RevokeIntroductionDto, UnrevokeIntroductionDto } from './dtos/revokeIntroduction.dto';
 import { MissingIntroductionPermissionException } from '../../exceptions/resource.introduction.forbidden.exception';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
@@ -53,8 +38,7 @@ export class ResourceIntroductionController {
   @Auth()
   @ApiOperation({
     summary: 'Mark resource introduction as completed for a user',
-    description:
-      'Complete an introduction for a user identified by their user ID, username, or email.',
+    description: 'Complete an introduction for a user identified by their user ID, username, or email.',
     operationId: 'markCompleted',
   })
   @ApiResponse({
@@ -75,20 +59,15 @@ export class ResourceIntroductionController {
     @Body() dto: CompleteIntroductionDto,
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroduction> {
-    return this.resourceIntroductionService.createIntroduction(
-      resourceId,
-      req.user.id,
-      dto.userId
-    );
+    return this.resourceIntroductionService.createIntroduction(resourceId, req.user.id, dto.userId);
   }
 
   @Get()
   @CanManageResources()
   @ApiOperation({
     summary: 'Get introductions for a specific resource',
-    description:
-      'Retrieve introductions for a resource, possibly paginated',
-      operationId: 'getAllResourceIntroductions',
+    description: 'Retrieve introductions for a resource, possibly paginated',
+    operationId: 'getAllResourceIntroductions',
   })
   @ApiResponse({
     status: 200,
@@ -99,12 +78,11 @@ export class ResourceIntroductionController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceIntroductionsQueryDto
   ): Promise<PaginatedResponse<ResourceIntroduction>> {
-    const { data, total } =
-      await this.resourceIntroductionService.getResourceIntroductions(
-        resourceId,
-        query.page,
-        query.limit
-      );
+    const { data, total } = await this.resourceIntroductionService.getResourceIntroductions(
+      resourceId,
+      query.page,
+      query.limit
+    );
 
     return makePaginatedResponse({ page: query.page, limit: query.limit }, data, total);
   }
@@ -113,9 +91,8 @@ export class ResourceIntroductionController {
   @Auth()
   @ApiOperation({
     summary: 'Check if current user has a valid introduction',
-    description:
-      'Check if the current user has completed the introduction for this resource and it is not revoked',
-      operationId: 'checkStatus',
+    description: 'Check if the current user has completed the introduction for this resource and it is not revoked',
+    operationId: 'checkStatus',
   })
   @ApiResponse({
     status: 200,
@@ -139,11 +116,7 @@ export class ResourceIntroductionController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Req() req: AuthenticatedRequest
   ): Promise<{ hasValidIntroduction: boolean }> {
-    const hasValidIntroduction =
-      await this.resourceIntroductionService.hasValidIntroduction(
-        resourceId,
-        req.user.id
-      );
+    const hasValidIntroduction = await this.resourceIntroductionService.hasValidIntroduction(resourceId, req.user.id);
 
     return { hasValidIntroduction };
   }
@@ -152,8 +125,7 @@ export class ResourceIntroductionController {
   @CanManageResources()
   @ApiOperation({
     summary: 'Revoke an introduction',
-    description:
-      'Revoke access for a user by marking their introduction as revoked',
+    description: 'Revoke access for a user by marking their introduction as revoked',
     operationId: 'markRevoked',
   })
   @ApiResponse({
@@ -168,11 +140,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem> {
     // First check if the user can give introductions (same permission check as for completing)
-    const canGiveIntroductions =
-      await this.resourceIntroductionService.canGiveIntroductions(
-        resourceId,
-        req.user.id
-      );
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -180,11 +148,7 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    return this.resourceIntroductionService.revokeIntroduction(
-      introductionId,
-      req.user.id,
-      dto.comment
-    );
+    return this.resourceIntroductionService.revokeIntroduction(introductionId, req.user.id, dto.comment);
   }
 
   @Post(':introductionId/unrevoke')
@@ -206,11 +170,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem> {
     // First check if the user can give introductions (same permission check as for completing)
-    const canGiveIntroductions =
-      await this.resourceIntroductionService.canGiveIntroductions(
-        resourceId,
-        req.user.id
-      );
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -218,19 +178,14 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    return this.resourceIntroductionService.unrevokeIntroduction(
-      introductionId,
-      req.user.id,
-      dto.comment
-    );
+    return this.resourceIntroductionService.unrevokeIntroduction(introductionId, req.user.id, dto.comment);
   }
 
   @Get(':introductionId/history')
   @CanManageResources()
   @ApiOperation({
     summary: 'Get history for a specific introduction',
-    description:
-      'Retrieve the history of revoke/unrevoke actions for an introduction',
+    description: 'Retrieve the history of revoke/unrevoke actions for an introduction',
     operationId: 'getHistoryOfIntroduction',
   })
   @ApiResponse({
@@ -244,11 +199,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem[]> {
     // Check permissions
-    const canGiveIntroductions =
-      await this.resourceIntroductionService.canGiveIntroductions(
-        resourceId,
-        req.user.id
-      );
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -256,10 +207,7 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    const history =
-      await this.resourceIntroductionService.getIntroductionHistory(
-        introductionId
-      );
+    const history = await this.resourceIntroductionService.getIntroductionHistory(introductionId);
 
     return history;
   }
@@ -287,11 +235,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<{ isRevoked: boolean }> {
     // Check permissions
-    const canGiveIntroductions =
-      await this.resourceIntroductionService.canGiveIntroductions(
-        resourceId,
-        req.user.id
-      );
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -299,10 +243,7 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    const isRevoked =
-      await this.resourceIntroductionService.isIntroductionRevoked(
-        introductionId
-      );
+    const isRevoked = await this.resourceIntroductionService.isIntroductionRevoked(introductionId);
 
     return { isRevoked };
   }
@@ -325,8 +266,7 @@ export class ResourceIntroductionController {
   })
   @ApiResponse({
     status: 403,
-    description:
-      'Forbidden - User does not have permission to view this introduction',
+    description: 'Forbidden - User does not have permission to view this introduction',
   })
   @ApiResponse({
     status: 404,
@@ -338,11 +278,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroduction> {
     // Check permissions
-    const canGiveIntroductions =
-      await this.resourceIntroductionService.canGiveIntroductions(
-        resourceId,
-        req.user.id
-      );
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -350,10 +286,7 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    return this.resourceIntroductionService.getResourceIntroductionById(
-      resourceId,
-      introductionId
-    );
+    return this.resourceIntroductionService.getResourceIntroductionById(resourceId, introductionId);
   }
 
   @Get('permissions/manage')
@@ -384,11 +317,7 @@ export class ResourceIntroductionController {
     }
 
     // Add any specific permission logic here
-    const canManage =
-      await this.resourceIntroductionService.canManageIntroductions(
-        resourceId,
-        user.id
-      );
+    const canManage = await this.resourceIntroductionService.canManageIntroductions(resourceId, user.id);
 
     return { canManageIntroductions: canManage };
   }

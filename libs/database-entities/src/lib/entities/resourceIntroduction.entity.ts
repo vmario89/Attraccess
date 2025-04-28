@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { User } from './user.entity';
@@ -22,21 +14,21 @@ export class ResourceIntroduction {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the resource',
     example: 1,
   })
   resourceId!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user who received the introduction',
     example: 1,
   })
   receiverUserId!: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user who tutored the receiver',
     example: 2,
@@ -77,10 +69,7 @@ export class ResourceIntroduction {
   })
   tutorUser!: User;
 
-  @OneToMany(
-    () => ResourceIntroductionHistoryItem,
-    (history) => history.introduction
-  )
+  @OneToMany(() => ResourceIntroductionHistoryItem, (history) => history.introduction)
   @ApiProperty({
     description: 'History of revoke/unrevoke actions for this introduction',
     type: () => [ResourceIntroductionHistoryItem],

@@ -30,13 +30,8 @@ export class SystemPermissionsGuard implements CanActivate {
 
   constructor(private reflector: Reflector) {}
 
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredPermissions = this.reflector.get(
-      NeedsSystemPermissions,
-      context.getHandler()
-    );
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const requiredPermissions = this.reflector.get(NeedsSystemPermissions, context.getHandler());
 
     if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;
@@ -53,17 +48,10 @@ export class SystemPermissionsGuard implements CanActivate {
     return this.matchPermissions(requiredPermissions, user);
   }
 
-  private matchPermissions(
-    requiredPermissions: SystemPermission | SystemPermission[],
-    user: User
-  ): boolean {
+  private matchPermissions(requiredPermissions: SystemPermission | SystemPermission[], user: User): boolean {
     // Convert single permission to array if it's not already an array
-    const permissionsArray = Array.isArray(requiredPermissions)
-      ? requiredPermissions
-      : [requiredPermissions];
+    const permissionsArray = Array.isArray(requiredPermissions) ? requiredPermissions : [requiredPermissions];
 
-    return permissionsArray.every(
-      (permission) => user.systemPermissions[permission] === true
-    );
+    return permissionsArray.every((permission) => user.systemPermissions[permission] === true);
   }
 }

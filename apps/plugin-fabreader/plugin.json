@@ -1,0 +1,9 @@
+{
+    "name": "FABReader",
+    "main": "fabreader.module.js",
+    "version": "1.0.0",
+    "description": "Plugin to add support for the FABReader",
+    "attraccessVersion": {
+        "min": "0.0.0"
+    }
+}

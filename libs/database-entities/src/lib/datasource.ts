@@ -3,7 +3,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { loadEnv } from '@attraccess/env';
 import { join, resolve } from 'path';
-import { entities } from './entities';
+import { entities } from './entities-index';
 import * as migrations from './migrations';
 
 const envType = loadEnv((z) => ({
@@ -47,10 +47,12 @@ function loadSqliteConfig() {
     DB_FILE: z.string().default('attraccess.sqlite'),
   }));
 
+  const dbFile = resolve(join(process.cwd(), 'storage', env.DB_FILE));
+
   dbConfig = {
     ...dbConfig,
     type: 'sqlite',
-    database: resolve(join(__dirname, '..', '..', '..', env.DB_FILE)),
+    database: dbFile,
   } as DataSourceOptions;
 }
 

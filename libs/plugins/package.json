@@ -17,6 +17,7 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@nestjs/common": "*",
-    "@attraccess/database-entities": "*"
+    "@attraccess/database-entities": "*",
+    "@attraccess/api-utils": "*"
   }
 }

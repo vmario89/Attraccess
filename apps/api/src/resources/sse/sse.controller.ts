@@ -13,10 +13,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Resource } from '@attraccess/database-entities';
-import {
-  ResourceUsageStartedEvent,
-  ResourceUsageEndedEvent,
-} from '../usage/events/resource-usage.events';
+import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../usage/events/resource-usage.events';
 
 interface MessageEvent {
   data: object;
@@ -55,9 +52,7 @@ export class SSEController implements OnModuleInit, OnModuleDestroy {
   }
 
   @Sse(':resourceId/events')
-  async streamEvents(
-    @Param('resourceId', ParseIntPipe) resourceId: number
-  ): Promise<Observable<MessageEvent>> {
+  async streamEvents(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<Observable<MessageEvent>> {
     // Verify resource exists
     const resource = await this.resourceRepository.findOne({
       where: { id: resourceId },
@@ -105,9 +100,7 @@ export class SSEController implements OnModuleInit, OnModuleDestroy {
     }
 
     // Look for active usage sessions (those without an end time)
-    const activeUsage = resource.usages?.find(
-      (usage) => usage.endTime === null
-    );
+    const activeUsage = resource.usages?.find((usage) => usage.endTime === null);
 
     return !!activeUsage;
   }
@@ -134,9 +127,7 @@ export class SSEController implements OnModuleInit, OnModuleDestroy {
     // Emit the event to all subscribers
     subject.next({ data: eventData });
 
-    this.logger.debug(
-      `Emitted resource.usage.started event for resource ${resourceId}`
-    );
+    this.logger.debug(`Emitted resource.usage.started event for resource ${resourceId}`);
   }
 
   @OnEvent('resource.usage.ended')
@@ -161,8 +152,6 @@ export class SSEController implements OnModuleInit, OnModuleDestroy {
     // Emit the event to all subscribers
     subject.next({ data: eventData });
 
-    this.logger.debug(
-      `Emitted resource.usage.ended event for resource ${resourceId}`
-    );
+    this.logger.debug(`Emitted resource.usage.ended event for resource ${resourceId}`);
   }
 }

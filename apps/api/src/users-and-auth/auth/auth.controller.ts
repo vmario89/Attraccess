@@ -2,15 +2,9 @@ import { Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthenticatedRequest } from '../../types/request';
 import { LoginGuard } from '../strategies/login.guard';
-import { Auth } from '../strategies/systemPermissions.guard';
+import { Auth } from '@attraccess/api-utils';
 import { CreateSessionResponse } from './auth.types';
-import {
-  ApiBody,
-  ApiOkResponse,
-  ApiResponse,
-  ApiTags,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Authentication')
 @Controller('/auth')
@@ -38,9 +32,7 @@ export class AuthController {
       },
     },
   })
-  async createSession(
-    @Req() request: AuthenticatedRequest
-  ): Promise<CreateSessionResponse> {
+  async createSession(@Req() request: AuthenticatedRequest): Promise<CreateSessionResponse> {
     const authToken = await this.authService.createJWT(request.user);
 
     return {

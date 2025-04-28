@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from './user.entity';
 import { AuthenticationType } from '../types/authenticationType.enum';
@@ -18,7 +12,7 @@ export class AuthenticationDetail {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user',
     example: 1,
@@ -36,7 +30,7 @@ export class AuthenticationDetail {
   })
   type!: AuthenticationType;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   @ApiProperty({
     description: 'The hashed password (for local authentication)',
     required: false,

@@ -9,7 +9,6 @@ import { ResourceIntroductionService } from '../introduction/resourceIntroductio
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from './events/resource-usage.events';
-import { PluginService } from '../../plugin-system/plugin.service';
 import { SystemEvent } from '@attraccess/plugins';
 
 @Injectable()
@@ -19,8 +18,7 @@ export class ResourceUsageService {
     private resourceUsageRepository: Repository<ResourceUsage>,
     private resourcesService: ResourcesService,
     private resourceIntroductionService: ResourceIntroductionService,
-    private eventEmitter: EventEmitter2,
-    private pluginService: PluginService
+    private eventEmitter: EventEmitter2
   ) {}
 
   async startSession(resourceId: number, user: User, dto: StartUsageSessionDto): Promise<ResourceUsage> {
@@ -93,28 +91,6 @@ export class ResourceUsageService {
       throw new Error('Failed to retrieve the newly created session.');
     }
 
-    // Emit event after successful save using PluginService
-    try {
-      const response = await this.pluginService.emitEvent(
-        SystemEvent.RESOURCE_USAGE_STARTED,
-        { resource, user }, // Pass the full resource and user objects
-        true // This event is blockable
-      );
-
-      // Check if any plugin blocked the event
-
-      if (response.isBlocked === true) {
-        this.resourceUsageRepository.delete(newSession.id); // Rollback: Delete the created session
-        throw new ForbiddenException('Resource usage start was blocked by a plugin.');
-      }
-    } catch (error) {
-      // If emitEvent itself throws an error, attempt rollback and rethrow
-      await this.resourceUsageRepository.delete(newSession.id).catch((deleteError) => {
-        console.error('Failed to rollback session creation after plugin error:', deleteError);
-      });
-      throw error; // Rethrow the original plugin error
-    }
-
     return newSession;
   }
 
@@ -151,18 +127,6 @@ export class ResourceUsageService {
       'resource.usage.ended',
       new ResourceUsageEndedEvent(resourceId, activeSession.startTime, endTime)
     );
-    // Emit event after successful save using PluginService
-    // Ensure resource and user are loaded before emitting
-    if (!activeSession.resource || !activeSession.user) {
-      console.error('Error emitting event: Active session data incomplete.', activeSession);
-      // Potentially fetch again or handle error, but for now just log
-    } else {
-      await this.pluginService.emitEvent(
-        SystemEvent.RESOURCE_USAGE_ENDED,
-        { resource: activeSession.resource, user: activeSession.user }, // Pass resource and the user whose session ended
-        false // This event is not blockable after the fact
-      );
-    }
 
     // Fetch the updated record
     return await this.resourceUsageRepository.findOne({

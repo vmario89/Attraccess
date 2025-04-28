@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@attraccess/api-client": ["libs/api-client/src/index.ts"],
+      "@attraccess/api-utils": ["libs/api-utils/src/index.ts"],
       "@attraccess/attracces": ["tools/attracces/src/index.ts"],
       "@attraccess/database-entities": ["libs/database-entities/src/index.ts"],
       "@attraccess/env": ["libs/env/src/index.ts"],

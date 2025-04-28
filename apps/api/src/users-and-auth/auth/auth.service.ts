@@ -1,20 +1,9 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-  Logger,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { nanoid } from 'nanoid';
 import { Repository } from 'typeorm';
-import {
-  User,
-  RevokedToken,
-  AuthenticationDetail,
-  AuthenticationType,
-} from '@attraccess/database-entities';
+import { User, RevokedToken, AuthenticationDetail, AuthenticationType } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from '../../email/email.service';
 import { addDays } from 'date-fns';
@@ -26,9 +15,7 @@ export interface LocalPasswordAuthenticationOptions {
 
 export interface AuthenticationOptions<T extends AuthenticationType> {
   type: T;
-  details: T extends AuthenticationType.LOCAL_PASSWORD
-    ? LocalPasswordAuthenticationOptions
-    : never;
+  details: T extends AuthenticationType.LOCAL_PASSWORD ? LocalPasswordAuthenticationOptions : never;
 }
 
 class UserEmailNotVerifiedException extends ForbiddenException {
@@ -101,20 +88,14 @@ export class AuthService {
     authenticationType: AuthenticationType,
     userId: number
   ): Promise<AuthenticationDetail> {
-    this.logger.debug(
-      `Getting authentication details for user ID: ${userId}, type: ${authenticationType}`
-    );
+    this.logger.debug(`Getting authentication details for user ID: ${userId}, type: ${authenticationType}`);
     const details = await this.authenticationDetailRepository.findOne({
       where: { userId, type: authenticationType },
     });
 
     if (!details) {
-      this.logger.debug(
-        `Authentication details not found for user ID: ${userId}`
-      );
-      throw new NotFoundException(
-        `Authentication details for user ${userId} not found`
-      );
+      this.logger.debug(`Authentication details not found for user ID: ${userId}`);
+      throw new NotFoundException(`Authentication details for user ${userId} not found`);
     }
 
     this.logger.debug(`Found authentication details, ID: ${details.id}`);
@@ -125,22 +106,14 @@ export class AuthService {
     userId: number,
     options: AuthenticationOptions<T>
   ): Promise<boolean> {
-    this.logger.debug(
-      `Validating authentication details for user ID: ${userId}, type: ${options.type}`
-    );
-    const authenticationDetails = await this.getAuthenticationDetail(
-      options.type,
-      userId
-    );
+    this.logger.debug(`Validating authentication details for user ID: ${userId}, type: ${options.type}`);
+    const authenticationDetails = await this.getAuthenticationDetail(options.type, userId);
 
     let isValid = false;
     switch (options.type) {
       case AuthenticationType.LOCAL_PASSWORD:
         this.logger.debug(`Validating password for user ID: ${userId}`);
-        isValid = await bcrypt.compare(
-          options.details.password,
-          authenticationDetails.password || ''
-        );
+        isValid = await bcrypt.compare(options.details.password, authenticationDetails.password || '');
         break;
 
       default:
@@ -148,9 +121,7 @@ export class AuthService {
         isValid = false;
     }
 
-    this.logger.debug(
-      `Authentication validation result for user ID: ${userId}: ${isValid}`
-    );
+    this.logger.debug(`Authentication validation result for user ID: ${userId}: ${isValid}`);
     return isValid;
   }
 
@@ -158,51 +129,34 @@ export class AuthService {
     userId: number,
     options: AuthenticationOptions<T>
   ): Promise<AuthenticationDetail> {
-    this.logger.debug(
-      `Adding authentication details for user ID: ${userId}, type: ${options.type}`
-    );
+    this.logger.debug(`Adding authentication details for user ID: ${userId}, type: ${options.type}`);
     const authenticationDetail = new AuthenticationDetail();
     authenticationDetail.userId = userId;
     authenticationDetail.type = options.type;
 
     if (options.type === AuthenticationType.LOCAL_PASSWORD) {
       this.logger.debug(`Hashing password for user ID: ${userId}`);
-      authenticationDetail.password = await bcrypt.hash(
-        options.details.password,
-        this.SALT_ROUNDS
-      );
+      authenticationDetail.password = await bcrypt.hash(options.details.password, this.SALT_ROUNDS);
     }
 
-    const saved = await this.authenticationDetailRepository.save(
-      authenticationDetail
-    );
-    this.logger.debug(
-      `Authentication details added for user ID: ${userId}, auth details ID: ${saved.id}`
-    );
+    const saved = await this.authenticationDetailRepository.save(authenticationDetail);
+    this.logger.debug(`Authentication details added for user ID: ${userId}, auth details ID: ${saved.id}`);
     return saved;
   }
 
-  async removeAuthenticationDetails(
-    authenticationDetailsId: number
-  ): Promise<void> {
-    this.logger.debug(
-      `Removing authentication details with ID: ${authenticationDetailsId}`
-    );
+  async removeAuthenticationDetails(authenticationDetailsId: number): Promise<void> {
+    this.logger.debug(`Removing authentication details with ID: ${authenticationDetailsId}`);
     await this.authenticationDetailRepository.delete({
       id: authenticationDetailsId,
     });
-    this.logger.debug(
-      `Authentication details with ID: ${authenticationDetailsId} removed`
-    );
+    this.logger.debug(`Authentication details with ID: ${authenticationDetailsId} removed`);
   }
 
   async getUserByUsernameAndAuthenticationDetails<T extends AuthenticationType>(
     username: string,
     options: AuthenticationOptions<T>
   ): Promise<User | null> {
-    this.logger.debug(
-      `Getting user by username: ${username} and authentication details`
-    );
+    this.logger.debug(`Getting user by username: ${username} and authentication details`);
     const user = await this.usersService.findOne({ username });
 
     if (!user) {
@@ -215,9 +169,7 @@ export class AuthService {
       throw new UserEmailNotVerifiedException();
     }
 
-    this.logger.debug(
-      `Validating authentication details for user ID: ${user.id}`
-    );
+    this.logger.debug(`Validating authentication details for user ID: ${user.id}`);
     const isValid = await this.validateAuthenticationDetails(user.id, options);
     if (!isValid) {
       this.logger.debug(`Invalid authentication for user ID: ${user.id}`);
@@ -233,36 +185,26 @@ export class AuthService {
     const tokenId = nanoid();
     const payload = { username: user.username, sub: user.id, tokenId };
     const token = this.jwtService.sign(payload);
-    this.logger.debug(
-      `JWT created for user ID: ${user.id}, token ID: ${tokenId}`
-    );
+    this.logger.debug(`JWT created for user ID: ${user.id}, token ID: ${tokenId}`);
     return token;
   }
 
   async generateEmailVerificationToken(user: User): Promise<string> {
-    this.logger.debug(
-      `Generating email verification token for user ID: ${user.id}`
-    );
+    this.logger.debug(`Generating email verification token for user ID: ${user.id}`);
     const token = nanoid();
 
-    this.logger.debug(
-      `Updating user with verification token, user ID: ${user.id}`
-    );
+    this.logger.debug(`Updating user with verification token, user ID: ${user.id}`);
     await this.usersService.updateUser(user.id, {
       emailVerificationToken: token,
       emailVerificationTokenExpiresAt: addDays(new Date(), 3),
     });
 
-    this.logger.debug(
-      `Email verification token generated for user ID: ${user.id}`
-    );
+    this.logger.debug(`Email verification token generated for user ID: ${user.id}`);
     return token;
   }
 
   async verifyEmail(email: string, token: string): Promise<void> {
-    this.logger.debug(
-      `Verifying email: ${email} with token: ${token.substring(0, 5)}...`
-    );
+    this.logger.debug(`Verifying email: ${email} with token: ${token.substring(0, 5)}...`);
     const user = await this.usersService.findOne({ email });
 
     if (!user) {

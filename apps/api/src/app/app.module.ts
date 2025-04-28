@@ -1,9 +1,8 @@
-import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceConfig } from '../database/datasource';
+import { dataSourceConfig } from '@attraccess/database-entities';
 import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule } from '@nestjs/config';
 import { storageConfig } from '../config/storage.config';
@@ -12,6 +11,7 @@ import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MqttModule } from '../mqtt/mqtt.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
+import { Module } from '@nestjs/common';
 import { PluginModule } from '../plugin-system/plugin.module';
 
 @Module({
@@ -21,7 +21,6 @@ import { PluginModule } from '../plugin-system/plugin.module';
       isGlobal: true,
     }),
     EventEmitterModule.forRoot(),
-    PluginModule.forRootAsync(),
     UsersAndAuthModule,
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
@@ -30,6 +29,7 @@ import { PluginModule } from '../plugin-system/plugin.module';
     ServeStaticModule.forRoot({
       rootPath: process.env.STATIC_FRONTEND_FILE_PATH || resolve(join(__dirname, 'public')),
     }),
+    PluginModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

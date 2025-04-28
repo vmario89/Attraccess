@@ -8,11 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ResourcesCoreModule } from '../resources/resources-core.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([WebhookConfig, Resource]),
-    ConfigModule,
-    ResourcesCoreModule,
-  ],
+  imports: [TypeOrmModule.forFeature([WebhookConfig, Resource]), ConfigModule, ResourcesCoreModule],
   controllers: [WebhookConfigController],
   providers: [WebhookConfigService, WebhookPublisherService],
   exports: [WebhookPublisherService],

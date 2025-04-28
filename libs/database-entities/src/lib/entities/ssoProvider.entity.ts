@@ -22,7 +22,7 @@ export class SSOProvider {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The internal name of the provider',
     example: 'Keycloak',

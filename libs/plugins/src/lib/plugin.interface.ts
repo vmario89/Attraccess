@@ -1,9 +1,6 @@
-import { DynamicModule } from '@nestjs/common';
-import { User as UserEntity, Resource as ResourceEntity } from '@attraccess/database-entities';
+import { DynamicModule, InjectionToken, Type } from '@nestjs/common';
 import { SemanticVersion } from './semver';
-
-export type User = UserEntity;
-export type Resource = ResourceEntity;
+import { Resource, User } from '@attraccess/plugins';
 
 export enum SystemEvent {
   RESOURCE_USAGE_STARTED = 'RESOURCE_USAGE_STARTED',
@@ -38,8 +35,12 @@ export interface PluginInterface {
    */
   load(attraccessVersion: SemanticVersion): Promise<DynamicModule> | DynamicModule;
 
-  on<TEvent extends SystemEvent>(
-    event: TEvent,
-    payload: SystemEventPayload[TEvent]
-  ): Promise<SystemEventResponse[TEvent] | null>;
+  /**
+   * Returns the injection token or class of the service within the plugin's module
+   * that should handle system events.
+   *
+   * @returns The injection token or class type (e.g., MyPluginEventHandlerService).
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getEventHandlerToken(): InjectionToken | Type<any>;
 }

@@ -16,9 +16,7 @@ export class MqttResourceConfigService {
   /**
    * Get MQTT configuration for a resource
    */
-  async findByResourceId(
-    resourceId: number
-  ): Promise<MqttResourceConfig | null> {
+  async findByResourceId(resourceId: number): Promise<MqttResourceConfig | null> {
     // First check if the resource exists
     const resource = await this.resourceRepository.findOne({
       where: { id: resourceId },
@@ -37,10 +35,7 @@ export class MqttResourceConfigService {
   /**
    * Create or update MQTT configuration for a resource
    */
-  async createOrUpdate(
-    resourceId: number,
-    dto: CreateMqttResourceConfigDto
-  ): Promise<MqttResourceConfig> {
+  async createOrUpdate(resourceId: number, dto: CreateMqttResourceConfigDto): Promise<MqttResourceConfig> {
     // First check if the resource exists
     const resource = await this.resourceRepository.findOne({
       where: { id: resourceId },
@@ -86,9 +81,7 @@ export class MqttResourceConfigService {
     });
 
     if (!config) {
-      throw new NotFoundException(
-        `MQTT configuration for resource with ID ${resourceId} not found`
-      );
+      throw new NotFoundException(`MQTT configuration for resource with ID ${resourceId} not found`);
     }
 
     // Remove the config

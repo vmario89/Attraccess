@@ -24,7 +24,7 @@ export class ResourceIntroductionHistoryItem {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the related introduction',
     example: 1,
@@ -42,7 +42,7 @@ export class ResourceIntroductionHistoryItem {
   })
   action!: IntroductionHistoryAction;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user who performed the action',
     example: 1,

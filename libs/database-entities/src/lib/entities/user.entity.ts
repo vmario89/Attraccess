@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { ResourceIntroduction } from './resourceIntroduction.entity';
@@ -15,21 +8,21 @@ import { AuthenticationDetail } from './authenticationDetail.entity';
 import { ResourceIntroductionUser } from './resourceIntroductionUser.entity';
 
 export class SystemPermissions {
-  @Column({ default: false })
+  @Column({ default: false, type: 'boolean' })
   @ApiProperty({
     description: 'Whether the user can manage resources',
     example: false,
   })
   canManageResources!: boolean;
 
-  @Column({ default: false })
+  @Column({ default: false, type: 'boolean' })
   @ApiProperty({
     description: 'Whether the user can manage system configuration',
     example: false,
   })
   canManageSystemConfiguration!: boolean;
 
-  @Column({ default: false })
+  @Column({ default: false, type: 'boolean' })
   @ApiProperty({
     description: 'Whether the user can manage users',
     example: false,
@@ -50,6 +43,7 @@ export class User {
 
   @Column({
     unique: true,
+    type: 'text',
   })
   @ApiProperty({
     description: 'The username of the user',
@@ -57,11 +51,11 @@ export class User {
   })
   username!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'text' })
   @Exclude()
   email!: string;
 
-  @Column({ default: false })
+  @Column({ default: false, type: 'boolean' })
   @ApiProperty({
     description: 'Whether the user has verified their email address',
     example: true,
@@ -99,13 +93,9 @@ export class User {
   })
   updatedAt!: Date;
 
-  @OneToMany(
-    () => ResourceIntroduction,
-    (introduction) => introduction.receiverUser,
-    {
-      onDelete: 'CASCADE',
-    }
-  )
+  @OneToMany(() => ResourceIntroduction, (introduction) => introduction.receiverUser, {
+    onDelete: 'CASCADE',
+  })
   resourceIntroductions!: ResourceIntroduction[];
 
   @OneToMany(() => ResourceUsage, (usage) => usage.user, {
