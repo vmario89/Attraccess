@@ -9,7 +9,7 @@
 
 Network server_connection;
 API api(server_connection.interface.getClient());
-NFC nfc(&api);
+// NFC nfc(&api);
 
 void setup()
 {
