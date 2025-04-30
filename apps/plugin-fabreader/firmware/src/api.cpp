@@ -1,7 +1,10 @@
 #include "api.hpp"
+#include "nfc.hpp"
 
-void API::setup()
+void API::setup(NFC *nfc)
 {
+    this->nfc = nfc;
+
     Serial.println("[API] Setting up...");
 
     Serial.println("[API] Setup complete.");
@@ -9,9 +12,13 @@ void API::setup()
 
 bool API::checkTCPConnection()
 {
+    String hostname = Persistence::getSettings().Config.api.hostname;
+    int port = Persistence::getSettings().Config.api.port;
+
+    Serial.println("[API] Checking TCP connection to " + hostname + ":" + String(port));
     int connectStatus = this->client.connect(
-        Persistence::getSettings().Config.api.hostname,
-        Persistence::getSettings().Config.api.port);
+        hostname.c_str(),
+        port);
 
     if (connectStatus == 1)
     {
@@ -77,7 +84,6 @@ bool API::isConnected()
     this->authentication_sent_at = 0;
     this->registration_sent_at = 0;
 
-    Serial.println("[API] Checking TCP connection...");
     bool tcp_connected = this->checkTCPConnection();
 
     if (!tcp_connected)
@@ -120,8 +126,6 @@ void API::onRegistrationData(JsonObject data)
             settings.Config.api.has_auth = true;
             Persistence::saveSettings(settings);
 
-            this->is_authenticated = true;
-
             Serial.print("[API] Reader registered with ID: ");
             Serial.print(readerId);
             Serial.print(" and token: ");
@@ -137,13 +141,91 @@ void API::onDisplayText(JsonObject data)
 
 void API::onUnauthorized(JsonObject data)
 {
-    Serial.println("[API] UNAUTHORIZED: " + data["payload"]["message"].as<String>());
+    String message = "Unknown error";
+    if (data.containsKey("payload") && data["payload"].is<JsonObject>())
+    {
+        JsonObject payload = data["payload"].as<JsonObject>();
+        if (payload.containsKey("message") && !payload["message"].isNull())
+        {
+            message = payload["message"].as<String>();
+        }
+    }
+
+    Serial.println("[API] UNAUTHORIZED: " + message);
     this->is_authenticated = false;
     this->authentication_sent_at = 0;
     this->registration_sent_at = 0;
     PersistSettings<PersistenceData> settings = Persistence::getSettings();
     settings.Config.api.has_auth = false;
     Persistence::saveSettings(settings);
+}
+
+void API::onEnableCardChecking(JsonObject data)
+{
+    Serial.println("[API] ENABLE_CARD_CHECKING");
+    this->nfc->enableCardChecking();
+}
+
+void API::onDisableCardChecking(JsonObject data)
+{
+    Serial.println("[API] DISABLE_CARD_CHECKING");
+    this->nfc->disableCardChecking();
+}
+
+void API::onChangeKeys(JsonObject data)
+{
+    Serial.println("[API] CHANGE_KEYS");
+
+    // authentication key
+    uint8_t authKey[16];
+    for (int i = 0; i < 16; i++)
+    {
+        authKey[i] = data["payload"]["authenticationKey"][i].as<uint8_t>();
+    }
+
+    JsonObject response = JsonObject();
+    response["failedKeys"] = JsonArray();
+    response["successfulKeys"] = JsonArray();
+
+    StaticJsonDocument<256> doc;
+    JsonObject responsePayload = doc.to<JsonObject>();
+    responsePayload["failedKeys"] = JsonArray();
+    responsePayload["successfulKeys"] = JsonArray();
+
+    // TODO: if change includes key 0, we need to change it first using provided auth key
+    // TODO: if more keys are provided, we need to change them afterwards using new key 0 as auth key
+
+    // for each key in "keys" object (key = key number as string, value = next key as hex string)
+    for (JsonPair key : data["payload"]["keys"].as<JsonObject>())
+    {
+        uint8_t keyNumber = key.key().c_str()[0] - '0';
+        uint8_t newKey[16];
+        for (int i = 0; i < 16; i++)
+        {
+            newKey[i] = strtol(key.value().as<String>().c_str(), NULL, 16);
+        }
+        bool success = this->nfc->changeKey(keyNumber, authKey, newKey);
+        if (success)
+        {
+            responsePayload["successfulKeys"].add(keyNumber);
+        }
+        else
+        {
+            responsePayload["failedKeys"].add(keyNumber);
+        }
+    }
+
+    this->sendMessage(true, "CHANGE_KEYS", responsePayload);
+}
+
+void API::onWriteFiles(JsonObject data)
+{
+    Serial.println("[API] WRITE_FILES");
+}
+
+void API::onReadFile(JsonObject data)
+{
+    Serial.println("[API] READ_FILE");
 }
 
 void API::processData()
@@ -155,14 +237,6 @@ void API::processData()
 
     uint8_t buffer[128];
     const auto bytes_read = this->websocket.read(buffer, 128);
-    Serial.print("[API] Received data: ");
-    Serial.write(buffer, bytes_read);
-    Serial.println();
-    if (this->authentication_sent_at != 0)
-    {
-        this->is_authenticated = true;
-        Serial.println("[API] Authentication successful.");
-    }
 
     // parse json
     JsonDocument doc;
@@ -170,6 +244,12 @@ void API::processData()
 
     auto data = doc["data"].as<JsonObject>();
     auto eventType = data["type"].as<String>();
+    auto payload = data["payload"].as<JsonObject>();
+
+    String payloadString;
+    serializeJson(payload, payloadString);
+
+    Serial.println("[API] Received message of type " + eventType + " with payload " + payloadString);
 
     if (eventType == "REGISTER")
     {
@@ -183,11 +263,59 @@ void API::processData()
     {
         this->onDisplayText(data);
     }
+    else if (eventType == "AUTHENTICATED")
+    {
+        this->is_authenticated = true;
+        Serial.println("[API] Authentication successful.");
+    }
+    else if (eventType == "ENABLE_CARD_CHECKING")
+    {
+        this->onEnableCardChecking(data);
+    }
+    else if (eventType == "DISABLE_CARD_CHECKING")
+    {
+        this->onDisableCardChecking(data);
+    }
+    else if (eventType == "CHANGE_KEYS")
+    {
+        this->onChangeKeys(data);
+    }
+    else if (eventType == "WRITE_FILES")
+    {
+        this->onWriteFiles(data);
+    }
+    else if (eventType == "READ_FILE")
+    {
+        this->onReadFile(data);
+    }
 }
 
 bool API::isRegistered()
 {
     return (Persistence::getSettings().Config.api.has_auth);
+}
+
+void API::sendMessage(bool is_response, const char *type, JsonObject payload)
+{
+    StaticJsonDocument<512> event;
+    event["event"] = "EVENT";
+    event["data"]["type"] = type;
+
+    // Create a copy of the payload in the destination document
+    JsonObject eventPayload = event["data"].createNestedObject("payload");
+    for (JsonPair p : payload)
+    {
+        eventPayload[p.key()] = p.value();
+    }
+
+    String payloadString = event["data"]["payload"].as<String>();
+
+    Serial.println("[API] Sending " + String(is_response ? "response" : "event") + " of type " + String(type) + " with payload " + payloadString);
+
+    String json;
+    serializeJson(event, json);
+    this->websocket.write((uint8_t *)json.c_str(), json.length());
+    this->websocket.flush();
 }
 
 void API::sendRegistrationRequest()
@@ -200,9 +328,7 @@ void API::sendRegistrationRequest()
 
     Serial.println("[API] Registering reader...");
 
-    const char *registerMessage = "{\"event\": \"EVENT\", \"data\": {\"type\": \"REGISTER\"}}";
-    this->websocket.write((uint8_t *)registerMessage, strlen(registerMessage));
-    this->websocket.flush();
+    this->sendMessage(false, "REGISTER", JsonObject());
 
     this->registration_sent_at = millis();
 
@@ -226,37 +352,33 @@ void API::sendAuthenticationRequest()
         return;
     }
 
-    Serial.println("[API] Sending authentication request...");
-
-    JsonDocument event;
-    event["event"] = "EVENT";
-    event["data"]["type"] = "AUTHENTICATE";
-    event["data"]["payload"]["id"] = Persistence::getSettings().Config.api.readerId;
-    event["data"]["payload"]["token"] = Persistence::getSettings().Config.api.apiKey;
-
-    String json;
-    serializeJson(event, json);
-
-    this->websocket.write((uint8_t *)json.c_str(), json.length());
-    this->websocket.flush();
+    StaticJsonDocument<256> doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["id"] = Persistence::getSettings().Config.api.readerId;
+    payload["token"] = Persistence::getSettings().Config.api.apiKey;
+    this->sendMessage(false, "AUTHENTICATE", payload);
 
     this->authentication_sent_at = millis();
 }
 
 void API::sendNFCTapped(uint8_t *uid, uint8_t uidLength)
 {
-    Serial.println("[API] Sending NFC tapped event...");
+    StaticJsonDocument<256> doc;
+    JsonObject payload = doc.to<JsonObject>();
 
-    JsonDocument event;
-    event["event"] = "EVENT";
-    event["data"]["type"] = "NFC_TAP";
-    event["data"]["payload"]["cardUID"] = uid;
+    // Convert UID to hex string
+    String uidHex = "";
+    for (uint8_t i = 0; i < uidLength; i++)
+    {
+        if (uid[i] < 0x10)
+        {
+            uidHex += "0";
+        }
+        uidHex += String(uid[i], HEX);
+    }
 
-    String json;
-    serializeJson(event, json);
-
-    this->websocket.write((uint8_t *)json.c_str(), json.length());
-    this->websocket.flush();
+    payload["cardUID"] = uidHex;
+    this->sendMessage(false, "NFC_TAP", payload);
 }
 
 void API::loop()

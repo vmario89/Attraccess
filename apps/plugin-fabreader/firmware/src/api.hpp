@@ -4,6 +4,8 @@
 #include <PicoWebsocket.h>
 #include "persistence.hpp"
 #include <ArduinoJson.h>
+// Forward declare NFC instead of including the header
+class NFC; // Forward declaration instead of #include "nfc.hpp"
 
 #define API_WS_PATH "/api/fabreader/websocket"
 
@@ -13,7 +15,7 @@ public:
     API(Client &client) : websocket(client, API_WS_PATH), client(client) {}
     ~API() {}
 
-    void setup();
+    void setup(NFC *nfc);
     void loop();
 
     void sendNFCTapped(uint8_t *uid, uint8_t uidLength);
@@ -21,6 +23,7 @@ public:
 private:
     PicoWebsocket::Client websocket;
     Client &client;
+    NFC *nfc;
 
     bool isConnected();
     void processData();
@@ -38,7 +41,14 @@ private:
     bool isRegistered();
     bool isAuthenticated();
 
+    void sendMessage(bool is_response, const char *type, JsonObject payload);
+
     void onRegistrationData(JsonObject data);
     void onDisplayText(JsonObject data);
     void onUnauthorized(JsonObject data);
+    void onEnableCardChecking(JsonObject data);
+    void onDisableCardChecking(JsonObject data);
+    void onChangeKeys(JsonObject data);
+    void onWriteFiles(JsonObject data);
+    void onReadFile(JsonObject data);
 };

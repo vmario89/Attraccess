@@ -1,4 +1,5 @@
 #include "nfc.hpp"
+#include "api.hpp"
 
 void NFC::setup()
 {
@@ -30,6 +31,16 @@ void NFC::setup()
     nfc.SAMConfig();
 }
 
+void NFC::enableCardChecking()
+{
+    this->is_card_checking_enabled = true;
+}
+
+void NFC::disableCardChecking()
+{
+    this->is_card_checking_enabled = false;
+}
+
 void NFC::loop()
 {
     this->checkForCard();
@@ -37,6 +48,11 @@ void NFC::loop()
 
 void NFC::checkForCard()
 {
+    if (!this->is_card_checking_enabled)
+    {
+        return;
+    }
+
     if (millis() - this->last_check_for_card < 1000)
     {
         return;
@@ -52,4 +68,43 @@ void NFC::checkForCard()
     {
         this->api->sendNFCTapped(uid, uidLength);
     }
+}
+
+const uint8_t AUTH_CMD = 0x71;
+bool NFC::changeKey(uint8_t keyNumber, uint8_t authKey[16], uint8_t newKey[16])
+{
+    Serial.print("[NFC] Change key ");
+    Serial.print(keyNumber);
+    Serial.print(" with auth key xxx");
+    for (int i = 10; i < 16; i++)
+    {
+        Serial.print(authKey[i], HEX);
+    }
+    Serial.print(" to new key xxx");
+    for (int i = 10; i < 16; i++)
+    {
+        Serial.print(newKey[i], HEX);
+    }
+    Serial.println();
+
+    Serial.println("[NFC] Authenticating key " + String(keyNumber));
+    if (!this->nfc.ntag424_Authenticate(authKey, keyNumber, AUTH_CMD))
+    {
+        Serial.println("[NFC] Authentication failed");
+        return false;
+    }
+
+    Serial.println("[NFC] Authentication successful");
+
+    Serial.println("[NFC] Changing key " + String(keyNumber));
+
+    if (!this->nfc.ntag424_ChangeKey(authKey, newKey, keyNumber))
+    {
+        Serial.println("[NFC] Change key failed");
+        return false;
+    }
+
+    Serial.println("[NFC] Change key successful");
+
+    return true;
 }
