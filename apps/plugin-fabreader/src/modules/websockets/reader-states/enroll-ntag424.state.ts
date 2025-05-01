@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ReaderState } from './reader-state.interface';
 import { InitialReaderState } from './initial.state';
-import { subtle } from 'crypto';
 import { User } from '@attraccess/plugins';
 import { AuthenticatedWebSocket, FabreaderEvent, FabreaderEventType, FabreaderResponse } from '../websocket.types';
 import { GatewayServices } from '../websocket.gateway';
@@ -71,34 +70,6 @@ export class EnrollNTAG424State implements ReaderState {
     return undefined;
   }
 
-  /**
-   * Generates a new key for the NFC card based on a seed which is based on the current month,
-   * the keyNo and the cardUID.
-   * @param keyNo The key number to generate
-   * @param cardUID The UID of the NFC card
-   * @returns 16 bytes Uint8Array
-   */
-  private async generateNTAG424Key(data: { keyNo: number; cardUID: string }) {
-    const seed = `${new Date().getMonth()}${data.keyNo}${data.cardUID}`;
-    const seedBytes = new TextEncoder().encode(seed);
-    const key = await subtle.digest('SHA-256', seedBytes);
-    return new Uint8Array(key).slice(0, 16);
-  }
-
-  private uint8ArrayToHexString(uint8Array: Uint8Array) {
-    return Array.from(uint8Array)
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('');
-  }
-
-  private hexStringToUint8Array(hexString: string) {
-    const bytes = new Uint8Array(hexString.length / 2);
-    for (let i = 0; i < hexString.length; i += 2) {
-      bytes[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
-    }
-    return bytes;
-  }
-
   private async onGetNfcUID(responseData: FabreaderResponse['data']) {
     const cardUID = responseData.payload.cardUID;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -108,15 +79,15 @@ export class EnrollNTAG424State implements ReaderState {
 
     const masterKey: string =
       nfcCard?.keys[this.KEY_ZERO_MASTER] ??
-      this.uint8ArrayToHexString(this.DEFAULT_NTAG424_KEYS[this.KEY_ZERO_MASTER]);
+      this.services.fabreaderService.uint8ArrayToHexString(this.DEFAULT_NTAG424_KEYS[this.KEY_ZERO_MASTER]);
 
     this.socket.enrollment.data.newKeys = Object.fromEntries(
       Object.entries({
-        [this.KEY_ZERO_MASTER.toString()]: await this.generateNTAG424Key({
+        [this.KEY_ZERO_MASTER.toString()]: await this.services.fabreaderService.generateNTAG424Key({
           keyNo: this.KEY_ZERO_MASTER,
           cardUID,
         }),
-      }).map(([key, value]) => [key, this.uint8ArrayToHexString(value)])
+      }).map(([key, value]) => [key, this.services.fabreaderService.uint8ArrayToHexString(value)])
     );
 
     this.socket.enrollment.nextExpectedEvent = FabreaderEventType.CHANGE_KEYS;

@@ -14,10 +14,12 @@ import { WebsocketService } from './websocket.service';
 import { InitialReaderState } from './reader-states/initial.state';
 import { EnrollNTAG424State } from './reader-states/enroll-ntag424.state';
 import { AuthenticatedWebSocket, FabreaderEvent } from './websocket.types';
+import { FabreaderService } from '../../fabreader.service';
 
 export interface GatewayServices {
   dbService: DbService;
   websocketService: WebsocketService;
+  fabreaderService: FabreaderService;
 }
 
 @WebSocketGateway({ path: '/api/fabreader/websocket' })
@@ -33,12 +35,16 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
   @Inject(WebsocketService)
   private websocketService: WebsocketService;
 
+  @Inject(FabreaderService)
+  private fabreaderService: FabreaderService;
+
   public handleConnection(client: AuthenticatedWebSocket) {
     this.logger.log('Client connected via WebSocket');
 
     client.state = new InitialReaderState(client, {
       dbService: this.dbService,
       websocketService: this.websocketService,
+      fabreaderService: this.fabreaderService,
     });
     client.send(JSON.stringify(client.state.getInitMessage()));
 
@@ -123,6 +129,7 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       {
         dbService: this.dbService,
         websocketService: this.websocketService,
+        fabreaderService: this.fabreaderService,
       },
       data.userId
     );

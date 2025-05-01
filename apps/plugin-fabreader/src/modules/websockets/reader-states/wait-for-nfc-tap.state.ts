@@ -95,12 +95,16 @@ export class WaitForNFCTapState implements ReaderState {
       await this.services.dbService.stopResourceUsage({
         resourceId: this.selectedResourceId,
         userId: userOfNFCCard.id,
+        readerId: this.socket.reader.id,
+        cardId: nfcCard.id,
       });
     } else {
       this.logger.debug(`Starting resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.dbService.startResourceUsage({
         userId: userOfNFCCard.id,
         resourceId: this.selectedResourceId,
+        readerId: this.socket.reader.id,
+        cardId: nfcCard.id,
       });
     }
 

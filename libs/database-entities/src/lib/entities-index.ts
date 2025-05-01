@@ -2,7 +2,6 @@
 import { AuthenticationDetail } from './entities/authenticationDetail.entity';
 import { MqttResourceConfig } from './entities/mqttResourceConfig.entity';
 import { MqttServer } from './entities/mqttServer.entity';
-import { PluginConfiguration } from './entities/pluginConfiguration.entity';
 import { Resource, ResourceComputedView } from './entities/resource.entity';
 import { ResourceGroup } from './entities/resourceGroup.entity';
 import { ResourceIntroduction } from './entities/resourceIntroduction.entity';
@@ -23,7 +22,6 @@ export {
   AuthenticationDetail,
   MqttResourceConfig,
   MqttServer,
-  PluginConfiguration,
   Resource,
   ResourceComputedView,
   ResourceGroup,
@@ -59,5 +57,4 @@ export const entities = {
   WebhookConfig,
   SSOProvider,
   SSOProviderOIDCConfiguration,
-  PluginConfiguration,
 };

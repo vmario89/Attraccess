@@ -40,6 +40,10 @@ describe('EnrollNTAG424State', () => {
         getNFCCardByUID: jest.fn(),
         createNFCCard: jest.fn(),
       },
+      fabreaderService: {
+        uint8ArrayToHexString: jest.fn().mockReturnValue('aaaabbbbccccddddeeeeffffgggghhhh'),
+        generateNTAG424Key: jest.fn(),
+      },
     } as unknown as GatewayServices;
 
     // Setup subtle.digest mock to return a consistent value for testing
@@ -262,6 +266,10 @@ describe('EnrollNTAG424State - Full Flow', () => {
       dbService: {
         getNFCCardByUID: jest.fn(),
         createNFCCard: jest.fn(),
+      },
+      fabreaderService: {
+        uint8ArrayToHexString: jest.fn(),
+        generateNTAG424Key: jest.fn(),
       },
     } as unknown as GatewayServices;
 

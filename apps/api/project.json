@@ -77,45 +77,5 @@
         "command": "docker compose -f docker-compose.dev.yml up -d --remove-orphans"
       }
     },
-    "build-migration-datasource": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/api-datasource",
-        "main": "apps/api/src/database/datasource.ts",
-        "tsConfig": "apps/api/tsconfig.app.json",
-        "webpackConfig": "apps/api/webpack.config.migrations.js"
-      }
-    },
-    "migration-generate": {
-      "executor": "nx:run-commands",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "cwd": "apps/api",
-        "commands": [
-          "typeorm -d ../../dist/apps/api-datasource/main.js migration:generate"
-        ]
-      },
-      "dependsOn": ["build-migration-datasource"]
-    },
-    "migration-create-empty": {
-      "executor": "nx:run-commands",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "cwd": "apps/api",
-        "commands": ["typeorm migration:create"]
-      }
-    },
-    "migrations-run": {
-      "executor": "nx:run-commands",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "cwd": "apps/api",
-        "commands": [
-          "typeorm -d ../../dist/apps/api-datasource/main.js migration:run"
-        ]
-      },
-      "dependsOn": ["build-migration-datasource"]
-    }
   }
 }

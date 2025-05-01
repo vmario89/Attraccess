@@ -57,19 +57,19 @@ export class DbService {
     return await userRepository.findOne({ where: { id } });
   }
 
-  public async startResourceUsage(data: { resourceId: number; userId: number }) {
+  public async startResourceUsage(data: { resourceId: number; userId: number; cardId: number; readerId: number }) {
     const resourceUsageRepository = this.pluginApiService.getRepository<ResourceUsage>('ResourceUsage');
     return await resourceUsageRepository.save({
       resourceId: data.resourceId,
       userId: data.userId,
       startTime: new Date(),
-      startNotes: '-- Started by Fabreader-NFC --',
+      startNotes: `-- by Fabreader (ID: ${data.readerId}) with NFC Card (ID: ${data.cardId}) --`,
       endTime: null,
       endNotes: null,
     } as ResourceUsage);
   }
 
-  public async stopResourceUsage(data: { resourceId: number; userId: number }) {
+  public async stopResourceUsage(data: { resourceId: number; userId: number; readerId: number; cardId: number }) {
     const activeUsageSession = await this.getActiveResourceUsageSession(data.resourceId, data.userId);
 
     if (!activeUsageSession) {
@@ -78,7 +78,7 @@ export class DbService {
     }
 
     activeUsageSession.endTime = new Date();
-    activeUsageSession.endNotes = '-- Stopped by Fabreader-NFC --';
+    activeUsageSession.endNotes = `-- by Fabreader (ID: ${data.readerId}) with NFC Card (ID: ${data.cardId}) --`;
 
     const resourceUsageRepository = this.pluginApiService.getRepository<ResourceUsage>('ResourceUsage');
     return await resourceUsageRepository.save(activeUsageSession);
