@@ -14,7 +14,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthenticatedRequest } from '../../types/request';
+import { AuthenticatedRequest } from '@attraccess/api-utils';
 import { AuthService } from '../auth/auth.service';
 import { Auth } from '@attraccess/api-utils';
 import { EmailService } from '../../email/email.service';

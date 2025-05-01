@@ -5,6 +5,8 @@ const storagePath = join(process.cwd(), 'storage');
 
 // Migrations
 import { Init1745783167785 } from './migrations/1745783167785-init';
+import { NfcCardEntitySimplification1746124147271 } from './migrations/1746124147271-nfc-card-entity-simplification';
+import { NfcCardKeyPrefix1746124521038 } from './migrations/1746124521038-nfc-card-key-prefix';
 
 // Entities
 import { Reader } from './entities/reader.entity';
@@ -17,7 +19,7 @@ const dbFile = resolve(storagePath, 'fabreader.sqlite');
 export const datasourceConfig: DataSourceOptions = {
   type: 'sqlite',
   synchronize: false,
-  migrations: [Init1745783167785],
+  migrations: [Init1745783167785, NfcCardEntitySimplification1746124147271, NfcCardKeyPrefix1746124521038],
   migrationsTableName: 'migrations',
   migrationsRun: true,
   entities: [Reader, NFCCard],

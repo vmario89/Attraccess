@@ -195,10 +195,49 @@ void API::onChangeKeys(JsonObject data)
     // TODO: if change includes key 0, we need to change it first using provided auth key
     // TODO: if more keys are provided, we need to change them afterwards using new key 0 as auth key
 
+    bool doesChangeKey0 = false;
+    for (JsonPair key : data["payload"]["keys"].as<JsonObject>())
+    {
+        uint8_t keyNumber = key.key().c_str()[0] - '0';
+        if (keyNumber == 0)
+        {
+            doesChangeKey0 = true;
+
+            uint8_t newKey[16];
+            for (int i = 0; i < 16; i++)
+            {
+                newKey[i] = strtol(key.value().as<String>().c_str(), NULL, 16);
+            }
+            bool success = this->nfc->changeKey(0, authKey, newKey);
+            if (!success)
+            {
+                responsePayload["failedKeys"].add(0);
+                this->sendMessage(true, "CHANGE_KEYS", responsePayload);
+                return;
+            }
+
+            responsePayload["successfulKeys"].add(0);
+
+            // replace authkey with newkey for further operations
+            for (int i = 0; i < 16; i++)
+            {
+                authKey[i] = newKey[i];
+            }
+
+            break;
+        }
+    }
+
     // for each key in "keys" object (key = key number as string, value = next key as hex string)
     for (JsonPair key : data["payload"]["keys"].as<JsonObject>())
     {
         uint8_t keyNumber = key.key().c_str()[0] - '0';
+
+        if (keyNumber == 0)
+        {
+            continue;
+        }
+
         uint8_t newKey[16];
         for (int i = 0; i < 16; i++)
         {
@@ -212,20 +251,12 @@ void API::onChangeKeys(JsonObject data)
         else
         {
             responsePayload["failedKeys"].add(keyNumber);
+            this->sendMessage(true, "CHANGE_KEYS", responsePayload);
+            return;
         }
     }
 
     this->sendMessage(true, "CHANGE_KEYS", responsePayload);
-}
-
-void API::onWriteFiles(JsonObject data)
-{
-    Serial.println("[API] WRITE_FILES");
-}
-
-void API::onReadFile(JsonObject data)
-{
-    Serial.println("[API] READ_FILE");
 }
 
 void API::processData()
@@ -280,13 +311,9 @@ void API::processData()
     {
         this->onChangeKeys(data);
     }
-    else if (eventType == "WRITE_FILES")
+    else
     {
-        this->onWriteFiles(data);
-    }
-    else if (eventType == "READ_FILE")
-    {
-        this->onReadFile(data);
+        Serial.println("[API] Unknown event type: " + eventType);
     }
 }
 
@@ -298,7 +325,14 @@ bool API::isRegistered()
 void API::sendMessage(bool is_response, const char *type, JsonObject payload)
 {
     StaticJsonDocument<512> event;
-    event["event"] = "EVENT";
+    if (is_response)
+    {
+        event["event"] = "RESPONSE";
+    }
+    else
+    {
+        event["event"] = "EVENT";
+    }
     event["data"]["type"] = type;
 
     // Create a copy of the payload in the destination document

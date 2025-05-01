@@ -1,5 +1,3 @@
-import { Logger } from '@nestjs/common';
-
 export type SemanticVersionString = `${number}.${number}.${number}`;
 export type SemanticVersionArray = [number, number, number];
 export type SemanticVersionObject = {

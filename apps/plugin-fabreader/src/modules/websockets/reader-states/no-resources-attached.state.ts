@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ReaderState } from './reader-state.interface';
 import { GatewayServices } from '../websocket.gateway';
-import { AuthenticatedWebSocket, FabreaderEventType, FabreaderResponse } from '../websocket.types';
+import { AuthenticatedWebSocket, FabreaderEventType } from '../websocket.types';
 import { FabreaderEvent } from '../websocket.types';
 
 export class NoResourcesAttachedState implements ReaderState {
@@ -13,16 +13,16 @@ export class NoResourcesAttachedState implements ReaderState {
     private readonly transitionEventData: FabreaderEvent['data']
   ) {}
 
-  public async onEvent(data: FabreaderEvent['data']) {
+  public async onEvent(/* data: FabreaderEvent['data'] */) {
     return undefined;
   }
 
-  public async onResponse(data: FabreaderResponse['data']) {
+  public async onResponse(/* data: FabreaderResponse['data'] */) {
     return undefined;
   }
 
   public getInitMessage(): FabreaderEvent {
-    return new FabreaderEvent(FabreaderEventType.DISPLAY_TEXT, {
+    return new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
       message: `No Resources (ID: ${this.socket.reader?.name ?? this.socket.reader?.id})`,
     });
   }

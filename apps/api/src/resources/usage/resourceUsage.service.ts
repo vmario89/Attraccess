@@ -9,7 +9,6 @@ import { ResourceIntroductionService } from '../introduction/resourceIntroductio
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from './events/resource-usage.events';
-import { SystemEvent } from '@attraccess/plugins';
 
 @Injectable()
 export class ResourceUsageService {

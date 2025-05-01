@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../../email/email.service';
 import { User, AuthenticationType } from '@attraccess/database-entities';
-import { AuthenticatedRequest } from '../../types/request';
+import { AuthenticatedRequest } from '@attraccess/api-utils';
 import { CreateUserDto } from './dtos/createUser.dto';
 
 describe('UsersController', () => {
@@ -79,10 +79,7 @@ describe('UsersController', () => {
         logout: jest.fn(),
       };
 
-      const response = await controller.getOneById(
-        user.id,
-        mockRequest as AuthenticatedRequest
-      );
+      const response = await controller.getOneById(user.id, mockRequest as AuthenticatedRequest);
       expect(response).toEqual(user);
     });
   });
@@ -107,9 +104,7 @@ describe('UsersController', () => {
 
       jest.spyOn(usersService, 'createOne').mockResolvedValue(user);
       jest.spyOn(authService, 'createJWT').mockResolvedValue('jwt-token');
-      jest
-        .spyOn(authService, 'generateEmailVerificationToken')
-        .mockResolvedValue('verification-token');
+      jest.spyOn(authService, 'generateEmailVerificationToken').mockResolvedValue('verification-token');
       jest.spyOn(authService, 'addAuthenticationDetails').mockResolvedValue({
         id: 1,
         userId: 1,
@@ -127,19 +122,13 @@ describe('UsersController', () => {
 
       const response = await controller.createOne(createUserDto);
       expect(response).toEqual(user);
-      expect(authService.addAuthenticationDetails).toHaveBeenCalledWith(
-        user.id,
-        {
-          type: AuthenticationType.LOCAL_PASSWORD,
-          details: {
-            password: createUserDto.password,
-          },
-        }
-      );
-      expect(emailService.sendVerificationEmail).toHaveBeenCalledWith(
-        user,
-        'verification-token'
-      );
+      expect(authService.addAuthenticationDetails).toHaveBeenCalledWith(user.id, {
+        type: AuthenticationType.LOCAL_PASSWORD,
+        details: {
+          password: createUserDto.password,
+        },
+      });
+      expect(emailService.sendVerificationEmail).toHaveBeenCalledWith(user, 'verification-token');
     });
   });
 });

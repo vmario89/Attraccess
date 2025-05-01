@@ -773,7 +773,7 @@ export class ResourceUsageService {
      * Get active usage session for current user
      * @param data The data for the request.
      * @param data.resourceId
-     * @returns ResourceUsage Active session retrieved successfully.
+     * @returns GetActiveUsageSessionDto Active session retrieved successfully.
      * @throws ApiError
      */
     public static getActiveSession(data: GetActiveSessionData): CancelablePromise<GetActiveSessionResponse> {

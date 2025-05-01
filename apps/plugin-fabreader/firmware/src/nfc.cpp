@@ -108,3 +108,27 @@ bool NFC::changeKey(uint8_t keyNumber, uint8_t authKey[16], uint8_t newKey[16])
 
     return true;
 }
+
+bool NFC::writeData(uint8_t authKey[16], uint8_t keyNumber, uint8_t data[], size_t dataLength)
+{
+    uint8_t fileNumberForCustomData = 0x03;
+
+    if (!this->nfc.ntag424_Authenticate(authKey, keyNumber, AUTH_CMD))
+    {
+        Serial.println("[NFC] Authentication failed");
+        return false;
+    }
+
+    Serial.println("[NFC] Authentication successful");
+
+    bool success = this->nfc.ntag424_WriteData(data, fileNumberForCustomData, 0, dataLength, keyNumber);
+
+    if (!success)
+    {
+        Serial.println("[NFC] Write data failed");
+        return false;
+    }
+
+    Serial.println("[NFC] Write data successful");
+    return true;
+}

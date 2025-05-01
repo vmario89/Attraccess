@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import { Reader } from './db/entities/reader.entity';
-import { FindManyOptions, In, Repository } from 'typeorm';
+import { FindManyOptions, In, IsNull, Repository } from 'typeorm';
 import { FABREADER_DB_DATASOURCE_NAME } from './db/datasource';
 import { NFCCard } from './db/entities/nfcCard.entity';
 import { securelyHashToken } from '../websockets/websocket.utils';
@@ -48,7 +48,7 @@ export class DbService {
     return await this.nfcCardRepository.findOne({ where: { uid } });
   }
 
-  public async createNFCCard(data: Omit<NFCCard, 'id'>): Promise<NFCCard> {
+  public async createNFCCard(data: Omit<NFCCard, 'id' | 'createdAt' | 'updatedAt'>): Promise<NFCCard> {
     return await this.nfcCardRepository.save(data);
   }
 
@@ -70,38 +70,27 @@ export class DbService {
   }
 
   public async stopResourceUsage(data: { resourceId: number; userId: number }) {
-    const resourceUsageRepository = this.pluginApiService.getRepository<ResourceUsage>('ResourceUsage');
-    const usage = await resourceUsageRepository.findOne({
-      where: {
-        resourceId: data.resourceId,
-        endTime: null,
-      },
-    });
+    const activeUsageSession = await this.getActiveResourceUsageSession(data.resourceId, data.userId);
 
-    if (!usage) {
+    if (!activeUsageSession) {
       this.logger.warn(`Resource not in use, skipping stopResourceUsage for ${data.resourceId}`);
       return;
     }
 
-    if (usage.userId !== data.userId) {
-      this.logger.error(
-        `Resource not in use by user ${data.userId}, skipping stopResourceUsage for ${data.resourceId}`
-      );
-      throw new Error(`Resource not in use by user ${data.userId}`);
-    }
+    activeUsageSession.endTime = new Date();
+    activeUsageSession.endNotes = '-- Stopped by Fabreader-NFC --';
 
-    usage.endTime = new Date();
-    usage.endNotes = '-- Stopped by Fabreader-NFC --';
-
-    return await resourceUsageRepository.save(usage);
+    const resourceUsageRepository = this.pluginApiService.getRepository<ResourceUsage>('ResourceUsage');
+    return await resourceUsageRepository.save(activeUsageSession);
   }
 
-  public async getActiveResourceUsageSession(resourceId: Resource['id']) {
+  public async getActiveResourceUsageSession(resourceId: Resource['id'], userId?: User['id']) {
     const resourceUsageRepository = this.pluginApiService.getRepository<ResourceUsage>('ResourceUsage');
     return await resourceUsageRepository.findOne({
       where: {
         resourceId,
-        endTime: null,
+        endTime: IsNull(),
+        ...(userId ? { userId } : {}),
       },
     });
   }

@@ -484,6 +484,13 @@ export type GetResourceHistoryResponseDto = {
     data: Array<ResourceUsage>;
 };
 
+export type GetActiveUsageSessionDto = {
+    /**
+     * The active usage session or null if none exists
+     */
+    usage: (ResourceUsage) | null;
+};
+
 export type CompleteIntroductionDto = {
     /**
      * User ID
@@ -1388,7 +1395,7 @@ export type GetActiveSessionData = {
     resourceId: number;
 };
 
-export type GetActiveSessionResponse = ResourceUsage;
+export type GetActiveSessionResponse = GetActiveUsageSessionDto;
 
 export type MarkCompletedData = {
     requestBody: CompleteIntroductionDto;
@@ -2297,7 +2304,7 @@ export type $OpenApiTs = {
                 /**
                  * Active session retrieved successfully.
                  */
-                200: ResourceUsage;
+                200: GetActiveUsageSessionDto;
                 /**
                  * Unauthorized
                  */

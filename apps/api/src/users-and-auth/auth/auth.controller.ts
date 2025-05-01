@@ -1,8 +1,7 @@
 import { Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthenticatedRequest } from '../../types/request';
 import { LoginGuard } from '../strategies/login.guard';
-import { Auth } from '@attraccess/api-utils';
+import { Auth, AuthenticatedRequest } from '@attraccess/api-utils';
 import { CreateSessionResponse } from './auth.types';
 import { ApiBody, ApiOkResponse, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 

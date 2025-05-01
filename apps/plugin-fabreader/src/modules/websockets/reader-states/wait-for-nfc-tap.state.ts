@@ -1,11 +1,12 @@
+import { Logger } from '@nestjs/common';
 import { GatewayServices } from '../websocket.gateway';
-import { AuthenticatedWebSocket, FabreaderEventType, FabreaderResponse } from '../websocket.types';
+import { AuthenticatedWebSocket, FabreaderEventType } from '../websocket.types';
 import { FabreaderEvent } from '../websocket.types';
 import { InitialReaderState } from './initial.state';
 import { ReaderState } from './reader-state.interface';
 
 export class WaitForNFCTapState implements ReaderState {
-  private resourceIsInUse: boolean;
+  private readonly logger = new Logger(WaitForNFCTapState.name);
 
   public constructor(
     private readonly socket: AuthenticatedWebSocket,
@@ -21,29 +22,43 @@ export class WaitForNFCTapState implements ReaderState {
     return undefined;
   }
 
-  public async onResponse(data: FabreaderResponse['data']) {
+  public async onResponse(/* data: FabreaderResponse['data'] */) {
     return undefined;
   }
 
   public async getInitMessage(): Promise<FabreaderEvent> {
     const activeUsageSession = await this.services.dbService.getActiveResourceUsageSession(this.selectedResourceId);
-    this.resourceIsInUse = !!activeUsageSession;
+    const resourceIsInUse = !!activeUsageSession;
 
-    if (this.resourceIsInUse) {
-      return new FabreaderEvent(FabreaderEventType.DISPLAY_TEXT, {
+    if (resourceIsInUse) {
+      return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
         message: `Tap your card to stop`,
       });
     }
 
-    return new FabreaderEvent(FabreaderEventType.DISPLAY_TEXT, {
+    return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
       message: `Tap your card to start`,
     });
   }
 
-  private async onInvalidCard() {
+  private sendDisableCardChecking(textToDisplay?: string) {
     this.socket.send(
       JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_TEXT, {
+        new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING, {
+          message: textToDisplay,
+        })
+      )
+    );
+  }
+
+  private async onInvalidCard() {
+    this.sendDisableCardChecking();
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    this.socket.send(
+      JSON.stringify(
+        new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
           message: `Invalid card`,
         })
       )
@@ -53,26 +68,36 @@ export class WaitForNFCTapState implements ReaderState {
   }
 
   private async onNFCTap(data: FabreaderEvent<{ cardUID: string }>['data']) {
+    this.sendDisableCardChecking('Do not remove card!');
+
     const nfcCard = await this.services.dbService.getNFCCardByUID(data.payload.cardUID);
 
     if (!nfcCard) {
+      this.logger.debug(`NFC Card with UID ${data.payload.cardUID} not found`);
       return this.onInvalidCard();
     }
 
     const userOfNFCCard = await this.services.dbService.getUserById(nfcCard.userId);
 
     if (!userOfNFCCard) {
+      this.logger.debug(`User (of NFC Card with UID ${data.payload.cardUID}) with ID ${nfcCard.userId} not found`);
       return this.onInvalidCard();
     }
 
+    const activeUsageSession = await this.services.dbService.getActiveResourceUsageSession(this.selectedResourceId);
+    console.log('activeUsageSession', activeUsageSession);
+    const resourceIsInUse = !!activeUsageSession;
+
     // TODO: run actual auth
 
-    if (this.resourceIsInUse) {
+    if (resourceIsInUse) {
+      this.logger.debug(`Stopping resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.dbService.stopResourceUsage({
         resourceId: this.selectedResourceId,
         userId: userOfNFCCard.id,
       });
     } else {
+      this.logger.debug(`Starting resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.dbService.startResourceUsage({
         userId: userOfNFCCard.id,
         resourceId: this.selectedResourceId,

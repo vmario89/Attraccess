@@ -1,7 +1,5 @@
-import { User } from '@attraccess/database-entities';
 import { PluginApiModule, PluginApiService } from '@attraccess/plugins';
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import { createRequire } from 'module';
 import * as path from 'path';
@@ -38,6 +36,11 @@ export class PluginModule {
   }
 
   private static findPluginsInFolder(folder: string): PluginManifest[] {
+    // if folder does not exist, return empty array
+    if (!fs.existsSync(folder)) {
+      return [];
+    }
+
     const folders = fs.readdirSync(folder);
 
     Logger.log(`Found ${folders.length} folders in ${folder}`, 'LoadPlugins');

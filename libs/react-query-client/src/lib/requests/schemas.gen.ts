@@ -763,6 +763,22 @@ export const $GetResourceHistoryResponseDto = {
     required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
+export const $GetActiveUsageSessionDto = {
+    type: 'object',
+    properties: {
+        usage: {
+            description: 'The active usage session or null if none exists',
+            nullable: true,
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/ResourceUsage'
+                }
+            ]
+        }
+    },
+    required: ['usage']
+} as const;
+
 export const $CompleteIntroductionDto = {
     type: 'object',
     properties: {

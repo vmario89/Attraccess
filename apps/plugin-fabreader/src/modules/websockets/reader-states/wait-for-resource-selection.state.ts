@@ -26,7 +26,7 @@ export class WaitForResourceSelectionState implements ReaderState {
     });
   }
 
-  public async onEvent(data: FabreaderEvent['data']) {
+  public async onEvent(/* data: FabreaderEvent['data'] */) {
     return undefined;
   }
 

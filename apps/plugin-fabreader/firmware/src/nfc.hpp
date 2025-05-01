@@ -21,6 +21,7 @@ public:
     void disableCardChecking();
 
     bool changeKey(uint8_t keyNumber, uint8_t authKey[16], uint8_t newKey[16]);
+    bool writeData(uint8_t authKey[16], uint8_t keyNumber, uint8_t data[], size_t dataLength);
 
 private:
     Adafruit_PN532 nfc;

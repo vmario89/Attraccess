@@ -43,7 +43,15 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
   );
 
   // Get active session
-  const { data: activeSession, isLoading: isLoadingSession } = useResourceUsageServiceGetActiveSession({ resourceId });
+  const { data: activeSessionResponse, isLoading: isLoadingSession } = useResourceUsageServiceGetActiveSession(
+    { resourceId },
+    undefined,
+    {
+      refetchInterval: 1000,
+    }
+  );
+
+  const activeSession = useMemo(() => activeSessionResponse?.usage, [activeSessionResponse]);
 
   const startSession = useResourceUsageServiceStartSession({
     onSuccess: () => {

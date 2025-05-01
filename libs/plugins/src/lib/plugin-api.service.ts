@@ -1,5 +1,4 @@
 import { Logger, InjectionToken, Injectable } from '@nestjs/common';
-import { Entity } from 'typeorm';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { entities } from '@attraccess/database-entities';

@@ -2,8 +2,7 @@ import { Controller, Post, Get, Param, ParseIntPipe, Req, Body, Query } from '@n
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
-import { Auth } from '@attraccess/api-utils';
-import { AuthenticatedRequest } from '../../types/request';
+import { Auth, AuthenticatedRequest } from '@attraccess/api-utils';
 import { PaginatedResponse, makePaginatedResponse } from '../../types/response';
 import { GetResourceIntroductionsQueryDto } from './dtos/getResourceIntroductionsQuery.dto';
 import { PaginatedResourceIntroductionResponseDto } from './dtos/paginatedResourceIntroductionResponse.dto';

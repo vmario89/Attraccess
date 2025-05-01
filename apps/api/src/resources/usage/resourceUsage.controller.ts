@@ -4,11 +4,11 @@ import { ResourceUsageService } from './resourceUsage.service';
 import { ResourceUsage } from '@attraccess/database-entities';
 import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
-import { Auth } from '@attraccess/api-utils';
-import { AuthenticatedRequest } from '../../types/request';
+import { Auth, AuthenticatedRequest } from '@attraccess/api-utils';
 import { makePaginatedResponse } from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
+import { GetActiveUsageSessionDto } from './dtos/getActiveUsageSession.dto';
 
 @ApiTags('Resource Usage')
 @Controller('resources/:resourceId/usage')
@@ -126,7 +126,7 @@ export class ResourceUsageController {
   @ApiResponse({
     status: 200,
     description: 'Active session retrieved successfully.',
-    type: ResourceUsage,
+    type: GetActiveUsageSessionDto,
   })
   @ApiResponse({
     status: 401,
@@ -136,7 +136,8 @@ export class ResourceUsageController {
     status: 404,
     description: 'Resource not found',
   })
-  async getActiveSession(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<ResourceUsage | null> {
-    return await this.resourceUsageService.getActiveSession(resourceId);
+  async getActiveSession(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<GetActiveUsageSessionDto> {
+    const activeSession = await this.resourceUsageService.getActiveSession(resourceId);
+    return { usage: activeSession || null };
   }
 }

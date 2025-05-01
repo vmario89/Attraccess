@@ -68,7 +68,11 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     const response = await client.state.onEvent(eventData);
 
-    this.logger.debug(`Processed event ${eventData.type}, sending response: ${JSON.stringify(response)}`);
+    this.logger.debug(
+      `Processed event ${eventData.type} with payload ${JSON.stringify(
+        eventData.payload
+      )}, sending response: ${JSON.stringify(response)}`
+    );
 
     return response;
   }
@@ -86,7 +90,11 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     const response = await client.state.onResponse(responseData);
 
-    this.logger.debug(`Processed response ${responseData.type}, sending response: ${JSON.stringify(response)}`);
+    this.logger.debug(
+      `Processed response ${responseData.type} with payload ${JSON.stringify(
+        responseData.payload
+      )}, sending response: ${JSON.stringify(response)}`
+    );
 
     return response;
   }
@@ -119,6 +127,8 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       data.userId
     );
     socket.state = nextState;
-    socket.send(JSON.stringify(nextState.getInitMessage()));
+    const initMessage = nextState.getInitMessage();
+    this.logger.debug(`Sending enrollment init message: ${JSON.stringify(initMessage)}`);
+    socket.send(JSON.stringify(initMessage));
   }
 }

@@ -56,7 +56,7 @@ export class InitialReaderState implements ReaderState {
   }
 
   public async handleAuthenticateEvent(data: FabreaderEvent['data']): Promise<FabreaderMessage | undefined> {
-    this.logger.debug('processing AUTHENTICATE event');
+    this.logger.debug('processing AUTHENTICATE event', data);
 
     const unauthorizedResponse = new FabreaderEvent(FabreaderEventType.UNAUTHORIZED, {});
 
@@ -71,6 +71,10 @@ export class InitialReaderState implements ReaderState {
       this.logger.error('Invalid token, sending UNAUTHORIZED response to client');
       return unauthorizedResponse;
     }
+
+    const authenticatedResponse = new FabreaderResponse(FabreaderEventType.AUTHENTICATED, {});
+    this.socket.send(JSON.stringify(authenticatedResponse));
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
     this.socket.reader = reader;
 

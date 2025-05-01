@@ -6,32 +6,9 @@ class NTag424Keys {
   @Column({
     type: 'text',
     nullable: false,
+    default: Array(16).fill('0').join(''),
   })
   '0': string; // master key
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  '1': string; // app auth key
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  '2': string; // app read key
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  '3': string; // app write key
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  '4': string; // app read write key
 }
 
 @Entity()
@@ -51,19 +28,7 @@ export class NFCCard {
   })
   userId: number;
 
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  verificationToken: string;
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  antiDuplicationToken: string;
-
-  @Column(() => NTag424Keys, { prefix: '' })
+  @Column(() => NTag424Keys, { prefix: 'key_' })
   keys: NTag424Keys;
 
   @CreateDateColumn()

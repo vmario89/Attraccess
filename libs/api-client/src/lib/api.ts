@@ -539,6 +539,11 @@ export interface GetResourceHistoryResponseDto {
   data: ResourceUsage[];
 }
 
+export interface GetActiveUsageSessionDto {
+  /** The active usage session or null if none exists */
+  usage: ResourceUsage | null;
+}
+
 export interface CompleteIntroductionDto {
   /**
    * User ID
@@ -1367,7 +1372,7 @@ export interface GetHistoryOfResourceUsageParams {
 
 export type GetHistoryOfResourceUsageData = GetResourceHistoryResponseDto;
 
-export type GetActiveSessionData = ResourceUsage;
+export type GetActiveSessionData = GetActiveUsageSessionDto;
 
 export type MarkCompletedData = ResourceIntroduction;
 

@@ -49,6 +49,4 @@ private:
     void onEnableCardChecking(JsonObject data);
     void onDisableCardChecking(JsonObject data);
     void onChangeKeys(JsonObject data);
-    void onWriteFiles(JsonObject data);
-    void onReadFile(JsonObject data);
 };
