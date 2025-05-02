@@ -8,6 +8,6 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "include": ["src/**/*.ts", "../../libs/api-utils/src/lib/systemPermissions.guard.ts", "../../libs/database-entities/src/lib/datasource.ts", "../../libs/database-entities/src/lib/entities-index.ts"],
+  "include": ["src/**/*.ts", "src/database/datasource.ts", "../../libs/database-entities/src/lib/entities-index.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

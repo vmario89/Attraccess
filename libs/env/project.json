@@ -3,6 +3,14 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/env/src",
   "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
   "tags": [],
   "targets": {
     "build": {
@@ -14,6 +22,11 @@
         "packageJson": "libs/env/package.json",
         "main": "libs/env/src/index.ts",
         "assets": ["libs/env/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
       }
     }
   }

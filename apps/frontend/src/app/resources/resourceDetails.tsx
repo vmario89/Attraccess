@@ -25,17 +25,6 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { ManageResourceGroups } from './groups/ManageResourceGroups';
 
-// Placeholder hook - replace with actual implementation
-const useResourceGroupsServiceCheckCanManagePermission = (params: { resourceId: number }) => {
-  console.warn('Placeholder hook used: useResourceGroupsServiceCheckCanManagePermission', params);
-  // Replace with actual API call - default to true for now
-  return {
-    data: { canManageResourceGroups: true },
-    isLoading: false,
-    error: null,
-  };
-};
-
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
   const resourceId = parseInt(id || '', 10);
@@ -81,25 +70,23 @@ function ResourceDetailsComponent() {
     }
   };
 
-  const canManageResources = hasPermission('canManageResources');
+  const canManageResourceGroups = hasPermission('canManageResources');
   const { data: canManageIntroductions } = useResourceIntroductionsServiceCheckCanManagePermission({ resourceId });
   const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({ resourceId });
-  const { data: canManageResourceGroupsData } = useResourceGroupsServiceCheckCanManagePermission({ resourceId });
-  const canManageResourceGroups = canManageResourceGroupsData?.canManageResourceGroups;
 
   const showIntroductionsManagement = useMemo(
-    () => canManageResources || canManageIntroductions?.canManageIntroductions,
-    [canManageResources, canManageIntroductions]
+    () => canManageResourceGroups || canManageIntroductions?.canManageIntroductions,
+    [canManageResourceGroups, canManageIntroductions]
   );
 
   const showIntroducersManagement = useMemo(
-    () => canManageResources || canManageIntroducers?.canManageIntroductions,
-    [canManageResources, canManageIntroducers]
+    () => canManageResourceGroups || canManageIntroducers?.canManageIntroductions,
+    [canManageResourceGroups, canManageIntroducers]
   );
 
   const showGroupsManagement = useMemo(
-    () => canManageResources || canManageResourceGroups,
-    [canManageResources, canManageResourceGroups]
+    () => canManageResourceGroups || canManageResourceGroups,
+    [canManageResourceGroups]
   );
 
   if (isLoadingResource) {
@@ -131,7 +118,7 @@ function ResourceDetailsComponent() {
         subtitle={resource.description || undefined}
         backTo="/resources"
         actions={
-          canManageResources && (
+          canManageResourceGroups && (
             <div className="flex space-x-2">
               <Link href={`/resources/${resourceId}/iot`}>
                 <Button variant="light" startContent={<Wifi className="w-4 h-4" />}>

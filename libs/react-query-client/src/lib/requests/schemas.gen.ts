@@ -1628,3 +1628,65 @@ export const $WebhookTestResponseDto = {
     },
     required: ['success', 'message']
 } as const;
+
+export const $PluginMain = {
+    type: 'object',
+    properties: {
+        frontend: {
+            type: 'string',
+            description: 'The frontend file of the plugin',
+            example: 'frontend/index.mjs'
+        },
+        backend: {
+            type: 'string',
+            description: 'The backend file of the plugin',
+            example: 'backend/src/plugin.js'
+        }
+    },
+    required: ['frontend', 'backend']
+} as const;
+
+export const $PluginAttraccessVersion = {
+    type: 'object',
+    properties: {
+        min: {
+            type: 'string',
+            description: 'The minimum version of the plugin',
+            example: '1.0.0'
+        },
+        max: {
+            type: 'string',
+            description: 'The maximum version of the plugin',
+            example: '1.0.0'
+        },
+        exact: {
+            type: 'string',
+            description: 'The exact version of the plugin',
+            example: '1.0.0'
+        }
+    },
+    required: ['min', 'max', 'exact']
+} as const;
+
+export const $PluginManifest = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            description: 'The name of the plugin',
+            example: 'plugin-name'
+        },
+        main: {
+            '$ref': '#/components/schemas/PluginMain'
+        },
+        version: {
+            type: 'string',
+            description: 'The version of the plugin',
+            example: '1.0.0'
+        },
+        attraccessVersion: {
+            '$ref': '#/components/schemas/PluginAttraccessVersion'
+        }
+    },
+    required: ['name', 'main', 'version', 'attraccessVersion']
+} as const;

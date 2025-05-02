@@ -5,7 +5,7 @@ import {
   CAN_MANAGE_RESOURCES_OPTIONS,
 } from './can-manage-resources.guard';
 import { ApiBearerAuth, ApiForbiddenResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { JwtGuard } from '@attraccess/api-utils';
+import { JwtGuard } from '@attraccess/plugins';
 
 /**
  * Decorator to protect routes that require permission to manage resources.

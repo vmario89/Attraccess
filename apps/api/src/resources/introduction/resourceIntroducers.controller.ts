@@ -14,7 +14,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import { ResourceIntroductionUser } from '@attraccess/database-entities';
-import { Auth, AuthenticatedRequest } from '@attraccess/api-utils';
+import { Auth, AuthenticatedRequest } from '@attraccess/plugins';
 import { UsersService } from '../../users-and-auth/users/users.service';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 import { CanManageIntroducersResponseDto } from './dtos/canManageIntroducers.dto';

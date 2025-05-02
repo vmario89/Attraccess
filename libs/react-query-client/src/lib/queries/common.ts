@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
 export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useApplicationServicePing2Key = "ApplicationServicePing2";
@@ -208,6 +208,16 @@ export const UseWebhooksServiceGetOneWebhookConfigurationByIdKeyFn = ({ id, reso
   id: number;
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useWebhooksServiceGetOneWebhookConfigurationByIdKey, ...(queryKey ?? [{ id, resourceId }])];
+export type PluginServiceGetPluginsDefaultResponse = Awaited<ReturnType<typeof PluginService.getPlugins>>;
+export type PluginServiceGetPluginsQueryResult<TData = PluginServiceGetPluginsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePluginServiceGetPluginsKey = "PluginServiceGetPlugins";
+export const UsePluginServiceGetPluginsKeyFn = (queryKey?: Array<unknown>) => [usePluginServiceGetPluginsKey, ...(queryKey ?? [])];
+export type PluginServiceGetFrontendPluginJsFileDefaultResponse = Awaited<ReturnType<typeof PluginService.getFrontendPluginJsFile>>;
+export type PluginServiceGetFrontendPluginJsFileQueryResult<TData = PluginServiceGetFrontendPluginJsFileDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePluginServiceGetFrontendPluginJsFileKey = "PluginServiceGetFrontendPluginJsFile";
+export const UsePluginServiceGetFrontendPluginJsFileKeyFn = ({ pluginName }: {
+  pluginName: string;
+}, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginJsFileKey, ...(queryKey ?? [{ pluginName }])];
 export type UsersServiceCreateOneUserMutationResult = Awaited<ReturnType<typeof UsersService.createOneUser>>;
 export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof UsersService.verifyEmail>>;
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;

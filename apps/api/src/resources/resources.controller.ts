@@ -18,7 +18,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { ListResourcesDto } from './dtos/listResources.dto';
 import { Resource } from '@attraccess/database-entities';
-import { Auth } from '@attraccess/api-utils';
+import { Auth } from '@attraccess/plugins';
 import { PaginatedResponse } from '../types/response';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';

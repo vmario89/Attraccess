@@ -19,7 +19,7 @@ import { ResourceGroup } from '@attraccess/database-entities';
 import { ListResourceGroupsDto } from './dto/list-resource-groups.dto';
 import { PaginatedResponse } from '../../types/response';
 import { PaginatedResourceGroupResponseDto } from './dto/paginated-resource-group-response.dto';
-import { Auth } from '@attraccess/api-utils';
+import { Auth } from '@attraccess/plugins';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 @ApiTags('Resource Groups')
@@ -59,7 +59,7 @@ export class ResourceGroupsController {
   }
 
   @Patch(':id')
-  @CanManageResources({ paramName: 'id' })
+  @CanManageResources({ skipResourceCheck: true })
   @ApiOperation({ summary: 'Update a specific resource group by ID', operationId: 'updateOneResourceGroup' })
   @ApiParam({ name: 'id', description: 'Resource Group ID', type: Number })
   @ApiResponse({ status: 200, description: 'The resource group has been successfully updated.', type: ResourceGroup })
@@ -69,7 +69,7 @@ export class ResourceGroupsController {
   }
 
   @Delete(':id')
-  @CanManageResources({ paramName: 'id' })
+  @CanManageResources({ skipResourceCheck: true })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a specific resource group by ID', operationId: 'deleteOneResourceGroup' })
   @ApiParam({ name: 'id', description: 'Resource Group ID', type: Number })

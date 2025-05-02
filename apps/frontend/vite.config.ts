@@ -33,5 +33,17 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react/jsx-runtime', 'react-dom'],
+          'vendor-router': ['react-router-dom'],
+        },
+        format: 'esm',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
   },
 });

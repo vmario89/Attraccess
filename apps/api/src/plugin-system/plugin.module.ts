@@ -1,79 +1,56 @@
 import { PluginApiModule, PluginApiService } from '@attraccess/plugins';
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
-import * as fs from 'fs';
 import { createRequire } from 'module';
-import * as path from 'path';
-
-export const PLUGIN_PATH = path.resolve(process.env.PLUGIN_DIR ?? path.join(__dirname, '..', 'plugins'));
+import { PluginManifest } from './plugin.manifest';
+import { PluginService } from './plugin.service';
+import { PluginController } from './plugin.controller';
+import { join } from 'path';
 
 @Global()
 @Module({})
 export class PluginModule {
   private static pluginManifests: PluginManifest[];
+  private static logger = new Logger(PluginModule.name);
 
   public static forRoot(): DynamicModule {
-    this.pluginManifests = this.findPluginsInFolder(PLUGIN_PATH);
-    Logger.log(`Found ${this.pluginManifests.length} plugins in ${PLUGIN_PATH}`, 'LoadPlugins');
-    const pluginModules = this.pluginManifests.map((manifest) => {
-      return PluginModule.loadPluginModule(manifest);
-    });
+    this.pluginManifests = PluginService.getPlugins();
+
+    const pluginModules = this.pluginManifests
+      .map((manifest) => {
+        try {
+          const module = PluginModule.loadPluginModule(manifest);
+          PluginService.markPluginAsLoaded(`${manifest.name}@${manifest.version}`);
+          return module;
+        } catch (error) {
+          this.logger.error(`Error loading plugin ${manifest.name}`, error);
+          PluginService.setPluginLoadError(`${manifest.name}@${manifest.version}`, error as Error);
+          return null;
+        }
+      })
+      .filter((module) => module !== null);
 
     return {
       module: PluginModule,
       providers: [PluginApiService],
       imports: [PluginApiModule, ...pluginModules],
       exports: [PluginApiService],
+      controllers: [PluginController],
     };
   }
 
   private static loadPluginModule(manifest: PluginManifest): DynamicModule {
-    const pluginRequire = createRequire(__filename);
-    const importedModule = pluginRequire(manifest.main);
+    this.logger.log(`Loading plugin ${manifest.name} from ${manifest.main.backend}`);
 
-    Logger.log(`Imported module: ${manifest.name}`, 'LoadPlugins');
-
-    return importedModule.default;
-  }
-
-  private static findPluginsInFolder(folder: string): PluginManifest[] {
-    // if folder does not exist, return empty array
-    if (!fs.existsSync(folder)) {
-      return [];
-    }
-
-    const folders = fs.readdirSync(folder);
-
-    Logger.log(`Found ${folders.length} folders in ${folder}`, 'LoadPlugins');
-
-    return folders
-      .map((folderName) => this.findPluginManifestInPluginFolder(path.join(folder, folderName)))
-      .filter((manifest) => manifest !== null);
-  }
-
-  private static findPluginManifestInPluginFolder(folder: string): PluginManifest {
-    const manifestPath = path.join(folder, 'plugin.json');
-
-    if (!fs.existsSync(manifestPath)) {
-      Logger.log(`No manifest found at ${manifestPath}`, 'LoadPlugins');
+    if (!manifest.main.backend) {
+      this.logger.error(`Plugin ${manifest.name} has no backend, skipping backend module loading`);
       return null;
     }
 
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const pluginRequire = createRequire(__filename);
+    const importedModule = pluginRequire(join(PluginService.PLUGIN_PATH, manifest.main.backend));
 
-    manifest.main = path.join(folder, manifest.main);
+    this.logger.log(`Imported module: ${manifest.name}`);
 
-    return manifest;
+    return importedModule.default;
   }
-}
-
-interface PluginManifest {
-  name: string;
-  main: string;
-  version: string;
-  description: string;
-  attraccessVersion: {
-    min?: string;
-    max?: string;
-    exact?: string;
-  };
 }

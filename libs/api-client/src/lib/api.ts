@@ -1196,6 +1196,52 @@ export interface WebhookTestResponseDto {
   message: string;
 }
 
+export interface PluginMain {
+  /**
+   * The frontend file of the plugin
+   * @example "frontend/index.mjs"
+   */
+  frontend: string;
+  /**
+   * The backend file of the plugin
+   * @example "backend/src/plugin.js"
+   */
+  backend: string;
+}
+
+export interface PluginAttraccessVersion {
+  /**
+   * The minimum version of the plugin
+   * @example "1.0.0"
+   */
+  min: string;
+  /**
+   * The maximum version of the plugin
+   * @example "1.0.0"
+   */
+  max: string;
+  /**
+   * The exact version of the plugin
+   * @example "1.0.0"
+   */
+  exact: string;
+}
+
+export interface PluginManifest {
+  /**
+   * The name of the plugin
+   * @example "plugin-name"
+   */
+  name: string;
+  main: PluginMain;
+  /**
+   * The version of the plugin
+   * @example "1.0.0"
+   */
+  version: string;
+  attraccessVersion: PluginAttraccessVersion;
+}
+
 export interface Ping2Data {
   /** @example "pong" */
   message?: string;
@@ -1464,6 +1510,10 @@ export type UpdateStatusData = WebhookConfigResponseDto;
 export type TestData = WebhookTestResponseDto;
 
 export type RegenerateSecretData = WebhookConfigResponseDto;
+
+export type GetPluginsData = PluginManifest[];
+
+export type GetFrontendPluginJsFileData = string;
 
 export namespace Application {
   /**
@@ -2808,6 +2858,40 @@ export namespace Webhooks {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = RegenerateSecretData;
+  }
+}
+
+export namespace Plugin {
+  /**
+   * No description
+   * @tags Plugin
+   * @name GetPlugins
+   * @summary Get all plugins
+   * @request GET:/api/plugins
+   */
+  export namespace GetPlugins {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetPluginsData;
+  }
+
+  /**
+   * No description
+   * @tags Plugin
+   * @name GetFrontendPluginJsFile
+   * @summary Get frontend plugin.js file
+   * @request GET:/api/plugins/{pluginName}/frontend/plugin.js
+   */
+  export namespace GetFrontendPluginJsFile {
+    export type RequestParams = {
+      pluginName: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetFrontendPluginJsFileData;
   }
 }
 
@@ -4326,6 +4410,39 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/resources/${resourceId}/webhooks/${id}/regenerate-secret`,
         method: 'POST',
         secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  plugin = {
+    /**
+     * No description
+     *
+     * @tags Plugin
+     * @name GetPlugins
+     * @summary Get all plugins
+     * @request GET:/api/plugins
+     */
+    getPlugins: (params: RequestParams = {}) =>
+      this.request<GetPluginsData, any>({
+        path: `/api/plugins`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Plugin
+     * @name GetFrontendPluginJsFile
+     * @summary Get frontend plugin.js file
+     * @request GET:/api/plugins/{pluginName}/frontend/plugin.js
+     */
+    getFrontendPluginJsFile: (pluginName: string, params: RequestParams = {}) =>
+      this.request<GetFrontendPluginJsFileData, any>({
+        path: `/api/plugins/${pluginName}/frontend/plugin.js`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),

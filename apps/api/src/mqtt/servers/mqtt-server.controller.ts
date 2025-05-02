@@ -9,7 +9,7 @@ import {
   MqttServerStatusDto,
   AllMqttServerStatusesDto,
 } from './dtos/mqtt-server.dto';
-import { Auth } from '@attraccess/api-utils';
+import { Auth } from '@attraccess/plugins';
 import { MqttClientService } from '../mqtt-client.service';
 
 @ApiTags('MQTT Servers')

@@ -14,7 +14,7 @@ import { ResourceUsage } from './entities/resourceUsage.entity';
 import { RevokedToken } from './entities/revokedToken.entity';
 import { SSOProvider, SSOProviderType } from './entities/ssoProvider.entity';
 import { SSOProviderOIDCConfiguration } from './entities/ssoProvider.oidc';
-import { User, SystemPermissions, SystemPermission } from './entities/user.entity';
+import { User, SystemPermissions, type SystemPermission } from './entities/user.entity';
 import { WebhookConfig } from './entities/webhookConfig.entity';
 
 // Export all entities individually

@@ -1,5 +1,5 @@
 import { Logger, InjectionToken, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, ObjectLiteral } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { entities } from '@attraccess/database-entities';
 
@@ -12,7 +12,7 @@ export class PluginApiService {
     private readonly dataSource: DataSource
   ) {}
 
-  public getRepository<TEntity>(entityName: keyof typeof entities) {
+  public getRepository<TEntity extends ObjectLiteral>(entityName: keyof typeof entities) {
     this.logger.log(`PluginApiService getRepository() called`);
     return this.dataSource.getRepository<TEntity>(entities[entityName]);
   }

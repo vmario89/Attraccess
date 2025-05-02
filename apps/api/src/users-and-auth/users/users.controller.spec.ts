@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../../email/email.service';
 import { User, AuthenticationType } from '@attraccess/database-entities';
-import { AuthenticatedRequest } from '@attraccess/api-utils';
+import { AuthenticatedRequest } from '@attraccess/plugins';
 import { CreateUserDto } from './dtos/createUser.dto';
 
 describe('UsersController', () => {

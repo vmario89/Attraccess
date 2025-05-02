@@ -1,0 +1,12 @@
+{
+    "name": "FABReader",
+    "main": {
+        "backend": "backend/src/fabreader.module.js",
+        "frontend": "frontend/index.esm.js"
+    },
+    "version": "1.0.0",
+    "description": "Plugin to add support for the FABReader",
+    "attraccessVersion": {
+        "min": "0.0.0"
+    }
+}

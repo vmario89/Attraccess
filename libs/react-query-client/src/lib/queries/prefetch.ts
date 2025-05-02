@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const prefetchUseApplicationServicePing2 = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const prefetchUseUsersServiceGetAllUsers = (queryClient: QueryClient, { limit, page, search }: {
@@ -113,3 +113,7 @@ export const prefetchUseWebhooksServiceGetOneWebhookConfigurationById = (queryCl
   id: number;
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseWebhooksServiceGetOneWebhookConfigurationByIdKeyFn({ id, resourceId }), queryFn: () => WebhooksService.getOneWebhookConfigurationById({ id, resourceId }) });
+export const prefetchUsePluginServiceGetPlugins = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePluginServiceGetPluginsKeyFn(), queryFn: () => PluginService.getPlugins() });
+export const prefetchUsePluginServiceGetFrontendPluginJsFile = (queryClient: QueryClient, { pluginName }: {
+  pluginName: string;
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePluginServiceGetFrontendPluginJsFileKeyFn({ pluginName }), queryFn: () => PluginService.getFrontendPluginJsFile({ pluginName }) });

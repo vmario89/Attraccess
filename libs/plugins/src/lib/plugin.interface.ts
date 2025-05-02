@@ -1,6 +1,6 @@
 import { DynamicModule, InjectionToken, Type } from '@nestjs/common';
 import { SemanticVersion } from './semver';
-import { Resource, User } from '@attraccess/plugins';
+import { Resource, User } from '@attraccess/database-entities';
 
 export enum SystemEvent {
   RESOURCE_USAGE_STARTED = 'RESOURCE_USAGE_STARTED',

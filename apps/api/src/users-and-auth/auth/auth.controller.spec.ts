@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { User } from '@attraccess/database-entities';
-import { AuthenticatedRequest } from '@attraccess/api-utils';
+import { AuthenticatedRequest } from '@attraccess/plugins';
 
 describe('AuthController', () => {
   let authController: AuthController;

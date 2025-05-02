@@ -14,9 +14,8 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthenticatedRequest } from '@attraccess/api-utils';
+import { AuthenticatedRequest, Auth } from '@attraccess/plugins';
 import { AuthService } from '../auth/auth.service';
-import { Auth } from '@attraccess/api-utils';
 import { EmailService } from '../../email/email.service';
 import { GetUsersQueryDto } from './dtos/getUsersQuery.dto';
 import { VerifyEmailDto } from './dtos/verifyEmail.dto';

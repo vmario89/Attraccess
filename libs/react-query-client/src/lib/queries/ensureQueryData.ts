@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const ensureUseApplicationServicePing2Data = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const ensureUseUsersServiceGetAllUsersData = (queryClient: QueryClient, { limit, page, search }: {
@@ -113,3 +113,7 @@ export const ensureUseWebhooksServiceGetOneWebhookConfigurationByIdData = (query
   id: number;
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseWebhooksServiceGetOneWebhookConfigurationByIdKeyFn({ id, resourceId }), queryFn: () => WebhooksService.getOneWebhookConfigurationById({ id, resourceId }) });
+export const ensureUsePluginServiceGetPluginsData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UsePluginServiceGetPluginsKeyFn(), queryFn: () => PluginService.getPlugins() });
+export const ensureUsePluginServiceGetFrontendPluginJsFileData = (queryClient: QueryClient, { pluginName }: {
+  pluginName: string;
+}) => queryClient.ensureQueryData({ queryKey: Common.UsePluginServiceGetFrontendPluginJsFileKeyFn({ pluginName }), queryFn: () => PluginService.getFrontendPluginJsFile({ pluginName }) });

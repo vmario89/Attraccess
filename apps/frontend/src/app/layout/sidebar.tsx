@@ -1,18 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { X, Settings, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '../../i18n';
 import * as en from './translations/header.en';
 import * as de from './translations/header.de';
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Link,
-} from '@heroui/react';
-import { routes, de as routesDe, en as routesEn } from '../routes';
+import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link } from '@heroui/react';
+import { useAllRoutes, de as routesDe, en as routesEn } from '../routes';
 import { SystemPermissions } from '@attraccess/react-query-client';
 
 interface SidebarProps {
@@ -32,8 +25,10 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     de: routesDe,
   });
 
+  const routes = useAllRoutes();
+
   // Get navigation items from routes that have sidebar config
-  const navigationItems = React.useMemo(() => {
+  const navigationItems = useMemo(() => {
     return routes
       .filter((route) => {
         if (!route.sidebar) {
@@ -53,9 +48,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         }
 
         const requiredPermissions = (
-          Array.isArray(route.authRequired)
-            ? route.authRequired
-            : [route.authRequired]
+          Array.isArray(route.authRequired) ? route.authRequired : [route.authRequired]
         ) as (keyof SystemPermissions)[];
 
         const userHasAllRequiredPermissions = requiredPermissions.every(
@@ -66,18 +59,24 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       })
       .sort((a, b) => {
         // Sort by order if available, otherwise alphabetically by translation key
-        const orderA = a.sidebar?.order || 0;
-        const orderB = b.sidebar?.order || 0;
+        const orderA = a.sidebar?.order;
+        const orderB = b.sidebar?.order;
 
-        if (orderA === orderB) {
-          return (a.sidebar?.translationKey || '').localeCompare(
-            b.sidebar?.translationKey || ''
-          );
+        if (!orderA && !!orderB) {
+          return 1;
         }
 
-        return orderA - orderB;
+        if (!!orderA && !orderB) {
+          return -1;
+        }
+
+        if (orderA === orderB) {
+          return (a.sidebar?.translationKey || '').localeCompare(b.sidebar?.translationKey || '');
+        }
+
+        return (orderA as number) - (orderB as number);
       });
-  }, [user]);
+  }, [user, routes]);
 
   return (
     <>
@@ -98,21 +97,10 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-          <Link
-            href="/"
-            className="text-xl font-semibold"
-            color="foreground"
-            underline="none"
-          >
+          <Link href="/" className="text-xl font-semibold" color="foreground" underline="none">
             Attraccess
           </Link>
-          <Button
-            variant="light"
-            aria-label="Close sidebar"
-            isIconOnly
-            className="md:hidden"
-            onPress={toggleSidebar}
-          >
+          <Button variant="light" aria-label="Close sidebar" isIconOnly className="md:hidden" onPress={toggleSidebar}>
             <X className="h-6 w-6" />
           </Button>
         </div>
@@ -128,8 +116,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                 color="foreground"
                 underline="none"
               >
-                {route.sidebar?.icon}
-                {tRoutes(route.sidebar?.translationKey || '')}
+                <span className="mr-3">{route.sidebar?.icon}</span>
+                {route.sidebar?.label ?? tRoutes(route.sidebar?.translationKey || '')}
               </Link>
             ))}
           </nav>
@@ -150,11 +138,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem
-                    key="logout"
-                    onPress={() => logout.mutateAsync()}
-                    startContent={<LogOut />}
-                  >
+                  <DropdownItem key="logout" onPress={() => logout.mutateAsync()} startContent={<LogOut />}>
                     {t('logout')}
                   </DropdownItem>
                 </DropdownMenu>

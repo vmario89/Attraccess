@@ -15,14 +15,13 @@ import {
 import { SSOOIDCGuard } from './oidc/oidc.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { SSOProvider, SSOProviderType } from '@attraccess/database-entities';
-import { AuthenticatedRequest } from '@attraccess/api-utils';
+import { AuthenticatedRequest, Auth } from '@attraccess/plugins';
 import { CreateSessionResponse } from '../auth.types';
 import { AuthService } from '../auth.service';
 import { SSOService } from './sso.service';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
-import { Auth } from '@attraccess/api-utils';
 import { Response } from 'express';
 
 @ApiTags('SSO')

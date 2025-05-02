@@ -1,7 +1,6 @@
 {
   "name": "@attraccess/plugins",
   "version": "0.0.1",
-  "private": true,
   "type": "commonjs",
   "main": "./src/index.js",
   "module": "./dist/index.js",
@@ -14,10 +13,21 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
   "dependencies": {
     "tslib": "^2.3.0",
-    "@nestjs/common": "*",
     "@attraccess/database-entities": "*",
-    "@attraccess/api-utils": "*"
+    "@nestjs/common": "*",
+    "rxjs": "*",
+    "@nestjs/core": "*",
+    "@nestjs/swagger": "*",
+    "express": "*",
+    "react-pluggable": "*",
+    "@nestjs/passport": "*",
+    "typeorm": "*",
+    "@nestjs/typeorm": "*"
   }
 }

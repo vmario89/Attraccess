@@ -4,7 +4,7 @@ import { ResourceUsageService } from './resourceUsage.service';
 import { ResourceUsage } from '@attraccess/database-entities';
 import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
-import { Auth, AuthenticatedRequest } from '@attraccess/api-utils';
+import { Auth, AuthenticatedRequest } from '@attraccess/plugins';
 import { makePaginatedResponse } from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';

@@ -2,7 +2,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceConfig } from '@attraccess/database-entities';
+import { dataSourceConfig } from '../database/datasource';
 import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule } from '@nestjs/config';
 import { storageConfig } from '../config/storage.config';

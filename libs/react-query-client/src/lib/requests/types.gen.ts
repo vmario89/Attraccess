@@ -1091,6 +1091,45 @@ export type WebhookTestResponseDto = {
     message: string;
 };
 
+export type PluginMain = {
+    /**
+     * The frontend file of the plugin
+     */
+    frontend: string;
+    /**
+     * The backend file of the plugin
+     */
+    backend: string;
+};
+
+export type PluginAttraccessVersion = {
+    /**
+     * The minimum version of the plugin
+     */
+    min: string;
+    /**
+     * The maximum version of the plugin
+     */
+    max: string;
+    /**
+     * The exact version of the plugin
+     */
+    exact: string;
+};
+
+export type PluginManifest = {
+    /**
+     * The name of the plugin
+     */
+    name: string;
+    main: PluginMain;
+    /**
+     * The version of the plugin
+     */
+    version: string;
+    attraccessVersion: PluginAttraccessVersion;
+};
+
 export type Ping2Response = {
     message?: string;
 };
@@ -1663,6 +1702,14 @@ export type RegenerateSecretData = {
 };
 
 export type RegenerateSecretResponse = WebhookConfigResponseDto;
+
+export type GetPluginsResponse = Array<PluginManifest>;
+
+export type GetFrontendPluginJsFileData = {
+    pluginName: string;
+};
+
+export type GetFrontendPluginJsFileResponse = string;
 
 export type $OpenApiTs = {
     '/api/ping': {
@@ -2970,6 +3017,27 @@ export type $OpenApiTs = {
                  * Webhook configuration not found
                  */
                 404: unknown;
+            };
+        };
+    };
+    '/api/plugins': {
+        get: {
+            res: {
+                /**
+                 * The list of all plugins
+                 */
+                200: Array<PluginManifest>;
+            };
+        };
+    };
+    '/api/plugins/{pluginName}/frontend/plugin.js': {
+        get: {
+            req: GetFrontendPluginJsFileData;
+            res: {
+                /**
+                 * The frontend plugin.js file
+                 */
+                200: string;
             };
         };
     };
