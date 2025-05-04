@@ -1,0 +1,9 @@
+{
+  "search": {
+    "label": "Ressourcen auswählen",
+    "placeholder": "Tippe um zu suchen"
+  },
+  "list": {
+    "label": "Zugewiesen an"
+  }
+}

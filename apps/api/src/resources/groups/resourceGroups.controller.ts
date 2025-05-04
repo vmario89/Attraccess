@@ -19,7 +19,7 @@ import { ResourceGroup } from '@attraccess/database-entities';
 import { ListResourceGroupsDto } from './dto/list-resource-groups.dto';
 import { PaginatedResponse } from '../../types/response';
 import { PaginatedResourceGroupResponseDto } from './dto/paginated-resource-group-response.dto';
-import { Auth } from '@attraccess/plugins';
+import { Auth } from '@attraccess/plugins-backend-sdk';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 @ApiTags('Resource Groups')

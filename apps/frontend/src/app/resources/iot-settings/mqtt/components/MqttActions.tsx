@@ -1,8 +1,7 @@
 import { Button, CardFooter } from '@heroui/react';
 import { Save, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
 import * as en from './translations/actions/en';
@@ -34,13 +33,9 @@ interface MqttActionsProps {
   onReset: () => void;
 }
 
-export default function MqttActions({
-  resourceId,
-  formData,
-  onReset,
-}: MqttActionsProps) {
+export default function MqttActions({ resourceId, formData, onReset }: MqttActionsProps) {
   const { t } = useTranslations('mqttActions', { en, de });
-  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
+  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({ resourceId });
   const [isTesting, setIsTesting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -96,7 +91,7 @@ export default function MqttActions({
 
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteConfig.mutateAsync({resourceId});
+        await deleteConfig.mutateAsync({ resourceId });
         onReset();
         success({
           title: t('configDeleted'),
@@ -121,7 +116,7 @@ export default function MqttActions({
   const handleTest = async () => {
     setIsTesting(true);
     try {
-      const result = await testConfig.mutateAsync({resourceId});
+      const result = await testConfig.mutateAsync({ resourceId });
       if (result.success) {
         success({
           title: t('testSuccessful'),
@@ -158,24 +153,13 @@ export default function MqttActions({
           >
             {t('test')}
           </Button>
-          <Button
-            size="sm"
-            color="danger"
-            variant="light"
-            startContent={<Trash2 size={16} />}
-            onPress={handleDelete}
-          >
+          <Button size="sm" color="danger" variant="light" startContent={<Trash2 size={16} />} onPress={handleDelete}>
             {t('delete')}
           </Button>
         </>
       )}
 
-      <Button
-        size="sm"
-        color="primary"
-        startContent={<Save size={16} />}
-        onPress={handleSave}
-      >
+      <Button size="sm" color="primary" startContent={<Save size={16} />} onPress={handleSave}>
         {t('save')}
       </Button>
     </CardFooter>

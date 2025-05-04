@@ -1,13 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  Pagination,
-  Spinner,
-} from '@heroui/react';
-import { useTranslations } from '../../../../../i18n';
+import { Table, TableHeader, TableBody, TableRow, Pagination, Spinner } from '@heroui/react';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './utils/translations/en';
 import * as de from './utils/translations/de';
 import { generateHeaderColumns } from './utils/tableHeaders';
@@ -61,14 +54,18 @@ export const HistoryTable = ({
     data: usageHistory,
     isLoading,
     error,
-  } = useResourceUsageServiceGetHistoryOfResourceUsage({
-    resourceId,
-    page,
-    limit: rowsPerPage,
-    userId: showAllUsers ? undefined : user?.id,
-  }, undefined, {
-    enabled: !!user,
-  });
+  } = useResourceUsageServiceGetHistoryOfResourceUsage(
+    {
+      resourceId,
+      page,
+      limit: rowsPerPage,
+      userId: showAllUsers ? undefined : user?.id,
+    },
+    undefined,
+    {
+      enabled: !!user,
+    }
+  );
 
   // Generate header columns
   const headerColumns = useMemo(
@@ -81,11 +78,7 @@ export const HistoryTable = ({
   }, [isLoading]);
 
   if (error) {
-    return (
-      <div className="text-center py-4 text-red-500">
-        {t('errorLoadingHistory')}
-      </div>
-    );
+    return <div className="text-center py-4 text-red-500">{t('errorLoadingHistory')}</div>;
   }
 
   return (
@@ -105,11 +98,7 @@ export const HistoryTable = ({
               label="Rows per page"
             />
           </div>
-          <Pagination
-            total={usageHistory?.totalPages || 1}
-            page={page}
-            onChange={handlePageChange}
-          />
+          <Pagination total={usageHistory?.totalPages || 1} page={page} onChange={handlePageChange} />
         </div>
       }
     >

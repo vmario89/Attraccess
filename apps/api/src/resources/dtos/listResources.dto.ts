@@ -44,4 +44,14 @@ export class ListResourcesDto {
   @IsOptional()
   @Type(() => Number)
   groupId?: number;
+
+  @ApiProperty({
+    description: 'Resource IDs to filter resources',
+    required: false,
+    type: [Number],
+  })
+  @IsInt({ each: true })
+  @IsOptional()
+  @Type(() => Number)
+  ids?: number[];
 }

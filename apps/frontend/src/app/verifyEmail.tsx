@@ -1,23 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useUrlQuery } from '../hooks/useUrlQuery';
+import { useUrlQuery } from '@attraccess/plugins-frontend-ui';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from './loading';
-import {
-  Alert,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Spacer,
-} from '@heroui/react';
-import { useTranslations } from '../i18n';
+import { Alert, Button, Card, CardBody, CardFooter, CardHeader, Spacer } from '@heroui/react';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/verifyEmail.en';
 import * as de from './translations/verifyEmail.de';
-import {
-  useUsersServiceVerifyEmail,
-  UseUsersServiceGetCurrentKeyFn,
-} from '@attraccess/react-query-client';
+import { useUsersServiceVerifyEmail, UseUsersServiceGetCurrentKeyFn } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function VerifyEmail() {
@@ -40,7 +29,7 @@ export function VerifyEmail() {
     }
 
     try {
-      await verifyEmail.mutateAsync({requestBody: { token, email }});
+      await verifyEmail.mutateAsync({ requestBody: { token, email } });
       setIsSuccess(true);
       setError(null);
 
@@ -49,8 +38,7 @@ export function VerifyEmail() {
       });
     } catch (err) {
       const error = err as { error?: { message?: string } };
-      const errorMessage =
-        error.error?.message || t('apiErrors.unexpectedError');
+      const errorMessage = error.error?.message || t('apiErrors.unexpectedError');
 
       // Check if a translation exists for this error message
       const translationKey = `apiErrors.${errorMessage}`;
@@ -82,9 +70,7 @@ export function VerifyEmail() {
             <h2 className="text-3xl font-bold">{t('success.title')}</h2>
           </CardHeader>
           <CardBody>
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              {t('success.message')}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">{t('success.message')}</p>
           </CardBody>
           <CardFooter>
             <Button fullWidth color="primary" onPress={() => navigate('/')}>
@@ -104,19 +90,10 @@ export function VerifyEmail() {
             <h2 className="text-3xl font-bold">{t('error.title')}</h2>
           </CardHeader>
           <CardBody>
-            <Alert
-              color="danger"
-              title={t('error.errorTitle')}
-              description={error}
-            />
+            <Alert color="danger" title={t('error.errorTitle')} description={error} />
           </CardBody>
           <CardFooter>
-            <Button
-              fullWidth
-              color="primary"
-              onPress={activateEmail}
-              isDisabled={verifyEmail.isPending}
-            >
+            <Button fullWidth color="primary" onPress={activateEmail} isDisabled={verifyEmail.isPending}>
               {t('error.tryAgain')}
             </Button>
             <Spacer y={2} />

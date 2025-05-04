@@ -1,4 +1,4 @@
-import { PluginApiModule, PluginApiService } from '@attraccess/plugins';
+import { PluginApiModule, PluginApiService } from '@attraccess/plugins-backend-sdk';
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { createRequire } from 'module';
 import { PluginManifest } from './plugin.manifest';

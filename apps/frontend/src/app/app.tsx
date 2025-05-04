@@ -5,11 +5,12 @@ import { useEffect, useMemo } from 'react';
 import { Layout } from './layout/layout';
 import { useAuth } from '../hooks/useAuth';
 import { Loading } from './loading';
-import { RouteConfig, useAllRoutes } from './routes';
+import { useAllRoutes } from './routes';
 import { VerifyEmail } from './verifyEmail';
 import { ToastProvider } from '../components/toastProvider';
 import { HeroUIProvider } from '@heroui/react';
 import { SystemPermissions } from '@attraccess/react-query-client';
+import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
 
 function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();

@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ReaderState } from './reader-state.interface';
 import { InitialReaderState } from './initial.state';
-import { User } from '@attraccess/plugins';
+import { User } from '@attraccess/plugins-backend-sdk';
 import { AuthenticatedWebSocket, FabreaderEvent, FabreaderEventType, FabreaderResponse } from '../websocket.types';
 import { GatewayServices } from '../websocket.gateway';
 
@@ -71,6 +71,8 @@ export class EnrollNTAG424State implements ReaderState {
   }
 
   private async onGetNfcUID(responseData: FabreaderResponse['data']) {
+    this.socket.send(JSON.stringify(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING)));
+
     const cardUID = responseData.payload.cardUID;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.socket.enrollment!.cardUID = cardUID;
@@ -90,6 +92,10 @@ export class EnrollNTAG424State implements ReaderState {
       }).map(([key, value]) => [key, this.services.fabreaderService.uint8ArrayToHexString(value)])
     );
 
+    this.logger.debug('Sending ChangeKeys event', {
+      authenticationKey: masterKey,
+      keys: this.socket.enrollment.data.newKeys,
+    });
     this.socket.enrollment.nextExpectedEvent = FabreaderEventType.CHANGE_KEYS;
     return new FabreaderEvent(FabreaderEventType.CHANGE_KEYS, {
       authenticationKey: masterKey,
@@ -110,7 +116,8 @@ export class EnrollNTAG424State implements ReaderState {
       );
       this.socket.enrollment = undefined;
       const nextState = new InitialReaderState(this.socket, this.services);
-      return nextState.getInitMessage();
+      this.socket.state = nextState;
+      return await nextState.getInitMessage();
     }
 
     this.socket.enrollment.nextExpectedEvent = FabreaderEventType.AUTHENTICATE;
@@ -121,48 +128,54 @@ export class EnrollNTAG424State implements ReaderState {
   }
 
   private async onAuthenticate(responseData: FabreaderResponse['data']) {
-    const failedKeys = responseData.payload.failedKeys as number[];
-    const successfulKeys = responseData.payload.successfulKeys as number[];
+    const authenticationSuccessful = responseData.payload.authenticationSuccessful as boolean;
 
-    if (successfulKeys.length !== 1 || failedKeys.length > 0) {
-      this.logger.error(
-        `Key ${failedKeys.join(', ')} failed to authenticate, Key ${successfulKeys.join(
-          ', '
-        )} authenticated successfully`,
-        {
-          enrollmentState: this.socket.enrollment,
-        }
-      );
-
-      const nfcCard = await this.services.dbService.createNFCCard({
-        uid: this.socket.enrollment.cardUID,
-        userId: this.userId,
-        keys: {
-          [this.KEY_ZERO_MASTER]: this.socket.enrollment.data.newKeys[this.KEY_ZERO_MASTER],
-        },
+    if (!authenticationSuccessful) {
+      this.logger.error('Enrollment failed: Authentication failed', {
+        enrollmentState: this.socket.enrollment,
       });
-
-      this.logger.log(`Created NFC card ${nfcCard.id} for user ${this.userId}`);
 
       this.socket.enrollment = undefined;
 
       this.socket.send(
         JSON.stringify(
           new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-            message: 'Authentication failed',
+            message: 'Enrollment failed',
           })
         )
       );
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
+      this.socket.enrollment = undefined;
       const nextState = new InitialReaderState(this.socket, this.services);
-      return nextState.getInitMessage();
+      this.socket.state = nextState;
+      return await nextState.getInitMessage();
     }
 
-    this.socket.enrollment = undefined;
-    return new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
-      message: 'Enrollment successful',
+    const nfcCard = await this.services.dbService.createNFCCard({
+      uid: this.socket.enrollment.cardUID,
+      userId: this.userId,
+      keys: {
+        [this.KEY_ZERO_MASTER]: this.socket.enrollment.data.newKeys[this.KEY_ZERO_MASTER],
+      },
     });
+
+    this.logger.log(`Created NFC card ${nfcCard.id} for user ${this.userId}`);
+
+    this.socket.enrollment = undefined;
+
+    this.socket.send(
+      JSON.stringify(
+        new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
+          message: 'Enrollment successful',
+        })
+      )
+    );
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    const nextState = new InitialReaderState(this.socket, this.services);
+    this.socket.state = nextState;
+    return await nextState.getInitMessage();
   }
 
   private async onNfcRemoved() {
@@ -180,7 +193,8 @@ export class EnrollNTAG424State implements ReaderState {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const nextState = new InitialReaderState(this.socket, this.services);
-    return nextState.getInitMessage();
+    this.socket.state = nextState;
+    return await nextState.getInitMessage();
   }
 
   public getInitMessage(): FabreaderEvent {

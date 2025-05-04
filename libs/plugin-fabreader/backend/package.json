@@ -20,18 +20,17 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@nestjs/common": "*",
-    "@attraccess/plugins": "*",
     "@nestjs/swagger": "*",
     "@nestjs/typeorm": "*",
-    "react": "*",
-    "react-pluggable": "*",
     "nanoid": "*",
     "typeorm": "*",
-    "@attraccess/database-entities": "*",
     "@nestjs/websockets": "*",
     "ws": "*",
     "bcrypt": "*",
     "@nx/webpack": "*",
-    "glob": "*"
+    "glob": "*",
+    "class-transformer": "*",
+    "@attraccess/database-entities": "*",
+    "@attraccess/plugins-backend-sdk": "*"
   }
 }

@@ -34,6 +34,7 @@ private:
 
     unsigned long registration_sent_at = 0;
     unsigned long authentication_sent_at = 0;
+    unsigned long heartbeat_sent_at = 0;
 
     void sendRegistrationRequest();
     void sendAuthenticationRequest();
@@ -42,6 +43,7 @@ private:
     bool isAuthenticated();
 
     void sendMessage(bool is_response, const char *type, JsonObject payload);
+    void sendHeartbeat();
 
     void onRegistrationData(JsonObject data);
     void onDisplayText(JsonObject data);
@@ -49,4 +51,7 @@ private:
     void onEnableCardChecking(JsonObject data);
     void onDisableCardChecking(JsonObject data);
     void onChangeKeys(JsonObject data);
+    void onAuthenticate(JsonObject data);
+
+    void hexStringToBytes(const String &hexString, uint8_t *byteArray, size_t byteArrayLength);
 };

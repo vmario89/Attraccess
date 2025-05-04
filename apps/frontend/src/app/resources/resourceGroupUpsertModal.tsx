@@ -12,8 +12,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceGroupUpsertModal.en';
 import * as de from './translations/resourceGroupUpsertModal.de';
 import {

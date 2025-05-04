@@ -83,7 +83,7 @@ export function useAuth() {
 
   const login = useMutation({
     mutationFn: async ({ username, password, persist }: LoginCredentials) => {
-      const response = await createSession.mutateAsync({requestBody: {username, password}});
+      const response = await createSession.mutateAsync({ requestBody: { username, password } });
 
       // Store the auth data in the appropriate storage
       if (persist) {
@@ -138,6 +138,8 @@ export function useAuth() {
       sessionStorage.removeItem('auth');
 
       OpenAPI.TOKEN = '';
+
+      window.location.reload();
     },
     onSuccess: () => {
       // First set auth state to null to update UI immediately
@@ -165,10 +167,7 @@ export function useAuth() {
     logout,
     hasPermission: (permission: keyof SystemPermissions) => {
       const user = session?.user;
-      if (
-        !user?.systemPermissions ||
-        typeof user.systemPermissions !== 'object'
-      ) {
+      if (!user?.systemPermissions || typeof user.systemPermissions !== 'object') {
         return false;
       }
       return (user.systemPermissions as SystemPermissions)[permission] ?? false;

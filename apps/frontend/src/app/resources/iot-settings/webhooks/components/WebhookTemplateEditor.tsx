@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { Textarea, Accordion, AccordionItem, Snippet } from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useWebhookForm } from '../context/WebhookFormContext';
 import { templateVariables } from '../types';
 import { useTemplatePreview } from '../hooks/useTemplatePreview';
@@ -18,9 +17,7 @@ const WebhookTemplateEditor: React.FC = () => {
   });
   const { previewTemplate } = useTemplatePreview(resourceId);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({
       ...prev,
@@ -51,9 +48,7 @@ const WebhookTemplateEditor: React.FC = () => {
             className="font-mono text-sm"
           />
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              {t('previewLabel')}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
             <Snippet hideSymbol>
               {previewTemplateJson(values.inUseTemplate)
                 .split('\n')
@@ -79,9 +74,7 @@ const WebhookTemplateEditor: React.FC = () => {
             className="font-mono text-sm"
           />
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              {t('previewLabel')}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
             <Snippet hideSymbol>
               {previewTemplateJson(values.notInUseTemplate)
                 .split('\n')
@@ -97,33 +90,21 @@ const WebhookTemplateEditor: React.FC = () => {
 
       <AccordionItem key="variables" title={t('variablesTab')}>
         <div className="p-2">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {t('variablesHelp')}
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('variablesHelp')}</p>
           <table className="w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="px-4 py-2 text-left dark:text-gray-300">
-                  {t('variableColumn')}
-                </th>
-                <th className="px-4 py-2 text-left dark:text-gray-300">
-                  {t('descriptionColumn')}
-                </th>
-                <th className="px-4 py-2 text-left dark:text-gray-300">
-                  {t('exampleColumn')}
-                </th>
+                <th className="px-4 py-2 text-left dark:text-gray-300">{t('variableColumn')}</th>
+                <th className="px-4 py-2 text-left dark:text-gray-300">{t('descriptionColumn')}</th>
+                <th className="px-4 py-2 text-left dark:text-gray-300">{t('exampleColumn')}</th>
               </tr>
             </thead>
             <tbody>
               {templateVariables.map((variable) => (
                 <tr key={variable.name} className="dark:border-gray-700">
                   <td className="px-4 py-2 font-mono dark:text-gray-300">{`{{${variable.name}}}`}</td>
-                  <td className="px-4 py-2 dark:text-gray-300">
-                    {variable.description}
-                  </td>
-                  <td className="px-4 py-2 font-mono dark:text-gray-300">
-                    {variable.example}
-                  </td>
+                  <td className="px-4 py-2 dark:text-gray-300">{variable.description}</td>
+                  <td className="px-4 py-2 font-mono dark:text-gray-300">{variable.example}</td>
                 </tr>
               ))}
             </tbody>

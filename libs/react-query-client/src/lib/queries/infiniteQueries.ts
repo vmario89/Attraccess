@@ -27,12 +27,13 @@ export const useResourceGroupsServiceGetAllResourceGroupsInfinite = <TData = Inf
     nextPage: number;
   }).nextPage, ...options
 });
-export const useResourcesServiceGetAllResourcesInfinite = <TData = InfiniteData<Common.ResourcesServiceGetAllResourcesDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, limit, search }: {
+export const useResourcesServiceGetAllResourcesInfinite = <TData = InfiniteData<Common.ResourcesServiceGetAllResourcesDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, ids, limit, search }: {
   groupId?: number;
+  ids?: number[];
   limit?: number;
   search?: string;
 } = {}, queryKey?: TQueryKey, options?: Omit<UseInfiniteQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useInfiniteQuery({
-  queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, limit, search }, queryKey), queryFn: ({ pageParam }) => ResourcesService.getAllResources({ groupId, limit, page: pageParam as number, search }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
+  queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, search }, queryKey), queryFn: ({ pageParam }) => ResourcesService.getAllResources({ groupId, ids, limit, page: pageParam as number, search }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
     nextPage: number;
   }).nextPage, ...options
 });

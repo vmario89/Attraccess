@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceIntroductions.en';
 import * as de from './translations/resourceIntroductions.de';
 import { Card, CardBody, CardFooter, CardHeader } from '@heroui/card';

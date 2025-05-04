@@ -54,8 +54,13 @@ export class PluginService {
 
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
-    manifest.main.backend = join(pluginFolder, manifest.main.backend);
-    manifest.main.frontend = join(pluginFolder, manifest.main.frontend);
+    if (manifest.main.backend) {
+      manifest.main.backend = join(pluginFolder, manifest.main.backend);
+    }
+
+    if (manifest.main.frontend) {
+      manifest.main.frontend.directory = join(pluginFolder, manifest.main.frontend.directory);
+    }
 
     return manifest;
   }

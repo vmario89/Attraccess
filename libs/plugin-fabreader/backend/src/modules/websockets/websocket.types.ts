@@ -13,7 +13,7 @@ export enum FabreaderEventType {
   REGISTER = 'REGISTER',
   AUTHENTICATE = 'AUTHENTICATE',
   UNAUTHORIZED = 'UNAUTHORIZED',
-  AUTHENTICATED = 'AUTHENTICATED',
+  READER_AUTHENTICATED = 'READER_AUTHENTICATED',
   PROMPT_SELECTION = 'PROMPT_SELECTION',
   NFC_TAP = 'NFC_TAP',
   CHANGE_KEYS = 'CHANGE_KEYS',
@@ -66,6 +66,8 @@ export class FabreaderResponse<TPayload = any | undefined> {
 export type FabreaderMessage<TPayload = any | undefined> = FabreaderEvent<TPayload> | FabreaderResponse<TPayload>;
 
 export interface AuthenticatedWebSocket extends WebSocket {
+  id: string;
+  disconnectTimeout?: NodeJS.Timeout;
   reader?: Reader;
   state?: ReaderState;
 }

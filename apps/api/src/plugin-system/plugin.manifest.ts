@@ -1,11 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class PluginMainFrontend {
+  @ApiProperty({
+    description: 'The directory of the plugins frontend files',
+    example: 'frontend',
+  })
+  directory: string;
+
+  @ApiProperty({
+    description: 'The entry point of the plugin, relative to the frontend directory',
+    example: 'index.mjs',
+  })
+  entryPoint: string;
+}
+
 export class PluginMain {
   @ApiProperty({
-    description: 'The frontend file of the plugin',
-    example: 'frontend/index.mjs',
+    description: 'The frontend files of the plugin',
+    example: {
+      directory: 'frontend',
+      entryPoint: 'index.mjs',
+    },
   })
-  frontend?: string;
+  frontend?: PluginMainFrontend;
 
   @ApiProperty({
     description: 'The backend file of the plugin',

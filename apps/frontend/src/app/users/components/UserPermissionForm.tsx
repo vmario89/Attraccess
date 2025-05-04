@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Button, Card } from '@heroui/react';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 
 import { useToastMessage } from '../../../components/toastProvider';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
-import { AttraccessUser } from '../../../components/AttraccessUser';
+import { AttraccessUser } from '@attraccess/plugins-frontend-ui';
 import {
   User,
   useUsersServiceGetPermissions,
@@ -18,14 +18,12 @@ interface UserPermissionFormProps {
   user: User;
 }
 
-export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
-  user,
-}) => {
+export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) => {
   const { t } = useTranslations('userPermissionForm', { en, de });
   const { showToast } = useToastMessage();
   const queryClient = useQueryClient();
 
-  const { data: userPermissions, isLoading } = useUsersServiceGetPermissions({id: user.id});
+  const { data: userPermissions, isLoading } = useUsersServiceGetPermissions({ id: user.id });
   const updatePermissions = useUsersServiceUpdatePermissions();
 
   const [permissions, setPermissions] = useState({
@@ -39,8 +37,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
     if (userPermissions) {
       setPermissions({
         canManageResources: userPermissions.canManageResources || false,
-        canManageSystemConfiguration:
-          userPermissions.canManageSystemConfiguration || false,
+        canManageSystemConfiguration: userPermissions.canManageSystemConfiguration || false,
         canManageUsers: userPermissions.canManageUsers || false,
       });
     }
@@ -78,9 +75,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center p-4">Loading permissions...</div>
-    );
+    return <div className="flex justify-center p-4">Loading permissions...</div>;
   }
 
   return (
@@ -107,9 +102,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
           <div className="flex items-center">
             <Checkbox
               isSelected={permissions.canManageSystemConfiguration}
-              onValueChange={handlePermissionChange(
-                'canManageSystemConfiguration'
-              )}
+              onValueChange={handlePermissionChange('canManageSystemConfiguration')}
               color="primary"
               className="mr-2"
             />
@@ -129,11 +122,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({
       </div>
 
       <div className="flex justify-end mt-6">
-        <Button
-          color="primary"
-          onPress={handleSave}
-          isLoading={updatePermissions.isPending}
-        >
+        <Button color="primary" onPress={handleSave} isLoading={updatePermissions.isPending}>
           {t('saveChanges')}
         </Button>
       </div>

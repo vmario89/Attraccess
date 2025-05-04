@@ -1,7 +1,6 @@
 import { Input, Textarea, Snippet } from '@heroui/react';
 import { Code } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useMemo } from 'react';
 import * as en from './translations/template-form/en';
 import * as de from './translations/template-form/de';
@@ -23,7 +22,7 @@ export default function MqttTemplateForm({
   resourceId,
 }: MqttTemplateFormProps) {
   const { t } = useTranslations('mqttTemplateForm', { en, de });
-  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
+  const { data: resource } = useResourcesServiceGetOneResourceById({ id: resourceId });
 
   // Create a preview context for rendering templates
   const previewContext = useMemo(() => {
@@ -57,10 +56,7 @@ export default function MqttTemplateForm({
             );
           });
         } else {
-          processedTemplate = processedTemplate.replace(
-            new RegExp(`{{${key}}}`, 'g'),
-            String(value)
-          );
+          processedTemplate = processedTemplate.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
         }
       });
 
@@ -84,9 +80,7 @@ export default function MqttTemplateForm({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-2">
-          {t('topicTemplate')}
-        </label>
+        <label className="block text-sm font-medium mb-2">{t('topicTemplate')}</label>
         <Input
           value={topicTemplate}
           onChange={(e) => onTopicChange(e.target.value)}
@@ -102,9 +96,7 @@ export default function MqttTemplateForm({
       </div>
 
       <div className="pt-8">
-        <label className="block text-sm font-medium mb-2">
-          {t('messageTemplate')}
-        </label>
+        <label className="block text-sm font-medium mb-2">{t('messageTemplate')}</label>
         <Textarea
           value={messageTemplate}
           onChange={(e) => onMessageChange(e.target.value)}

@@ -9,6 +9,7 @@ import { NFCCard } from './modules/persistence/db/entities/nfcCard.entity';
 import { DbService } from './modules/persistence/db.service';
 import { WebsocketService } from './modules/websockets/websocket.service';
 import { FabreaderGateway } from './modules/websockets/websocket.gateway';
+import { CardController } from './card.controller';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { FabreaderGateway } from './modules/websockets/websocket.gateway';
     TypeOrmModule.forFeature([Reader, NFCCard], FABREADER_DB_DATASOURCE_NAME),
   ],
   providers: [FabreaderService, DbService, WebsocketService, FabreaderGateway],
-  controllers: [ReaderController],
+  controllers: [ReaderController, CardController],
 })
 export default class FabReaderModule {}

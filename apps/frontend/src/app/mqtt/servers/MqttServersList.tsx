@@ -20,10 +20,10 @@ import {
 } from '@heroui/react';
 import { Pencil, Trash, Globe, Webhook, Shield, RefreshCw } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
-import { 
+import {
   CreateMqttServerDto,
   MqttServer,
   UpdateMqttServerDto,
@@ -50,17 +50,12 @@ export interface MqttServersListRef {
   handleAddNew: () => void;
 }
 
-export const MqttServersList = forwardRef<
-  MqttServersListRef,
-  React.ComponentPropsWithoutRef<'div'>
->((props, ref) => {
+export const MqttServersList = forwardRef<MqttServersListRef, React.ComponentPropsWithoutRef<'div'>>((props, ref) => {
   const { t } = useTranslations('mqttServersList', { en, de });
   const { data: servers, isLoading, error } = useMqttServersServiceGetAllMqttServers();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [editingServer, setEditingServer] = useState<MqttServer | null>(null);
-  const [formValues, setFormValues] = useState<CreateMqttServerDto>(
-    defaultServerValues as CreateMqttServerDto
-  );
+  const [formValues, setFormValues] = useState<CreateMqttServerDto>(defaultServerValues as CreateMqttServerDto);
   const [testingId, setTestingId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
@@ -98,7 +93,7 @@ export const MqttServersList = forwardRef<
   const handleDelete = async (id: number) => {
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteMqttServer.mutateAsync({id});
+        await deleteMqttServer.mutateAsync({ id });
         success({
           title: t('serverDeleted'),
           description: t('serverDeletedDesc'),
@@ -117,12 +112,7 @@ export const MqttServersList = forwardRef<
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    const newValue =
-      type === 'checkbox'
-        ? checked
-        : type === 'number'
-        ? parseInt(value, 10)
-        : value;
+    const newValue = type === 'checkbox' ? checked : type === 'number' ? parseInt(value, 10) : value;
 
     setFormValues((prev) => ({
       ...prev,
@@ -142,7 +132,7 @@ export const MqttServersList = forwardRef<
           description: t('serverUpdatedDesc'),
         });
       } else {
-        await createMqttServer.mutateAsync({requestBody: formValues as CreateMqttServerDto});
+        await createMqttServer.mutateAsync({ requestBody: formValues as CreateMqttServerDto });
         success({
           title: t('serverCreated'),
           description: t('serverCreatedDesc'),
@@ -155,12 +145,7 @@ export const MqttServersList = forwardRef<
     } catch (err) {
       showError({
         title: t('errorGeneric'),
-        description:
-          err instanceof Error
-            ? err.message
-            : editingServer
-            ? t('failedToUpdate')
-            : t('failedToCreate'),
+        description: err instanceof Error ? err.message : editingServer ? t('failedToUpdate') : t('failedToCreate'),
       });
     }
   };
@@ -169,7 +154,7 @@ export const MqttServersList = forwardRef<
     setTestingId(id);
 
     try {
-      const result = await testConnection.mutateAsync({id});
+      const result = await testConnection.mutateAsync({ id });
 
       if (result && typeof result.success === 'boolean') {
         if (result.success) {
@@ -270,21 +255,12 @@ export const MqttServersList = forwardRef<
                       </Button>
                     </Tooltip>
                     <Tooltip content={t('editServer')}>
-                      <Button
-                        isIconOnly
-                        variant="light"
-                        onPress={() => handleEdit(server)}
-                      >
+                      <Button isIconOnly variant="light" onPress={() => handleEdit(server)}>
                         <Pencil size={16} />
                       </Button>
                     </Tooltip>
                     <Tooltip content={t('deleteServer')}>
-                      <Button
-                        isIconOnly
-                        variant="light"
-                        color="danger"
-                        onPress={() => handleDelete(server.id)}
-                      >
+                      <Button isIconOnly variant="light" color="danger" onPress={() => handleDelete(server.id)}>
                         <Trash size={16} />
                       </Button>
                     </Tooltip>
@@ -295,21 +271,12 @@ export const MqttServersList = forwardRef<
           </TableBody>
         </Table>
       ) : (
-        <div className="text-center py-8 text-gray-500">
-          {t('noServersConfigured')}
-        </div>
+        <div className="text-center py-8 text-gray-500">{t('noServersConfigured')}</div>
       )}
 
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        placement="center"
-        size="lg"
-      >
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="lg">
         <ModalContent>
-          <ModalHeader>
-            {editingServer ? t('editMqttServer') : t('addNewMqttServer')}
-          </ModalHeader>
+          <ModalHeader>{editingServer ? t('editMqttServer') : t('addNewMqttServer')}</ModalHeader>
           <ModalBody>
             <div className="grid gap-4">
               <Input
@@ -362,9 +329,7 @@ export const MqttServersList = forwardRef<
               <Checkbox
                 name="useTls"
                 isSelected={Boolean(formValues.useTls)}
-                onValueChange={(checked) =>
-                  setFormValues((prev) => ({ ...prev, useTls: checked }))
-                }
+                onValueChange={(checked) => setFormValues((prev) => ({ ...prev, useTls: checked }))}
               >
                 {t('useTls')}
               </Checkbox>

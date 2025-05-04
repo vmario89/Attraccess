@@ -14,8 +14,7 @@ import {
 } from '@heroui/react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { FileUpload } from '@frontend/components/fileUpload';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceCreateModal.en';
 import * as de from './translations/resourceCreateModal.de';
 import {

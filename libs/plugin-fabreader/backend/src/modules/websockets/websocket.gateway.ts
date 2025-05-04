@@ -15,6 +15,8 @@ import { InitialReaderState } from './reader-states/initial.state';
 import { EnrollNTAG424State } from './reader-states/enroll-ntag424.state';
 import { AuthenticatedWebSocket, FabreaderEvent } from './websocket.types';
 import { FabreaderService } from '../../fabreader.service';
+import { nanoid } from 'nanoid';
+import { ResetNTAG424State } from './reader-states/reset-ntag424.state';
 
 export interface GatewayServices {
   dbService: DbService;
@@ -24,6 +26,8 @@ export interface GatewayServices {
 
 @WebSocketGateway({ path: '/api/fabreader/websocket' })
 export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  private static readonly SOCKET_HEARTBEAT_TIMEOUT = 30000;
+
   @WebSocketServer()
   server: Server;
 
@@ -38,27 +42,59 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
   @Inject(FabreaderService)
   private fabreaderService: FabreaderService;
 
-  public handleConnection(client: AuthenticatedWebSocket) {
+  public async handleConnection(client: AuthenticatedWebSocket) {
     this.logger.log('Client connected via WebSocket');
+
+    client.id = nanoid(5);
 
     client.state = new InitialReaderState(client, {
       dbService: this.dbService,
       websocketService: this.websocketService,
       fabreaderService: this.fabreaderService,
     });
-    client.send(JSON.stringify(client.state.getInitMessage()));
+    client.send(JSON.stringify(await client.state.getInitMessage()));
 
-    this.websocketService.sockets.push(client);
+    this.websocketService.sockets.set(client.id, client);
+
+    await this.clientWasActive(client);
   }
 
   public handleDisconnect(client: AuthenticatedWebSocket) {
+    this.logger.debug(`Client ${client.id} disconnected.`);
+
     const readerId = client.reader?.id;
     if (readerId) {
-      this.websocketService.sockets.splice(this.websocketService.sockets.indexOf(client), 1);
       this.logger.log(`Client for reader ${readerId} disconnected.`);
     } else {
       this.logger.log('An unidentified client disconnected.');
     }
+
+    this.websocketService.sockets.delete(client.id);
+  }
+
+  private async clientWasActive(client: AuthenticatedWebSocket) {
+    if (client.disconnectTimeout) {
+      clearTimeout(client.disconnectTimeout);
+    }
+
+    client.disconnectTimeout = setTimeout(() => {
+      this.logger.debug(
+        `Client ${client.id} did not send heartbeat within ${FabreaderGateway.SOCKET_HEARTBEAT_TIMEOUT}ms. Closing connection.`
+      );
+      client.close();
+      this.handleDisconnect(client);
+    }, FabreaderGateway.SOCKET_HEARTBEAT_TIMEOUT);
+
+    if (client.reader) {
+      await this.dbService.updateLastReaderConnection(client.reader.id);
+    }
+  }
+
+  @SubscribeMessage('HEARTBEAT')
+  public async onHeartbeat(@ConnectedSocket() client: AuthenticatedWebSocket) {
+    this.logger.debug(`Heartbeat from client ${client.id}.`);
+
+    await this.clientWasActive(client);
   }
 
   @SubscribeMessage('EVENT')
@@ -71,6 +107,8 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       client.close();
       return;
     }
+
+    await this.clientWasActive(client);
 
     const response = await client.state.onEvent(eventData);
 
@@ -93,6 +131,8 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       client.close();
       return;
     }
+
+    await this.clientWasActive(client);
 
     const response = await client.state.onResponse(responseData);
 
@@ -118,7 +158,9 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       throw new Error(`User not found: ${data.userId}`);
     }
 
-    const socket = this.websocketService.sockets.find((socket) => socket.reader?.id === data.readerId);
+    const socket = Array.from(this.websocketService.sockets.values()).find(
+      (socket) => socket.reader?.id === data.readerId
+    );
 
     if (!socket) {
       throw new Error(`Reader not connected: ${data.readerId}`);
@@ -136,6 +178,48 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
     socket.state = nextState;
     const initMessage = nextState.getInitMessage();
     this.logger.debug(`Sending enrollment init message: ${JSON.stringify(initMessage)}`);
+    socket.send(JSON.stringify(initMessage));
+  }
+
+  public async startResetOfNfcCard(data: { readerId: number; userId: number; cardId: number }) {
+    const reader = await this.dbService.findReaderById(data.readerId);
+
+    if (!reader) {
+      throw new Error(`Reader not found: ${data.readerId}`);
+    }
+
+    const user = await this.dbService.getUserById(data.userId);
+
+    if (!user) {
+      throw new Error(`User not found: ${data.userId}`);
+    }
+
+    const socket = Array.from(this.websocketService.sockets.values()).find(
+      (socket) => socket.reader?.id === data.readerId
+    );
+
+    if (!socket) {
+      throw new Error(`Reader not connected: ${data.readerId}`);
+    }
+
+    const nfcCard = await this.dbService.getNFCCardByID(data.cardId);
+
+    if (!nfcCard) {
+      throw new Error(`NFC card not found: ${data.cardId}`);
+    }
+
+    const nextState = new ResetNTAG424State(
+      socket,
+      {
+        dbService: this.dbService,
+        websocketService: this.websocketService,
+        fabreaderService: this.fabreaderService,
+      },
+      nfcCard.id
+    );
+    socket.state = nextState;
+    const initMessage = await nextState.getInitMessage();
+    this.logger.debug(`Sending reset init message: ${JSON.stringify(initMessage)}`);
     socket.send(JSON.stringify(initMessage));
   }
 }

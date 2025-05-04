@@ -1,4 +1,4 @@
-import { useTranslations } from '../../../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { Listbox, ListboxItem } from '@heroui/listbox';

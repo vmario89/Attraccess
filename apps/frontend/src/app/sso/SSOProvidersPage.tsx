@@ -1,14 +1,11 @@
 import React from 'react';
 import { PageHeader } from '../../components/pageHeader';
-import {
-  SSOProvidersList,
-  SSOProvidersListRef,
-} from './providers/SSOProvidersList';
+import { SSOProvidersList, SSOProvidersListRef } from './providers/SSOProvidersList';
 import { useAuth } from '../../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as providerListEn from './providers/translations/en';
 import * as providerListDe from './providers/translations/de';
 
@@ -41,11 +38,7 @@ export const SSOProvidersPage: React.FC = () => {
         subtitle="Manage Single Sign-On providers for system authentication"
         backTo="/"
         actions={
-          <Button
-            color="primary"
-            startContent={<Plus size={16} />}
-            onPress={handleAddNewProvider}
-          >
+          <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewProvider}>
             {t('addNewProvider')}
           </Button>
         }

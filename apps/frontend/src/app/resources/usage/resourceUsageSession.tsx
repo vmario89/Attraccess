@@ -2,14 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { Button, Card, CardBody, CardHeader, Spinner, Divider, Alert } from '@heroui/react';
 import { Play, StopCircle, Clock, Users } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceUsageSession.en';
 import * as de from './translations/resourceUsageSession.de';
 import { SessionNotesModal, SessionModalMode } from './components/SessionNotesModal';
 import { useAuth } from '../../../hooks/useAuth';
-import { AttraccessUser } from '../../../components/AttraccessUser';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { DateTimeDisplay } from '@frontend/components/DateTimeDisplay';
+import { AttraccessUser, DateTimeDisplay } from '@attraccess/plugins-frontend-ui';
 import {
   useResourceIntroducersServiceGetAllResourceIntroducers,
   useResourceIntroductionsServiceCheckStatus,

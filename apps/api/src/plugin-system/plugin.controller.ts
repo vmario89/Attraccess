@@ -1,9 +1,9 @@
 import { Controller, Get, Logger, NotFoundException, Param, StreamableFile } from '@nestjs/common';
 import { PluginService } from './plugin.service';
-import { join } from 'path';
 import { createReadStream, existsSync } from 'fs';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PluginManifest } from './plugin.manifest';
+import { join } from 'path';
 
 @Controller('plugins')
 export class PluginController {
@@ -20,29 +20,36 @@ export class PluginController {
     return PluginService.getPlugins();
   }
 
-  @Get(':pluginName/frontend/plugin.js')
-  @ApiOperation({ summary: 'Get frontend plugin.js file', operationId: 'getFrontendPluginJsFile' })
+  // Also add support for loading the index.js file
+  @Get(':pluginName/frontend/module-federation/*filePath')
+  @ApiOperation({ summary: 'Get any frontend plugin file', operationId: 'getFrontendPluginFile' })
   @ApiResponse({
     status: 200,
-    description: 'The frontend plugin.js file',
+    description: 'The requested frontend plugin file',
     type: String,
   })
-  getFrontendPluginJsFile(@Param('pluginName') pluginName: string) {
+  getFrontendPluginFile(@Param('pluginName') pluginName: string, @Param('filePath') filePath?: string) {
     const plugins = PluginService.getPlugins();
     const plugin = plugins.find((plugin) => plugin.name === pluginName);
     if (!plugin) {
       throw new NotFoundException(`Plugin ${pluginName} not found`);
     }
 
-    const filePath = join(PluginService.PLUGIN_PATH, plugin.main.frontend);
-    if (!existsSync(filePath)) {
-      throw new NotFoundException(`Frontend plugin.js file not found for plugin ${pluginName}`);
+    const fileName = join(...filePath.split(','));
+
+    // Path should point to the requested file in the plugin directory
+    const pluginDir = join(PluginService.PLUGIN_PATH, plugin.main.frontend.directory);
+    const fullFilePath = join(pluginDir, fileName);
+
+    if (!existsSync(fullFilePath)) {
+      this.logger.warn(`Frontend file ${fullFilePath} not found for plugin ${pluginName}`);
+      throw new NotFoundException(`Frontend file ${fileName} not found for plugin ${pluginName}`);
     }
 
-    this.logger.log(`Serving frontend plugin.js file for plugin ${pluginName} from ${filePath}`);
+    this.logger.log(`Serving frontend file ${fileName} for plugin ${pluginName} from ${fullFilePath}`);
 
     // stream the file
-    const fileStream = createReadStream(filePath);
+    const fileStream = createReadStream(fullFilePath);
     return new StreamableFile(fileStream, {
       type: 'application/javascript',
     });

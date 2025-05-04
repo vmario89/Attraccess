@@ -18,7 +18,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { ListResourcesDto } from './dtos/listResources.dto';
 import { Resource } from '@attraccess/database-entities';
-import { Auth } from '@attraccess/plugins';
+import { Auth } from '@attraccess/plugins-backend-sdk';
 import { PaginatedResponse } from '../types/response';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';
@@ -68,12 +68,8 @@ export class ResourcesController {
     description: 'Unauthorized - User is not authenticated',
   })
   async getAll(@Query() query: ListResourcesDto): Promise<PaginatedResponse<Resource>> {
-    const resources = (await this.resourcesService.listResources(
-      query.page,
-      query.limit,
-      query.search,
-      query.groupId
-    )) as PaginatedResourceResponseDto;
+    console.log(query);
+    const resources = (await this.resourcesService.listResources(query)) as PaginatedResourceResponseDto;
 
     resources.data = resources.data.map(this.transformResource);
     return resources;

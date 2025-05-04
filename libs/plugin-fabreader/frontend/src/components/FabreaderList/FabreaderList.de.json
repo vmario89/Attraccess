@@ -1,0 +1,24 @@
+{
+  "editReader": "Bearbeiten",
+  "nfcCards": "NFC-Karten",
+  "fabreaders": "FABReader",
+  "enrollInstructions": "Um eine neue NFC-Karte zu registrieren, wählen Sie einen verbundenen ({{cloud}}) FABReader aus der Liste unten aus. Klicken Sie dann auf die Schaltfläche \"Neue NFC-Karte registrieren\" und foldgen dann den Anweisungen auf dem FABReader.",
+  "enrollNewNfcCard": "Neue NFC-Karte registrieren",
+  "lastConnection": "Letzte Verbindung am {{timestamp}}",
+  "noNfcCardsFound": "Keine NFC-Karten gefunden",
+  "errorEnrollNfcCard": "NFC-Karte konnte nicht registriert werden",
+  "errorFetchCards": "NFC-Karten konnten nicht abgerufen werden",
+  "errorFetchReaders": "FABReader konnten nicht abgerufen werden",
+  "nfcCardEnrollmentStarted": "NFC-Karten registrierung in arbeit",
+  "nfcCardEnrollmentStartedDescription": "Bitte befolgen Sie die Anweisungen auf dem FABReader.",
+  "connected": "Verbunden",
+  "disconnected": "Nicht verbunden",
+  "nfcCardsTable": {
+    "headers": {
+      "id": "ID",
+      "uid": "UID",
+      "userId": "Benutzer",
+      "createdAt": "Erstellt am"
+    }
+  }
+}

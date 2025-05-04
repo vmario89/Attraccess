@@ -2,6 +2,7 @@ import { Column, Entity } from 'typeorm';
 
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Reader {
@@ -20,7 +21,7 @@ export class Reader {
     type: 'text',
     nullable: false,
   })
-  @ApiProperty({ description: 'The API token hash of the reader' })
+  @Exclude()
   apiTokenHash: string;
 
   @Column({

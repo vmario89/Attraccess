@@ -172,16 +172,27 @@ void API::onDisableCardChecking(JsonObject data)
     this->nfc->disableCardChecking();
 }
 
+void API::hexStringToBytes(const String &hexString, uint8_t *byteArray, size_t byteArrayLength)
+{
+    // Initialize array with zeros
+    memset(byteArray, 0, byteArrayLength);
+
+    // Process the hex string - 2 characters per byte
+    for (size_t i = 0; i < byteArrayLength && i * 2 + 1 < hexString.length(); i++)
+    {
+        String byteHex = hexString.substring(i * 2, i * 2 + 2);
+        byteArray[i] = strtol(byteHex.c_str(), NULL, 16);
+    }
+}
+
 void API::onChangeKeys(JsonObject data)
 {
     Serial.println("[API] CHANGE_KEYS");
 
-    // authentication key
+    // Parse authentication key from hex string
     uint8_t authKey[16];
-    for (int i = 0; i < 16; i++)
-    {
-        authKey[i] = data["payload"]["authenticationKey"][i].as<uint8_t>();
-    }
+    String authKeyHex = data["payload"]["authenticationKey"].as<String>();
+    this->hexStringToBytes(authKeyHex, authKey, sizeof(authKey));
 
     JsonObject response = JsonObject();
     response["failedKeys"] = JsonArray();
@@ -204,10 +215,10 @@ void API::onChangeKeys(JsonObject data)
             doesChangeKey0 = true;
 
             uint8_t newKey[16];
-            for (int i = 0; i < 16; i++)
-            {
-                newKey[i] = strtol(key.value().as<String>().c_str(), NULL, 16);
-            }
+            String newKeyHex = key.value().as<String>();
+            this->hexStringToBytes(newKeyHex, newKey, sizeof(newKey));
+
+            Serial.println("Change KEy Call 1");
             bool success = this->nfc->changeKey(0, authKey, newKey);
             if (!success)
             {
@@ -239,10 +250,24 @@ void API::onChangeKeys(JsonObject data)
         }
 
         uint8_t newKey[16];
-        for (int i = 0; i < 16; i++)
+        String newKeyHex = key.value().as<String>();
+        this->hexStringToBytes(newKeyHex, newKey, sizeof(newKey));
+
+        Serial.print("[API] executing change key for key number ");
+        Serial.print(keyNumber);
+        Serial.print(" using current key xxxx");
+        for (int i = 10; i < 16; i++)
         {
-            newKey[i] = strtol(key.value().as<String>().c_str(), NULL, 16);
+            Serial.print(authKey[i]);
         }
+        Serial.print(" to new key ");
+        for (int i = 10; i < 16; i++)
+        {
+            Serial.print(newKey[i]);
+        }
+        Serial.println();
+
+        Serial.println("Change key call 3");
         bool success = this->nfc->changeKey(keyNumber, authKey, newKey);
         if (success)
         {
@@ -259,6 +284,32 @@ void API::onChangeKeys(JsonObject data)
     this->sendMessage(true, "CHANGE_KEYS", responsePayload);
 }
 
+void API::onAuthenticate(JsonObject data)
+{
+    Serial.println("[API] AUTHENTICATE");
+
+    uint8_t authenticationKey[16];
+    String authKeyHex = data["payload"]["authenticationKey"].as<String>();
+    this->hexStringToBytes(authKeyHex, authenticationKey, sizeof(authenticationKey));
+
+    uint8_t keyNumber = data["payload"]["keyNumber"].as<uint8_t>();
+
+    bool success = this->nfc->authenticate(keyNumber, authenticationKey);
+    if (success)
+    {
+        Serial.println("[API] Authentication successful.");
+    }
+    else
+    {
+        Serial.println("[API] Authentication failed.");
+    }
+
+    StaticJsonDocument<256> doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["authenticationSuccessful"] = success;
+    this->sendMessage(true, "AUTHENTICATE", payload);
+}
+
 void API::processData()
 {
     if (!this->websocket.available())
@@ -266,8 +317,8 @@ void API::processData()
         return;
     }
 
-    uint8_t buffer[128];
-    const auto bytes_read = this->websocket.read(buffer, 128);
+    uint8_t buffer[1024];
+    const auto bytes_read = this->websocket.read(buffer, 1024);
 
     // parse json
     JsonDocument doc;
@@ -294,7 +345,7 @@ void API::processData()
     {
         this->onDisplayText(data);
     }
-    else if (eventType == "AUTHENTICATED")
+    else if (eventType == "READER_AUTHENTICATED")
     {
         this->is_authenticated = true;
         Serial.println("[API] Authentication successful.");
@@ -311,9 +362,15 @@ void API::processData()
     {
         this->onChangeKeys(data);
     }
+    else if (eventType == "AUTHENTICATE")
+    {
+        this->onAuthenticate(data);
+    }
     else
     {
         Serial.println("[API] Unknown event type: " + eventType);
+        Serial.write(buffer, bytes_read);
+        Serial.println();
     }
 }
 
@@ -415,6 +472,25 @@ void API::sendNFCTapped(uint8_t *uid, uint8_t uidLength)
     this->sendMessage(false, "NFC_TAP", payload);
 }
 
+void API::sendHeartbeat()
+{
+    // send every 5 seconds
+    if (this->heartbeat_sent_at != 0 && millis() - this->heartbeat_sent_at < (1000 * 5))
+    {
+        return;
+    }
+
+    StaticJsonDocument<512> event;
+    event["event"] = "HEARTBEAT";
+
+    String json;
+    serializeJson(event, json);
+    this->websocket.write((uint8_t *)json.c_str(), json.length());
+    this->websocket.flush();
+
+    this->heartbeat_sent_at = millis();
+}
+
 void API::loop()
 {
     if (!isConnected())
@@ -431,5 +507,6 @@ void API::loop()
         this->sendAuthenticationRequest();
     }
 
+    this->sendHeartbeat();
     this->processData();
 }

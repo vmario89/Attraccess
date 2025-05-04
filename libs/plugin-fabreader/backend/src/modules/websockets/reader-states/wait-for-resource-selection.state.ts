@@ -12,7 +12,6 @@ export class WaitForResourceSelectionState implements ReaderState {
   public constructor(
     private readonly socket: AuthenticatedWebSocket,
     private readonly services: GatewayServices,
-    private readonly transitionEventData: FabreaderEvent['data'],
     private readonly resourcesOfReader: Resource[]
   ) {}
 
@@ -44,6 +43,6 @@ export class WaitForResourceSelectionState implements ReaderState {
 
     this.logger.debug(`Reader has selected resource with id ${selectedResourceId}, moving to WaitForNFCTapState`);
     this.socket.state = new WaitForNFCTapState(this.socket, this.services, selectedResourceId);
-    return this.socket.state.getInitMessage();
+    return await this.socket.state.getInitMessage();
   }
 }

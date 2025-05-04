@@ -14,7 +14,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthenticatedRequest, Auth } from '@attraccess/plugins';
+import { AuthenticatedRequest, Auth } from '@attraccess/plugins-backend-sdk';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../../email/email.service';
 import { GetUsersQueryDto } from './dtos/getUsersQuery.dto';
@@ -167,7 +167,6 @@ export class UsersController {
     type: UserNotFoundException,
   })
   async getOneById(@Param('id', ParseIntPipe) id: number, @Req() request: AuthenticatedRequest): Promise<User> {
-    this.logger.debug(`Getting user by ID: ${id}, requested by user ID: ${request.user.id}`);
     const authenticatedUser = request.user;
 
     // Allow access if the user is requesting their own data or has canManageUsers permission
@@ -178,14 +177,12 @@ export class UsersController {
       throw new ForbiddenException();
     }
 
-    this.logger.debug(`Fetching user from database, ID: ${id}`);
     const user = await this.usersService.findOne({ id });
     if (!user) {
       this.logger.debug(`User not found with ID: ${id}`);
       throw new UserNotFoundException(id);
     }
 
-    this.logger.debug(`User found with ID: ${id}`);
     return user;
   }
 
@@ -202,7 +199,6 @@ export class UsersController {
     description: 'Forbidden - User does not have permission to manage users.',
   })
   async getAll(@Query() query: GetUsersQueryDto): Promise<PaginatedUsersResponseDto> {
-    this.logger.debug(`Getting all users with query: ${JSON.stringify(query)}`);
     const result = (await this.usersService.findAll({
       page: query.page,
       limit: query.limit,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input, Textarea, Select, SelectItem } from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useWebhookForm } from '../context/WebhookFormContext';
 import { WebhookHttpMethod } from '../types';
 
@@ -16,9 +15,7 @@ const WebhookBasicSettings: React.FC = () => {
     de: deBasic,
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({
       ...prev,
@@ -29,9 +26,7 @@ const WebhookBasicSettings: React.FC = () => {
   const handleSelectChange = (name: string, value: string) => {
     if (name === 'method') {
       // Validate that it's a valid webhook method
-      if (
-        Object.values(WebhookHttpMethod).includes(value as WebhookHttpMethod)
-      ) {
+      if (Object.values(WebhookHttpMethod).includes(value as WebhookHttpMethod)) {
         setValues((prev) => ({
           ...prev,
           [name]: value as WebhookHttpMethod,

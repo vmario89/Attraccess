@@ -1196,12 +1196,25 @@ export interface WebhookTestResponseDto {
   message: string;
 }
 
+export interface PluginMainFrontend {
+  /**
+   * The directory of the plugins frontend files
+   * @example "frontend"
+   */
+  directory: string;
+  /**
+   * The entry point of the plugin, relative to the frontend directory
+   * @example "index.mjs"
+   */
+  entryPoint: string;
+}
+
 export interface PluginMain {
   /**
-   * The frontend file of the plugin
-   * @example "frontend/index.mjs"
+   * The frontend files of the plugin
+   * @example {"directory":"frontend","entryPoint":"index.mjs"}
    */
-  frontend: string;
+  frontend: PluginMainFrontend;
   /**
    * The backend file of the plugin
    * @example "backend/src/plugin.js"
@@ -1513,7 +1526,7 @@ export type RegenerateSecretData = WebhookConfigResponseDto;
 
 export type GetPluginsData = PluginManifest[];
 
-export type GetFrontendPluginJsFileData = string;
+export type GetFrontendPluginFileData = string;
 
 export namespace Application {
   /**
@@ -2880,18 +2893,19 @@ export namespace Plugin {
   /**
    * No description
    * @tags Plugin
-   * @name GetFrontendPluginJsFile
-   * @summary Get frontend plugin.js file
-   * @request GET:/api/plugins/{pluginName}/frontend/plugin.js
+   * @name GetFrontendPluginFile
+   * @summary Get any frontend plugin file
+   * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
    */
-  export namespace GetFrontendPluginJsFile {
+  export namespace GetFrontendPluginFile {
     export type RequestParams = {
       pluginName: string;
+      filePath: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = GetFrontendPluginJsFileData;
+    export type ResponseBody = GetFrontendPluginFileData;
   }
 }
 
@@ -4435,13 +4449,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Plugin
-     * @name GetFrontendPluginJsFile
-     * @summary Get frontend plugin.js file
-     * @request GET:/api/plugins/{pluginName}/frontend/plugin.js
+     * @name GetFrontendPluginFile
+     * @summary Get any frontend plugin file
+     * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
      */
-    getFrontendPluginJsFile: (pluginName: string, params: RequestParams = {}) =>
-      this.request<GetFrontendPluginJsFileData, any>({
-        path: `/api/plugins/${pluginName}/frontend/plugin.js`,
+    getFrontendPluginFile: (pluginName: string, filePath: string, params: RequestParams = {}) =>
+      this.request<GetFrontendPluginFileData, any>({
+        path: `/api/plugins/${pluginName}/frontend/module-federation/${filePath}`,
         method: 'GET',
         format: 'json',
         ...params,

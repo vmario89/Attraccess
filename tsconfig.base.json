@@ -13,6 +13,7 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
@@ -22,7 +23,9 @@
       "@attraccess/attraccess-plugin-fabreader-frontend": ["libs/plugin-fabreader/frontend/src/index.ts"],
       "@attraccess/database-entities": ["libs/database-entities/src/index.ts"],
       "@attraccess/env": ["libs/env/src/index.ts"],
-      "@attraccess/plugins": ["libs/plugins/src/index.ts"],
+      "@attraccess/plugins-backend-sdk": ["libs/plugins-backend-sdk/src/index.ts"],
+      "@attraccess/plugins-frontend-sdk": ["libs/plugins-frontend-sdk/src/index.ts"],
+      "@attraccess/plugins-frontend-ui": ["libs/plugins-frontend-ui/src/index.ts"],
       "@attraccess/react-query-client": ["libs/react-query-client/src/index.ts"],
       "@frontend/*": ["apps/frontend/src/*"]
     }

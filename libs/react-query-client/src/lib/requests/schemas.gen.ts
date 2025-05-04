@@ -1629,13 +1629,37 @@ export const $WebhookTestResponseDto = {
     required: ['success', 'message']
 } as const;
 
+export const $PluginMainFrontend = {
+    type: 'object',
+    properties: {
+        directory: {
+            type: 'string',
+            description: 'The directory of the plugins frontend files',
+            example: 'frontend'
+        },
+        entryPoint: {
+            type: 'string',
+            description: 'The entry point of the plugin, relative to the frontend directory',
+            example: 'index.mjs'
+        }
+    },
+    required: ['directory', 'entryPoint']
+} as const;
+
 export const $PluginMain = {
     type: 'object',
     properties: {
         frontend: {
-            type: 'string',
-            description: 'The frontend file of the plugin',
-            example: 'frontend/index.mjs'
+            description: 'The frontend files of the plugin',
+            example: {
+                directory: 'frontend',
+                entryPoint: 'index.mjs'
+            },
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/PluginMainFrontend'
+                }
+            ]
         },
         backend: {
             type: 'string',

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useAuth } from '../../../hooks/useAuth';
 import { Card, CardHeader, CardBody } from '@heroui/react';
 import { ResourceUsage } from '@attraccess/react-query-client';
@@ -15,18 +15,14 @@ interface ResourceUsageHistoryProps {
 }
 
 // Main component
-export function ResourceUsageHistory({
-  resourceId,
-}: ResourceUsageHistoryProps) {
+export function ResourceUsageHistory({ resourceId }: ResourceUsageHistoryProps) {
   const { t } = useTranslations('resourceUsageHistory', { en, de });
   const { hasPermission } = useAuth();
   const canManageResources = hasPermission('canManageResources');
 
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSession, setSelectedSession] = useState<ResourceUsage | null>(
-    null
-  );
+  const [selectedSession, setSelectedSession] = useState<ResourceUsage | null>(null);
 
   const handleSessionClick = (session: ResourceUsage) => {
     setSelectedSession(session);
@@ -57,11 +53,7 @@ export function ResourceUsageHistory({
         />
       </CardBody>
 
-      <UsageNotesModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        session={selectedSession}
-      />
+      <UsageNotesModal isOpen={isModalOpen} onClose={handleCloseModal} session={selectedSession} />
     </Card>
   );
 }

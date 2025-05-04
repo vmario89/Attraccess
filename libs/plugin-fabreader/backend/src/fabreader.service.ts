@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SystemEvent, SystemEventPayload, SystemEventResponse } from '@attraccess/plugins';
+import { SystemEvent, SystemEventPayload, SystemEventResponse } from '@attraccess/plugins-backend-sdk';
 import { subtle } from 'crypto';
 
 @Injectable()

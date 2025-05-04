@@ -18,7 +18,10 @@ export class InitialReaderState implements ReaderState {
 
   public constructor(private readonly socket: AuthenticatedWebSocket, private readonly services: GatewayServices) {}
 
-  public getInitMessage(): undefined {
+  public async getInitMessage() {
+    if (this.socket.reader) {
+      return await this.onIsAuthenticated();
+    }
     return undefined;
   }
 
@@ -39,6 +42,32 @@ export class InitialReaderState implements ReaderState {
   public async onResponse(data: FabreaderResponse['data']) {
     this.logger.debug(`Received response: ${JSON.stringify(data)}`);
     return undefined;
+  }
+
+  private async onIsAuthenticated() {
+    this.logger.debug('Getting resources of reader', this.socket.reader.hasAccessToResourceIds);
+    const resourcesOfReader = await this.services.dbService.getManyResourcesById(
+      this.socket.reader.hasAccessToResourceIds
+    );
+    if (resourcesOfReader.length === 0) {
+      this.logger.debug('No resources attached to reader, moving reader to NoResourcesAttachedState');
+      const nextState = new NoResourcesAttachedState(this.socket, this.services);
+      this.socket.state = nextState;
+      return nextState.getInitMessage();
+    }
+
+    if (resourcesOfReader.length > 1) {
+      this.logger.debug('Resources attached to reader, moving reader to WaitForResourceSelectionState');
+
+      const nextState = new WaitForResourceSelectionState(this.socket, this.services, resourcesOfReader);
+      this.socket.state = nextState;
+      return nextState.getInitMessage();
+    }
+
+    this.logger.debug('Reader has only one resource attached, moving reader to WaitForNFCTapState');
+    const nextState = new WaitForNFCTapState(this.socket, this.services, resourcesOfReader[0].id);
+    this.socket.state = nextState;
+    return await nextState.getInitMessage();
   }
 
   public async handleRegisterEvent(data: FabreaderEvent['data']): Promise<FabreaderMessage | undefined> {
@@ -72,32 +101,12 @@ export class InitialReaderState implements ReaderState {
       return unauthorizedResponse;
     }
 
-    const authenticatedResponse = new FabreaderResponse(FabreaderEventType.AUTHENTICATED, {});
+    const authenticatedResponse = new FabreaderResponse(FabreaderEventType.READER_AUTHENTICATED, {});
     this.socket.send(JSON.stringify(authenticatedResponse));
     await new Promise((resolve) => setTimeout(resolve, 400));
 
     this.socket.reader = reader;
 
-    this.logger.debug('Getting resources of reader', reader.hasAccessToResourceIds);
-    const resourcesOfReader = await this.services.dbService.getManyResourcesById(reader.hasAccessToResourceIds);
-    if (resourcesOfReader.length === 0) {
-      this.logger.debug('No resources attached to reader, moving reader to NoResourcesAttachedState');
-      const nextState = new NoResourcesAttachedState(this.socket, this.services, data);
-      this.socket.state = nextState;
-      return nextState.getInitMessage();
-    }
-
-    if (resourcesOfReader.length > 1) {
-      this.logger.debug('Resources attached to reader, moving reader to WaitForResourceSelectionState');
-
-      const nextState = new WaitForResourceSelectionState(this.socket, this.services, data, resourcesOfReader);
-      this.socket.state = nextState;
-      return nextState.getInitMessage();
-    }
-
-    this.logger.debug('Reader has only one resource attached, moving reader to WaitForNFCTapState');
-    const nextState = new WaitForNFCTapState(this.socket, this.services, resourcesOfReader[0].id);
-    this.socket.state = nextState;
-    return nextState.getInitMessage();
+    return this.onIsAuthenticated();
   }
 }

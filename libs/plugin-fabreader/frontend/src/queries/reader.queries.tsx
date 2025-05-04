@@ -1,19 +1,26 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { useAuthStore } from '../store/auth.store';
+import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
+import { useStore } from '../store/store';
+import { getQueryKey } from './keys';
 
 interface Reader {
   id: number;
   name: string;
-  // Add other reader properties as needed
+  hasAccessToResourceIds: number[];
+  lastConnection: string;
+  firstConnection: string;
+  connected: boolean;
 }
 
 // API client for reader-related requests
 const readerApi = {
   getReaders: async (): Promise<Reader[]> => {
-    const authToken = useAuthStore.getState().authToken;
-    const response = await fetch('/fabreader/readers', {
+    const { endpoint, auth } = useStore.getState();
+
+    const response = await fetch(`${endpoint}/api/fabreader/readers`, {
+      method: 'GET',
       headers: {
-        Authorization: authToken ? `Bearer ${authToken}` : '',
+        Authorization: auth?.authToken ? `Bearer ${auth.authToken}` : '',
+        'Content-Type': 'application/json',
       },
     });
 
@@ -25,11 +32,16 @@ const readerApi = {
   },
 
   enrollNfcCard: async (readerId: number): Promise<{ message: string }> => {
-    const authToken = useAuthStore.getState().authToken;
-    const response = await fetch(`/fabreader/readers/${readerId}/enroll-nfc-card`, {
+    const { auth, endpoint } = useStore.getState();
+
+    if (!auth?.authToken || !endpoint) {
+      throw new Error('No auth token or endpoint');
+    }
+
+    const response = await fetch(`${endpoint}/api/fabreader/readers/${readerId}/enroll-nfc-card`, {
       method: 'POST',
       headers: {
-        Authorization: authToken ? `Bearer ${authToken}` : '',
+        Authorization: auth?.authToken ? `Bearer ${auth.authToken}` : '',
         'Content-Type': 'application/json',
       },
     });
@@ -40,22 +52,100 @@ const readerApi = {
 
     return response.json();
   },
+
+  resetNfcCard: async (readerId: number, cardId: number): Promise<{ message: string }> => {
+    const { auth, endpoint } = useStore.getState();
+
+    if (!auth?.authToken || !endpoint) {
+      throw new Error('No auth token or endpoint');
+    }
+
+    const response = await fetch(`${endpoint}/api/fabreader/readers/${readerId}/reset-nfc-card/${cardId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: auth?.authToken ? `Bearer ${auth.authToken}` : '',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to reset NFC card');
+    }
+
+    return response.json();
+  },
+
+  updateReader: async (
+    readerId: number,
+    data: { name?: string; connectedResources?: number[] }
+  ): Promise<{ message: string; reader: Reader }> => {
+    const { auth, endpoint } = useStore.getState();
+
+    if (!auth?.authToken || !endpoint) {
+      throw new Error('No auth token or endpoint');
+    }
+
+    const response = await fetch(`${endpoint}/api/fabreader/readers/${readerId}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: auth?.authToken ? `Bearer ${auth.authToken}` : '',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update reader');
+    }
+
+    return response.json();
+  },
 };
 
 // React Query hooks
-export const useReaders = () => {
-  const authToken = useAuthStore((state) => state.authToken);
+export const useReaders = (options?: Partial<UseQueryOptions<Reader[], Error>>) => {
+  const { endpoint, auth } = useStore();
 
   return useQuery({
-    queryKey: ['plugin-fabreader', 'readers', 'getAll', authToken],
+    queryKey: getQueryKey('readers', ['getAll']),
     queryFn: readerApi.getReaders,
-    enabled: !!authToken, // Only run query if auth token is available
+    enabled: !!endpoint && !!auth?.authToken,
+    ...options,
   });
 };
 
-export const useEnrollNfcCard = () => {
+export const useEnrollNfcCard = (
+  options?: Partial<UseMutationOptions<{ message: string }, Error, { readerId: number }>>
+) => {
   return useMutation({
-    mutationKey: ['plugin-fabreader', 'readers', 'enrollNfcCard'],
-    mutationFn: (readerId: number) => readerApi.enrollNfcCard(readerId),
+    mutationKey: getQueryKey('readers', ['enrollNfcCard']),
+    mutationFn: ({ readerId }) => readerApi.enrollNfcCard(readerId),
+    ...options,
+  });
+};
+
+export const useUpdateReader = (
+  options?: Partial<
+    UseMutationOptions<
+      { message: string; reader: Reader },
+      Error,
+      { readerId: number; data: { name?: string; connectedResources?: number[] } }
+    >
+  >
+) => {
+  return useMutation({
+    mutationKey: getQueryKey('readers', ['updateReader']),
+    mutationFn: ({ readerId, data }) => readerApi.updateReader(readerId, data),
+    ...options,
+  });
+};
+
+export const useResetNfcCard = (
+  options?: Partial<UseMutationOptions<{ message: string }, Error, { readerId: number; cardId: number }>>
+) => {
+  return useMutation({
+    mutationKey: getQueryKey('readers', ['resetNfcCard']),
+    mutationFn: ({ readerId, cardId }) => readerApi.resetNfcCard(readerId, cardId),
+    ...options,
   });
 };

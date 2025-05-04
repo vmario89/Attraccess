@@ -3,5 +3,5 @@ import { AuthenticatedWebSocket } from './websocket.types';
 
 @Injectable()
 export class WebsocketService {
-  public readonly sockets: AuthenticatedWebSocket[] = [];
+  public readonly sockets: Map<string, AuthenticatedWebSocket> = new Map();
 }

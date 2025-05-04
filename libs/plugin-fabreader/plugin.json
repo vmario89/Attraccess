@@ -2,7 +2,10 @@
     "name": "FABReader",
     "main": {
         "backend": "backend/src/fabreader.module.js",
-        "frontend": "frontend/index.esm.js"
+        "frontend": {
+            "directory": "frontend",
+            "entryPoint": "assets/remoteEntry.js"
+        }
     },
     "version": "1.0.0",
     "description": "Plugin to add support for the FABReader",

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@heroui/react';
 import { Trash2, RefreshCw, Save } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
 import { useWebhookForm } from '../context/WebhookFormContext';
@@ -10,19 +9,18 @@ import { useWebhookForm } from '../context/WebhookFormContext';
 // Translations for this component only
 import * as enActions from '../translations/components/form-actions/en';
 import * as deActions from '../translations/components/form-actions/de';
-import { useWebhooksServiceDeleteOneWebhookConfiguration, useWebhooksServiceTest } from '@attraccess/react-query-client';
+import {
+  useWebhooksServiceDeleteOneWebhookConfiguration,
+  useWebhooksServiceTest,
+} from '@attraccess/react-query-client';
 
 interface WebhookFormActionsProps {
   onCancel?: () => void;
   onSubmit: () => void;
 }
 
-const WebhookFormActions: React.FC<WebhookFormActionsProps> = ({
-  onCancel,
-  onSubmit,
-}) => {
-  const { webhookId, resourceId, isExistingWebhook, isSubmitting } =
-    useWebhookForm();
+const WebhookFormActions: React.FC<WebhookFormActionsProps> = ({ onCancel, onSubmit }) => {
+  const { webhookId, resourceId, isExistingWebhook, isSubmitting } = useWebhookForm();
   const { t } = useTranslations('webhooks.formActions', {
     en: enActions,
     de: deActions,
@@ -132,12 +130,7 @@ const WebhookFormActions: React.FC<WebhookFormActionsProps> = ({
             {t('cancel')}
           </Button>
         )}
-        <Button
-          color="primary"
-          startContent={<Save className="w-4 h-4" />}
-          onPress={onSubmit}
-          isLoading={isSubmitting}
-        >
+        <Button color="primary" startContent={<Save className="w-4 h-4" />} onPress={onSubmit} isLoading={isSubmitting}>
           {t('save')}
         </Button>
       </div>

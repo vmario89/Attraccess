@@ -1,14 +1,8 @@
 import { useState } from 'react';
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@heroui/modal';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
 import { Button } from '@heroui/button';
 import { Textarea } from '@heroui/input';
-import { useTranslations } from '../../../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 
@@ -25,13 +19,7 @@ export type SessionNotesModalProps = {
   isSubmitting: boolean;
 };
 
-export const SessionNotesModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  mode,
-  isSubmitting,
-}: SessionNotesModalProps) => {
+export const SessionNotesModal = ({ isOpen, onClose, onConfirm, mode, isSubmitting }: SessionNotesModalProps) => {
   const { t } = useTranslations('sessionNotesModal', { en, de });
   const [notes, setNotes] = useState('');
 
@@ -43,9 +31,7 @@ export const SessionNotesModal = ({
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent className="sm:max-w-md">
-        <ModalHeader>
-          {mode === SessionModalMode.START ? t('title.start') : t('title.end')}
-        </ModalHeader>
+        <ModalHeader>{mode === SessionModalMode.START ? t('title.start') : t('title.end')}</ModalHeader>
 
         <ModalBody>
           <div className="space-y-2">
@@ -56,9 +42,7 @@ export const SessionNotesModal = ({
               id="notes"
               placeholder={t('notesPlaceholder')}
               value={notes}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setNotes(e.target.value)
-              }
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNotes(e.target.value)}
               className="w-full"
             />
             <p className="text-xs text-gray-500">{t('notesOptional')}</p>

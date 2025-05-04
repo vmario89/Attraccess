@@ -9,7 +9,7 @@ import { ResourceUsageSession } from './usage/resourceUsageSession';
 import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
 import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceDetails.en';
 import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';

@@ -1,14 +1,12 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-
 import { HistoryItem } from './components/HistoryItem';
 import { EmptyState } from './components/EmptyState';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { Button } from '@heroui/react';
+import { useResourceIntroductionsServiceGetHistoryOfIntroduction } from '@attraccess/react-query-client';
 
 import * as en from './translations/en';
 import * as de from './translations/de';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
-import { Button } from '@heroui/react';
-import { useResourceIntroductionsServiceGetHistoryOfIntroduction } from '@attraccess/react-query-client';
 
 export type IntroductionHistoryDialogProps = {
   isOpen: boolean;

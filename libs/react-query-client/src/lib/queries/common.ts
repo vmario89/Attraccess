@@ -83,12 +83,13 @@ export const UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn = ({ id }: {
 export type ResourcesServiceGetAllResourcesDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getAllResources>>;
 export type ResourcesServiceGetAllResourcesQueryResult<TData = ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetAllResourcesKey = "ResourcesServiceGetAllResources";
-export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, limit, page, search }: {
+export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, ids, limit, page, search }: {
   groupId?: number;
+  ids?: number[];
   limit?: number;
   page?: number;
   search?: string;
-} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, limit, page, search }])];
+} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, ids, limit, page, search }])];
 export type ResourcesServiceGetOneResourceByIdDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getOneResourceById>>;
 export type ResourcesServiceGetOneResourceByIdQueryResult<TData = ResourcesServiceGetOneResourceByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetOneResourceByIdKey = "ResourcesServiceGetOneResourceById";
@@ -212,12 +213,13 @@ export type PluginServiceGetPluginsDefaultResponse = Awaited<ReturnType<typeof P
 export type PluginServiceGetPluginsQueryResult<TData = PluginServiceGetPluginsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const usePluginServiceGetPluginsKey = "PluginServiceGetPlugins";
 export const UsePluginServiceGetPluginsKeyFn = (queryKey?: Array<unknown>) => [usePluginServiceGetPluginsKey, ...(queryKey ?? [])];
-export type PluginServiceGetFrontendPluginJsFileDefaultResponse = Awaited<ReturnType<typeof PluginService.getFrontendPluginJsFile>>;
-export type PluginServiceGetFrontendPluginJsFileQueryResult<TData = PluginServiceGetFrontendPluginJsFileDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const usePluginServiceGetFrontendPluginJsFileKey = "PluginServiceGetFrontendPluginJsFile";
-export const UsePluginServiceGetFrontendPluginJsFileKeyFn = ({ pluginName }: {
+export type PluginServiceGetFrontendPluginFileDefaultResponse = Awaited<ReturnType<typeof PluginService.getFrontendPluginFile>>;
+export type PluginServiceGetFrontendPluginFileQueryResult<TData = PluginServiceGetFrontendPluginFileDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePluginServiceGetFrontendPluginFileKey = "PluginServiceGetFrontendPluginFile";
+export const UsePluginServiceGetFrontendPluginFileKeyFn = ({ filePath, pluginName }: {
+  filePath: string;
   pluginName: string;
-}, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginJsFileKey, ...(queryKey ?? [{ pluginName }])];
+}, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginFileKey, ...(queryKey ?? [{ filePath, pluginName }])];
 export type UsersServiceCreateOneUserMutationResult = Awaited<ReturnType<typeof UsersService.createOneUser>>;
 export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof UsersService.verifyEmail>>;
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;

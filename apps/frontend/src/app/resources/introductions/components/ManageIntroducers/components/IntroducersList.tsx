@@ -1,20 +1,11 @@
 import { useCallback, useState } from 'react';
 import { Listbox, ListboxItem } from '@heroui/listbox';
 import { Trash2 } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@heroui/modal';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
 import { Button } from '@heroui/button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { AttraccessUser } from '@frontend/components/AttraccessUser';
+import { AttraccessUser, useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useResourceIntroducersServiceGetAllResourceIntroducers,
@@ -43,15 +34,14 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
     de,
   });
 
-  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
+  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({ resourceId });
   const queryClient = useQueryClient();
 
   const { success, error: showError } = useToastMessage();
 
   // State for the confirmation modal
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [introducerToRemove, setIntroducerToRemove] =
-    useState<Introducer | null>(null);
+  const [introducerToRemove, setIntroducerToRemove] = useState<Introducer | null>(null);
 
   const handleRemoveClick = useCallback((introducer: Introducer) => {
     setIntroducerToRemove(introducer);
@@ -125,9 +115,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
       {/* Confirmation Modal */}
       <Modal isOpen={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            {t('removeConfirmation.title')}
-          </ModalHeader>
+          <ModalHeader className="flex flex-col gap-1">{t('removeConfirmation.title')}</ModalHeader>
           <ModalBody>
             <p>
               {t('removeConfirmation.message', {
@@ -139,11 +127,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
             <Button variant="flat" onPress={handleCancelRemove}>
               {t('removeConfirmation.cancel')}
             </Button>
-            <Button
-              color="danger"
-              onPress={handleConfirmRemove}
-              isLoading={removeIntroducer.isPending}
-            >
+            <Button color="danger" onPress={handleConfirmRemove} isLoading={removeIntroducer.isPending}>
               {t('removeConfirmation.confirm')}
             </Button>
           </ModalFooter>

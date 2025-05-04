@@ -1,5 +1,4 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { Card, CardHeader, CardBody } from '@heroui/card';
 import { Divider } from '@heroui/divider';
 import { AddIntroducer } from './components/AddIntroducer';
@@ -16,14 +15,12 @@ interface IntroducersListProps {
 }
 
 function IntroducersListCard({ resourceId, t }: IntroducersListProps) {
-  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({resourceId});
+  const { data: introducers } = useResourceIntroducersServiceGetAllResourceIntroducers({ resourceId });
 
   return introducers && introducers.length > 0 ? (
     <>
       <Divider className="my-4" />
-      <h3 className="text-lg font-medium mb-2 dark:text-white">
-        {t('currentIntroducers')}
-      </h3>
+      <h3 className="text-lg font-medium mb-2 dark:text-white">{t('currentIntroducers')}</h3>
       <IntroducersList resourceId={resourceId} />
     </>
   ) : (

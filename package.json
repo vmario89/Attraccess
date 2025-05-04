@@ -106,6 +106,7 @@
     "@nx/web": "20.3.3",
     "@nx/webpack": "20.3.3",
     "@nx/workspace": "20.3.3",
+    "@originjs/vite-plugin-federation": "^1.4.1",
     "@rollup/plugin-url": "^8.0.2",
     "@svgr/rollup": "^8.1.0",
     "@swc-node/register": "~1.9.2",

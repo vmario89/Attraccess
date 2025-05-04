@@ -1,8 +1,7 @@
 import React from 'react';
 import { Alert, Link } from '@heroui/react';
 import { HelpCircle } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from '../translations/en';
 import * as de from '../translations/de';
 
@@ -20,11 +19,7 @@ const WebhookSecurityInfo: React.FC = () => {
           <div>
             <p className="font-medium">{t('securityTitle')}</p>
             <p className="text-sm text-gray-600">{t('securityDescription')}</p>
-            <Link
-              className="text-sm mt-1 block"
-              href="/docs/webhooks"
-              isExternal
-            >
+            <Link className="text-sm mt-1 block" href="/docs/webhooks" isExternal>
               {t('securityLink')}
             </Link>
           </div>

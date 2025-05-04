@@ -1091,11 +1091,22 @@ export type WebhookTestResponseDto = {
     message: string;
 };
 
+export type PluginMainFrontend = {
+    /**
+     * The directory of the plugins frontend files
+     */
+    directory: string;
+    /**
+     * The entry point of the plugin, relative to the frontend directory
+     */
+    entryPoint: string;
+};
+
 export type PluginMain = {
     /**
-     * The frontend file of the plugin
+     * The frontend files of the plugin
      */
-    frontend: string;
+    frontend: PluginMainFrontend;
     /**
      * The backend file of the plugin
      */
@@ -1351,6 +1362,10 @@ export type GetAllResourcesData = {
      * Group ID to filter resources. Send -1 to find ungrouped resources.
      */
     groupId?: number;
+    /**
+     * Resource IDs to filter resources
+     */
+    ids?: Array<(number)>;
     /**
      * Number of items per page
      */
@@ -1705,11 +1720,12 @@ export type RegenerateSecretResponse = WebhookConfigResponseDto;
 
 export type GetPluginsResponse = Array<PluginManifest>;
 
-export type GetFrontendPluginJsFileData = {
+export type GetFrontendPluginFileData = {
+    filePath: string;
     pluginName: string;
 };
 
-export type GetFrontendPluginJsFileResponse = string;
+export type GetFrontendPluginFileResponse = string;
 
 export type $OpenApiTs = {
     '/api/ping': {
@@ -3030,12 +3046,12 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/plugins/{pluginName}/frontend/plugin.js': {
+    '/api/plugins/{pluginName}/frontend/module-federation/{filePath}': {
         get: {
-            req: GetFrontendPluginJsFileData;
+            req: GetFrontendPluginFileData;
             res: {
                 /**
-                 * The frontend plugin.js file
+                 * The requested frontend plugin file
                  */
                 200: string;
             };

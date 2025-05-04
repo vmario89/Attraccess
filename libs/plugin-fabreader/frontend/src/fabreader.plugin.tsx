@@ -1,10 +1,15 @@
 import { PluginStore } from 'react-pluggable';
-import { FabreaderList } from './components/FabreaderList';
+import { FabreaderList } from './components/FabreaderList/FabreaderList';
 import { NfcIcon } from 'lucide-react';
-import { AttraccessFrontendPlugin, AttraccessFrontendPluginAuthData } from '@attraccess/plugins';
-import { useAuthStore } from './store/auth.store';
+import {
+  AttraccessFrontendPlugin,
+  AttraccessFrontendPluginAuthData,
+  RouteConfig,
+} from '@attraccess/plugins-frontend-sdk';
+import { useStore as store } from './store/store';
+import { Providers } from './components/providers';
 
-export class FabreaderPlugin implements AttraccessFrontendPlugin {
+export default class FabreaderPlugin implements AttraccessFrontendPlugin {
   public pluginStore!: PluginStore;
   public readonly name = 'FABreader';
   public readonly version = 'v0.0.1';
@@ -18,29 +23,40 @@ export class FabreaderPlugin implements AttraccessFrontendPlugin {
   }
 
   init(pluginStore: PluginStore): void {
+    store.getState().setPluginStore(pluginStore);
     this.pluginStore = pluginStore;
   }
 
+  onApiEndpointChange(endpoint: string): void {
+    store.getState().setEndpoint(endpoint);
+  }
+
   onApiAuthStateChange(authData: null | AttraccessFrontendPluginAuthData): void {
-    useAuthStore.getState().setAuthToken(authData?.authToken || null);
+    console.log('onApiAuthStateChange', authData);
+    store.getState().setAuthData(authData);
   }
 
   activate(): void {
-    this.pluginStore.addFunction(`${this.getPluginName()}.GET_ROUTES`, () => {
+    store.getState().pluginStore.addFunction(`${this.getPluginName()}.GET_ROUTES`, () => {
       return [
         {
           path: '/fabreader',
-          element: <FabreaderList />,
+          element: (
+            <Providers>
+              <FabreaderList />
+            </Providers>
+          ),
+          authRequired: true,
           sidebar: {
             label: 'FABReader',
             icon: <NfcIcon />,
           },
         },
-      ];
+      ] as RouteConfig[];
     });
   }
 
   deactivate(): void {
-    this.pluginStore.removeFunction(`${this.name}.GET_ROUTES`);
+    store.getState().pluginStore.removeFunction(`${this.name}.GET_ROUTES`);
   }
 }

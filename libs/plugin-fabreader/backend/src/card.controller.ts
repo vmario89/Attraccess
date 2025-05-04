@@ -1,12 +1,12 @@
-import { Controller, Inject, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Get, Inject, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
 import { DbService } from './modules/persistence/db.service';
 import { FabreaderGateway } from './modules/websockets/websocket.gateway';
-import { Auth } from '@attraccess/plugins';
+import { Auth, AuthenticatedRequest } from '@attraccess/plugins-backend-sdk';
 import { ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { FabreaderService } from './fabreader.service';
 
 @Controller('fabreader/cards')
-export class ReaderController {
+export class CardController {
   public constructor(
     @Inject(DbService)
     private readonly dbService: DbService,
@@ -31,5 +31,17 @@ export class ReaderController {
     return {
       key: this.fabreaderService.uint8ArrayToHexString(key),
     };
+  }
+
+  @Get()
+  @Auth()
+  @ApiOperation({ summary: 'Get all cards (to which you have access)' })
+  @ApiResponse({ status: 200, description: 'The list of all cards' })
+  async getCards(@Req() req: AuthenticatedRequest) {
+    if (req.user.systemPermissions.canManageSystemConfiguration) {
+      return await this.dbService.getAllNFCCards();
+    }
+
+    return this.dbService.getNFCCardsByUserId(req.user.id);
   }
 }

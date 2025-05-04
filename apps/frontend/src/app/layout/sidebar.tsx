@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, Settings, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/header.en';
 import * as de from './translations/header.de';
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link } from '@heroui/react';

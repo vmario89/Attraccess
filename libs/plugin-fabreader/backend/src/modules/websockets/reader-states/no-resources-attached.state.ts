@@ -7,11 +7,7 @@ import { FabreaderEvent } from '../websocket.types';
 export class NoResourcesAttachedState implements ReaderState {
   private readonly logger = new Logger(NoResourcesAttachedState.name);
 
-  public constructor(
-    private readonly socket: AuthenticatedWebSocket,
-    private readonly services: GatewayServices,
-    private readonly transitionEventData: FabreaderEvent['data']
-  ) {}
+  public constructor(private readonly socket: AuthenticatedWebSocket, private readonly services: GatewayServices) {}
 
   public async onEvent(/* data: FabreaderEvent['data'] */) {
     return undefined;

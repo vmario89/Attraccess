@@ -45,12 +45,13 @@ export const prefetchUseResourceGroupsServiceGetAllResourceGroups = (queryClient
 export const prefetchUseResourceGroupsServiceGetOneResourceGroupById = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn({ id }), queryFn: () => ResourceGroupsService.getOneResourceGroupById({ id }) });
-export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { groupId, limit, page, search }: {
+export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { groupId, ids, limit, page, search }: {
   groupId?: number;
+  ids?: number[];
   limit?: number;
   page?: number;
   search?: string;
-} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, limit, page, search }) });
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, ids, limit, page, search }) });
 export const prefetchUseResourcesServiceGetOneResourceById = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetOneResourceByIdKeyFn({ id }), queryFn: () => ResourcesService.getOneResourceById({ id }) });
@@ -114,6 +115,7 @@ export const prefetchUseWebhooksServiceGetOneWebhookConfigurationById = (queryCl
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseWebhooksServiceGetOneWebhookConfigurationByIdKeyFn({ id, resourceId }), queryFn: () => WebhooksService.getOneWebhookConfigurationById({ id, resourceId }) });
 export const prefetchUsePluginServiceGetPlugins = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePluginServiceGetPluginsKeyFn(), queryFn: () => PluginService.getPlugins() });
-export const prefetchUsePluginServiceGetFrontendPluginJsFile = (queryClient: QueryClient, { pluginName }: {
+export const prefetchUsePluginServiceGetFrontendPluginFile = (queryClient: QueryClient, { filePath, pluginName }: {
+  filePath: string;
   pluginName: string;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePluginServiceGetFrontendPluginJsFileKeyFn({ pluginName }), queryFn: () => PluginService.getFrontendPluginJsFile({ pluginName }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePluginServiceGetFrontendPluginFileKeyFn({ filePath, pluginName }), queryFn: () => PluginService.getFrontendPluginFile({ filePath, pluginName }) });

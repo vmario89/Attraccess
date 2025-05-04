@@ -98,6 +98,7 @@ bool NFC::changeKey(uint8_t keyNumber, uint8_t authKey[16], uint8_t newKey[16])
 
     Serial.println("[NFC] Changing key " + String(keyNumber));
 
+    Serial.println("Change key call 2");
     if (!this->nfc.ntag424_ChangeKey(authKey, newKey, keyNumber))
     {
         Serial.println("[NFC] Change key failed");
@@ -131,4 +132,9 @@ bool NFC::writeData(uint8_t authKey[16], uint8_t keyNumber, uint8_t data[], size
 
     Serial.println("[NFC] Write data successful");
     return true;
+}
+
+bool NFC::authenticate(uint8_t keyNumber, uint8_t authKey[16])
+{
+    return this->nfc.ntag424_Authenticate(authKey, keyNumber, AUTH_CMD);
 }
