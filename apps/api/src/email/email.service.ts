@@ -22,7 +22,7 @@ export class EmailService {
     // Load and compile templates
     this.loadTemplates();
     this.config = loadEnv((z) => ({
-      FRONTEND_URL: z.string().url(),
+      FRONTEND_URL: z.string().url().default(process.env.VITE_ATTRACCESS_URL),
     })) as EnvConfig;
     this.logger.debug(
       `EmailService initialized with FRONTEND_URL: ${this.config.FRONTEND_URL}`
