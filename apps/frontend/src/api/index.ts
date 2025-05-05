@@ -12,7 +12,7 @@ function getInferredApiUrl() {
 }
 
 export function getBaseUrl() {
-  return import.meta.env.VITE_API_URL || getInferredApiUrl();
+  return import.meta.env.VITE_ATTRACCESS_URL || getInferredApiUrl();
 }
 
 const setupApiParameters = () => {

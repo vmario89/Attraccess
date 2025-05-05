@@ -28,16 +28,11 @@ import { SSOOIDCStrategy } from './auth/sso/oidc/oidc.strategy';
 import { ModuleRef } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { SSOController } from './auth/sso/sso.controller';
+import { loadEnv } from '@attraccess/env';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-      AuthenticationDetail,
-      RevokedToken,
-      SSOProvider,
-      SSOProviderOIDCConfiguration,
-    ]),
+    TypeOrmModule.forFeature([User, AuthenticationDetail, RevokedToken, SSOProvider, SSOProviderOIDCConfiguration]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -53,7 +48,7 @@ import { SSOController } from './auth/sso/sso.controller';
     SSOService,
     {
       provide: SSOOIDCStrategy,
-      useFactory: (moduleRef: ModuleRef, configService: ConfigService) => {
+      useFactory: (moduleRef: ModuleRef) => {
         // This is a placeholder - you'll need to retrieve an actual configuration
         // from the database or environment variables
         const config = new SSOProviderOIDCConfiguration();
@@ -64,8 +59,10 @@ import { SSOController } from './auth/sso/sso.controller';
         config.clientId = 'placeholder';
         config.clientSecret = 'placeholder';
 
-        const callbackURL =
-          configService.get<string>('FRONTEND_URL') + '/api/sso/OIDC/callback';
+        const env = loadEnv((z) => ({
+          FRONTEND_URL: z.string().url().default(process.env.VITE_ATTRACCESS_URL),
+        }));
+        const callbackURL = env.FRONTEND_URL + '/api/sso/OIDC/callback';
 
         return new SSOOIDCStrategy(moduleRef, config, callbackURL);
       },

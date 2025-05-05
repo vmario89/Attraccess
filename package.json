@@ -44,6 +44,7 @@
     "class-validator": "^0.14.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "docsify-cli": "^4.4.4",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "framer-motion": "^12.4.2",

@@ -1392,6 +1392,8 @@ export interface GetAllResourcesParams {
   search?: string;
   /** Group ID to filter resources. Send -1 to find ungrouped resources. */
   groupId?: number;
+  /** Resource IDs to filter resources */
+  ids?: number[];
 }
 
 export type GetAllResourcesData = PaginatedResourceResponseDto;
@@ -2028,6 +2030,8 @@ export namespace Resources {
       search?: string;
       /** Group ID to filter resources. Send -1 to find ungrouped resources. */
       groupId?: number;
+      /** Resource IDs to filter resources */
+      ids?: number[];
     };
     export type RequestBody = never;
     export type RequestHeaders = {};

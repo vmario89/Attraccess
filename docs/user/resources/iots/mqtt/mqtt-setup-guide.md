@@ -30,6 +30,9 @@ The easiest way to set up an MQTT broker for development is using the included D
    log_type all
    ```
 
+> [!WARNING]
+> The configuration above uses `allow_anonymous true` which is suitable for development environments only. Never use anonymous access in production deployments as it poses significant security risks.
+
 3. Start the development environment with:
 
    ```bash
@@ -90,6 +93,9 @@ The easiest way to set up an MQTT broker for development is using the included D
 
 ### Using Mosquitto CLI Tools
 
+> [!NOTE]
+> Mosquitto CLI tools provide a quick way to verify your broker configuration before integrating with Attraccess. They're particularly useful for troubleshooting connection issues.
+
 1. Subscribe to a topic:
 
    ```bash
@@ -108,6 +114,9 @@ The easiest way to set up an MQTT broker for development is using the included D
 
 [MQTT Explorer](https://mqtt-explorer.com/) is a helpful GUI tool for visualizing MQTT communications.
 
+> [!TIP]
+> MQTT Explorer makes it easy to visualize the topic structure and message flow. This can be invaluable for understanding complex MQTT deployments and debugging communication issues.
+
 1. Download and install MQTT Explorer from [mqtt-explorer.com](https://mqtt-explorer.com/)
 
 2. Configure a connection:
@@ -121,6 +130,9 @@ The easiest way to set up an MQTT broker for development is using the included D
 ## Production Setup
 
 For production environments, we recommend additional security measures:
+
+> [!ATTENTION]
+> Production deployments require proper security configuration. At minimum, you should use authentication and TLS encryption to protect your MQTT communications from unauthorized access and eavesdropping.
 
 ### Secure MQTT Configuration
 
@@ -157,6 +169,9 @@ For production environments, we recommend additional security measures:
    openssl req -new -out /etc/mosquitto/certs/server.csr -key /etc/mosquitto/certs/server.key
    openssl x509 -req -in /etc/mosquitto/certs/server.csr -CA /etc/mosquitto/certs/ca.crt -CAkey /etc/mosquitto/certs/ca.key -CAcreateserial -out /etc/mosquitto/certs/server.crt -days 365
    ```
+
+> [!WARNING]
+> Self-signed certificates should only be used for testing. For production, use certificates from a trusted Certificate Authority or consider using Let's Encrypt.
 
 ### Running with Docker in Production
 
@@ -215,3 +230,6 @@ Once your MQTT broker is running:
 3. Test the connection to verify it's working.
 
 4. Add MQTT configuration to your resources to start publishing messages.
+
+> [!NOTE]
+> Attraccess will maintain a persistent connection to your MQTT broker. If the connection is lost, it will automatically attempt to reconnect using an exponential backoff strategy.
