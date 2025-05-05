@@ -33,12 +33,13 @@ describe('EnrollNTAG424State', () => {
     mockSocket = {
       enrollment: undefined,
       send: jest.fn(),
+      state: undefined,
     } as unknown as AuthenticatedWebSocket & { enrollment?: EnrollmentState };
 
     mockServices = {
       dbService: {
         getNFCCardByUID: jest.fn(),
-        createNFCCard: jest.fn(),
+        createNFCCard: jest.fn().mockResolvedValue({ id: 'nfc-card-1' }),
       },
       fabreaderService: {
         uint8ArrayToHexString: jest.fn().mockReturnValue('aaaabbbbccccddddeeeeffffgggghhhh'),
@@ -188,6 +189,7 @@ describe('EnrollNTAG424State', () => {
       // Setup
       mockSocket.enrollment = {
         nextExpectedEvent: FabreaderEventType.AUTHENTICATE,
+        cardUID: mockCardUID,
         data: {
           newKeys: { 0: mockNewMasterKey },
         },
@@ -197,15 +199,24 @@ describe('EnrollNTAG424State', () => {
       const result = await enrollState.onResponse({
         type: FabreaderEventType.AUTHENTICATE,
         payload: {
-          successfulKeys: [0],
-          failedKeys: [],
+          authenticationSuccessful: true,
         },
       });
 
       // Assert
       expect(mockSocket.enrollment).toBeUndefined();
       expect(result).toBeInstanceOf(FabreaderEvent);
-      expect(result.data.type).toBe(FabreaderEventType.DISPLAY_SUCCESS);
+      // After successful authentication and card creation, the next state is initialized
+      // and its init message is returned (which is ENABLE_CARD_CHECKING)
+      expect(result.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+      expect(mockServices.dbService.createNFCCard).toHaveBeenCalledWith({
+        uid: mockCardUID,
+        userId: mockUserId,
+        keys: {
+          0: mockNewMasterKey,
+        },
+      });
+      expect(mockSocket.send).toHaveBeenCalled();
     });
 
     it('should handle failed authentication', async () => {
@@ -218,28 +229,20 @@ describe('EnrollNTAG424State', () => {
         },
       };
 
-      (mockServices.dbService.createNFCCard as jest.Mock).mockResolvedValue({ id: 'nfc-card-1' });
-
       // Call method
-      await enrollState.onResponse({
+      const result = await enrollState.onResponse({
         type: FabreaderEventType.AUTHENTICATE,
         payload: {
-          successfulKeys: [],
-          failedKeys: [0],
+          authenticationSuccessful: false,
         },
       });
 
       // Assert
       expect(mockSocket.enrollment).toBeUndefined();
-      expect(mockServices.dbService.createNFCCard).toHaveBeenCalledWith({
-        uid: mockCardUID,
-        userId: mockUserId,
-        keys: {
-          0: mockNewMasterKey,
-        },
-      });
+      // No card should be created when authentication fails
+      expect(mockServices.dbService.createNFCCard).not.toHaveBeenCalled();
       expect(mockSocket.send).toHaveBeenCalled();
-      expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
+      expect(result.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
     });
   });
 });
@@ -260,12 +263,13 @@ describe('EnrollNTAG424State - Full Flow', () => {
     mockSocket = {
       enrollment: undefined,
       send: jest.fn(),
+      state: undefined,
     } as unknown as AuthenticatedWebSocket & { enrollment?: EnrollmentState };
 
     mockServices = {
       dbService: {
         getNFCCardByUID: jest.fn(),
-        createNFCCard: jest.fn(),
+        createNFCCard: jest.fn().mockResolvedValue({ id: 'nfc-card-1' }),
       },
       fabreaderService: {
         uint8ArrayToHexString: jest.fn(),
@@ -322,17 +326,23 @@ describe('EnrollNTAG424State - Full Flow', () => {
     const authResponse = await enrollState.onResponse({
       type: FabreaderEventType.AUTHENTICATE,
       payload: {
-        successfulKeys: [0],
-        failedKeys: [],
+        authenticationSuccessful: true,
       },
     });
 
-    // Step 5: Enrollment successfully completed
-    expect(authResponse.data.type).toBe(FabreaderEventType.DISPLAY_SUCCESS);
-    expect(authResponse.data.payload).toEqual({
-      message: 'Enrollment successful',
-    });
+    // Step 5: After successful enrollment, the state is reset to initial
+    expect(authResponse.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
     expect(mockSocket.enrollment).toBeUndefined(); // Enrollment state cleared
+    expect(mockServices.dbService.createNFCCard).toHaveBeenCalled();
+
+    // Verify success message was sent
+    expect(mockSocket.send).toHaveBeenCalled();
+    const successMessage = JSON.parse(
+      (mockSocket.send as jest.Mock).mock.calls.find(
+        (call) => JSON.parse(call[0]).data.type === FabreaderEventType.DISPLAY_SUCCESS
+      )[0]
+    );
+    expect(successMessage.data.payload.message).toBe('Enrollment successful');
   });
 
   it('should handle card removal during enrollment', async () => {
@@ -381,10 +391,7 @@ describe('EnrollNTAG424State - Full Flow', () => {
     expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
   });
 
-  it('should handle authentication failure and store card data', async () => {
-    // Setup mock for card creation
-    (mockServices.dbService.createNFCCard as jest.Mock).mockResolvedValue({ id: 'nfc-card-1' });
-
+  it('should handle authentication failure and NOT store card data', async () => {
     // Initialize and tap card
     enrollState.getInitMessage();
     (mockServices.dbService.getNFCCardByUID as jest.Mock).mockResolvedValue(null);
@@ -407,17 +414,12 @@ describe('EnrollNTAG424State - Full Flow', () => {
     const authFailResponse = await enrollState.onResponse({
       type: FabreaderEventType.AUTHENTICATE,
       payload: {
-        successfulKeys: [],
-        failedKeys: [0],
+        authenticationSuccessful: false,
       },
     });
 
-    // Verify card was created despite authentication failure
-    expect(mockServices.dbService.createNFCCard).toHaveBeenCalledWith({
-      uid: mockCardUID,
-      userId: mockUserId,
-      keys: expect.any(Object),
-    });
+    // Verify card was NOT created when authentication fails
+    expect(mockServices.dbService.createNFCCard).not.toHaveBeenCalled();
 
     // Verify error message and transition back to initial state
     expect(mockSocket.send).toHaveBeenCalled();
