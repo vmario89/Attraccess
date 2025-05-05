@@ -8,11 +8,7 @@ import { MqttModule } from '../../mqtt/mqtt.module';
 import { ResourcesCoreModule } from '../resources-core.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([MqttResourceConfig, Resource]),
-    MqttModule,
-    ResourcesCoreModule,
-  ],
+  imports: [TypeOrmModule.forFeature([MqttResourceConfig, Resource]), MqttModule, ResourcesCoreModule],
   controllers: [MqttResourceConfigController],
   providers: [MqttResourceConfigService, MqttPublisherService],
   exports: [MqttResourceConfigService],

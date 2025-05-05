@@ -8,10 +8,7 @@ import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { ResourceIntroductionService } from '../introduction/resourceIntroduction.service';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  ResourceUsageStartedEvent,
-  ResourceUsageEndedEvent,
-} from './events/resource-usage.events';
+import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from './events/resource-usage.events';
 
 @Injectable()
 export class ResourceUsageService {
@@ -23,11 +20,7 @@ export class ResourceUsageService {
     private eventEmitter: EventEmitter2
   ) {}
 
-  async startSession(
-    resourceId: number,
-    user: User,
-    dto: StartUsageSessionDto
-  ): Promise<ResourceUsage> {
+  async startSession(resourceId: number, user: User, dto: StartUsageSessionDto): Promise<ResourceUsage> {
     // Check if resource exists and is ready
     const resource = await this.resourcesService.getResourceById(resourceId);
     if (!resource) {
@@ -35,42 +28,34 @@ export class ResourceUsageService {
     }
 
     // Skip introduction check for users with resource management permission
-    const canManageResources =
-      user.systemPermissions?.canManageResources || false;
+    const canManageResources = user.systemPermissions?.canManageResources || false;
 
     let canStartSession = canManageResources;
 
     // Only check for introduction if user doesn't have resource management permission
     if (!canStartSession) {
       // Check if user has completed the introduction
-      const hasCompletedIntroduction =
-        await this.resourceIntroductionService.hasCompletedIntroduction(
-          resourceId,
-          user.id
-        );
+      const hasCompletedIntroduction = await this.resourceIntroductionService.hasCompletedIntroduction(
+        resourceId,
+        user.id
+      );
 
       canStartSession = hasCompletedIntroduction;
     }
 
     if (!canStartSession) {
-      const canGiveIntroductions =
-        await this.resourceIntroductionService.canGiveIntroductions(
-          resourceId,
-          user.id
-        );
+      const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, user.id);
 
       canStartSession = canGiveIntroductions;
     }
 
     if (!canStartSession) {
-      throw new BadRequestException(
-        'You must complete the resource introduction before using it'
-      );
+      throw new BadRequestException('You must complete the resource introduction before using it');
     }
 
     // Check if user has an active session
-    const activeSession = await this.getActiveSession(resourceId);
-    if (activeSession) {
+    const existingActiveSession = await this.getActiveSession(resourceId);
+    if (existingActiveSession) {
       throw new BadRequestException('User already has an active session');
     }
 
@@ -84,12 +69,7 @@ export class ResourceUsageService {
       endNotes: null,
     };
 
-    await this.resourceUsageRepository
-      .createQueryBuilder()
-      .insert()
-      .into(ResourceUsage)
-      .values(usageData)
-      .execute();
+    await this.resourceUsageRepository.createQueryBuilder().insert().into(ResourceUsage).values(usageData).execute();
 
     const newSession = await this.resourceUsageRepository.findOne({
       where: {
@@ -104,19 +84,16 @@ export class ResourceUsageService {
     });
 
     // Emit event after successful save
-    this.eventEmitter.emit(
-      'resource.usage.started',
-      new ResourceUsageStartedEvent(resourceId, usageData.startTime)
-    );
+    this.eventEmitter.emit('resource.usage.started', new ResourceUsageStartedEvent(resourceId, usageData.startTime));
+    if (!newSession) {
+      // Should not happen if insert succeeded, but good practice to check
+      throw new Error('Failed to retrieve the newly created session.');
+    }
 
     return newSession;
   }
 
-  async endSession(
-    resourceId: number,
-    user: User,
-    dto: EndUsageSessionDto
-  ): Promise<ResourceUsage> {
+  async endSession(resourceId: number, user: User, dto: EndUsageSessionDto): Promise<ResourceUsage> {
     // Find active session
     const activeSession = await this.getActiveSession(resourceId);
     if (!activeSession) {
@@ -125,12 +102,10 @@ export class ResourceUsageService {
 
     // Check if the user is authorized to end the session
     const canManageResources = user.systemPermissions?.canManageResources || false;
-    const isSessionOwner = activeSession.userId === user.id;
+    const isSessionOwner = activeSession.user.id === user.id; // Use loaded user ID
 
     if (!isSessionOwner && !canManageResources) {
-      throw new ForbiddenException(
-        'You are not authorized to end this session'
-      );
+      throw new ForbiddenException('You are not authorized to end this session');
     }
 
     const endTime = new Date();
@@ -149,11 +124,7 @@ export class ResourceUsageService {
     // Emit event after successful save
     this.eventEmitter.emit(
       'resource.usage.ended',
-      new ResourceUsageEndedEvent(
-        resourceId,
-        activeSession.startTime,
-        endTime
-      )
+      new ResourceUsageEndedEvent(resourceId, activeSession.startTime, endTime)
     );
 
     // Fetch the updated record
@@ -163,9 +134,7 @@ export class ResourceUsageService {
     });
   }
 
-  async getActiveSession(
-    resourceId: number,
-  ): Promise<ResourceUsage | null> {
+  async getActiveSession(resourceId: number): Promise<ResourceUsage | null> {
     return await this.resourceUsageRepository.findOne({
       where: {
         resourceId,
@@ -199,11 +168,7 @@ export class ResourceUsageService {
     return { data, total };
   }
 
-  async getUserUsageHistory(
-    userId: number,
-    page = 1,
-    limit = 10
-  ): Promise<{ data: ResourceUsage[]; total: number }> {
+  async getUserUsageHistory(userId: number, page = 1, limit = 10): Promise<{ data: ResourceUsage[]; total: number }> {
     const [data, total] = await this.resourceUsageRepository.findAndCount({
       where: { userId },
       skip: (page - 1) * limit,

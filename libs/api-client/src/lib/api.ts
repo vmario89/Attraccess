@@ -539,6 +539,11 @@ export interface GetResourceHistoryResponseDto {
   data: ResourceUsage[];
 }
 
+export interface GetActiveUsageSessionDto {
+  /** The active usage session or null if none exists */
+  usage: ResourceUsage | null;
+}
+
 export interface CompleteIntroductionDto {
   /**
    * User ID
@@ -1191,6 +1196,65 @@ export interface WebhookTestResponseDto {
   message: string;
 }
 
+export interface PluginMainFrontend {
+  /**
+   * The directory of the plugins frontend files
+   * @example "frontend"
+   */
+  directory: string;
+  /**
+   * The entry point of the plugin, relative to the frontend directory
+   * @example "index.mjs"
+   */
+  entryPoint: string;
+}
+
+export interface PluginMain {
+  /**
+   * The frontend files of the plugin
+   * @example {"directory":"frontend","entryPoint":"index.mjs"}
+   */
+  frontend: PluginMainFrontend;
+  /**
+   * The backend file of the plugin
+   * @example "backend/src/plugin.js"
+   */
+  backend: string;
+}
+
+export interface PluginAttraccessVersion {
+  /**
+   * The minimum version of the plugin
+   * @example "1.0.0"
+   */
+  min: string;
+  /**
+   * The maximum version of the plugin
+   * @example "1.0.0"
+   */
+  max: string;
+  /**
+   * The exact version of the plugin
+   * @example "1.0.0"
+   */
+  exact: string;
+}
+
+export interface PluginManifest {
+  /**
+   * The name of the plugin
+   * @example "plugin-name"
+   */
+  name: string;
+  main: PluginMain;
+  /**
+   * The version of the plugin
+   * @example "1.0.0"
+   */
+  version: string;
+  attraccessVersion: PluginAttraccessVersion;
+}
+
 export interface Ping2Data {
   /** @example "pong" */
   message?: string;
@@ -1367,7 +1431,7 @@ export interface GetHistoryOfResourceUsageParams {
 
 export type GetHistoryOfResourceUsageData = GetResourceHistoryResponseDto;
 
-export type GetActiveSessionData = ResourceUsage;
+export type GetActiveSessionData = GetActiveUsageSessionDto;
 
 export type MarkCompletedData = ResourceIntroduction;
 
@@ -1459,6 +1523,10 @@ export type UpdateStatusData = WebhookConfigResponseDto;
 export type TestData = WebhookTestResponseDto;
 
 export type RegenerateSecretData = WebhookConfigResponseDto;
+
+export type GetPluginsData = PluginManifest[];
+
+export type GetFrontendPluginFileData = string;
 
 export namespace Application {
   /**
@@ -2803,6 +2871,41 @@ export namespace Webhooks {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = RegenerateSecretData;
+  }
+}
+
+export namespace Plugin {
+  /**
+   * No description
+   * @tags Plugin
+   * @name GetPlugins
+   * @summary Get all plugins
+   * @request GET:/api/plugins
+   */
+  export namespace GetPlugins {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetPluginsData;
+  }
+
+  /**
+   * No description
+   * @tags Plugin
+   * @name GetFrontendPluginFile
+   * @summary Get any frontend plugin file
+   * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
+   */
+  export namespace GetFrontendPluginFile {
+    export type RequestParams = {
+      pluginName: string;
+      filePath: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetFrontendPluginFileData;
   }
 }
 
@@ -4321,6 +4424,39 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/resources/${resourceId}/webhooks/${id}/regenerate-secret`,
         method: 'POST',
         secure: true,
+        format: 'json',
+        ...params,
+      }),
+  };
+  plugin = {
+    /**
+     * No description
+     *
+     * @tags Plugin
+     * @name GetPlugins
+     * @summary Get all plugins
+     * @request GET:/api/plugins
+     */
+    getPlugins: (params: RequestParams = {}) =>
+      this.request<GetPluginsData, any>({
+        path: `/api/plugins`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Plugin
+     * @name GetFrontendPluginFile
+     * @summary Get any frontend plugin file
+     * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
+     */
+    getFrontendPluginFile: (pluginName: string, filePath: string, params: RequestParams = {}) =>
+      this.request<GetFrontendPluginFileData, any>({
+        path: `/api/plugins/${pluginName}/frontend/module-federation/${filePath}`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),

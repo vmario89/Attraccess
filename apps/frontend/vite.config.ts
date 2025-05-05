@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import federation from '@originjs/vite-plugin-federation';
 // import MillionLint from '@million/lint';
 
 export default defineConfig({
@@ -21,6 +22,26 @@ export default defineConfig({
     nxViteTsPaths(),
     nxCopyAssetsPlugin([]),
     // MillionLint.vite(),
+    federation({
+      name: 'attraccess',
+      remotes: {
+        // Dynamic remotes will be loaded at runtime
+      },
+      shared: {
+        react: { requiredVersion: '*' },
+        'react/jsx-runtime': { requiredVersion: '*' },
+        'react-dom': { requiredVersion: '*' },
+        'react-router-dom': { requiredVersion: '*' },
+        'react-pluggable': { requiredVersion: '*' },
+        '@heroui/react': { requiredVersion: '*' },
+        i18next: { requiredVersion: '*' },
+        'react-i18next': { requiredVersion: '*' },
+        'i18next-browser-languagedetector': { requiredVersion: '*' },
+        '@tanstack/react-query': { requiredVersion: '*' },
+        '@attraccess/react-query-client': { requiredVersion: '*' },
+        '@attraccess/plugins-frontend-ui': { requiredVersion: '*' },
+      },
+    }),
   ],
   // Uncomment this if you are using workers.
   // worker: {
@@ -33,5 +54,7 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+    target: 'esnext',
+    minify: 'esbuild',
   },
 });

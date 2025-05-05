@@ -14,8 +14,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResourceIntroductionService } from './resourceIntroduction.service';
 import { ResourceIntroductionUser } from '@attraccess/database-entities';
-import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
-import { AuthenticatedRequest } from '../../types/request';
+import { Auth, AuthenticatedRequest } from '@attraccess/plugins-backend-sdk';
 import { UsersService } from '../../users-and-auth/users/users.service';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 import { CanManageIntroducersResponseDto } from './dtos/canManageIntroducers.dto';
@@ -40,9 +39,7 @@ export class ResourceIntroducersController {
     description: 'List of resource introducers',
     type: [ResourceIntroductionUser],
   })
-  async getAll(
-    @Param('resourceId', ParseIntPipe) resourceId: number
-  ): Promise<ResourceIntroductionUser[]> {
+  async getAll(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<ResourceIntroductionUser[]> {
     try {
       // First verify the resource exists
       const resource = await this.resourcesService.getResourceById(resourceId);
@@ -55,27 +52,17 @@ export class ResourceIntroducersController {
       // No additional permission checks needed for viewing
 
       // Get the introducers list
-      return this.resourceIntroductionService.getResourceIntroducers(
-        resourceId
-      );
+      return this.resourceIntroductionService.getResourceIntroducers(resourceId);
     } catch (error) {
-      this.logger.error(
-        `Error getting resource introducers: ${error.message}`,
-        error.stack
-      );
+      this.logger.error(`Error getting resource introducers: ${error.message}`, error.stack);
 
       // Rethrow known exceptions
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof NotFoundException || error instanceof ForbiddenException) {
         throw error;
       }
 
       // For other errors, hide details in production
-      throw new InternalServerErrorException(
-        'Error fetching resource introducers'
-      );
+      throw new InternalServerErrorException('Error fetching resource introducers');
     }
   }
 
@@ -105,10 +92,7 @@ export class ResourceIntroducersController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
   ): Promise<void> {
-    return this.resourceIntroductionService.removeIntroducer(
-      resourceId,
-      userId
-    );
+    return this.resourceIntroductionService.removeIntroducer(resourceId, userId);
   }
 
   @Get('can-manage')
@@ -134,11 +118,7 @@ export class ResourceIntroducersController {
     }
 
     // Add any specific permission logic here
-    const canManage =
-      await this.resourceIntroductionService.canManageIntroducers(
-        resourceId,
-        user.id
-      );
+    const canManage = await this.resourceIntroductionService.canManageIntroducers(resourceId, user.id);
 
     return { canManageIntroducers: canManage };
   }

@@ -1,13 +1,5 @@
-import {
-  Card,
-  Accordion,
-  AccordionItem,
-  CardBody,
-  Snippet,
-  Link,
-  Alert,
-} from '@heroui/react';
-import { useTranslations } from '../../../../i18n';
+import { Card, Accordion, AccordionItem, CardBody, Snippet, Link, Alert } from '@heroui/react';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useMemo, useState } from 'react';
@@ -18,7 +10,7 @@ import { getBaseUrl } from '@frontend/api';
 
 function useEspHomeConfigSnippet(resourceId: number) {
   // Get the resource details to use in the configuration
-  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
+  const { data: resource } = useResourcesServiceGetOneResourceById({ id: resourceId });
 
   // Generate the API base URL from the window location
   const apiBaseUrl = getBaseUrl();
@@ -87,9 +79,7 @@ interface ESPHomeConfigurationPanelProps {
   resourceId: number;
 }
 
-export function ESPHomeConfigurationPanel(
-  props: ESPHomeConfigurationPanelProps
-) {
+export function ESPHomeConfigurationPanel(props: ESPHomeConfigurationPanelProps) {
   const { resourceId } = props;
   const { t } = useTranslations('esphome', { en, de });
   const [isOpen, setIsOpen] = useState(false);
@@ -118,16 +108,11 @@ export function ESPHomeConfigurationPanel(
               </Alert>
 
               <div className="mt-2">
-                <h3 className="text-md font-medium mb-2">
-                  {t('setupInstructions')}
-                </h3>
+                <h3 className="text-md font-medium mb-2">{t('setupInstructions')}</h3>
 
                 <Snippet className="w-full" hideSymbol>
                   {esphomeConfig.split('\n').map((line, index) => (
-                    <div
-                      key={index}
-                      className="whitespace-pre-wrap min-h-[1em] min-w-[1em]"
-                    >
+                    <div key={index} className="whitespace-pre-wrap min-h-[1em] min-w-[1em]">
                       {line}
                     </div>
                   ))}

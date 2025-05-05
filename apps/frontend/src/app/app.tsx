@@ -5,11 +5,12 @@ import { useEffect, useMemo } from 'react';
 import { Layout } from './layout/layout';
 import { useAuth } from '../hooks/useAuth';
 import { Loading } from './loading';
-import { routes as allRoutes, RouteConfig } from './routes';
+import { useAllRoutes } from './routes';
 import { VerifyEmail } from './verifyEmail';
 import { ToastProvider } from '../components/toastProvider';
 import { HeroUIProvider } from '@heroui/react';
 import { SystemPermissions } from '@attraccess/react-query-client';
+import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
 
 function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();
@@ -32,9 +33,7 @@ function useRoutesWithAuthElements(routes: RouteConfig[]) {
       }
 
       const requiredPermissions = (
-        Array.isArray(route.authRequired)
-          ? route.authRequired
-          : [route.authRequired]
+        Array.isArray(route.authRequired) ? route.authRequired : [route.authRequired]
       ) as (keyof SystemPermissions)[];
 
       const userHasAllRequiredPermissions = requiredPermissions.every(
@@ -66,14 +65,12 @@ export function App() {
   const { setTheme } = useTheme();
   const navigate = useNavigate();
 
+  const allRoutes = useAllRoutes();
   const routesWithAuthElements = useRoutesWithAuthElements(allRoutes);
 
   // set theme based on system preference of browser
   useEffect(() => {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-      .matches
-      ? 'dark'
-      : 'light';
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     setTheme(systemTheme);
 
     let metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -85,10 +82,7 @@ export function App() {
     const darkBackground = 'rgb(0,0,0)';
     const lightBackground = 'rgb(255,255,255)';
 
-    metaTheme.setAttribute(
-      'content',
-      systemTheme === 'dark' ? darkBackground : lightBackground
-    );
+    metaTheme.setAttribute('content', systemTheme === 'dark' ? darkBackground : lightBackground);
   }, [setTheme]);
 
   // Show loading screen while checking auth state

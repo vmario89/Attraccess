@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
 export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useApplicationServicePing2Key = "ApplicationServicePing2";
@@ -83,12 +83,13 @@ export const UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn = ({ id }: {
 export type ResourcesServiceGetAllResourcesDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getAllResources>>;
 export type ResourcesServiceGetAllResourcesQueryResult<TData = ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetAllResourcesKey = "ResourcesServiceGetAllResources";
-export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, limit, page, search }: {
+export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, ids, limit, page, search }: {
   groupId?: number;
+  ids?: number[];
   limit?: number;
   page?: number;
   search?: string;
-} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, limit, page, search }])];
+} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, ids, limit, page, search }])];
 export type ResourcesServiceGetOneResourceByIdDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getOneResourceById>>;
 export type ResourcesServiceGetOneResourceByIdQueryResult<TData = ResourcesServiceGetOneResourceByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetOneResourceByIdKey = "ResourcesServiceGetOneResourceById";
@@ -208,6 +209,17 @@ export const UseWebhooksServiceGetOneWebhookConfigurationByIdKeyFn = ({ id, reso
   id: number;
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useWebhooksServiceGetOneWebhookConfigurationByIdKey, ...(queryKey ?? [{ id, resourceId }])];
+export type PluginServiceGetPluginsDefaultResponse = Awaited<ReturnType<typeof PluginService.getPlugins>>;
+export type PluginServiceGetPluginsQueryResult<TData = PluginServiceGetPluginsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePluginServiceGetPluginsKey = "PluginServiceGetPlugins";
+export const UsePluginServiceGetPluginsKeyFn = (queryKey?: Array<unknown>) => [usePluginServiceGetPluginsKey, ...(queryKey ?? [])];
+export type PluginServiceGetFrontendPluginFileDefaultResponse = Awaited<ReturnType<typeof PluginService.getFrontendPluginFile>>;
+export type PluginServiceGetFrontendPluginFileQueryResult<TData = PluginServiceGetFrontendPluginFileDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePluginServiceGetFrontendPluginFileKey = "PluginServiceGetFrontendPluginFile";
+export const UsePluginServiceGetFrontendPluginFileKeyFn = ({ filePath, pluginName }: {
+  filePath: string;
+  pluginName: string;
+}, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginFileKey, ...(queryKey ?? [{ filePath, pluginName }])];
 export type UsersServiceCreateOneUserMutationResult = Awaited<ReturnType<typeof UsersService.createOneUser>>;
 export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof UsersService.verifyEmail>>;
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;

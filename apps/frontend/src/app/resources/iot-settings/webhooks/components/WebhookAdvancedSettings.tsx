@@ -1,7 +1,6 @@
 import React from 'react';
 import { Switch, NumberInput, Divider } from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only
@@ -36,15 +35,11 @@ const WebhookAdvancedSettings: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <div className="font-medium">{t('retryLabel')}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {t('retryHelp')}
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{t('retryHelp')}</div>
           </div>
           <Switch
             isSelected={values.retryEnabled}
-            onValueChange={(checked) =>
-              handleSwitchChange('retryEnabled', checked)
-            }
+            onValueChange={(checked) => handleSwitchChange('retryEnabled', checked)}
           />
         </div>
       </div>
@@ -52,23 +47,17 @@ const WebhookAdvancedSettings: React.FC = () => {
       {values.retryEnabled && (
         <div className="grid grid-cols-2 gap-4 px-2">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('maxRetriesLabel')}
-            </label>
+            <label className="block text-sm font-medium mb-1">{t('maxRetriesLabel')}</label>
             <NumberInput
               min={1}
               max={10}
               value={values.maxRetries}
               onValueChange={(value) => handleNumberChange('maxRetries', value)}
             />
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              {t('maxRetriesHelp')}
-            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('maxRetriesHelp')}</div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('retryDelayLabel')}
-            </label>
+            <label className="block text-sm font-medium mb-1">{t('retryDelayLabel')}</label>
             <NumberInput
               min={100}
               max={10000}
@@ -76,9 +65,7 @@ const WebhookAdvancedSettings: React.FC = () => {
               value={values.retryDelay}
               onValueChange={(value) => handleNumberChange('retryDelay', value)}
             />
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              {t('retryDelayHelp')}
-            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('retryDelayHelp')}</div>
           </div>
         </div>
       )}
@@ -88,14 +75,9 @@ const WebhookAdvancedSettings: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="font-medium">{t('activeLabel')}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {t('activeHelp')}
-          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">{t('activeHelp')}</div>
         </div>
-        <Switch
-          isSelected={values.active}
-          onValueChange={(checked) => handleSwitchChange('active', checked)}
-        />
+        <Switch isSelected={values.active} onValueChange={(checked) => handleSwitchChange('active', checked)} />
       </div>
     </div>
   );

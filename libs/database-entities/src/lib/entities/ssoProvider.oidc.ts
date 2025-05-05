@@ -19,21 +19,21 @@ export class SSOProviderOIDCConfiguration {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the SSO provider',
     example: 1,
   })
   ssoProviderId!: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The issuer of the provider',
     example: 'https://sso.csh.rit.edu/auth/realms/csh',
   })
   issuer!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The authorization URL of the provider',
     example:
@@ -41,7 +41,7 @@ export class SSOProviderOIDCConfiguration {
   })
   authorizationURL!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The token URL of the provider',
     example:
@@ -49,7 +49,7 @@ export class SSOProviderOIDCConfiguration {
   })
   tokenURL!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The user info URL of the provider',
     example:
@@ -57,14 +57,14 @@ export class SSOProviderOIDCConfiguration {
   })
   userInfoURL!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The client ID of the provider',
     example: '1234567890',
   })
   clientId!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The client secret of the provider',
     example: '1234567890',

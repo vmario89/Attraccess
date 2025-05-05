@@ -3,21 +3,11 @@ import { ArrowRight, Mail } from 'lucide-react';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Alert } from '@heroui/alert';
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from '@heroui/modal';
-import { useTranslations } from '../../i18n';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/modal';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/register.en';
 import * as de from './translations/register.de';
-import {
-  useUsersServiceCreateOneUser,
-  UseUsersServiceGetAllUsersKeyFn,
-} from '@attraccess/react-query-client';
+import { useUsersServiceCreateOneUser, UseUsersServiceGetAllUsersKeyFn } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface RegisterFormProps {
@@ -50,11 +40,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
       const password = formData.get('password');
       const email = formData.get('email');
 
-      if (
-        typeof username !== 'string' ||
-        typeof password !== 'string' ||
-        typeof email !== 'string'
-      ) {
+      if (typeof username !== 'string' || typeof password !== 'string' || typeof email !== 'string') {
         return;
       }
 
@@ -65,7 +51,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
             password,
             email,
             strategy: 'local_password',
-          }
+          },
         });
         setRegisteredEmail(email);
         onOpen();
@@ -83,12 +69,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         <h2 className="text-3xl font-bold">{t('title')}</h2>
         <p className="mt-2 text-gray-600 dark:text-gray-300">
           {t('hasAccount')}{' '}
-          <Button
-            onPress={onHasAccount}
-            variant="light"
-            color="secondary"
-            isDisabled={createUser.isPending}
-          >
+          <Button onPress={onHasAccount} variant="light" color="secondary" isDisabled={createUser.isPending}>
             {t('signInButton')}
           </Button>
         </p>
@@ -129,18 +110,14 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           color="primary"
           fullWidth
           type="submit"
-          endContent={
-            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-          }
+          endContent={<ArrowRight className="group-hover:translate-x-1 transition-transform" />}
           isLoading={createUser.isPending}
           isDisabled={createUser.isPending}
         >
           {createUser.isPending ? t('creatingAccount') : t('createAccountButton')}
         </Button>
 
-        {error && (
-          <Alert color="danger" title={t('error.title')} description={error} />
-        )}
+        {error && <Alert color="danger" title={t('error.title')} description={error} />}
       </form>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

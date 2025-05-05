@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as serverListEn from './servers/translations/en';
 import * as serverListDe from './servers/translations/de';
 
@@ -38,11 +38,7 @@ export const MqttServersPage: React.FC = () => {
         subtitle="Manage MQTT server connections for resource integration"
         backTo="/"
         actions={
-          <Button
-            color="primary"
-            startContent={<Plus size={16} />}
-            onPress={handleAddNewServer}
-          >
+          <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewServer}>
             {t('addNewServer')}
           </Button>
         }

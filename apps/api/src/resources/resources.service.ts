@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike, FindOptionsWhere, IsNull } from 'typeorm';
+import { Repository, ILike, FindOptionsWhere, IsNull, In } from 'typeorm';
 import { Resource } from '@attraccess/database-entities';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
@@ -46,8 +46,6 @@ export class ResourcesService {
       relations: ['introductions', 'usages', 'groups'],
     });
 
-    console.log('resource', resource);
-
     if (!resource) {
       throw new ResourceNotFoundException(id);
     }
@@ -87,36 +85,43 @@ export class ResourcesService {
     }
   }
 
-  async listResources(page = 1, limit = 10, search?: string, groupId?: number): Promise<PaginatedResponse<Resource>> {
-    let where: FindOptionsWhere<Resource> | FindOptionsWhere<Resource>[] = [];
-
-    if (search) {
-      where = [
-        {
-          name: ILike(`%${search}%`),
-        },
-        {
-          description: ILike(`%${search}%`),
-        },
-      ];
+  async listResources(options?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    groupId?: number;
+    ids?: number[] | number;
+  }): Promise<PaginatedResponse<Resource>> {
+    if (!options) {
+      options = {};
     }
 
-    let groupFilter: ReturnType<typeof IsNull> | number | undefined;
+    const { page = 1, limit = 10, search, groupId } = options;
+
+    const where: FindOptionsWhere<Resource> = {};
+
+    let ids = options.ids;
+    if (typeof ids === 'number') {
+      ids = [ids];
+    }
+
+    if (ids && ids.length > 0) {
+      where.id = In(ids);
+    }
+
+    if (groupId) {
+      where.groups = { id: groupId };
+    }
 
     if (groupId === -1) {
-      groupFilter = IsNull();
-    } else if (groupId !== undefined) {
-      groupFilter = groupId;
+      where.groups = {
+        id: IsNull(),
+      };
     }
 
-    if (groupFilter) {
-      if (!search) {
-        where = { groups: { id: groupFilter } };
-      } else {
-        where.forEach((condition) => {
-          condition.groups = { id: groupFilter };
-        });
-      }
+    if (search) {
+      where.name = ILike(`%${search}%`);
+      where.description = ILike(`%${search}%`);
     }
 
     const [resources, total] = await this.resourceRepository.findAndCount({

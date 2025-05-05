@@ -12,7 +12,10 @@ FROM node:${NODE_VERSION}-alpine
 WORKDIR /app
 
 # Copy the pre-built application (these will be built in the CI pipeline)
-COPY ./dist ./dist
+COPY ./dist/apps/api ./dist/apps/api
+COPY ./dist/apps/frontend ./dist/apps/frontend
+
+COPY package.json package.json
 
 # Copy the email templates
 ENV EMAIL_TEMPLATES_PATH=/app/dist/apps/api/assets/email-templates

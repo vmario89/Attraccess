@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslations } from '../../../../../i18n';
-import { UserSearch } from '../../../../../components/userSearch';
+import { useTranslations, UserSearch } from '@attraccess/plugins-frontend-ui';
 import { Button } from '@heroui/button';
 import { PlusCircle } from 'lucide-react';
 import * as en from './translations/en';

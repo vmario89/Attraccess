@@ -484,6 +484,13 @@ export type GetResourceHistoryResponseDto = {
     data: Array<ResourceUsage>;
 };
 
+export type GetActiveUsageSessionDto = {
+    /**
+     * The active usage session or null if none exists
+     */
+    usage: (ResourceUsage) | null;
+};
+
 export type CompleteIntroductionDto = {
     /**
      * User ID
@@ -1084,6 +1091,56 @@ export type WebhookTestResponseDto = {
     message: string;
 };
 
+export type PluginMainFrontend = {
+    /**
+     * The directory of the plugins frontend files
+     */
+    directory: string;
+    /**
+     * The entry point of the plugin, relative to the frontend directory
+     */
+    entryPoint: string;
+};
+
+export type PluginMain = {
+    /**
+     * The frontend files of the plugin
+     */
+    frontend: PluginMainFrontend;
+    /**
+     * The backend file of the plugin
+     */
+    backend: string;
+};
+
+export type PluginAttraccessVersion = {
+    /**
+     * The minimum version of the plugin
+     */
+    min: string;
+    /**
+     * The maximum version of the plugin
+     */
+    max: string;
+    /**
+     * The exact version of the plugin
+     */
+    exact: string;
+};
+
+export type PluginManifest = {
+    /**
+     * The name of the plugin
+     */
+    name: string;
+    main: PluginMain;
+    /**
+     * The version of the plugin
+     */
+    version: string;
+    attraccessVersion: PluginAttraccessVersion;
+};
+
 export type Ping2Response = {
     message?: string;
 };
@@ -1306,6 +1363,10 @@ export type GetAllResourcesData = {
      */
     groupId?: number;
     /**
+     * Resource IDs to filter resources
+     */
+    ids?: Array<(number)>;
+    /**
      * Number of items per page
      */
     limit?: number;
@@ -1388,7 +1449,7 @@ export type GetActiveSessionData = {
     resourceId: number;
 };
 
-export type GetActiveSessionResponse = ResourceUsage;
+export type GetActiveSessionResponse = GetActiveUsageSessionDto;
 
 export type MarkCompletedData = {
     requestBody: CompleteIntroductionDto;
@@ -1656,6 +1717,15 @@ export type RegenerateSecretData = {
 };
 
 export type RegenerateSecretResponse = WebhookConfigResponseDto;
+
+export type GetPluginsResponse = Array<PluginManifest>;
+
+export type GetFrontendPluginFileData = {
+    filePath: string;
+    pluginName: string;
+};
+
+export type GetFrontendPluginFileResponse = string;
 
 export type $OpenApiTs = {
     '/api/ping': {
@@ -2297,7 +2367,7 @@ export type $OpenApiTs = {
                 /**
                  * Active session retrieved successfully.
                  */
-                200: ResourceUsage;
+                200: GetActiveUsageSessionDto;
                 /**
                  * Unauthorized
                  */
@@ -2963,6 +3033,27 @@ export type $OpenApiTs = {
                  * Webhook configuration not found
                  */
                 404: unknown;
+            };
+        };
+    };
+    '/api/plugins': {
+        get: {
+            res: {
+                /**
+                 * The list of all plugins
+                 */
+                200: Array<PluginManifest>;
+            };
+        };
+    };
+    '/api/plugins/{pluginName}/frontend/module-federation/{filePath}': {
+        get: {
+            req: GetFrontendPluginFileData;
+            res: {
+                /**
+                 * The requested frontend plugin file
+                 */
+                200: string;
             };
         };
     };

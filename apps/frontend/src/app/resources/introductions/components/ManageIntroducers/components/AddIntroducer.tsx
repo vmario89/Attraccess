@@ -1,12 +1,9 @@
 import { memo, useCallback, useState } from 'react';
 import { Button } from '@heroui/button';
 import { PlusCircle } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { UserSearch } from '@frontend/components/userSearch';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
+import { UserSearch } from '@attraccess/plugins-frontend-ui';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { useToastMessage } from '../../../../../../components/toastProvider';
 
 // Import translations
 import * as en from './translations/addIntroducer.en';

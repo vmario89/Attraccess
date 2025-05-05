@@ -1,7 +1,6 @@
 import { Accordion, AccordionItem, Badge } from '@heroui/react';
 import { HelpCircle } from 'lucide-react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/documentation/en';
 import * as de from './translations/documentation/de';
 
@@ -38,43 +37,30 @@ export default function MqttDocumentation() {
         title={
           <div className="flex items-center gap-2">
             <HelpCircle size={16} />
-            <span className="dark:text-gray-200">
-              {t('templateVariablesTitle')}
-            </span>
+            <span className="dark:text-gray-200">{t('templateVariablesTitle')}</span>
           </div>
         }
       >
         <div className="grid gap-4 p-2">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t('templateVariablesDescription')}
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('templateVariablesDescription')}</p>
           <div className="grid gap-2">
             {templateVariables.map((variable) => (
-              <div
-                key={variable.name}
-                className="border border-gray-200 dark:border-gray-700 rounded-md p-3"
-              >
+              <div key={variable.name} className="border border-gray-200 dark:border-gray-700 rounded-md p-3">
                 <div className="flex items-center justify-between mb-2">
                   <Badge color="primary" className="font-mono">
                     {`{{${variable.name}}}`}
                   </Badge>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {variable.description}
-                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{variable.description}</span>
                 </div>
                 <div className="text-sm bg-gray-50 dark:bg-gray-800 p-2 rounded">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {t('example')}
-                  </span>{' '}
+                  <span className="text-gray-500 dark:text-gray-400">{t('example')}</span>{' '}
                   <span className="dark:text-gray-200">{variable.example}</span>
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-2">
-            <h4 className="text-sm font-semibold mb-2 dark:text-gray-300">
-              {t('exampleTemplate')}
-            </h4>
+            <h4 className="text-sm font-semibold mb-2 dark:text-gray-300">{t('exampleTemplate')}</h4>
             <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-3 font-mono text-xs dark:text-gray-200">
               {t('topic')} &nbsp;resources/42/status
               <br />

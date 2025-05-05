@@ -2,7 +2,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 import { Button } from '@heroui/button';
 import { Textarea } from '@heroui/input';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslations } from '../../../../../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useToastMessage } from '../../../../../../../components/toastProvider';

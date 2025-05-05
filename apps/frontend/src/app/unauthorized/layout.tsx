@@ -6,19 +6,15 @@ interface UnauthorizedLayoutProps {
   subtitle: string;
 }
 
-export function UnauthorizedLayout({
-  children,
-  title,
-  subtitle,
-}: UnauthorizedLayoutProps) {
+export function UnauthorizedLayout({ children, title, subtitle }: UnauthorizedLayoutProps) {
   return (
     <div className="flex min-h-screen">
       {/* Left side with background image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <img
-          className="absolute inset-0 w-full h-full object-cover"
-          src="https://images.unsplash.com/photo-1554147090-e1221a04a025?q=80&w=2848&auto=format&fit=crop"
-          alt="Office interior"
+          className="absolute inset-0 w-full h-full object-cover object-left"
+          src="login-wallpaper-blue.jpg"
+          alt="Login Wallpaper"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20" />
         <div className="relative z-10 p-12 text-white">

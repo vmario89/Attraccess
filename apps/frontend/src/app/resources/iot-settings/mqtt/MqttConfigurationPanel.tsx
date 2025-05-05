@@ -1,12 +1,5 @@
-import {
-  Card,
-  Accordion,
-  AccordionItem,
-  CardBody,
-  Button,
-} from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { Card, Accordion, AccordionItem, CardBody, Button } from '@heroui/react';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import { useState, useEffect } from 'react';
@@ -51,7 +44,7 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
   const { resourceId } = props;
   const { t } = useTranslations('mqtt', { en, de });
   const [isOpen, setIsOpen] = useState(false);
-  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({resourceId});
+  const { data: mqttConfig } = useMqttResourceConfigurationServiceGetOneMqttConfiguration({ resourceId });
   const [formData, setFormData] = useState<MqttFormData>({
     serverId: '',
     inUse: {
@@ -71,14 +64,11 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
         serverId: mqttConfig.serverId.toString(),
         inUse: {
           topicTemplate: mqttConfig.inUseTopic || defaultTemplates.inUse.topic,
-          messageTemplate:
-            mqttConfig.inUseMessage || defaultTemplates.inUse.message,
+          messageTemplate: mqttConfig.inUseMessage || defaultTemplates.inUse.message,
         },
         notInUse: {
-          topicTemplate:
-            mqttConfig.notInUseTopic || defaultTemplates.notInUse.topic,
-          messageTemplate:
-            mqttConfig.notInUseMessage || defaultTemplates.notInUse.message,
+          topicTemplate: mqttConfig.notInUseTopic || defaultTemplates.notInUse.topic,
+          messageTemplate: mqttConfig.notInUseMessage || defaultTemplates.notInUse.message,
         },
       });
     }
@@ -114,13 +104,7 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
             <div className="flex justify-between items-center w-full px-4">
               <span>{t('mqttTitle')}</span>
               {isOpen && (
-                <Button
-                  size="sm"
-                  variant="light"
-                  isIconOnly
-                  onPress={handleReset}
-                  title={t('resetToDefaults')}
-                >
+                <Button size="sm" variant="light" isIconOnly onPress={handleReset} title={t('resetToDefaults')}>
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               )}
@@ -134,25 +118,15 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
               <MqttServerSelector
                 resourceId={resourceId}
                 value={formData.serverId}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, serverId: value }))
-                }
+                onChange={(value) => setFormData((prev) => ({ ...prev, serverId: value }))}
               />
 
               <div className="space-y-6">
-                <MqttTemplateSettings
-                  resourceId={resourceId}
-                  formData={formData}
-                  onChange={setFormData}
-                />
+                <MqttTemplateSettings resourceId={resourceId} formData={formData} onChange={setFormData} />
                 <MqttDocumentation />
               </div>
 
-              <MqttActions
-                resourceId={resourceId}
-                formData={formData}
-                onReset={handleReset}
-              />
+              <MqttActions resourceId={resourceId} formData={formData} onReset={handleReset} />
             </div>
           </CardBody>
         </AccordionItem>

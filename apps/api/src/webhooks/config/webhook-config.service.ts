@@ -28,18 +28,13 @@ export class WebhookConfigService {
     });
 
     if (!webhook) {
-      throw new NotFoundException(
-        `Webhook configuration with ID ${id} not found`
-      );
+      throw new NotFoundException(`Webhook configuration with ID ${id} not found`);
     }
 
     return webhook;
   }
 
-  async create(
-    resourceId: number,
-    data: Partial<WebhookConfig>
-  ): Promise<WebhookConfig> {
+  async create(resourceId: number, data: Partial<WebhookConfig>): Promise<WebhookConfig> {
     // Check if resource exists
     const resource = await this.resourceRepository.findOne({
       where: { id: resourceId },
@@ -62,11 +57,7 @@ export class WebhookConfigService {
     return this.webhookConfigRepository.save(webhook);
   }
 
-  async update(
-    id: number,
-    resourceId: number,
-    data: Partial<WebhookConfig>
-  ): Promise<WebhookConfig> {
+  async update(id: number, resourceId: number, data: Partial<WebhookConfig>): Promise<WebhookConfig> {
     // First check if the webhook exists
     await this.findById(id, resourceId);
 
@@ -85,18 +76,11 @@ export class WebhookConfigService {
     await this.webhookConfigRepository.delete({ id, resourceId });
   }
 
-  async updateStatus(
-    id: number,
-    resourceId: number,
-    active: boolean
-  ): Promise<WebhookConfig> {
+  async updateStatus(id: number, resourceId: number, active: boolean): Promise<WebhookConfig> {
     return this.update(id, resourceId, { active });
   }
 
-  async regenerateSecret(
-    id: number,
-    resourceId: number
-  ): Promise<WebhookConfig> {
+  async regenerateSecret(id: number, resourceId: number): Promise<WebhookConfig> {
     // Generate a new secret
     const secret = this.generateSecret();
 
@@ -114,10 +98,7 @@ export class WebhookConfigService {
     return createHmac('sha256', secret).update(payload).digest('hex');
   }
 
-  async testWebhook(
-    id: number,
-    resourceId: number
-  ): Promise<{ success: boolean; message: string }> {
+  async testWebhook(id: number, resourceId: number): Promise<{ success: boolean; message: string }> {
     try {
       // Get the webhook configuration
       const webhook = await this.findById(id, resourceId);

@@ -20,21 +20,13 @@ import {
   SelectItem,
   Divider,
 } from '@heroui/react';
-import {
-  Pencil,
-  Trash,
-  Key,
-  FileCode,
-  Eye,
-  EyeOff,
-  Download,
-} from 'lucide-react';
+import { Pencil, Trash, Key, FileCode, Eye, EyeOff, Download } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
 import { SSOProviderType } from '@attraccess/database-entities';
-import { useTranslations } from '../../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
-import { 
+import {
   CreateSSOProviderDto,
   SSOProvider,
   UpdateSSOProviderDto,
@@ -73,19 +65,12 @@ export interface SSOProvidersListRef {
   handleAddNew: () => void;
 }
 
-export const SSOProvidersList = forwardRef<
-  SSOProvidersListRef,
-  React.ComponentPropsWithoutRef<'div'>
->((props, ref) => {
+export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentPropsWithoutRef<'div'>>((props, ref) => {
   const { t } = useTranslations('ssoProvidersList', { en, de });
   const { data: providers, isLoading, error } = useSsoServiceGetAllSsoProviders();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const [editingProvider, setEditingProvider] = useState<SSOProvider | null>(
-    null
-  );
-  const [formValues, setFormValues] = useState<CreateSSOProviderDto>(
-    defaultProviderValues
-  );
+  const [editingProvider, setEditingProvider] = useState<SSOProvider | null>(null);
+  const [formValues, setFormValues] = useState<CreateSSOProviderDto>(defaultProviderValues);
   const [showClientSecret, setShowClientSecret] = useState(false);
   const [isDiscovering, setIsDiscovering] = useState(false);
   const [keycloakHost, setKeycloakHost] = useState('');
@@ -115,9 +100,13 @@ export const SSOProvidersList = forwardRef<
       });
     },
   });
-  const { data: providerDetails } = useSsoServiceGetOneSsoProviderById({id: editingProvider?.id as number}, undefined, {
-    enabled: !!editingProvider,
-  });
+  const { data: providerDetails } = useSsoServiceGetOneSsoProviderById(
+    { id: editingProvider?.id as number },
+    undefined,
+    {
+      enabled: !!editingProvider,
+    }
+  );
 
   // Function to discover OIDC configuration from Keycloak
   const discoverOIDCConfiguration = async () => {
@@ -133,9 +122,7 @@ export const SSOProvidersList = forwardRef<
 
     try {
       // Normalize the host URL to ensure it doesn't end with a trailing slash
-      const normalizedHost = keycloakHost.endsWith('/')
-        ? keycloakHost.slice(0, -1)
-        : keycloakHost;
+      const normalizedHost = keycloakHost.endsWith('/') ? keycloakHost.slice(0, -1) : keycloakHost;
 
       // Construct the well-known endpoint URL
       const wellKnownUrl = `${normalizedHost}/realms/${keycloakRealm}/.well-known/openid-configuration`;
@@ -144,9 +131,7 @@ export const SSOProvidersList = forwardRef<
       const response = await fetch(wellKnownUrl);
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch configuration: ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch configuration: ${response.statusText}`);
       }
 
       const config: OpenIDConfiguration = await response.json();
@@ -194,10 +179,7 @@ export const SSOProvidersList = forwardRef<
         type: extendedProvider.type as SSOProviderType,
       };
 
-      if (
-        extendedProvider.type === 'OIDC' &&
-        extendedProvider.oidcConfiguration
-      ) {
+      if (extendedProvider.type === 'OIDC' && extendedProvider.oidcConfiguration) {
         updatedFormValues.oidcConfiguration = {
           issuer: extendedProvider.oidcConfiguration.issuer,
           authorizationURL: extendedProvider.oidcConfiguration.authorizationURL,
@@ -231,7 +213,7 @@ export const SSOProvidersList = forwardRef<
   const handleDelete = async (id: number) => {
     if (window.confirm(t('deleteConfirmation'))) {
       try {
-        await deleteSSOProvider.mutateAsync({id: id as number});
+        await deleteSSOProvider.mutateAsync({ id: id as number });
         success({
           title: t('providerDeleted'),
           description: t('providerDeletedDesc'),
@@ -299,7 +281,7 @@ export const SSOProvidersList = forwardRef<
           description: t('providerUpdatedDesc'),
         });
       } else {
-        await createSSOProvider.mutateAsync({requestBody: formValues});
+        await createSSOProvider.mutateAsync({ requestBody: formValues });
         success({
           title: t('providerCreated'),
           description: t('providerCreatedDesc'),
@@ -314,12 +296,7 @@ export const SSOProvidersList = forwardRef<
     } catch (err) {
       showError({
         title: t('errorGeneric'),
-        description:
-          err instanceof Error
-            ? err.message
-            : editingProvider
-            ? t('failedToUpdate')
-            : t('failedToCreate'),
+        description: err instanceof Error ? err.message : editingProvider ? t('failedToUpdate') : t('failedToCreate'),
       });
     }
   };
@@ -358,12 +335,7 @@ export const SSOProvidersList = forwardRef<
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Tooltip content={t('edit')}>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        isIconOnly
-                        onPress={() => handleEdit(provider)}
-                      >
+                      <Button size="sm" variant="ghost" isIconOnly onPress={() => handleEdit(provider)}>
                         <Pencil size={16} />
                       </Button>
                     </Tooltip>
@@ -386,26 +358,18 @@ export const SSOProvidersList = forwardRef<
         </Table>
       ) : (
         <div className="text-center p-8 rounded-lg border dark:border-gray-700 border-gray-200">
-          <div className="text-gray-500 dark:text-gray-400">
-            {t('noProviders')}
-          </div>
+          <div className="text-gray-500 dark:text-gray-400">{t('noProviders')}</div>
         </div>
       )}
 
       {/* Discover Configuration Dialog */}
-      <Modal
-        isOpen={isDiscoverDialogOpen}
-        onOpenChange={(open) => setIsDiscoverDialogOpen(open)}
-        size="md"
-      >
+      <Modal isOpen={isDiscoverDialogOpen} onOpenChange={(open) => setIsDiscoverDialogOpen(open)} size="md">
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader>{t('discoverFromKeycloak')}</ModalHeader>
               <ModalBody>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  {t('discoverDescription')}
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('discoverDescription')}</p>
                 <div className="space-y-4">
                   <Input
                     label={t('keycloakHost')}
@@ -447,9 +411,7 @@ export const SSOProvidersList = forwardRef<
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>
-                {editingProvider ? t('editProvider') : t('createNewProvider')}
-              </ModalHeader>
+              <ModalHeader>{editingProvider ? t('editProvider') : t('createNewProvider')}</ModalHeader>
               <ModalBody>
                 <div className="space-y-4">
                   <Input
@@ -476,9 +438,7 @@ export const SSOProvidersList = forwardRef<
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <FileCode size={16} />
-                          <span className="font-semibold">
-                            {t('oidcConfiguration')}
-                          </span>
+                          <span className="font-semibold">{t('oidcConfiguration')}</span>
                         </div>
                         <Button
                           size="sm"
@@ -503,9 +463,7 @@ export const SSOProvidersList = forwardRef<
                       <Input
                         label={t('authorizationURL')}
                         name="oidcConfiguration.authorizationURL"
-                        value={
-                          formValues.oidcConfiguration?.authorizationURL || ''
-                        }
+                        value={formValues.oidcConfiguration?.authorizationURL || ''}
                         onChange={handleInputChange}
                         placeholder="https://sso.example.com/auth/realms/example/protocol/openid-connect/auth"
                         isRequired
@@ -547,26 +505,14 @@ export const SSOProvidersList = forwardRef<
                         placeholder="••••••••••••••••"
                         isRequired
                         endContent={
-                          <Tooltip
-                            content={
-                              showClientSecret
-                                ? t('hideClientSecret')
-                                : t('showClientSecret')
-                            }
-                          >
+                          <Tooltip content={showClientSecret ? t('hideClientSecret') : t('showClientSecret')}>
                             <Button
                               isIconOnly
                               size="sm"
                               variant="light"
-                              onPress={() =>
-                                setShowClientSecret(!showClientSecret)
-                              }
+                              onPress={() => setShowClientSecret(!showClientSecret)}
                             >
-                              {showClientSecret ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Eye size={16} />
-                              )}
+                              {showClientSecret ? <EyeOff size={16} /> : <Eye size={16} />}
                             </Button>
                           </Tooltip>
                         }

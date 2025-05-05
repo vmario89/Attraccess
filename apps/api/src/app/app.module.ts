@@ -1,4 +1,3 @@
-import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
@@ -12,6 +11,8 @@ import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MqttModule } from '../mqtt/mqtt.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
+import { Module } from '@nestjs/common';
+import { PluginModule } from '../plugin-system/plugin.module';
 
 @Module({
   imports: [
@@ -26,10 +27,9 @@ import { WebhooksModule } from '../webhooks/webhooks.module';
     MqttModule,
     WebhooksModule,
     ServeStaticModule.forRoot({
-      rootPath:
-        process.env.STATIC_FRONTEND_FILE_PATH ||
-        resolve(join(__dirname, 'public')),
+      rootPath: process.env.STATIC_FRONTEND_FILE_PATH || resolve(join(__dirname, 'public')),
     }),
+    PluginModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

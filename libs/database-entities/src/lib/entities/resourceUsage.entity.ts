@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { User } from './user.entity';
@@ -19,17 +12,18 @@ export class ResourceUsage {
   })
   id!: number;
 
-  @Column()
+  @Column({
+    type: 'integer',
+  })
   @ApiProperty({
     description: 'The ID of the resource being used',
     example: 1,
   })
   resourceId!: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'integer' })
   @ApiProperty({
-    description:
-      'The ID of the user using the resource (null if user was deleted)',
+    description: 'The ID of the user using the resource (null if user was deleted)',
     example: 1,
     required: false,
   })
@@ -86,6 +80,7 @@ export class ResourceUsage {
     END`,
     insert: false,
     update: false,
+    type: 'integer',
   })
   @ApiProperty({
     description: 'The duration of the usage session in minutes',

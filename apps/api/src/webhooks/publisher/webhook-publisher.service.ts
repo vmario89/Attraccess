@@ -3,10 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WebhookConfig, Resource } from '@attraccess/database-entities';
-import {
-  ResourceUsageStartedEvent,
-  ResourceUsageEndedEvent,
-} from '../../resources/usage/events/resource-usage.events';
+import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../resources/usage/events/resource-usage.events';
 import * as Handlebars from 'handlebars';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
@@ -52,10 +49,7 @@ export class WebhookPublisherService {
     return this.templates[template];
   }
 
-  private processTemplate(
-    template: string,
-    context: Record<string, unknown>
-  ): string {
+  private processTemplate(template: string, context: Record<string, unknown>): string {
     const compiled = this.compileTemplate(template);
     return compiled(context);
   }
@@ -64,10 +58,7 @@ export class WebhookPublisherService {
    * Process a URL with Handlebars templates
    * This allows dynamic URL parameters based on resource attributes
    */
-  private processUrlTemplate(
-    url: string,
-    context: Record<string, unknown>
-  ): string {
+  private processUrlTemplate(url: string, context: Record<string, unknown>): string {
     // Check if URL contains any handlebars templates
     if (url.includes('{{') && url.includes('}}')) {
       return this.processTemplate(url, context);
@@ -99,10 +90,7 @@ export class WebhookPublisherService {
 
   private startQueueProcessor(): void {
     // Process queue every 5 seconds
-    const interval = this.configService.get<number>(
-      'WEBHOOK_QUEUE_INTERVAL_MS',
-      5000
-    );
+    const interval = this.configService.get<number>('WEBHOOK_QUEUE_INTERVAL_MS', 5000);
     this.queueProcessor = setInterval(() => {
       this.processMessageQueue();
     }, interval);
@@ -132,10 +120,7 @@ export class WebhookPublisherService {
 
       for (const item of items) {
         // Skip if not enough time has passed since the last attempt
-        if (
-          item.lastAttempt !== null &&
-          now.getTime() - item.lastAttempt.getTime() < item.retryDelay
-        ) {
+        if (item.lastAttempt !== null && now.getTime() - item.lastAttempt.getTime() < item.retryDelay) {
           updatedItems.push(item);
           continue;
         }
@@ -153,10 +138,7 @@ export class WebhookPublisherService {
               lastAttempt: now,
             });
           } else {
-            this.logger.error(
-              `Failed to send webhook after ${item.maxRetries} retries: ${error.message}`,
-              error.stack
-            );
+            this.logger.error(`Failed to send webhook after ${item.maxRetries} retries: ${error.message}`, error.stack);
           }
         }
       }
@@ -204,24 +186,20 @@ export class WebhookPublisherService {
 
       const response = await axios(config);
 
-      this.logger.log(
-        `Webhook sent successfully to ${item.url} (${response.status})`
-      );
+      this.logger.log(`Webhook sent successfully to ${item.url} (${response.status})`);
     } catch (error) {
       const axiosError = error as AxiosError;
 
       if (axiosError.response) {
         // The request was made and the server responded with an error status
         this.logger.error(
-          `Webhook error: Server responded with ${
-            axiosError.response.status
-          }: ${JSON.stringify(axiosError.response.data)}`
+          `Webhook error: Server responded with ${axiosError.response.status}: ${JSON.stringify(
+            axiosError.response.data
+          )}`
         );
       } else if (axiosError.request) {
         // The request was made but no response was received
-        this.logger.error(
-          `Webhook error: No response received - ${axiosError.message}`
-        );
+        this.logger.error(`Webhook error: No response received - ${axiosError.message}`);
       } else {
         // Something happened in setting up the request
         this.logger.error(`Webhook error: ${axiosError.message}`);
@@ -294,9 +272,7 @@ export class WebhookPublisherService {
       });
 
       if (!resource) {
-        this.logger.warn(
-          `Cannot send webhooks for non-existent resource ${resourceId}`
-        );
+        this.logger.warn(`Cannot send webhooks for non-existent resource ${resourceId}`);
         return;
       }
 
@@ -327,9 +303,7 @@ export class WebhookPublisherService {
               // Process header templates
               headers = this.processHeaderTemplates(headers, context);
             } catch (error) {
-              this.logger.warn(
-                `Invalid headers JSON for webhook ${webhook.id}: ${error.message}`
-              );
+              this.logger.warn(`Invalid headers JSON for webhook ${webhook.id}: ${error.message}`);
             }
           }
 
@@ -355,10 +329,7 @@ export class WebhookPublisherService {
         }
       }
     } catch (error) {
-      this.logger.error(
-        `Error handling resource.usage.started event: ${error.message}`,
-        error.stack
-      );
+      this.logger.error(`Error handling resource.usage.started event: ${error.message}`, error.stack);
     }
   }
 
@@ -382,9 +353,7 @@ export class WebhookPublisherService {
       });
 
       if (!resource) {
-        this.logger.warn(
-          `Cannot send webhooks for non-existent resource ${resourceId}`
-        );
+        this.logger.warn(`Cannot send webhooks for non-existent resource ${resourceId}`);
         return;
       }
 
@@ -401,10 +370,7 @@ export class WebhookPublisherService {
       for (const webhook of webhooks) {
         try {
           // Process template
-          const payload = this.processTemplate(
-            webhook.notInUseTemplate,
-            context
-          );
+          const payload = this.processTemplate(webhook.notInUseTemplate, context);
 
           // Process URL template
           const processedUrl = this.processUrlTemplate(webhook.url, context);
@@ -418,9 +384,7 @@ export class WebhookPublisherService {
               // Process header templates
               headers = this.processHeaderTemplates(headers, context);
             } catch (error) {
-              this.logger.warn(
-                `Invalid headers JSON for webhook ${webhook.id}: ${error.message}`
-              );
+              this.logger.warn(`Invalid headers JSON for webhook ${webhook.id}: ${error.message}`);
             }
           }
 
@@ -446,18 +410,12 @@ export class WebhookPublisherService {
         }
       }
     } catch (error) {
-      this.logger.error(
-        `Error handling resource.usage.ended event: ${error.message}`,
-        error.stack
-      );
+      this.logger.error(`Error handling resource.usage.ended event: ${error.message}`, error.stack);
     }
   }
 
   // Method to test a webhook without actually sending it
-  async testWebhook(
-    webhookId: number,
-    resourceId: number
-  ): Promise<{ success: boolean; message: string }> {
+  async testWebhook(webhookId: number, resourceId: number): Promise<{ success: boolean; message: string }> {
     try {
       // Find the webhook configuration
       const webhook = await this.webhookConfigRepository.findOne({
@@ -522,10 +480,7 @@ export class WebhookPublisherService {
 
         // Include timestamp in signature calculation
         const signaturePayload = `${timestamp}.${payload}`;
-        const signature = this.generateSignature(
-          signaturePayload,
-          webhook.secret
-        );
+        const signature = this.generateSignature(signaturePayload, webhook.secret);
         headers[webhook.signatureHeader] = signature;
       }
 
@@ -554,9 +509,7 @@ export class WebhookPublisherService {
       if (axiosError.response) {
         return {
           success: false,
-          message: `Server responded with ${
-            axiosError.response.status
-          }: ${JSON.stringify(axiosError.response.data)}`,
+          message: `Server responded with ${axiosError.response.status}: ${JSON.stringify(axiosError.response.data)}`,
         };
       } else if (axiosError.request) {
         return {

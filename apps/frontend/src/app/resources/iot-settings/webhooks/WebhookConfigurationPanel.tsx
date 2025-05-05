@@ -1,12 +1,5 @@
-import {
-  Card,
-  Accordion,
-  AccordionItem,
-  CardBody,
-  Button,
-} from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { Card, Accordion, AccordionItem, CardBody, Button } from '@heroui/react';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import WebhookList from './components/WebhookList';
@@ -18,9 +11,7 @@ interface WebhookConfigurationPanelProps {
   resourceId: number;
 }
 
-export function WebhookConfigurationPanel(
-  props: WebhookConfigurationPanelProps
-) {
+export function WebhookConfigurationPanel(props: WebhookConfigurationPanelProps) {
   const { resourceId } = props;
   const { t } = useTranslations('webhooksConfigurationPanel', { en, de });
 
@@ -29,11 +20,7 @@ export function WebhookConfigurationPanel(
 
   return (
     <Card>
-      <WebhookCreateModal
-        resourceId={resourceId}
-        isOpen={showCreateModal}
-        onOpenChange={setShowCreateModal}
-      />
+      <WebhookCreateModal resourceId={resourceId} isOpen={showCreateModal} onOpenChange={setShowCreateModal} />
       <Accordion
         selectedKeys={isOpen ? ['webhooks'] : []}
         onSelectionChange={(keys) => {
@@ -49,12 +36,7 @@ export function WebhookConfigurationPanel(
               <span>{t('title')}</span>
 
               {isOpen && (
-                <Button
-                  size="sm"
-                  color="primary"
-                  onPress={() => setShowCreateModal(true)}
-                  startContent={<Plus />}
-                >
+                <Button size="sm" color="primary" onPress={() => setShowCreateModal(true)} startContent={<Plus />}>
                   {t('addWebhook')}
                 </Button>
               )}

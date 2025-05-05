@@ -1,20 +1,9 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import {
-  Repository,
-  ILike,
-  FindOneOptions as TypeormFindOneOptions,
-  FindOperator,
-} from 'typeorm';
+import { Repository, ILike, FindOneOptions as TypeormFindOneOptions, FindOperator } from 'typeorm';
 import { SystemPermissions, User } from '@attraccess/database-entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  makePaginatedResponse,
-  PaginatedResponse,
-} from '../../types/response';
-import {
-  PaginationOptions,
-  PaginationOptionsSchema,
-} from '../../types/request';
+import { makePaginatedResponse, PaginatedResponse } from '../../types/response';
+import { PaginationOptions, PaginationOptionsSchema } from '../../types/request';
 import { z } from 'zod';
 import { UserNotFoundException } from '../../exceptions/user.notFound.exception';
 
@@ -25,11 +14,9 @@ const FindOneOptionsSchema = z
     email: z.string().email(),
   })
   .partial()
-  .refine(
-    ({ id, username, email }) =>
-      id !== undefined || username !== undefined || email !== undefined,
-    { message: 'At least one search criteria must be provided' }
-  );
+  .refine(({ id, username, email }) => id !== undefined || username !== undefined || email !== undefined, {
+    message: 'At least one search criteria must be provided',
+  });
 
 type FindOneOptions = z.infer<typeof FindOneOptionsSchema>;
 
@@ -73,26 +60,16 @@ export class UsersService {
       whereCondition.email = validatedOptions.email;
     }
 
-    this.logger.debug(
-      `Searching user with where condition: ${JSON.stringify(whereCondition)}`
-    );
+    this.logger.debug(`Searching user with where condition: ${JSON.stringify(whereCondition)}`);
     const user = await this.userRepository.findOne({
       where: whereCondition,
     });
-
-    if (user) {
-      this.logger.debug(`User found with ID: ${user.id}`);
-    } else {
-      this.logger.debug('No user found matching criteria');
-    }
 
     return user || null;
   }
 
   async createOne(username: string, email: string): Promise<User> {
-    this.logger.debug(
-      `Creating new user - username: ${username}, email: ${email}`
-    );
+    this.logger.debug(`Creating new user - username: ${username}, email: ${email}`);
 
     // Check for existing email
     this.logger.debug(`Checking if email already exists: ${email}`);
@@ -118,9 +95,7 @@ export class UsersService {
     this.logger.debug('Checking if this is the first user in the system');
     const totalUsers = await this.userRepository.count();
     if (totalUsers === 0) {
-      this.logger.debug(
-        'First user in system - granting all system permissions'
-      );
+      this.logger.debug('First user in system - granting all system permissions');
       // This is the first user, grant all system permissions
       type permissionKeys = keyof SystemPermissions;
 
@@ -146,9 +121,7 @@ export class UsersService {
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
-    this.logger.debug(
-      `Updating user with ID: ${id}, updates: ${JSON.stringify(updates)}`
-    );
+    this.logger.debug(`Updating user with ID: ${id}, updates: ${JSON.stringify(updates)}`);
 
     // If email is being updated, check for uniqueness
     if (updates.email) {
@@ -158,25 +131,19 @@ export class UsersService {
       });
 
       if (existingEmails.some((user) => user.id !== id)) {
-        this.logger.debug(
-          `Email already in use by another user: ${updates.email}`
-        );
+        this.logger.debug(`Email already in use by another user: ${updates.email}`);
         throw new UserEmailAlreadyInUseException();
       }
     }
 
     // If username is being updated, check for case-insensitive uniqueness
     if (updates.username) {
-      this.logger.debug(
-        `Checking uniqueness for new username: ${updates.username}`
-      );
+      this.logger.debug(`Checking uniqueness for new username: ${updates.username}`);
       const existingUsername = await this.findOne({
         username: updates.username,
       });
       if (existingUsername && existingUsername.id !== id) {
-        this.logger.debug(
-          `Username already in use by another user: ${updates.username}`
-        );
+        this.logger.debug(`Username already in use by another user: ${updates.username}`);
         throw new UserUsernameAlreadyInUseException();
       }
     }
@@ -195,12 +162,8 @@ export class UsersService {
     return updatedUser;
   }
 
-  async findAll(
-    options: PaginationOptions & { search?: string }
-  ): Promise<PaginatedResponse<User>> {
-    this.logger.debug(
-      `Finding all users with options: ${JSON.stringify(options)}`
-    );
+  async findAll(options: PaginationOptions & { search?: string }): Promise<PaginatedResponse<User>> {
+    this.logger.debug(`Finding all users with options: ${JSON.stringify(options)}`);
     const paginationOptions = PaginationOptionsSchema.parse(options);
     const { search } = options;
     const { page, limit } = paginationOptions;
@@ -220,14 +183,10 @@ export class UsersService {
     const [users, total] = await this.userRepository.findAndCount({
       skip,
       take: limit,
-      where: search
-        ? [{ username: ILike(`%${search}%`) }, { email: ILike(`%${search}%`) }]
-        : undefined,
+      where: search ? [{ username: ILike(`%${search}%`) }, { email: ILike(`%${search}%`) }] : undefined,
     });
 
-    this.logger.debug(
-      `Found ${total} total users, returning page ${page} with ${users.length} results`
-    );
+    this.logger.debug(`Found ${total} total users, returning page ${page} with ${users.length} results`);
     return makePaginatedResponse(
       {
         page: paginationOptions.page,
@@ -242,11 +201,7 @@ export class UsersService {
     permission: keyof SystemPermissions,
     options: PaginationOptions & { search?: string }
   ): Promise<PaginatedResponse<User>> {
-    this.logger.debug(
-      `Finding users with permission "${permission}" and options: ${JSON.stringify(
-        options
-      )}`
-    );
+    this.logger.debug(`Finding users with permission "${permission}" and options: ${JSON.stringify(options)}`);
     const paginationOptions = PaginationOptionsSchema.parse(options);
     const { search } = options;
     const { page, limit } = paginationOptions;
@@ -256,31 +211,23 @@ export class UsersService {
     const query = this.userRepository.createQueryBuilder('user');
 
     // Add where clause for the specific permission = true
-    query.where(
-      `user.systemPermissions${
-        permission.charAt(0).toUpperCase() + permission.slice(1)
-      } = :value`,
-      { value: true }
-    );
+    query.where(`user.systemPermissions${permission.charAt(0).toUpperCase() + permission.slice(1)} = :value`, {
+      value: true,
+    });
 
     // Add search clause if provided
     if (search) {
       this.logger.debug(`Searching for users with query: ${search}`);
-      query.andWhere(
-        '(user.username LIKE :search OR user.email LIKE :search)',
-        {
-          search: `%${search}%`,
-        }
-      );
+      query.andWhere('(user.username LIKE :search OR user.email LIKE :search)', {
+        search: `%${search}%`,
+      });
     }
 
     // Add pagination
     query.skip(skip).take(limit);
 
     // Execute the query
-    this.logger.debug(
-      `Executing query for users with permission "${permission}"`
-    );
+    this.logger.debug(`Executing query for users with permission "${permission}"`);
     const [users, total] = await query.getManyAndCount();
 
     this.logger.debug(

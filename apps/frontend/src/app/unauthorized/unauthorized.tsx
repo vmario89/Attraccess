@@ -2,7 +2,7 @@ import { memo, useState } from 'react';
 import { RegistrationForm } from './registrationForm';
 import { LoginForm } from './loginForm';
 import { UnauthorizedLayout } from './layout';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/unauthorized.en';
 import * as de from './translations/unauthorized.de';
 import { SSOLogin } from './ssoLogin';
@@ -13,9 +13,7 @@ export const Unauthorized = memo(function UnauthorizedComponent() {
     de,
   });
 
-  const [formToShow, setFormToShow] = useState<
-    'login' | 'register' | 'forgotPassword'
-  >('login');
+  const [formToShow, setFormToShow] = useState<'login' | 'register' | 'forgotPassword'>('login');
 
   return (
     <UnauthorizedLayout title={t('title')} subtitle={t('subtitle')}>
@@ -25,9 +23,7 @@ export const Unauthorized = memo(function UnauthorizedComponent() {
           onForgotPassword={() => setFormToShow('forgotPassword')}
         />
       )}
-      {formToShow === 'register' && (
-        <RegistrationForm onHasAccount={() => setFormToShow('login')} />
-      )}
+      {formToShow === 'register' && <RegistrationForm onHasAccount={() => setFormToShow('login')} />}
       <SSOLogin />
     </UnauthorizedLayout>
   );

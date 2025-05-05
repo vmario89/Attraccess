@@ -1,0 +1,25 @@
+{
+  "nfcCards": "NFC Cards",
+  "enrollInstructions": "To enroll a new NFC Card, choose a connected ({{cloud}}) FABreader in the list below. Then click on the button \"Enroll new NFC Card\" and follow the instructions on the FABreader.",
+  "noNfcCardsFound": "No NFC Cards found",
+  "nfcCardsTable": {
+    "headers": {
+      "id": "ID",
+      "uid": "UID",
+      "userId": "User",
+      "createdAt": "Created at",
+      "actions": "Actions"
+    },
+    "actions": {
+      "delete": "Delete"
+    },
+    "deleteModal": {
+      "title": "Delete NFC Card",
+      "description": "You are about to delete the NFC Card with the ID {{id}}. This action cannot be undone.",
+      "readerLabel": "Select FABreader",
+      "readerPlaceholder": "Select a FABreader",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
+  }
+}

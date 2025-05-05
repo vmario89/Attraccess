@@ -1,0 +1,9 @@
+{
+  "name": "plugin-fabreader-frontend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/plugin-fabreader/frontend/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project plugin-fabreader-frontend --web",
+  "targets": {}
+}

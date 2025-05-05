@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useTranslations } from '@frontend/i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useToastMessage } from '@frontend/components/toastProvider';
 
-import {
-  WebhookFormValues,
-  defaultFormValues,
-  webhookToFormValues,
-} from '../types';
+import { WebhookFormValues, defaultFormValues, webhookToFormValues } from '../types';
 import { WebhookFormProvider } from '../context/WebhookFormContext';
 import WebhookBasicSettings from './WebhookBasicSettings';
 import WebhookTemplateEditor from './WebhookTemplateEditor';
@@ -36,20 +31,12 @@ export interface WebhookFormProps {
  * Handles its own data fetching, state management, and API operations
  * Composed of smaller, self-contained components
  */
-const WebhookForm: React.FC<WebhookFormProps> = ({
-  webhookId,
-  resourceId,
-  initialValues,
-  onCancel,
-  onComplete,
-}) => {
+const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initialValues, onCancel, onComplete }) => {
   const { t } = useTranslations('webhookForm', { en, de });
   const { success, error: showError } = useToastMessage();
 
   // State
-  const [values, setValues] = useState<WebhookFormValues>(
-    initialValues || defaultFormValues
-  );
+  const [values, setValues] = useState<WebhookFormValues>(initialValues || defaultFormValues);
   const [isLoaded, setIsLoaded] = useState(!!initialValues);
 
   // API hooks - main form only needs create and update

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MqttServer } from '@attraccess/database-entities';
 import { MqttServerService } from './mqtt-server.service';
@@ -18,7 +9,7 @@ import {
   MqttServerStatusDto,
   AllMqttServerStatusesDto,
 } from './dtos/mqtt-server.dto';
-import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '@attraccess/plugins-backend-sdk';
 import { MqttClientService } from '../mqtt-client.service';
 
 @ApiTags('MQTT Servers')
@@ -49,9 +40,7 @@ export class MqttServerController {
     type: MqttServer,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async getOneById(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<MqttServer> {
+  async getOneById(@Param('id', ParseIntPipe) id: number): Promise<MqttServer> {
     return this.mqttServerService.findOne(id);
   }
 
@@ -62,9 +51,7 @@ export class MqttServerController {
     description: 'MQTT server created successfully',
     type: MqttServer,
   })
-  async createOne(
-    @Body() createMqttServerDto: CreateMqttServerDto
-  ): Promise<MqttServer> {
+  async createOne(@Body() createMqttServerDto: CreateMqttServerDto): Promise<MqttServer> {
     return this.mqttServerService.create(createMqttServerDto);
   }
 
@@ -102,9 +89,7 @@ export class MqttServerController {
     type: TestConnectionResponseDto,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async testConnection(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<TestConnectionResponseDto> {
+  async testConnection(@Param('id', ParseIntPipe) id: number): Promise<TestConnectionResponseDto> {
     try {
       // First check if the server exists
       await this.mqttServerService.findOne(id);
@@ -115,17 +100,13 @@ export class MqttServerController {
       // Ensure we always return a properly formatted response
       return {
         success: typeof result.success === 'boolean' ? result.success : false,
-        message:
-          result.message ||
-          (result.success ? 'Connection successful' : 'Connection failed'),
+        message: result.message || (result.success ? 'Connection successful' : 'Connection failed'),
       };
     } catch (error) {
       // If any exception occurs, return a formatted error
       return {
         success: false,
-        message: `Connection failed: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
+        message: `Connection failed: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
   }
@@ -141,9 +122,7 @@ export class MqttServerController {
     type: MqttServerStatusDto,
   })
   @ApiResponse({ status: 404, description: 'MQTT server not found' })
-  async getStatusOfOne(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<MqttServerStatusDto> {
+  async getStatusOfOne(@Param('id', ParseIntPipe) id: number): Promise<MqttServerStatusDto> {
     return this.mqttClientService.getStatusOfOne(id);
   }
 

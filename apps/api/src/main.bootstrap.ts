@@ -1,12 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import {
-  ValidationPipe,
-  ClassSerializerInterceptor,
-  Logger,
-  LogLevel,
-} from '@nestjs/common';
+import { ValidationPipe, ClassSerializerInterceptor, Logger, LogLevel } from '@nestjs/common';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
@@ -17,20 +13,23 @@ const env = loadEnv((z) => ({
 }));
 
 export async function bootstrap() {
-  // Parse log levels from environment variable
+  const bootstrapLogger = new Logger('Bootstrap');
+  bootstrapLogger.log('Starting bootstrap process...');
+
   const logLevels = (process.env.LOG_LEVELS || 'error,warn,log')
     .split(',')
-    .filter((level): level is LogLevel =>
-      ['error', 'warn', 'log', 'debug', 'verbose'].includes(level)
-    );
+    .filter((level): level is LogLevel => ['error', 'warn', 'log', 'debug', 'verbose'].includes(level));
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: logLevels,
   });
+  bootstrapLogger.log('Main application instance created.');
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   app.enableCors();
+
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   app.use(
     session({
@@ -40,12 +39,11 @@ export async function bootstrap() {
     })
   );
 
-  const logger = new Logger('Bootstrap');
-  logger.log(`🚀 Application is running with global prefix: ${globalPrefix}`);
-  logger.log(`📝 Enabled log levels: ${logLevels.join(', ')}`);
+  bootstrapLogger.log(`🚀 Application is running with global prefix: ${globalPrefix}`);
+  bootstrapLogger.log(`📝 Enabled log levels: ${logLevels.join(', ')}`);
 
   const configService = app.get(ConfigService);
-  const storageConfig = configService.get('storage');
+  const storageCfg = configService.get('storage');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -57,22 +55,16 @@ export async function bootstrap() {
     })
   );
 
-  // Add global interceptor to handle @Exclude() decorators
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get('Reflector'))
-  );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get('Reflector')));
 
-  // Set up static file serving for resource images
-  app.useStaticAssets(storageConfig.root, {
+  app.useStaticAssets(storageCfg.root, {
     prefix: '/storage',
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   const config = new DocumentBuilder()
     .setTitle('Attraccess API')
-    .setDescription(
-      'The Attraccess API used to manage machine and tool access in a Makerspace or FabLab'
-    )
+    .setDescription('The Attraccess API used to manage machine and tool access in a Makerspace or FabLab')
     .setVersion('1.0')
     .addBearerAuth()
     .addApiKey({
@@ -84,5 +76,6 @@ export async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
+  bootstrapLogger.log('Bootstrap process completed.');
   return { app, globalPrefix, swaggerDocumentFactory: documentFactory };
 }

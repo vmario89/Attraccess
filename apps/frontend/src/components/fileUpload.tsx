@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useToastMessage } from './toastProvider';
 import { ImageIcon, X } from 'lucide-react';
-import { useTranslations } from '../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/fileUpload.en';
 import * as de from './translations/fileUpload.de';
 
@@ -16,13 +16,7 @@ interface FileUploadProps {
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export function FileUpload({
-  id,
-  label,
-  onChange,
-  disabled = false,
-  className = '',
-}: FileUploadProps) {
+export function FileUpload({ id, label, onChange, disabled = false, className = '' }: FileUploadProps) {
   const { t } = useTranslations('fileUpload', {
     en,
     de,
@@ -137,17 +131,12 @@ export function FileUpload({
 
   return (
     <div className={className}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-      >
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         {label}
       </label>
       <div
         className={`relative ${
-          isDragActive
-            ? 'border-blue-500'
-            : 'border-gray-300 dark:border-gray-700'
+          isDragActive ? 'border-blue-500' : 'border-gray-300 dark:border-gray-700'
         } border-2 border-dashed rounded-lg p-4 transition-colors`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -165,9 +154,7 @@ export function FileUpload({
         {!selectedFile && (
           <div className="text-center">
             <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {t('dragAndDrop')}
-            </p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{t('dragAndDrop')}</p>
             <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
               {t('acceptedFormats', { maxSize: MAX_FILE_SIZE / 1024 / 1024 })}
             </p>
@@ -184,11 +171,7 @@ export function FileUpload({
               <X className="h-4 w-4" />
             </button>
             <div className="relative w-full aspect-video">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="w-full h-full object-contain rounded-lg"
-              />
+              <img src={previewUrl} alt="Preview" className="w-full h-full object-contain rounded-lg" />
             </div>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 text-center">
               {t('preview', {

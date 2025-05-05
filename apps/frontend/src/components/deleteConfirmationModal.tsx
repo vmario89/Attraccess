@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalProps,
-} from '@heroui/modal';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalProps } from '@heroui/modal';
 import { Button } from '@heroui/button';
-import { useTranslations } from '../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/deleteConfirmation.en';
 import * as de from './translations/deleteConfirmation.de';
 import { Trans } from 'react-i18next';

@@ -28,7 +28,7 @@ export class Resource {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The name of the resource',
     example: '3D Printer',

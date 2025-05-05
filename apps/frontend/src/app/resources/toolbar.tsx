@@ -5,7 +5,7 @@ import { Search, Plus } from 'lucide-react';
 import { ResourceCreateModal } from './resourceCreateModal';
 import { ResourceGroupUpsertModal } from './resourceGroupUpsertModal';
 import { useAuth } from '../../hooks/useAuth';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/toolbar.en';
 import * as de from './translations/toolbar.de';
 

@@ -19,7 +19,7 @@ import { ResourceGroup } from '@attraccess/database-entities';
 import { ListResourceGroupsDto } from './dto/list-resource-groups.dto';
 import { PaginatedResponse } from '../../types/response';
 import { PaginatedResourceGroupResponseDto } from './dto/paginated-resource-group-response.dto';
-import { Auth } from '../../users-and-auth/strategies/systemPermissions.guard';
+import { Auth } from '@attraccess/plugins-backend-sdk';
 import { CanManageResources } from '../guards/can-manage-resources.decorator';
 
 @ApiTags('Resource Groups')
@@ -39,13 +39,13 @@ export class ResourceGroupsController {
   @Get()
   @Auth()
   @ApiOperation({ summary: 'Retrieve all resource groups', operationId: 'getAllResourceGroups' })
-  @ApiResponse({ status: 200, description: 'List of resource groups with pagination.', type: PaginatedResourceGroupResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'List of resource groups with pagination.',
+    type: PaginatedResourceGroupResponseDto,
+  })
   getAll(@Query() query: ListResourceGroupsDto): Promise<PaginatedResponse<ResourceGroup>> {
-    return this.resourceGroupsService.listResourceGroups(
-      query.page,
-      query.limit,
-      query.search,
-    );
+    return this.resourceGroupsService.listResourceGroups(query.page, query.limit, query.search);
   }
 
   @Get(':id')
@@ -59,20 +59,17 @@ export class ResourceGroupsController {
   }
 
   @Patch(':id')
-  @CanManageResources({ paramName: 'id' })
+  @CanManageResources({ skipResourceCheck: true })
   @ApiOperation({ summary: 'Update a specific resource group by ID', operationId: 'updateOneResourceGroup' })
   @ApiParam({ name: 'id', description: 'Resource Group ID', type: Number })
   @ApiResponse({ status: 200, description: 'The resource group has been successfully updated.', type: ResourceGroup })
   @ApiResponse({ status: 404, description: 'Resource group not found.' })
-  updateOne(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateDto: UpdateResourceGroupDto,
-  ): Promise<ResourceGroup> {
+  updateOne(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateResourceGroupDto): Promise<ResourceGroup> {
     return this.resourceGroupsService.updateResourceGroup(id, updateDto);
   }
 
   @Delete(':id')
-  @CanManageResources({ paramName: 'id' })
+  @CanManageResources({ skipResourceCheck: true })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a specific resource group by ID', operationId: 'deleteOneResourceGroup' })
   @ApiParam({ name: 'id', description: 'Resource Group ID', type: Number })

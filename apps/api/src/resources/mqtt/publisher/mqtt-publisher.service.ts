@@ -3,10 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Resource, MqttResourceConfig } from '@attraccess/database-entities';
-import {
-  ResourceUsageStartedEvent,
-  ResourceUsageEndedEvent,
-} from '../../usage/events/resource-usage.events';
+import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../usage/events/resource-usage.events';
 import { MqttClientService } from '../../../mqtt/mqtt-client.service';
 import * as Handlebars from 'handlebars';
 import { ConfigService } from '@nestjs/config';
@@ -39,10 +36,7 @@ export class MqttPublisherService {
     private readonly resourceRepository: Repository<Resource>
   ) {
     this.maxRetries = this.configService.get<number>('MQTT_MAX_RETRIES', 3);
-    this.retryDelay = this.configService.get<number>(
-      'MQTT_RETRY_DELAY_MS',
-      5000
-    );
+    this.retryDelay = this.configService.get<number>('MQTT_RETRY_DELAY_MS', 5000);
 
     // Start queue processor
     this.startQueueProcessor();
@@ -55,10 +49,7 @@ export class MqttPublisherService {
     return this.templates[template];
   }
 
-  private processTemplate(
-    template: string,
-    context: Record<string, unknown>
-  ): string {
+  private processTemplate(template: string, context: Record<string, unknown>): string {
     const compiledTemplate = this.compileTemplate(template);
     return compiledTemplate(context);
   }
@@ -68,10 +59,7 @@ export class MqttPublisherService {
       clearInterval(this.queueProcessor);
     }
 
-    this.queueProcessor = setInterval(
-      () => this.processMessageQueue(),
-      this.retryDelay
-    );
+    this.queueProcessor = setInterval(() => this.processMessageQueue(), this.retryDelay);
   }
 
   private stopQueueProcessor(): void {
@@ -99,8 +87,7 @@ export class MqttPublisherService {
 
       for (const queuedMessage of messages) {
         // Skip messages that haven't waited long enough
-        const timeSinceLastAttempt =
-          now.getTime() - queuedMessage.lastAttempt.getTime();
+        const timeSinceLastAttempt = now.getTime() - queuedMessage.lastAttempt.getTime();
         if (timeSinceLastAttempt < this.retryDelay) {
           remainingMessages.push(queuedMessage);
           continue;
@@ -108,16 +95,10 @@ export class MqttPublisherService {
 
         // Try to publish
         try {
-          const serverStatus = await this.mqttClientService.getStatusOfOne(
-            queuedMessage.serverId
-          );
+          const serverStatus = await this.mqttClientService.getStatusOfOne(queuedMessage.serverId);
 
           if (serverStatus.connected) {
-            await this.mqttClientService.publish(
-              queuedMessage.serverId,
-              queuedMessage.topic,
-              queuedMessage.message
-            );
+            await this.mqttClientService.publish(queuedMessage.serverId, queuedMessage.topic, queuedMessage.message);
 
             this.logger.log(
               `Successfully published queued message for resource ${queuedMessage.resourceId} after retry`
@@ -165,12 +146,7 @@ export class MqttPublisherService {
     }
   }
 
-  private async publishWithRetry(
-    serverId: number,
-    resourceId: number,
-    topic: string,
-    message: string
-  ): Promise<void> {
+  private async publishWithRetry(serverId: number, resourceId: number, topic: string, message: string): Promise<void> {
     try {
       // Try to publish immediately first
       await this.mqttClientService.publish(serverId, topic, message);
@@ -208,9 +184,7 @@ export class MqttPublisherService {
       });
 
       if (!config) {
-        this.logger.debug(
-          `No MQTT configuration found for resource ID ${event.resourceId}`
-        );
+        this.logger.debug(`No MQTT configuration found for resource ID ${event.resourceId}`);
         return; // No MQTT config for this resource
       }
 
@@ -240,10 +214,7 @@ export class MqttPublisherService {
       await this.publishWithRetry(config.serverId, resource.id, topic, message);
     } catch (error) {
       // Log error but don't fail the operation
-      this.logger.error(
-        'Failed to publish resource usage started event to MQTT',
-        error
-      );
+      this.logger.error('Failed to publish resource usage started event to MQTT', error);
     }
   }
 
@@ -256,9 +227,7 @@ export class MqttPublisherService {
       });
 
       if (!config) {
-        this.logger.debug(
-          `No MQTT configuration found for resource ID ${event.resourceId}`
-        );
+        this.logger.debug(`No MQTT configuration found for resource ID ${event.resourceId}`);
         return; // No MQTT config for this resource
       }
 
@@ -288,10 +257,7 @@ export class MqttPublisherService {
       await this.publishWithRetry(config.serverId, resource.id, topic, message);
     } catch (error) {
       // Log error but don't fail the operation
-      this.logger.error(
-        'Failed to publish resource usage ended event to MQTT',
-        error
-      );
+      this.logger.error('Failed to publish resource usage ended event to MQTT', error);
     }
   }
 }

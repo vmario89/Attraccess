@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Resource } from './resource.entity';
 import { User } from './user.entity';
@@ -20,14 +13,14 @@ export class ResourceIntroductionUser {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the resource',
     example: 1,
   })
   resourceId!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user who can give introductions',
     example: 1,

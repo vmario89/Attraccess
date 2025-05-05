@@ -14,9 +14,8 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthenticatedRequest } from '../../types/request';
+import { AuthenticatedRequest, Auth } from '@attraccess/plugins-backend-sdk';
 import { AuthService } from '../auth/auth.service';
-import { Auth } from '../strategies/systemPermissions.guard';
 import { EmailService } from '../../email/email.service';
 import { GetUsersQueryDto } from './dtos/getUsersQuery.dto';
 import { VerifyEmailDto } from './dtos/verifyEmail.dto';
@@ -28,10 +27,7 @@ import { UserNotFoundException } from '../../exceptions/user.notFound.exception'
 import { UpdateUserPermissionsDto } from './dtos/updateUserPermissions.dto';
 import { BulkUpdateUserPermissionsDto } from './dtos/bulkUpdateUserPermissions.dto';
 import { SystemPermissions } from '@attraccess/database-entities';
-import {
-  GetUsersWithPermissionQueryDto,
-  PermissionFilter,
-} from './dtos/getUsersWithPermissionQuery.dto';
+import { GetUsersWithPermissionQueryDto, PermissionFilter } from './dtos/getUsersWithPermissionQuery.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -51,22 +47,12 @@ export class UsersController {
    * @param permissions The permissions being granted
    * @throws ForbiddenException if the user tries to grant a permission they don't have
    */
-  private validateCanGrantPermissions(
-    user: User,
-    permissions: Partial<SystemPermissions>
-  ): void {
+  private validateCanGrantPermissions(user: User, permissions: Partial<SystemPermissions>): void {
     for (const permission of Object.keys(permissions)) {
       // If the permission is being set to true, check if the user has it
-      if (
-        permissions[permission] === true &&
-        !user.systemPermissions[permission]
-      ) {
-        this.logger.warn(
-          `User ${user.id} attempted to grant ${permission} permission they don't have`
-        );
-        throw new ForbiddenException(
-          'You cannot grant permissions you do not have'
-        );
+      if (permissions[permission] === true && !user.systemPermissions[permission]) {
+        this.logger.warn(`User ${user.id} attempted to grant ${permission} permission they don't have`);
+        throw new ForbiddenException('You cannot grant permissions you do not have');
       }
     }
   }
@@ -83,65 +69,43 @@ export class UsersController {
     description: 'Invalid input data.',
   })
   async createOne(@Body() body: CreateUserDto): Promise<User> {
-    this.logger.debug(
-      `Creating new user with username: ${body.username} and email: ${body.email}`
-    );
+    this.logger.debug(`Creating new user with username: ${body.username} and email: ${body.email}`);
 
     const user = await this.usersService.createOne(body.username, body.email);
     this.logger.debug(`User created with ID: ${user.id}`);
 
     let authenticationDetails: AuthenticationDetail | null = null;
     try {
-      this.logger.debug(
-        `Adding authentication details for user ID: ${user.id}, strategy: ${body.strategy}`
-      );
-      authenticationDetails = await this.authService.addAuthenticationDetails(
-        user.id,
-        {
-          type: body.strategy,
-          details: {
-            password: body.password,
-          },
-        }
-      );
-      this.logger.debug(
-        `Authentication details added with ID: ${authenticationDetails.id}`
-      );
+      this.logger.debug(`Adding authentication details for user ID: ${user.id}, strategy: ${body.strategy}`);
+      authenticationDetails = await this.authService.addAuthenticationDetails(user.id, {
+        type: body.strategy,
+        details: {
+          password: body.password,
+        },
+      });
+      this.logger.debug(`Authentication details added with ID: ${authenticationDetails.id}`);
     } catch (e) {
-      this.logger.error(
-        `Error adding authentication details for user ID: ${user.id}`,
-        e.stack
-      );
+      this.logger.error(`Error adding authentication details for user ID: ${user.id}`, e.stack);
       await this.usersService.deleteOne(user.id);
       throw e;
     }
 
     try {
-      this.logger.debug(
-        `Generating email verification token for user ID: ${user.id}`
-      );
-      const verificationToken =
-        await this.authService.generateEmailVerificationToken(user);
+      this.logger.debug(`Generating email verification token for user ID: ${user.id}`);
+      const verificationToken = await this.authService.generateEmailVerificationToken(user);
       this.logger.debug(`Sending verification email to user ID: ${user.id}`);
       await this.emailService.sendVerificationEmail(user, verificationToken);
       this.logger.debug(`Verification email sent to user ID: ${user.id}`);
     } catch (e) {
-      this.logger.error(
-        `Error sending verification email for user ID: ${user.id}`,
-        e.stack
-      );
+      this.logger.error(`Error sending verification email for user ID: ${user.id}`, e.stack);
       if (authenticationDetails) {
-        await this.authService.removeAuthenticationDetails(
-          authenticationDetails.id
-        );
+        await this.authService.removeAuthenticationDetails(authenticationDetails.id);
       }
       await this.usersService.deleteOne(user.id);
       throw e;
     }
 
-    this.logger.debug(
-      `User creation completed successfully for ID: ${user.id}`
-    );
+    this.logger.debug(`User creation completed successfully for ID: ${user.id}`);
     return user;
   }
 
@@ -162,12 +126,7 @@ export class UsersController {
     description: 'Invalid token or email.',
   })
   async verifyEmail(@Body() body: VerifyEmailDto) {
-    this.logger.debug(
-      `Verifying email for: ${body.email} with token: ${body.token.substring(
-        0,
-        5
-      )}...`
-    );
+    this.logger.debug(`Verifying email for: ${body.email} with token: ${body.token.substring(0, 5)}...`);
     await this.authService.verifyEmail(body.email, body.token);
     this.logger.debug(`Email verified successfully for: ${body.email}`);
     return { message: 'Email verified successfully' };
@@ -200,42 +159,30 @@ export class UsersController {
   })
   @ApiResponse({
     status: 403,
-    description:
-      'Forbidden - User does not have permission to access this resource.',
+    description: 'Forbidden - User does not have permission to access this resource.',
   })
   @ApiResponse({
     status: 404,
     description: 'User not found.',
     type: UserNotFoundException,
   })
-  async getOneById(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() request: AuthenticatedRequest
-  ): Promise<User> {
-    this.logger.debug(
-      `Getting user by ID: ${id}, requested by user ID: ${request.user.id}`
-    );
+  async getOneById(@Param('id', ParseIntPipe) id: number, @Req() request: AuthenticatedRequest): Promise<User> {
     const authenticatedUser = request.user;
 
     // Allow access if the user is requesting their own data or has canManageUsers permission
-    if (
-      authenticatedUser?.id !== id &&
-      !authenticatedUser.systemPermissions.canManageUsers
-    ) {
+    if (authenticatedUser?.id !== id && !authenticatedUser.systemPermissions.canManageUsers) {
       this.logger.debug(
         `Access denied - User ID ${authenticatedUser.id} attempting to access user ID ${id} without required permissions`
       );
       throw new ForbiddenException();
     }
 
-    this.logger.debug(`Fetching user from database, ID: ${id}`);
     const user = await this.usersService.findOne({ id });
     if (!user) {
       this.logger.debug(`User not found with ID: ${id}`);
       throw new UserNotFoundException(id);
     }
 
-    this.logger.debug(`User found with ID: ${id}`);
     return user;
   }
 
@@ -251,18 +198,13 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - User does not have permission to manage users.',
   })
-  async getAll(
-    @Query() query: GetUsersQueryDto
-  ): Promise<PaginatedUsersResponseDto> {
-    this.logger.debug(`Getting all users with query: ${JSON.stringify(query)}`);
+  async getAll(@Query() query: GetUsersQueryDto): Promise<PaginatedUsersResponseDto> {
     const result = (await this.usersService.findAll({
       page: query.page,
       limit: query.limit,
       search: query.search,
     })) as PaginatedUsersResponseDto;
-    this.logger.debug(
-      `Found ${result.total} users total, returning ${result.data.length} users`
-    );
+    this.logger.debug(`Found ${result.total} users total, returning ${result.data.length} users`);
     return result;
   }
 
@@ -291,9 +233,7 @@ export class UsersController {
     @Body() body: UpdateUserPermissionsDto,
     @Req() request: AuthenticatedRequest
   ): Promise<User> {
-    this.logger.debug(
-      `Updating permissions for user ID: ${id}, by user ID: ${request.user.id}`
-    );
+    this.logger.debug(`Updating permissions for user ID: ${id}, by user ID: ${request.user.id}`);
 
     // Prevent users from updating their own permissions
     if (request.user.id === id) {
@@ -324,19 +264,14 @@ export class UsersController {
     }
 
     if (body.canManageSystemConfiguration !== undefined) {
-      updates.systemPermissions.canManageSystemConfiguration =
-        body.canManageSystemConfiguration;
+      updates.systemPermissions.canManageSystemConfiguration = body.canManageSystemConfiguration;
     }
 
     if (body.canManageUsers !== undefined) {
       updates.systemPermissions.canManageUsers = body.canManageUsers;
     }
 
-    this.logger.debug(
-      `Applying permission updates for user ID: ${id}: ${JSON.stringify(
-        updates.systemPermissions
-      )}`
-    );
+    this.logger.debug(`Applying permission updates for user ID: ${id}: ${JSON.stringify(updates.systemPermissions)}`);
 
     // Update the user
     const updatedUser = await this.usersService.updateUser(id, updates);
@@ -365,9 +300,7 @@ export class UsersController {
     @Body() body: BulkUpdateUserPermissionsDto,
     @Req() request: AuthenticatedRequest
   ): Promise<User[]> {
-    this.logger.debug(
-      `Bulk updating permissions for ${body.updates.length} users, by user ID: ${request.user.id}`
-    );
+    this.logger.debug(`Bulk updating permissions for ${body.updates.length} users, by user ID: ${request.user.id}`);
 
     // First, validate that the user is not trying to grant permissions they don't have
     for (const update of body.updates) {
@@ -379,9 +312,7 @@ export class UsersController {
     for (const update of body.updates) {
       // Skip if user is trying to update their own permissions
       if (request.user.id === update.userId) {
-        this.logger.warn(
-          `User ${update.userId} attempted to update their own permissions in bulk operation, skipping`
-        );
+        this.logger.warn(`User ${update.userId} attempted to update their own permissions in bulk operation, skipping`);
         continue;
       }
 
@@ -389,9 +320,7 @@ export class UsersController {
         // Get the user to update
         const user = await this.usersService.findOne({ id: update.userId });
         if (!user) {
-          this.logger.debug(
-            `User not found with ID: ${update.userId}, skipping`
-          );
+          this.logger.debug(`User not found with ID: ${update.userId}, skipping`);
           continue;
         }
 
@@ -404,40 +333,28 @@ export class UsersController {
 
         // Update only the permissions that were specified in the request
         if (update.permissions.canManageResources !== undefined) {
-          updates.systemPermissions.canManageResources =
-            update.permissions.canManageResources;
+          updates.systemPermissions.canManageResources = update.permissions.canManageResources;
         }
 
         if (update.permissions.canManageSystemConfiguration !== undefined) {
-          updates.systemPermissions.canManageSystemConfiguration =
-            update.permissions.canManageSystemConfiguration;
+          updates.systemPermissions.canManageSystemConfiguration = update.permissions.canManageSystemConfiguration;
         }
 
         if (update.permissions.canManageUsers !== undefined) {
-          updates.systemPermissions.canManageUsers =
-            update.permissions.canManageUsers;
+          updates.systemPermissions.canManageUsers = update.permissions.canManageUsers;
         }
 
         this.logger.debug(
-          `Applying permission updates for user ID: ${
-            update.userId
-          }: ${JSON.stringify(updates.systemPermissions)}`
+          `Applying permission updates for user ID: ${update.userId}: ${JSON.stringify(updates.systemPermissions)}`
         );
 
         // Update the user
-        const updatedUser = await this.usersService.updateUser(
-          update.userId,
-          updates
-        );
-        this.logger.debug(
-          `Successfully updated permissions for user ID: ${update.userId}`
-        );
+        const updatedUser = await this.usersService.updateUser(update.userId, updates);
+        this.logger.debug(`Successfully updated permissions for user ID: ${update.userId}`);
 
         updatedUsers.push(updatedUser);
       } catch (error) {
-        this.logger.error(
-          `Error updating user ID: ${update.userId}: ${error.message}`
-        );
+        this.logger.error(`Error updating user ID: ${update.userId}: ${error.message}`);
         // Continue with the next user even if there's an error
       }
     }
@@ -469,9 +386,7 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  async getPermissions(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<SystemPermissions> {
+  async getPermissions(@Param('id', ParseIntPipe) id: number): Promise<SystemPermissions> {
     this.logger.debug(`Getting permissions for user ID: ${id}`);
 
     // Get the user
@@ -497,14 +412,10 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - User does not have permission to manage users.',
   })
-  async getAllWithPermission(
-    @Query() query: GetUsersWithPermissionQueryDto
-  ): Promise<PaginatedUsersResponseDto> {
+  async getAllWithPermission(@Query() query: GetUsersWithPermissionQueryDto): Promise<PaginatedUsersResponseDto> {
     const permission = query.permission || PermissionFilter.canManageUsers;
 
-    this.logger.debug(
-      `Getting users with permission: ${permission}, page: ${query.page}, limit: ${query.limit}`
-    );
+    this.logger.debug(`Getting users with permission: ${permission}, page: ${query.page}, limit: ${query.limit}`);
 
     const result = (await this.usersService.findByPermission(permission, {
       page: query.page,

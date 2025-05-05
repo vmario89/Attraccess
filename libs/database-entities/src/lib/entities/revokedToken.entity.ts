@@ -18,20 +18,20 @@ export class RevokedToken {
   })
   id!: number;
 
-  @Column()
+  @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the user who owned the token',
     example: 1,
   })
   userId!: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The JWT token that was revoked',
   })
   token!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({
     description: 'The unique identifier of the token',
   })

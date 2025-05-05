@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Toolbar } from './toolbar';
 import { Accordion, AccordionItem, Selection, Spinner } from '@heroui/react';
-import { useTranslations } from '../../i18n';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceList.en';
 import * as de from './translations/resourceList.de';
 import {

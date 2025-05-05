@@ -763,6 +763,22 @@ export const $GetResourceHistoryResponseDto = {
     required: ['total', 'page', 'limit', 'nextPage', 'totalPages', 'data']
 } as const;
 
+export const $GetActiveUsageSessionDto = {
+    type: 'object',
+    properties: {
+        usage: {
+            description: 'The active usage session or null if none exists',
+            nullable: true,
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/ResourceUsage'
+                }
+            ]
+        }
+    },
+    required: ['usage']
+} as const;
+
 export const $CompleteIntroductionDto = {
     type: 'object',
     properties: {
@@ -1611,4 +1627,90 @@ export const $WebhookTestResponseDto = {
         }
     },
     required: ['success', 'message']
+} as const;
+
+export const $PluginMainFrontend = {
+    type: 'object',
+    properties: {
+        directory: {
+            type: 'string',
+            description: 'The directory of the plugins frontend files',
+            example: 'frontend'
+        },
+        entryPoint: {
+            type: 'string',
+            description: 'The entry point of the plugin, relative to the frontend directory',
+            example: 'index.mjs'
+        }
+    },
+    required: ['directory', 'entryPoint']
+} as const;
+
+export const $PluginMain = {
+    type: 'object',
+    properties: {
+        frontend: {
+            description: 'The frontend files of the plugin',
+            example: {
+                directory: 'frontend',
+                entryPoint: 'index.mjs'
+            },
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/PluginMainFrontend'
+                }
+            ]
+        },
+        backend: {
+            type: 'string',
+            description: 'The backend file of the plugin',
+            example: 'backend/src/plugin.js'
+        }
+    },
+    required: ['frontend', 'backend']
+} as const;
+
+export const $PluginAttraccessVersion = {
+    type: 'object',
+    properties: {
+        min: {
+            type: 'string',
+            description: 'The minimum version of the plugin',
+            example: '1.0.0'
+        },
+        max: {
+            type: 'string',
+            description: 'The maximum version of the plugin',
+            example: '1.0.0'
+        },
+        exact: {
+            type: 'string',
+            description: 'The exact version of the plugin',
+            example: '1.0.0'
+        }
+    },
+    required: ['min', 'max', 'exact']
+} as const;
+
+export const $PluginManifest = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            description: 'The name of the plugin',
+            example: 'plugin-name'
+        },
+        main: {
+            '$ref': '#/components/schemas/PluginMain'
+        },
+        version: {
+            type: 'string',
+            description: 'The version of the plugin',
+            example: '1.0.0'
+        },
+        attraccessVersion: {
+            '$ref': '#/components/schemas/PluginAttraccessVersion'
+        }
+    },
+    required: ['name', 'main', 'version', 'attraccessVersion']
 } as const;

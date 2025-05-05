@@ -1,0 +1,9 @@
+{
+  "search": {
+    "label": "Select resources",
+    "placeholder": "Type to search"
+  },
+  "list": {
+    "label": "Assigned to"
+  }
+}

@@ -15,30 +15,19 @@ import {
 import { SSOOIDCGuard } from './oidc/oidc.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { SSOProvider, SSOProviderType } from '@attraccess/database-entities';
-import { AuthenticatedRequest } from '../../../types/request';
+import { AuthenticatedRequest, Auth } from '@attraccess/plugins-backend-sdk';
 import { CreateSessionResponse } from '../auth.types';
 import { AuthService } from '../auth.service';
 import { SSOService } from './sso.service';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
-import { Auth } from '../../../users-and-auth/strategies/systemPermissions.guard';
 import { Response } from 'express';
 
 @ApiTags('SSO')
 @Controller('auth/sso')
 export class SSOController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly ssoService: SSOService
-  ) {}
+  constructor(private readonly authService: AuthService, private readonly ssoService: SSOService) {}
 
   @Get('providers')
   @ApiOperation({ summary: 'Get all SSO providers', operationId: 'getAllSSOProviders' })
@@ -76,10 +65,7 @@ export class SSOController {
   async getOneById(@Param('id') id: string): Promise<SSOProvider> {
     const providerId = parseInt(id, 10);
     const provider = await this.ssoService.getProviderById(providerId);
-    return this.ssoService.getProviderByTypeAndIdWithConfiguration(
-      provider.type,
-      providerId
-    );
+    return this.ssoService.getProviderByTypeAndIdWithConfiguration(provider.type, providerId);
   }
 
   @Post('providers')
@@ -95,9 +81,7 @@ export class SSOController {
     status: 403,
     description: 'Forbidden - Insufficient permissions',
   })
-  async createOne(
-    @Body() createDto: CreateSSOProviderDto
-  ): Promise<SSOProvider> {
+  async createOne(@Body() createDto: CreateSSOProviderDto): Promise<SSOProvider> {
     return this.ssoService.createProvider(createDto);
   }
 
@@ -123,10 +107,7 @@ export class SSOController {
     status: 404,
     description: 'Provider not found',
   })
-  async updateOne(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateSSOProviderDto
-  ): Promise<SSOProvider> {
+  async updateOne(@Param('id') id: string, @Body() updateDto: UpdateSSOProviderDto): Promise<SSOProvider> {
     return this.ssoService.updateProvider(parseInt(id, 10), updateDto);
   }
 
