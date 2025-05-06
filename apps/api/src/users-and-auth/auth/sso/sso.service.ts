@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  SSOProvider,
-  SSOProviderOIDCConfiguration,
-  SSOProviderType,
-} from '@attraccess/database-entities';
+import { SSOProvider, SSOProviderOIDCConfiguration, SSOProviderType } from '@attraccess/database-entities';
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
 import { SSOProviderNotFoundException } from './errors';
@@ -26,6 +22,7 @@ export class SSOService {
   public async getProviderById(id: number): Promise<SSOProvider> {
     const provider = await this.ssoProviderRepository.findOne({
       where: { id },
+      relations: ['oidcConfiguration'],
     });
 
     if (!provider) {
@@ -35,10 +32,7 @@ export class SSOService {
     return provider;
   }
 
-  public getProviderByTypeAndIdWithConfiguration(
-    ssoType: SSOProviderType,
-    providerId: number
-  ): Promise<SSOProvider> {
+  public getProviderByTypeAndIdWithConfiguration(ssoType: SSOProviderType, providerId: number): Promise<SSOProvider> {
     const relations = [];
 
     if (ssoType === SSOProviderType.OIDC) {
@@ -51,9 +45,7 @@ export class SSOService {
     });
   }
 
-  public async createProvider(
-    createDto: CreateSSOProviderDto
-  ): Promise<SSOProvider> {
+  public async createProvider(createDto: CreateSSOProviderDto): Promise<SSOProvider> {
     const newProvider = this.ssoProviderRepository.create({
       name: createDto.name,
       type: createDto.type,
@@ -61,53 +53,31 @@ export class SSOService {
 
     const savedProvider = await this.ssoProviderRepository.save(newProvider);
 
-    if (
-      createDto.type === SSOProviderType.OIDC &&
-      createDto.oidcConfiguration
-    ) {
-      await this.createOIDCConfiguration(
-        savedProvider.id,
-        createDto.oidcConfiguration
-      );
+    if (createDto.type === SSOProviderType.OIDC && createDto.oidcConfiguration) {
+      await this.createOIDCConfiguration(savedProvider.id, createDto.oidcConfiguration);
     }
 
-    return this.getProviderByTypeAndIdWithConfiguration(
-      savedProvider.type,
-      savedProvider.id
-    );
+    return this.getProviderByTypeAndIdWithConfiguration(savedProvider.type, savedProvider.id);
   }
 
-  public async updateProvider(
-    id: number,
-    updateDto: UpdateSSOProviderDto
-  ): Promise<SSOProvider> {
+  public async updateProvider(id: number, updateDto: UpdateSSOProviderDto): Promise<SSOProvider> {
     const provider = await this.getProviderById(id);
 
-    // Basic provider properties
-    Object.assign(provider, updateDto);
-
     // Handle OIDC configuration
-    if (
-      provider.type === SSOProviderType.OIDC &&
-      updateDto.oidcConfiguration &&
-      provider.oidcConfiguration
-    ) {
-      await this.updateOIDCConfiguration(
-        provider.oidcConfiguration,
-        updateDto.oidcConfiguration
-      );
+    if (provider.type === SSOProviderType.OIDC && updateDto.oidcConfiguration) {
+      await this.updateOIDCConfiguration(provider.id, updateDto.oidcConfiguration);
     }
 
-    await this.ssoProviderRepository.save(provider);
+    await this.ssoProviderRepository.update(provider.id, { name: updateDto.name });
 
-    return this.getProviderByTypeAndIdWithConfiguration(
-      provider.type,
-      provider.id
-    );
+    return this.getProviderByTypeAndIdWithConfiguration(provider.type, provider.id);
   }
 
   public async deleteProvider(id: number): Promise<void> {
-    await this.getProviderById(id);
+    const provider = await this.getProviderById(id);
+    if (provider.oidcConfiguration) {
+      await this.oidcConfigRepository.delete(provider.oidcConfiguration.id);
+    }
     await this.ssoProviderRepository.delete(id);
   }
 
@@ -131,7 +101,7 @@ export class SSOService {
   }
 
   public async updateOIDCConfiguration(
-    existingConfig: SSOProviderOIDCConfiguration,
+    providerId: number,
     updateConfig: Partial<{
       issuer: string;
       authorizationURL: string;
@@ -141,7 +111,7 @@ export class SSOService {
       clientSecret: string;
     }>
   ): Promise<SSOProviderOIDCConfiguration> {
-    Object.assign(existingConfig, updateConfig);
-    return this.oidcConfigRepository.save(existingConfig);
+    await this.oidcConfigRepository.update(providerId, updateConfig);
+    return await this.oidcConfigRepository.findOne({ where: { ssoProviderId: providerId } });
   }
 }

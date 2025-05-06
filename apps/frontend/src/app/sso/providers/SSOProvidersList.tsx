@@ -136,6 +136,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
 
       const config: OpenIDConfiguration = await response.json();
 
+      console.log('update form with discovered config');
       // Update the form values with the discovered configuration
       setFormValues((prev) => ({
         ...prev,
@@ -190,12 +191,15 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
         };
       }
 
+      console.log('updatedFormValues through useEffect', updatedFormValues);
+
       setFormValues(updatedFormValues);
     }
   }, [providerDetails, editingProvider]);
 
   const handleAddNew = () => {
     setEditingProvider(null);
+    console.log('setting form values to default');
     setFormValues(defaultProviderValues);
     onOpen();
   };
@@ -230,6 +234,8 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
+    console.log('field changed', name, value);
+
     if (name.includes('.')) {
       const [section, field] = name.split('.');
       if (section === 'oidcConfiguration') {
@@ -245,13 +251,17 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
           };
 
           // Use type assertion to help TypeScript understand the structure
-          return {
+          console.log('currentConfig', currentConfig);
+          console.log('setting', field, ' to ', value);
+          const newFormValues = {
             ...prev,
             oidcConfiguration: {
               ...currentConfig,
               [field]: value,
             },
           } as CreateSSOProviderDto;
+          console.log('newFormValues', newFormValues);
+          return newFormValues;
         });
       }
     } else {
@@ -272,6 +282,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
   const handleSubmit = async () => {
     try {
       if (editingProvider) {
+        console.log('editingProvider', formValues);
         await updateSSOProvider.mutateAsync({
           id: editingProvider.id,
           requestBody: formValues as UpdateSSOProviderDto,
