@@ -2,7 +2,7 @@
 
 - **Setup & Maintenance**
 
-  - [Docker](setup/docker.md)
+  - [using Docker](setup/installation.md)
 
 - **User Guides**
 
