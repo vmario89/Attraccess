@@ -29,6 +29,9 @@ import { PluginModule } from '../plugin-system/plugin.module';
     ServeStaticModule.forRoot({
       rootPath: process.env.STATIC_FRONTEND_FILE_PATH || resolve(join(__dirname, 'public')),
     }),
+    ServeStaticModule.forRoot({
+      rootPath: process.env.STATIC_DOCS_FILE_PATH || resolve(join(__dirname, 'docs')),
+    }),
     PluginModule.forRoot(),
   ],
   controllers: [AppController],

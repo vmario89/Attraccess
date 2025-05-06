@@ -14,6 +14,7 @@ WORKDIR /app
 # Copy the pre-built application (these will be built in the CI pipeline)
 COPY ./dist/apps/api ./dist/apps/api
 COPY ./dist/apps/frontend ./dist/apps/frontend
+COPY ./docs /app/docs
 
 COPY package.json package.json
 
@@ -22,6 +23,9 @@ ENV EMAIL_TEMPLATES_PATH=/app/dist/apps/api/assets/email-templates
 
 # Set environment variable to tell API about frontend location
 ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
+
+# Set environment variable to tell API about docs location
+ENV STATIC_DOCS_FILE_PATH=/app/docs
 
 # Install dependencies directly from the Nx-generated package.json
 WORKDIR /app/dist/apps/api
