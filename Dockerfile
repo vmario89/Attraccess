@@ -27,6 +27,10 @@ ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 # Set environment variable to tell API about docs location
 ENV STATIC_DOCS_FILE_PATH=/app/docs
 
+# Set environment variable to tell API about plugins location
+RUN mkdir -p /app/plugins
+ENV PLUGIN_DIR=/app/plugins
+
 # Install dependencies directly from the Nx-generated package.json
 WORKDIR /app/dist/apps/api
 RUN corepack enable && corepack prepare && \
