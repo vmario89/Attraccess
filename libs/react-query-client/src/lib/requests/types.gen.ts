@@ -1151,10 +1151,6 @@ export type LoadedPluginManifest = {
 
 export type UploadPluginDto = {
     /**
-     * Overwrite existing plugin
-     */
-    overwrite?: boolean;
-    /**
      * Plugin zip file
      */
     pluginZip: (Blob | File);

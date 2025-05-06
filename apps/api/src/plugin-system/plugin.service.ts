@@ -80,7 +80,7 @@ export class PluginService {
     return manifest;
   }
 
-  public async uploadPlugin(zipFile: FileUpload, overwrite = false) {
+  public async uploadPlugin(zipFile: FileUpload) {
     // check if file is a zip file
     if (zipFile.mimetype !== 'application/zip') {
       PluginService.logger.error(`File ${zipFile.originalname} is not a zip file`);
@@ -92,37 +92,26 @@ export class PluginService {
     const tempFolder = join(PluginService.PLUGIN_PATH, 'temp', nanoid());
     await decompress(zipFile.buffer, tempFolder);
 
-    const uncompressedFolder = join(
-      tempFolder,
-      zipFile.originalname.substring(0, zipFile.originalname.length - '.zip'.length)
-    );
-
     // read manifest
-    PluginService.logger.debug(`Reading manifest from ${uncompressedFolder}`);
-    const manifestPath = join(uncompressedFolder, 'plugin.json');
+    PluginService.logger.debug(`Reading manifest from ${tempFolder}`);
+    const manifestPath = join(tempFolder, 'plugin.json');
     const manifestContent = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
     // validate manifest
     PluginService.logger.debug(`Validating manifest`, manifestContent);
     const manifest = PluginManifestSchema.parse(manifestContent);
 
-    // if folder exists, and overwrite is false, throw error
+    // if folder exists throw error
     const pluginFolder = join(PluginService.PLUGIN_PATH, manifest.name);
     PluginService.logger.debug(`Checking if plugin folder ${pluginFolder} exists`, pluginFolder);
     if (existsSync(pluginFolder)) {
-      if (!overwrite) {
-        PluginService.logger.error(`Plugin ${manifest.name} already exists, but overwrite is false`);
-        throw new BadRequestException('Plugin already exists');
-      }
-
-      // delete folder
-      PluginService.logger.debug(`Deleting plugin folder ${pluginFolder}`);
-      await rm(pluginFolder, { recursive: true });
+      PluginService.logger.error(`Plugin ${manifest.name} already exists`);
+      throw new BadRequestException('Plugin already exists');
     }
 
     // move plugin to plugins folder
     PluginService.logger.debug(`Moving plugin to plugins folder ${pluginFolder}`);
-    await rename(uncompressedFolder, pluginFolder);
+    await rename(tempFolder, pluginFolder);
 
     // restart app in 1 second
     setTimeout(() => {

@@ -1266,8 +1266,6 @@ export interface LoadedPluginManifest {
 }
 
 export interface UploadPluginDto {
-  /** Overwrite existing plugin */
-  overwrite?: boolean;
   /**
    * Plugin zip file
    * @format binary
