@@ -3,10 +3,12 @@ import { X, Settings, LogOut, User, Book, ExternalLink } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link, PropsOf } from '@heroui/react';
-import { useAllRoutes, de as routesDe, en as routesEn } from '../routes';
+import { useAllRoutes } from '../routes';
 import { SystemPermissions } from '@attraccess/react-query-client';
 import de from './sidebar.de.json';
 import en from './sidebar.en.json';
+import deRoutes from '../routes/translations/de.json';
+import enRoutes from '../routes/translations/en.json';
 
 function NavLink(
   props: Omit<PropsOf<typeof Link>, 'children'> & { label: string; icon: React.ReactNode; isExternal?: boolean }
@@ -39,8 +41,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   });
 
   const { t: tRoutes } = useTranslations('routes', {
-    en: routesEn,
-    de: routesDe,
+    en: enRoutes,
+    de: deRoutes,
   });
 
   const routes = useAllRoutes();

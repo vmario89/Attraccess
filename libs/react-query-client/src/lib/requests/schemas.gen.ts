@@ -1692,7 +1692,7 @@ export const $PluginAttraccessVersion = {
     required: ['min', 'max', 'exact']
 } as const;
 
-export const $PluginManifest = {
+export const $LoadedPluginManifest = {
     type: 'object',
     properties: {
         name: {
@@ -1710,7 +1710,33 @@ export const $PluginManifest = {
         },
         attraccessVersion: {
             '$ref': '#/components/schemas/PluginAttraccessVersion'
+        },
+        pluginDirectory: {
+            type: 'string',
+            description: 'The directory of the plugin',
+            example: 'plugin-name'
+        },
+        id: {
+            type: 'string',
+            description: 'The id of the plugin',
+            example: '123e4567-e89b-12d3-a456-426614174000'
         }
     },
-    required: ['name', 'main', 'version', 'attraccessVersion']
+    required: ['name', 'main', 'version', 'attraccessVersion', 'pluginDirectory', 'id']
+} as const;
+
+export const $UploadPluginDto = {
+    type: 'object',
+    properties: {
+        overwrite: {
+            type: 'boolean',
+            description: 'Overwrite existing plugin'
+        },
+        pluginZip: {
+            type: 'string',
+            description: 'Plugin zip file',
+            format: 'binary'
+        }
+    },
+    required: ['pluginZip']
 } as const;

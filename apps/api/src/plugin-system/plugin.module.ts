@@ -31,7 +31,7 @@ export class PluginModule {
 
     return {
       module: PluginModule,
-      providers: [PluginApiService],
+      providers: [PluginApiService, PluginService],
       imports: [PluginApiModule, ...pluginModules],
       exports: [PluginApiService],
       controllers: [PluginController],

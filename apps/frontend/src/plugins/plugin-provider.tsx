@@ -1,4 +1,4 @@
-import { OpenAPI, PluginManifest, usePluginServiceGetPlugins } from '@attraccess/react-query-client';
+import { OpenAPI, LoadedPluginManifest, usePluginServiceGetPlugins } from '@attraccess/react-query-client';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { getBaseUrl } from '@frontend/api';
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
@@ -38,7 +38,7 @@ declare module 'virtual:__federation__' {
 }
 
 export class PluginLoadedEvent extends Event {
-  constructor(public readonly pluginManifest: PluginManifest) {
+  constructor(public readonly pluginManifest: LoadedPluginManifest) {
     super('pluginLoaded');
   }
 }
@@ -90,7 +90,7 @@ export function PluginProvider(props: PropsWithChildren) {
   }, [toast]);
 
   const loadPlugin = useCallback(
-    async (pluginManifest: PluginManifest) => {
+    async (pluginManifest: LoadedPluginManifest) => {
       try {
         console.log(`Attraccess Plugin System: loading plugin ${pluginManifest.name}`);
         const entryPointFile = pluginManifest.main.frontend?.entryPoint;

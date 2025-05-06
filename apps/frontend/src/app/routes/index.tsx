@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { ResourceList } from '../resources/list.group';
 import { ResourceDetails } from '../resources/resourceDetails';
 import { IoTSettings } from '../resources/iot-settings/iotSettings';
-import { Database, ServerIcon, Key, Users } from 'lucide-react';
+import { Database, ServerIcon, Key, Users, Package } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
 import { SSOProvidersPage } from '../sso/SSOProvidersPage';
@@ -11,8 +11,7 @@ import { UserManagementPage } from '../users/UserManagementPage';
 import usePluginState, { PluginManifestWithPlugin } from '@frontend/plugins/plugin.state';
 import { usePluginStore } from 'react-pluggable';
 import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
-export * as de from './translations/de';
-export * as en from './translations/en';
+import { PluginsList } from '../plugins/PluginsList';
 
 const coreRoutes: RouteConfig[] = [
   {
@@ -69,6 +68,16 @@ const coreRoutes: RouteConfig[] = [
       order: 4,
     },
     authRequired: 'canManageUsers',
+  },
+  {
+    path: '/plugins',
+    element: <PluginsList />,
+    authRequired: 'canManageSystemConfiguration',
+    sidebar: {
+      translationKey: 'plugins',
+      icon: <Package className="h-5 w-5" />,
+      order: 5,
+    },
   },
 ];
 

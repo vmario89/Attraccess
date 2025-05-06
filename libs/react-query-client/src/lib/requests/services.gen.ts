@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse, GetPluginsResponse, GetFrontendPluginFileData, GetFrontendPluginFileResponse } from './types.gen';
+import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse, GetPluginsResponse, UploadPluginData, GetFrontendPluginFileData, GetFrontendPluginFileResponse, DeletePluginData, DeletePluginResponse } from './types.gen';
 
 export class ApplicationService {
     /**
@@ -1641,13 +1641,31 @@ export class WebhooksService {
 export class PluginService {
     /**
      * Get all plugins
-     * @returns PluginManifest The list of all plugins
+     * @returns LoadedPluginManifest The list of all plugins
      * @throws ApiError
      */
     public static getPlugins(): CancelablePromise<GetPluginsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/plugins'
+        });
+    }
+    
+    /**
+     * Upload a new plugin
+     * @param data The data for the request.
+     * @param data.formData
+     * @throws ApiError
+     */
+    public static uploadPlugin(data: UploadPluginData): CancelablePromise<void> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/plugins',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                401: 'Unauthorized'
+            }
         });
     }
     
@@ -1666,6 +1684,26 @@ export class PluginService {
             path: {
                 pluginName: data.pluginName,
                 filePath: data.filePath
+            }
+        });
+    }
+    
+    /**
+     * Delete a plugin
+     * @param data The data for the request.
+     * @param data.pluginId
+     * @returns unknown The plugin has been deleted
+     * @throws ApiError
+     */
+    public static deletePlugin(data: DeletePluginData): CancelablePromise<DeletePluginResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/plugins/{pluginId}',
+            path: {
+                pluginId: data.pluginId
+            },
+            errors: {
+                401: 'Unauthorized'
             }
         });
     }
