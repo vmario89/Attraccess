@@ -7,6 +7,7 @@ import '@attraccess/plugins-frontend-ui';
 import { queryClient } from './api/queryClient';
 import setupApiParameters from './api';
 import { PluginProvider } from './plugins/plugin-provider';
+import { PWAInstall } from './components/pwa-install';
 
 setupApiParameters();
 
@@ -17,6 +18,7 @@ root.render(
     <BrowserRouter>
       <PluginProvider>
         <StrictMode>
+          <PWAInstall />
           <App />
         </StrictMode>
       </PluginProvider>
