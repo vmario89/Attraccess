@@ -14,7 +14,7 @@ WORKDIR /app
 # Copy the pre-built application (these will be built in the CI pipeline)
 COPY ./dist/apps/api ./dist/apps/api
 COPY ./dist/apps/frontend ./dist/apps/frontend
-COPY ./docs /app/docs
+COPY ./docs ./docs
 
 COPY package.json package.json
 

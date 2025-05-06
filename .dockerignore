@@ -46,7 +46,6 @@ yarn-error.log*
 pnpm-debug.log*
 storage
 secrets
-docs
 
 # Keep necessary files
 !.npmrc
