@@ -38,11 +38,26 @@ export const MqttServersPage: React.FC = () => {
         subtitle="Manage MQTT server connections for resource integration"
         backTo="/"
         actions={
-          <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewServer}>
+          <Button
+            color="primary"
+            startContent={<Plus size={16} />}
+            onPress={handleAddNewServer}
+            className="hidden md:flex"
+          >
             {t('addNewServer')}
           </Button>
         }
       />
+
+      <Button
+        color="primary"
+        fullWidth
+        startContent={<Plus size={16} />}
+        onPress={handleAddNewServer}
+        className="md:hidden"
+      >
+        {t('addNewServer')}
+      </Button>
 
       <div className="mt-6">
         <MqttServersList ref={serverListRef} />

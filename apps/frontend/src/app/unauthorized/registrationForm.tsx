@@ -120,7 +120,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         {error && <Alert color="danger" title={t('error.title')} description={error} />}
       </form>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
         <ModalContent>
           {(onClose) => (
             <>

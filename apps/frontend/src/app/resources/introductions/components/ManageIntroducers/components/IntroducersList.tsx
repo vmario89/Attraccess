@@ -113,7 +113,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
       </Listbox>
 
       {/* Confirmation Modal */}
-      <Modal isOpen={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+      <Modal isOpen={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen} scrollBehavior='inside'>
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">{t('removeConfirmation.title')}</ModalHeader>
           <ModalBody>

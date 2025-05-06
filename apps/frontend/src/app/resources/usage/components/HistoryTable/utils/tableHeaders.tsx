@@ -19,7 +19,9 @@ export function generateHeaderColumns(
 
   headers.push(
     <TableColumn key="startTime">{t('startTime')}</TableColumn>,
-    <TableColumn key="endTime">{t('endTime')}</TableColumn>,
+    <TableColumn key="endTime" className="hidden md:table-cell">
+      {t('endTime')}
+    </TableColumn>,
     <TableColumn key="duration">{t('duration')}</TableColumn>,
     <TableColumn key="icons">{''}</TableColumn>
   );

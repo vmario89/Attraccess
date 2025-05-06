@@ -15,11 +15,8 @@ export function useFormatedDuration(minutes: number) {
       const minutesInAHour = 60;
       const minutesInADay = minutesInAHour * 24;
       const days = Math.floor(minutes / minutesInADay);
-      const hours = Math.floor(
-        (minutes - days * minutesInADay) / minutesInAHour
-      );
-      const remainingMinutes =
-        minutes - days * minutesInADay - hours * minutesInAHour;
+      const hours = Math.floor((minutes - days * minutesInADay) / minutesInAHour);
+      const remainingMinutes = minutes - days * minutesInADay - hours * minutesInAHour;
 
       try {
         // Check if Intl.DurationFormat is supported
@@ -43,7 +40,7 @@ export function useFormatedDuration(minutes: number) {
           return formatter.format({
             days,
             hours,
-            minutes: remainingMinutes,
+            minutes: Math.round(remainingMinutes),
           });
         }
 
@@ -62,10 +59,7 @@ export function useFormatedDuration(minutes: number) {
     [i18n.language]
   );
 
-  const formattedDuration = useMemo(
-    () => formatDuration(minutes),
-    [minutes, formatDuration]
-  );
+  const formattedDuration = useMemo(() => formatDuration(minutes), [minutes, formatDuration]);
 
   return formattedDuration;
 }

@@ -53,7 +53,7 @@ const NfcCardDeleteModal = (props: DeleteModalProps) => {
   }, [props.cardId, resetNfcCard, readerId]);
 
   return (
-    <Modal isOpen={props.show} onClose={() => props.close()}>
+    <Modal isOpen={props.show} onClose={() => props.close()} scrollBehavior="inside">
       <ModalContent>
         <ModalHeader>
           <h1>{t('nfcCardsTable.deleteModal.title')}</h1>

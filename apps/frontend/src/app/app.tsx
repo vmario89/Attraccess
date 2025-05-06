@@ -8,9 +8,14 @@ import { Loading } from './loading';
 import { useAllRoutes } from './routes';
 import { VerifyEmail } from './verifyEmail';
 import { ToastProvider } from '../components/toastProvider';
-import { HeroUIProvider } from '@heroui/react';
+import { HeroUIProvider, Spinner } from '@heroui/react';
 import { SystemPermissions } from '@attraccess/react-query-client';
 import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
+import PullToRefresh from 'react-simple-pull-to-refresh';
+import { useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import de from './app.de.json';
+import en from './app.en.json';
 
 function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();
@@ -64,9 +69,12 @@ export function App() {
   const { isAuthenticated, isLoading } = useAuth();
   const { setTheme } = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslations('app', { de, en });
 
   const allRoutes = useAllRoutes();
   const routesWithAuthElements = useRoutesWithAuthElements(allRoutes);
+
+  const queryClient = useQueryClient();
 
   // set theme based on system preference of browser
   useEffect(() => {
@@ -91,19 +99,31 @@ export function App() {
   }
 
   return (
-    <HeroUIProvider navigate={navigate}>
-      <ToastProvider>
-        <Layout noLayout={!isAuthenticated}>
-          <Routes>
-            <Route path="/verify-email" element={<VerifyEmail />} />
+    <PullToRefresh
+      onRefresh={() => queryClient.invalidateQueries()}
+      pullDownThreshold={90}
+      refreshingContent={<Spinner />}
+      pullingContent={
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '8px' }}>
+          <div style={{ fontSize: '14px' }}>{t('pullToRefresh')}</div>
+          <div style={{ fontSize: '24px' }}>↓</div>
+        </div>
+      }
+    >
+      <HeroUIProvider navigate={navigate}>
+        <ToastProvider>
+          <Layout noLayout={!isAuthenticated}>
+            <Routes>
+              <Route path="/verify-email" element={<VerifyEmail />} />
 
-            {routesWithAuthElements}
+              {routesWithAuthElements}
 
-            {!isAuthenticated && <Route path="*" element={<Unauthorized />} />}
-          </Routes>
-        </Layout>
-      </ToastProvider>
-    </HeroUIProvider>
+              {!isAuthenticated && <Route path="*" element={<Unauthorized />} />}
+            </Routes>
+          </Layout>
+        </ToastProvider>
+      </HeroUIProvider>
+    </PullToRefresh>
   );
 }
 

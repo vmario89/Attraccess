@@ -15,7 +15,7 @@ export function DurationDisplay({
   alternativeText = '',
   ...spanProps
 }: DurationDisplayProps & React.HTMLAttributes<HTMLSpanElement>) {
-  const formatedDuration = useFormatedDuration(minutes === null ? -1 : minutes);
+  const formatedDuration = useFormatedDuration(minutes ?? 0);
 
   if (minutes === null || minutes === undefined) {
     return <span {...spanProps}>{alternativeText}</span>;

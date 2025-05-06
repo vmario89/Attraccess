@@ -2,8 +2,8 @@ import { Alert, Link } from '@heroui/react';
 import { AlertTriangle } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useEffect } from 'react';
-import * as en from './translations/server-selector/en';
-import * as de from './translations/server-selector/de';
+import de from './MqttServerSelector.de.json';
+import en from './MqttServerSelector.en.json';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Select } from '@frontend/components/select';
 import {
@@ -36,9 +36,9 @@ export default function MqttServerSelector({ resourceId, value, onChange }: Mqtt
   if (!servers?.length) {
     return (
       <Alert color="warning" startContent={<AlertTriangle className="h-4 w-4" />} className="mb-4">
-        {t('noServers')}{' '}
-        <Link href="/settings/mqtt-servers" className="font-medium">
-          {t('addServer')}
+        {t('errors.noServers.message')}{' '}
+        <Link href="/mqtt/servers" className="font-medium">
+          {t('errors.noServers.action')}
         </Link>
       </Alert>
     );

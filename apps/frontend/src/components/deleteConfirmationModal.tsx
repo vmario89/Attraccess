@@ -27,7 +27,7 @@ export function DeleteConfirmationModal({
   });
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
       <ModalContent>
         {() => (
           <>

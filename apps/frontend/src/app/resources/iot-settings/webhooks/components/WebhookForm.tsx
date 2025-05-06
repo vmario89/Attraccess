@@ -44,10 +44,16 @@ const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initia
   const updateWebhook = useWebhooksServiceUpdateOneWebhookConfiguration();
 
   // Data fetching hook - only used when webhookId is provided and no initialValues
-  const { data: webhookData, isFetching } = useWebhooksServiceGetOneWebhookConfigurationById({
-    resourceId,
-    id: webhookId ?? 0,
-  });
+  const { data: webhookData, isFetching } = useWebhooksServiceGetOneWebhookConfigurationById(
+    {
+      resourceId,
+      id: webhookId ?? 0,
+    },
+    undefined,
+    {
+      enabled: !!webhookId && !initialValues,
+    }
+  );
 
   // Disable fetching if we already have initial values or no webhook ID
   const shouldFetch = !!webhookId && !initialValues;

@@ -76,7 +76,7 @@ export function FabreaderEditor(props: Props) {
 
   return (
     <Form onSubmit={onSubmit}>
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel}>
+      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior='inside'>
         <ModalContent>
           {() => (
             <>

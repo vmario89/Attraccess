@@ -365,7 +365,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
       )}
 
       {/* Discover Configuration Dialog */}
-      <Modal isOpen={isDiscoverDialogOpen} onOpenChange={(open) => setIsDiscoverDialogOpen(open)} size="md">
+      <Modal isOpen={isDiscoverDialogOpen} onOpenChange={(open) => setIsDiscoverDialogOpen(open)} size="md" scrollBehavior='inside'>
         <ModalContent>
           {(onClose) => (
             <>
@@ -409,7 +409,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
       </Modal>
 
       {/* Main Provider Form Modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior='inside'>
         <ModalContent>
           {(onClose) => (
             <>

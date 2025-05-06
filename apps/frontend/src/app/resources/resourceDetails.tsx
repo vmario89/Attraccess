@@ -10,8 +10,6 @@ import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
 import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/resourceDetails.en';
-import * as de from './translations/resourceDetails.de';
 import { ResourceIntroductions } from './introductions/resourceIntroductions';
 import { ManageIntroducers } from './introductions/components/ManageIntroducers';
 import { memo, useMemo } from 'react';
@@ -24,6 +22,8 @@ import {
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { ManageResourceGroups } from './groups/ManageResourceGroups';
+import de from './resourceDetails.de.json';
+import en from './resourceDetails.en.json';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -100,12 +100,10 @@ function ResourceDetailsComponent() {
   if (resourceError || !resource) {
     return (
       <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-xl font-semibold mb-2">Resource not found</h2>
-        <p className="text-gray-500 mb-4">
-          The requested resource could not be found or you don't have permission to view it.
-        </p>
+        <h2 className="text-xl font-semibold mb-2">{t('error.resourceNotFound.title')}</h2>
+        <p className="text-gray-500 mb-4">{t('error.resourceNotFound.description')}</p>
         <Button onPress={() => navigate('/resources')} variant="light" startContent={<ArrowLeft className="w-4 h-4" />}>
-          Back to Resources
+          {t('error.resourceNotFound.backToResources')}
         </Button>
       </div>
     );
@@ -119,14 +117,17 @@ function ResourceDetailsComponent() {
         backTo="/resources"
         actions={
           canManageResourceGroups && (
-            <div className="flex space-x-2">
-              <Link href={`/resources/${resourceId}/iot`}>
-                <Button variant="light" startContent={<Wifi className="w-4 h-4" />}>
-                  {t('iotSettings')}
-                </Button>
-              </Link>
+            <div className="flex space-x-2 flex-wrap justify-end">
+              <Button
+                as={Link}
+                href={`/resources/${resourceId}/iot`}
+                variant="light"
+                startContent={<Wifi className="w-4 h-4" />}
+              >
+                {t('navItems.iotSettings')}
+              </Button>
               <Button onPress={onOpen} color="danger" variant="light" startContent={<Trash className="w-4 h-4" />}>
-                {t('delete')}
+                {t('actions.delete')}
               </Button>
             </div>
           )

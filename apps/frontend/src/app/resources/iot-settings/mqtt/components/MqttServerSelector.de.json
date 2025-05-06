@@ -1,0 +1,10 @@
+{
+    "errors": {
+        "noServers": {
+            "message": "Keine MQTT-Server gefunden",
+            "action": "Server hinzufügen"
+        }
+    },
+    "mqttServer": "MQTT-Server",
+    "selectServer": "Server auswählen"
+}

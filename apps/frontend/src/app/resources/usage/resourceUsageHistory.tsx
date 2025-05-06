@@ -35,7 +35,7 @@ export function ResourceUsageHistory({ resourceId }: ResourceUsageHistoryProps) 
 
   return (
     <Card className="w-full">
-      <CardHeader className="flex justify-between items-center px-6 py-5">
+      <CardHeader className="flex justify-between items-center">
         <HistoryHeader
           title={t('usageHistory')}
           showAllUsers={showAllUsers}
