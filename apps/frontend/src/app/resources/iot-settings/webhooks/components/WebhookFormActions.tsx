@@ -7,8 +7,8 @@ import { useToastMessage } from '@frontend/components/toastProvider';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only
-import * as enActions from '../translations/components/form-actions/en';
-import * as deActions from '../translations/components/form-actions/de';
+import en from './WebhookFormActions.en.json';
+import de from './WebhookFormActions.de.json';
 import {
   useWebhooksServiceDeleteOneWebhookConfiguration,
   useWebhooksServiceTest,
@@ -22,8 +22,8 @@ interface WebhookFormActionsProps {
 const WebhookFormActions: React.FC<WebhookFormActionsProps> = ({ onCancel, onSubmit }) => {
   const { webhookId, resourceId, isExistingWebhook, isSubmitting } = useWebhookForm();
   const { t } = useTranslations('webhooks.formActions', {
-    en: enActions,
-    de: deActions,
+    en,
+    de,
   });
   const { success, error: showError } = useToastMessage();
 

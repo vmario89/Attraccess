@@ -32,7 +32,7 @@ export function generateRowCells(
     <TableCell key={`start-${session.id}`}>
       <DateTimeDisplay date={session.startTime} />
     </TableCell>,
-    <TableCell key={`end-${session.id}`}>
+    <TableCell key={`end-${session.id}`} className="hidden md:table-cell">
       <DateTimeDisplay date={session.endTime} />
     </TableCell>,
     <TableCell key={`duration-${session.id}`}>

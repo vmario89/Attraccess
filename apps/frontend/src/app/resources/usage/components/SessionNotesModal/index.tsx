@@ -29,7 +29,7 @@ export const SessionNotesModal = ({ isOpen, onClose, onConfirm, mode, isSubmitti
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose} scrollBehavior='inside'>
       <ModalContent className="sm:max-w-md">
         <ModalHeader>{mode === SessionModalMode.START ? t('title.start') : t('title.end')}</ModalHeader>
 

@@ -143,7 +143,6 @@ export function PluginProvider(props: PropsWithChildren) {
   );
 
   useEffect(() => {
-    console.log('updating plugins on auth state change', plugins, user);
     plugins.forEach((plugin) => {
       plugin.plugin.onApiEndpointChange(getBaseUrl());
       plugin.plugin.onApiAuthStateChange({

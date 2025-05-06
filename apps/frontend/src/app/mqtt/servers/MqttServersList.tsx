@@ -274,7 +274,7 @@ export const MqttServersList = forwardRef<MqttServersListRef, React.ComponentPro
         <div className="text-center py-8 text-gray-500">{t('noServersConfigured')}</div>
       )}
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="lg">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="lg" scrollBehavior='inside'>
         <ModalContent>
           <ModalHeader>{editingServer ? t('editMqttServer') : t('addNewMqttServer')}</ModalHeader>
           <ModalBody>

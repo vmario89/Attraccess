@@ -218,7 +218,7 @@ export const RevokeConfirmationDialog = ({
   }, [setComment, isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose} scrollBehavior='inside'>
       <ModalContent className="sm:max-w-md">
         <ModalHeader>{mode === RevokeDialogMode.REVOKE ? t('title.revoke') : t('title.unrevoke')}</ModalHeader>
 

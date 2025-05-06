@@ -38,11 +38,25 @@ export const SSOProvidersPage: React.FC = () => {
         subtitle="Manage Single Sign-On providers for system authentication"
         backTo="/"
         actions={
-          <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewProvider}>
+          <Button
+            color="primary"
+            startContent={<Plus size={16} />}
+            onPress={handleAddNewProvider}
+            className="hidden md:flex"
+          >
             {t('addNewProvider')}
           </Button>
         }
       />
+      <Button
+        color="primary"
+        fullWidth
+        startContent={<Plus size={16} />}
+        onPress={handleAddNewProvider}
+        className="md:hidden"
+      >
+        {t('addNewProvider')}
+      </Button>
 
       <div className="mt-6">
         <SSOProvidersList ref={providerListRef} />

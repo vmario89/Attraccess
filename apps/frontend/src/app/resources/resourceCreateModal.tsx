@@ -159,7 +159,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior='inside'>
         <ModalContent>
           {(onClose) => (
             <Form
@@ -195,10 +195,11 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                 />
               </ModalBody>
 
-              <ModalFooter>
+              <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">
                 <Button
                   color="primary"
                   variant="ghost"
+                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
                   onPress={() => handleCreate('close', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'close'}
                   isDisabled={isSubmitting || !formData.name}
@@ -208,19 +209,21 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                 <Button
                   color="primary"
                   variant="ghost"
+                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
                   onPress={() => handleCreate('clear', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'clear'}
                   isDisabled={isSubmitting || !formData.name}
                 >
-                  {t('createClearButton', 'Create and New')}{' '}
+                  {t('createClearButton', 'Create and New')}
                 </Button>
                 <Button
                   color="primary"
+                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
                   onPress={() => handleCreate('open', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'open'}
                   isDisabled={isSubmitting || !formData.name}
                 >
-                  {t('createOpenButton', 'Create and Open')}{' '}
+                  {t('createOpenButton', 'Create and Open')}
                 </Button>
               </ModalFooter>
             </Form>

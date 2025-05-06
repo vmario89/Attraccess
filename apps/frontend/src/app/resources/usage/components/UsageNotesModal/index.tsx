@@ -18,7 +18,7 @@ export const UsageNotesModal = memo(({ isOpen, onClose, session }: UsageNotesMod
   if (!isOpen) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">{t('sessionNotes')}</ModalHeader>
         <ModalBody>

@@ -175,7 +175,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior='inside'>
         <ModalContent>
           {(onClose) => (
             <Form onSubmit={handleSubmit}>
