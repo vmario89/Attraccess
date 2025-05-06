@@ -6,6 +6,20 @@ import * as path from 'path';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
+const sharedLibs = [
+  'react',
+  'react-dom',
+  'react/jsx-runtime',
+  'react-pluggable',
+  '@heroui/react',
+  'i18next',
+  'react-i18next',
+  'i18next-browser-languagedetector',
+  '@tanstack/react-query',
+  '@attraccess/react-query-client',
+  '@attraccess/plugins-frontend-ui',
+];
+
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/libs/plugins-frontend-sdk',
@@ -39,7 +53,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: sharedLibs,
     },
   },
   test: {
