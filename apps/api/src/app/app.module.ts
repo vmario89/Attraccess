@@ -38,8 +38,6 @@ console.log('Serving docs from: ', docsPath);
     }),
     ServeStaticModule.forRoot({
       rootPath: frontendPath,
-      serveRoot: '/',
-      exclude: ['/docs*'],
     }),
     PluginModule.forRoot(),
   ],
