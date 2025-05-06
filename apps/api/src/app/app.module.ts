@@ -14,6 +14,12 @@ import { WebhooksModule } from '../webhooks/webhooks.module';
 import { Module } from '@nestjs/common';
 import { PluginModule } from '../plugin-system/plugin.module';
 
+const frontendPath = resolve(process.env.STATIC_FRONTEND_FILE_PATH || join(__dirname, 'public'));
+console.log('Serving frontend from ', frontendPath);
+
+const docsPath = resolve(process.env.STATIC_DOCS_FILE_PATH || join(__dirname, 'docs'));
+console.log('Serving docs from: ', docsPath);
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,10 +33,13 @@ import { PluginModule } from '../plugin-system/plugin.module';
     MqttModule,
     WebhooksModule,
     ServeStaticModule.forRoot({
-      rootPath: process.env.STATIC_FRONTEND_FILE_PATH || resolve(join(__dirname, 'public')),
+      rootPath: docsPath,
+      serveRoot: '/docs',
     }),
     ServeStaticModule.forRoot({
-      rootPath: process.env.STATIC_DOCS_FILE_PATH || resolve(join(__dirname, 'docs')),
+      rootPath: frontendPath,
+      serveRoot: '/',
+      exclude: ['/docs*'],
     }),
     PluginModule.forRoot(),
   ],

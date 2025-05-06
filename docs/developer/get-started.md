@@ -172,6 +172,12 @@ nx graph
 
 For detailed information about the API and OpenAPI documentation, please refer to the [OpenAPI Documentation Guide](/developer/openapi.md).
 
+The full Attraccess documentation is also accessible directly from your running instance at:
+
+```
+<your-attraccess-url>/docs
+```
+
 ## Need Help?
 
 If you encounter issues or have questions, please:

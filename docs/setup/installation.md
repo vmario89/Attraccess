@@ -1,4 +1,4 @@
-# Docker
+# Installation
 
 ## 🚀 Getting Started with Attraccess
 

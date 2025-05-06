@@ -46,6 +46,16 @@ The raw OpenAPI schema is available in JSON format at:
 
 This schema can be downloaded and used with various OpenAPI tools for client code generation, documentation, and more.
 
+### Accessing the Documentation
+
+The full Attraccess documentation is available through docsify and can be accessed at:
+
+```
+<your-attraccess-url>/docs
+```
+
+This provides comprehensive documentation on all aspects of Attraccess, including setup guides, user guides, and developer documentation.
+
 ## Generating Client Code
 
 The OpenAPI schema can be used to generate client code in various programming languages, which helps ensure type safety and reduces the amount of boilerplate code needed to interact with the API.
