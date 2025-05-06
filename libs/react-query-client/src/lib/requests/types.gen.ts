@@ -1128,7 +1128,7 @@ export type PluginAttraccessVersion = {
     exact: string;
 };
 
-export type PluginManifest = {
+export type LoadedPluginManifest = {
     /**
      * The name of the plugin
      */
@@ -1139,6 +1139,25 @@ export type PluginManifest = {
      */
     version: string;
     attraccessVersion: PluginAttraccessVersion;
+    /**
+     * The directory of the plugin
+     */
+    pluginDirectory: string;
+    /**
+     * The id of the plugin
+     */
+    id: string;
+};
+
+export type UploadPluginDto = {
+    /**
+     * Overwrite existing plugin
+     */
+    overwrite?: boolean;
+    /**
+     * Plugin zip file
+     */
+    pluginZip: (Blob | File);
 };
 
 export type Ping2Response = {
@@ -1718,7 +1737,11 @@ export type RegenerateSecretData = {
 
 export type RegenerateSecretResponse = WebhookConfigResponseDto;
 
-export type GetPluginsResponse = Array<PluginManifest>;
+export type GetPluginsResponse = Array<LoadedPluginManifest>;
+
+export type UploadPluginData = {
+    formData: UploadPluginDto;
+};
 
 export type GetFrontendPluginFileData = {
     filePath: string;
@@ -1726,6 +1749,12 @@ export type GetFrontendPluginFileData = {
 };
 
 export type GetFrontendPluginFileResponse = string;
+
+export type DeletePluginData = {
+    pluginId: string;
+};
+
+export type DeletePluginResponse = unknown;
 
 export type $OpenApiTs = {
     '/api/ping': {
@@ -3042,7 +3071,16 @@ export type $OpenApiTs = {
                 /**
                  * The list of all plugins
                  */
-                200: Array<PluginManifest>;
+                200: Array<LoadedPluginManifest>;
+            };
+        };
+        post: {
+            req: UploadPluginData;
+            res: {
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
             };
         };
     };
@@ -3054,6 +3092,21 @@ export type $OpenApiTs = {
                  * The requested frontend plugin file
                  */
                 200: string;
+            };
+        };
+    };
+    '/api/plugins/{pluginId}': {
+        delete: {
+            req: DeletePluginData;
+            res: {
+                /**
+                 * The plugin has been deleted
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
             };
         };
     };

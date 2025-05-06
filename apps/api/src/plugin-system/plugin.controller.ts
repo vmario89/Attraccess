@@ -1,20 +1,38 @@
-import { Controller, Get, Logger, NotFoundException, Param, StreamableFile } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  NotFoundException,
+  Param,
+  Post,
+  StreamableFile,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PluginService } from './plugin.service';
 import { createReadStream, existsSync } from 'fs';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { PluginManifest } from './plugin.manifest';
+import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { LoadedPluginManifest } from './plugin.manifest';
 import { join } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileUpload } from '../common/types/file-upload.types';
+import { Auth } from '@attraccess/plugins-backend-sdk';
+import { UploadPluginDto } from './dto/uploadPlugin.dto';
 
 @Controller('plugins')
 export class PluginController {
   private readonly logger = new Logger(PluginController.name);
+
+  constructor(private readonly pluginService: PluginService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all plugins', operationId: 'getPlugins' })
   @ApiResponse({
     status: 200,
     description: 'The list of all plugins',
-    type: [PluginManifest],
+    type: [LoadedPluginManifest],
   })
   getAllPlugins() {
     return PluginService.getPlugins();
@@ -53,5 +71,26 @@ export class PluginController {
     return new StreamableFile(fileStream, {
       type: 'application/javascript',
     });
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Upload a new plugin', operationId: 'uploadPlugin' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('pluginZip'))
+  @Auth('canManageSystemConfiguration')
+  async uploadPlugin(@UploadedFile() file: FileUpload, @Body() body: UploadPluginDto) {
+    this.logger.log(`Uploading plugin ${file.originalname} with overwrite ${body.overwrite}`);
+    return await this.pluginService.uploadPlugin(file, body.overwrite);
+  }
+
+  @Delete(':pluginId')
+  @ApiOperation({ summary: 'Delete a plugin', operationId: 'deletePlugin' })
+  @ApiResponse({
+    status: 200,
+    description: 'The plugin has been deleted',
+  })
+  @Auth('canManageSystemConfiguration')
+  deletePlugin(@Param('pluginId') pluginId: string) {
+    return this.pluginService.deletePlugin(pluginId);
   }
 }

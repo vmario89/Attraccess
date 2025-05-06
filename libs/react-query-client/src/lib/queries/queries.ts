@@ -2,7 +2,7 @@
 
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
-import { BulkUpdateUserPermissionsDto, CompleteIntroductionDto, CreateMqttResourceConfigDto, CreateMqttServerDto, CreateResourceDto, CreateResourceGroupDto, CreateSSOProviderDto, CreateUserDto, CreateWebhookConfigDto, EndUsageSessionDto, RevokeIntroductionDto, StartUsageSessionDto, UnrevokeIntroductionDto, UpdateMqttServerDto, UpdateResourceDto, UpdateResourceGroupDto, UpdateSSOProviderDto, UpdateUserPermissionsDto, UpdateWebhookConfigDto, VerifyEmailDto, WebhookStatusDto } from "../requests/types.gen";
+import { BulkUpdateUserPermissionsDto, CompleteIntroductionDto, CreateMqttResourceConfigDto, CreateMqttServerDto, CreateResourceDto, CreateResourceGroupDto, CreateSSOProviderDto, CreateUserDto, CreateWebhookConfigDto, EndUsageSessionDto, RevokeIntroductionDto, StartUsageSessionDto, UnrevokeIntroductionDto, UpdateMqttServerDto, UpdateResourceDto, UpdateResourceGroupDto, UpdateSSOProviderDto, UpdateUserPermissionsDto, UpdateWebhookConfigDto, UploadPluginDto, VerifyEmailDto, WebhookStatusDto } from "../requests/types.gen";
 import * as Common from "./common";
 export const useApplicationServicePing2 = <TData = Common.ApplicationServicePing2DefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseApplicationServicePing2KeyFn(queryKey), queryFn: () => ApplicationService.ping2() as TData, ...options });
 export const useUsersServiceGetAllUsers = <TData = Common.UsersServiceGetAllUsersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ limit, page, search }: {
@@ -244,6 +244,11 @@ export const useWebhooksServiceRegenerateSecret = <TData = Common.WebhooksServic
   id: number;
   resourceId: number;
 }, TContext>({ mutationFn: ({ id, resourceId }) => WebhooksService.regenerateSecret({ id, resourceId }) as unknown as Promise<TData>, ...options });
+export const usePluginServiceUploadPlugin = <TData = Common.PluginServiceUploadPluginMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  formData: UploadPluginDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  formData: UploadPluginDto;
+}, TContext>({ mutationFn: ({ formData }) => PluginService.uploadPlugin({ formData }) as unknown as Promise<TData>, ...options });
 export const useSsoServiceUpdateOneSsoProvider = <TData = Common.SsoServiceUpdateOneSsoProviderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
   requestBody: UpdateSSOProviderDto;
@@ -351,3 +356,8 @@ export const useWebhooksServiceDeleteOneWebhookConfiguration = <TData = Common.W
   id: number;
   resourceId: number;
 }, TContext>({ mutationFn: ({ id, resourceId }) => WebhooksService.deleteOneWebhookConfiguration({ id, resourceId }) as unknown as Promise<TData>, ...options });
+export const usePluginServiceDeletePlugin = <TData = Common.PluginServiceDeletePluginMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  pluginId: string;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  pluginId: string;
+}, TContext>({ mutationFn: ({ pluginId }) => PluginService.deletePlugin({ pluginId }) as unknown as Promise<TData>, ...options });

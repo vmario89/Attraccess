@@ -1,8 +1,8 @@
 import { AttraccessFrontendPlugin } from '@attraccess/plugins-frontend-sdk';
-import { PluginManifest } from '@attraccess/react-query-client';
+import { LoadedPluginManifest } from '@attraccess/react-query-client';
 import { create } from 'zustand';
 
-export interface PluginManifestWithPlugin extends PluginManifest {
+export interface PluginManifestWithPlugin extends LoadedPluginManifest {
   plugin: AttraccessFrontendPlugin;
 }
 

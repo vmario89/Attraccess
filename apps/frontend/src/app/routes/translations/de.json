@@ -1,0 +1,7 @@
+{
+  "resources": "Ressourcen",
+  "mqttServers": "MQTT-Server",
+  "ssoProviders": "SSO-Anbieter",
+  "userManagement": "Benutzerverwaltung",
+  "plugins": "Plugins"
+}

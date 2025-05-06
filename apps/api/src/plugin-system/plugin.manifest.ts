@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { z } from 'zod';
 
 export class PluginMainFrontend {
   @ApiProperty({
@@ -74,3 +75,55 @@ export class PluginManifest {
   })
   attraccessVersion: PluginAttraccessVersion;
 }
+
+export class LoadedPluginManifest extends PluginManifest {
+  @ApiProperty({
+    description: 'The directory of the plugin',
+    example: 'plugin-name',
+  })
+  pluginDirectory: string;
+
+  @ApiProperty({
+    description: 'The id of the plugin',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id: string;
+}
+
+export const PluginManifestSchema = z.object({
+  name: z.string(),
+  main: z.object({
+    frontend: z.object({
+      directory: z.string(),
+      entryPoint: z.string(),
+    }),
+    backend: z.string(),
+  }),
+  version: z.string(),
+  attraccessVersion: z
+    .object({
+      min: z.string().optional(),
+      max: z.string().optional(),
+      exact: z.string().optional(),
+    })
+    .refine(
+      (data) => {
+        if (data.min && data.max) {
+          return data.min <= data.max;
+        }
+
+        return true;
+      },
+      { message: 'min must be less than or equal to max' }
+    )
+    .refine(
+      (data) => {
+        if (!data.min && !data.max && !data.exact) {
+          return false;
+        }
+
+        return true;
+      },
+      { message: 'min, max or exact must be provided' }
+    ),
+});

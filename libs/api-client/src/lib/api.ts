@@ -1240,7 +1240,7 @@ export interface PluginAttraccessVersion {
   exact: string;
 }
 
-export interface PluginManifest {
+export interface LoadedPluginManifest {
   /**
    * The name of the plugin
    * @example "plugin-name"
@@ -1253,6 +1253,26 @@ export interface PluginManifest {
    */
   version: string;
   attraccessVersion: PluginAttraccessVersion;
+  /**
+   * The directory of the plugin
+   * @example "plugin-name"
+   */
+  pluginDirectory: string;
+  /**
+   * The id of the plugin
+   * @example "123e4567-e89b-12d3-a456-426614174000"
+   */
+  id: string;
+}
+
+export interface UploadPluginDto {
+  /** Overwrite existing plugin */
+  overwrite?: boolean;
+  /**
+   * Plugin zip file
+   * @format binary
+   */
+  pluginZip: File;
 }
 
 export interface Ping2Data {
@@ -1526,9 +1546,11 @@ export type TestData = WebhookTestResponseDto;
 
 export type RegenerateSecretData = WebhookConfigResponseDto;
 
-export type GetPluginsData = PluginManifest[];
+export type GetPluginsData = LoadedPluginManifest[];
 
 export type GetFrontendPluginFileData = string;
+
+export type DeletePluginData = any;
 
 export namespace Application {
   /**
@@ -2897,6 +2919,22 @@ export namespace Plugin {
   /**
    * No description
    * @tags Plugin
+   * @name UploadPlugin
+   * @summary Upload a new plugin
+   * @request POST:/api/plugins
+   * @secure
+   */
+  export namespace UploadPlugin {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UploadPluginDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
+  }
+
+  /**
+   * No description
+   * @tags Plugin
    * @name GetFrontendPluginFile
    * @summary Get any frontend plugin file
    * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
@@ -2910,6 +2948,24 @@ export namespace Plugin {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetFrontendPluginFileData;
+  }
+
+  /**
+   * No description
+   * @tags Plugin
+   * @name DeletePlugin
+   * @summary Delete a plugin
+   * @request DELETE:/api/plugins/{pluginId}
+   * @secure
+   */
+  export namespace DeletePlugin {
+    export type RequestParams = {
+      pluginId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeletePluginData;
   }
 }
 
@@ -4453,6 +4509,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Plugin
+     * @name UploadPlugin
+     * @summary Upload a new plugin
+     * @request POST:/api/plugins
+     * @secure
+     */
+    uploadPlugin: (data: UploadPluginDto, params: RequestParams = {}) =>
+      this.request<any, void>({
+        path: `/api/plugins`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Plugin
      * @name GetFrontendPluginFile
      * @summary Get any frontend plugin file
      * @request GET:/api/plugins/{pluginName}/frontend/module-federation/{filePath}
@@ -4462,6 +4537,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/plugins/${pluginName}/frontend/module-federation/${filePath}`,
         method: 'GET',
         format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Plugin
+     * @name DeletePlugin
+     * @summary Delete a plugin
+     * @request DELETE:/api/plugins/{pluginId}
+     * @secure
+     */
+    deletePlugin: (pluginId: string, params: RequestParams = {}) =>
+      this.request<DeletePluginData, void>({
+        path: `/api/plugins/${pluginId}`,
+        method: 'DELETE',
+        secure: true,
         ...params,
       }),
   };
