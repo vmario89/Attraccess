@@ -2,7 +2,6 @@
   "title": "Plugin hochladen",
   "description": "Laden Sie ein Plugin als ZIP-Datei hoch. Das Plugin muss korrekt strukturiert sein und eine manifest.json-Datei enthalten.",
   "fileInputDescription": "Wählen Sie eine .zip Plugin-Datei aus",
-  "overwriteExisting": "Überschreiben, falls Plugin bereits existiert",
   "selectedFile": "Ausgewählte Datei",
   "upload": "Hochladen",
   "cancel": "Abbrechen",

@@ -78,9 +78,10 @@ export class PluginController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('pluginZip'))
   @Auth('canManageSystemConfiguration')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async uploadPlugin(@UploadedFile() file: FileUpload, @Body() body: UploadPluginDto) {
-    this.logger.log(`Uploading plugin ${file.originalname} with overwrite ${body.overwrite}`);
-    return await this.pluginService.uploadPlugin(file, body.overwrite);
+    this.logger.log(`Uploading plugin ${file.originalname}`);
+    return await this.pluginService.uploadPlugin(file);
   }
 
   @Delete(':pluginId')

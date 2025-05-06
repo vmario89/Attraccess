@@ -2,7 +2,6 @@
   "title": "Upload Plugin",
   "description": "Upload a plugin as a ZIP file. The plugin must be properly structured with a manifest.json file.",
   "fileInputDescription": "Select a .zip plugin file",
-  "overwriteExisting": "Overwrite if plugin already exists",
   "selectedFile": "Selected file",
   "upload": "Upload",
   "cancel": "Cancel",

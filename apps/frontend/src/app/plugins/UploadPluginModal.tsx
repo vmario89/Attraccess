@@ -1,6 +1,6 @@
 import { usePluginServiceUploadPlugin } from '@attraccess/react-query-client';
 import { useState, useRef } from 'react';
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Checkbox, Input } from '@heroui/react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input } from '@heroui/react';
 import { Upload } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import en from './UploadPluginModal.en.json';
@@ -15,7 +15,6 @@ interface UploadPluginModalProps {
 
 export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [overwrite, setOverwrite] = useState(false);
   const [isFileInvalid, setIsFileInvalid] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToastMessage();
@@ -57,7 +56,6 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
 
     uploadPlugin({
       formData: {
-        overwrite,
         pluginZip: selectedFile,
       },
     });
@@ -65,7 +63,6 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
 
   const resetForm = () => {
     setSelectedFile(null);
-    setOverwrite(false);
     setIsFileInvalid(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -94,10 +91,6 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
               errorMessage={isFileInvalid ? t('errors.invalidFile') : ''}
               description={t('fileInputDescription')}
             />
-
-            <Checkbox isSelected={overwrite} onValueChange={setOverwrite} className="mt-4">
-              {t('overwriteExisting')}
-            </Checkbox>
 
             {selectedFile && (
               <div className="py-2 px-4 bg-gray-100 dark:bg-gray-800 rounded-md">

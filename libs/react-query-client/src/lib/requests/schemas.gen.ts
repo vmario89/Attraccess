@@ -1728,10 +1728,6 @@ export const $LoadedPluginManifest = {
 export const $UploadPluginDto = {
     type: 'object',
     properties: {
-        overwrite: {
-            type: 'boolean',
-            description: 'Overwrite existing plugin'
-        },
         pluginZip: {
             type: 'string',
             description: 'Plugin zip file',
