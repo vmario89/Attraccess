@@ -32,7 +32,6 @@ export default class FabreaderPlugin implements AttraccessFrontendPlugin {
   }
 
   onApiAuthStateChange(authData: null | AttraccessFrontendPluginAuthData): void {
-    console.log('onApiAuthStateChange', authData);
     store.getState().setAuthData(authData);
   }
 

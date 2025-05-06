@@ -45,7 +45,6 @@ const NfcCardDeleteModal = (props: DeleteModalProps) => {
   const { mutate: resetNfcCard } = useResetNfcCard();
 
   const deleteCard = useCallback(() => {
-    console.log({ readerId });
     if (!props.cardId || !readerId) {
       return;
     }

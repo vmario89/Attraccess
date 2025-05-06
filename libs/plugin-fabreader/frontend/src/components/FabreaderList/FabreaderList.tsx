@@ -56,7 +56,6 @@ export const FabreaderList = () => {
   }, [readersError, pluginStore, t]);
 
   const userCanManage = useMemo(() => {
-    console.log(auth);
     return !!auth?.user?.systemPermissions.canManageSystemConfiguration;
   }, [auth]);
 

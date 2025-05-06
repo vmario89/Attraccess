@@ -16,8 +16,6 @@ export function PWAInstall() {
     de,
   });
 
-  console.log(de, en);
-
   return (
     <PWAInstallFromLib
       name="Attraccess"

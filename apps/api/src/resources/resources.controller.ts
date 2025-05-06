@@ -68,7 +68,6 @@ export class ResourcesController {
     description: 'Unauthorized - User is not authenticated',
   })
   async getAll(@Query() query: ListResourcesDto): Promise<PaginatedResponse<Resource>> {
-    console.log(query);
     const resources = (await this.resourcesService.listResources(query)) as PaginatedResourceResponseDto;
 
     resources.data = resources.data.map(this.transformResource);
