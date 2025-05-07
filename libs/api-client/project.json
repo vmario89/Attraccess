@@ -7,6 +7,17 @@
   "// targets": "to see all targets run: nx show project api-client --web",
   "targets": {
     "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/api-client",
+        "tsConfig": "libs/api-client/tsconfig.lib.json",
+        "packageJson": "libs/api-client/package.json",
+        "main": "libs/api-client/src/index.ts",
+        "assets": ["libs/api-client/*.md"]
+      },
+      "dependsOn": ["generate"]
+    },
+    "generate": {
       "executor": "nx:run-commands",
       "cache": true,
       "outputs": ["{projectRoot}/src/lib/api.ts"],
@@ -14,6 +25,13 @@
         "command": "ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
       },
       "dependsOn": ["api:export-swagger"]
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/source",
-  "version": "0.0.0",
+  "version": "0.0.7",
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/index.ts",

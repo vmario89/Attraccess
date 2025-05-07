@@ -69,11 +69,11 @@ export class PluginService {
 
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
-    if (manifest.main.backend) {
-      manifest.main.backend = join(pluginFolder, manifest.main.backend);
+    if (manifest.main.backend?.directory) {
+      manifest.main.backend.directory = join(pluginFolder, manifest.main.backend.directory);
     }
 
-    if (manifest.main.frontend) {
+    if (manifest.main.frontend?.directory) {
       manifest.main.frontend.directory = join(pluginFolder, manifest.main.frontend.directory);
     }
 
@@ -125,6 +125,13 @@ export class PluginService {
 
   private restartApp() {
     PluginService.logger.log('Restarting app');
+    if (process.env.RESTART_BY_EXIT === 'true') {
+      PluginService.logger.log('Restarting app by exiting');
+      process.exit();
+    }
+
+    // restart app by starting a new process
+    PluginService.logger.log('Restarting app by starting a new process');
     const subprocess = spawn(process.argv[0], process.argv.slice(1), {
       detached: true,
       stdio: 'inherit',

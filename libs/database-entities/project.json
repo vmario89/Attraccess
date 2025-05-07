@@ -47,6 +47,13 @@
         ]
       },
       "dependsOn": ["build-migration-datasource"]
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
     }
   }
 }

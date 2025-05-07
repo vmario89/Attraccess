@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/plugins-backend-sdk",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "type": "commonjs",
   "main": "./src/index.js",
   "module": "./dist/index.js",
@@ -13,6 +13,9 @@
       "default": "./dist/index.js"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "!**/*.tsbuildinfo"
@@ -20,13 +23,13 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@attraccess/database-entities": "*",
-    "@nestjs/common": "*",
-    "rxjs": "*",
-    "@nestjs/core": "*",
-    "@nestjs/swagger": "*",
-    "express": "*",
-    "@nestjs/passport": "*",
-    "typeorm": "*",
-    "@nestjs/typeorm": "*"
+    "@nestjs/common": "^11.1.0",
+    "rxjs": "^7.8.2",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/swagger": "^11.2.0",
+    "express": "^4.21.2",
+    "@nestjs/passport": "^11.0.5",
+    "typeorm": "0.3.20",
+    "@nestjs/typeorm": "^11.0.0"
   }
 }

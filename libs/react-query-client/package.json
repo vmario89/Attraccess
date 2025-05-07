@@ -1,10 +1,14 @@
 {
-  "name": "@attraccess/api-client",
-  "version": "0.0.1",
+  "name": "@attraccess/react-query-client",
+  "version": "0.0.7",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@tanstack/react-query": "^5.66.3"
+    "@tanstack/react-query": "^5.66.3",
+    "tslib": "^2.3.0"
   }
 }

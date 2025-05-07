@@ -1215,6 +1215,19 @@ export interface PluginMainFrontend {
   entryPoint: string;
 }
 
+export interface PluginMainBackend {
+  /**
+   * The directory of the plugins backend files
+   * @example "backend"
+   */
+  directory: string;
+  /**
+   * The entry point of the plugin, relative to the backend directory
+   * @example "index.mjs"
+   */
+  entryPoint: string;
+}
+
 export interface PluginMain {
   /**
    * The frontend files of the plugin
@@ -1223,9 +1236,9 @@ export interface PluginMain {
   frontend: PluginMainFrontend;
   /**
    * The backend file of the plugin
-   * @example "backend/src/plugin.js"
+   * @example {"directory":"backend","entryPoint":"src/plugin.js"}
    */
-  backend: string;
+  backend: PluginMainBackend;
 }
 
 export interface PluginAttraccessVersion {

@@ -1109,6 +1109,17 @@ export type PluginMainFrontend = {
     entryPoint: string;
 };
 
+export type PluginMainBackend = {
+    /**
+     * The directory of the plugins backend files
+     */
+    directory: string;
+    /**
+     * The entry point of the plugin, relative to the backend directory
+     */
+    entryPoint: string;
+};
+
 export type PluginMain = {
     /**
      * The frontend files of the plugin
@@ -1117,7 +1128,7 @@ export type PluginMain = {
     /**
      * The backend file of the plugin
      */
-    backend: string;
+    backend: PluginMainBackend;
 };
 
 export type PluginAttraccessVersion = {

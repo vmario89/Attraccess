@@ -9,9 +9,11 @@ on:
 permissions:
   actions: read
   contents: read
+  packages: write
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   main:
@@ -28,6 +30,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
@@ -39,3 +42,10 @@ jobs:
       # Modified to run lint with max-warnings=0 to fail on warnings
       - name: Run lint, test, build and e2e
         run: pnpm exec nx affected -t lint, test, build, e2e
+
+      # Publish packages if on main branch
+      - name: Publish packages
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          pnpm exec nx release publish --yes

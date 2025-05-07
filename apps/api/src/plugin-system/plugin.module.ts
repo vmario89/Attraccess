@@ -39,15 +39,17 @@ export class PluginModule {
   }
 
   private static loadPluginModule(manifest: PluginManifest): DynamicModule {
-    this.logger.log(`Loading plugin ${manifest.name} from ${manifest.main.backend}`);
+    this.logger.log(`Loading plugin ${manifest.name} from ${manifest.main.backend.directory}`);
 
-    if (!manifest.main.backend) {
+    if (!manifest.main.backend?.directory || !manifest.main.backend?.entryPoint) {
       this.logger.error(`Plugin ${manifest.name} has no backend, skipping backend module loading`);
       return null;
     }
 
     const pluginRequire = createRequire(__filename);
-    const importedModule = pluginRequire(join(PluginService.PLUGIN_PATH, manifest.main.backend));
+    const importedModule = pluginRequire(
+      join(PluginService.PLUGIN_PATH, manifest.main.backend.directory, manifest.main.backend.entryPoint)
+    );
 
     this.logger.log(`Imported module: ${manifest.name}`);
 
