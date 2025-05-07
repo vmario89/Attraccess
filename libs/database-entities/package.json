@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/database-entities",
-  "version": "0.0.1",
+  "version": "0.0.8",
   "private": true,
   "type": "commonjs",
   "main": "./src/index.js",
@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "typeorm": "*",
-    "@nestjs/swagger": "*",
-    "class-transformer": "*",
-    "@nx/webpack": "*",
-    "glob": "*",
-    "class-validator": "*"
+    "typeorm": "0.3.20",
+    "@nestjs/swagger": "^11.2.0",
+    "class-transformer": "^0.5.1",
+    "@nx/webpack": "20.3.3",
+    "glob": "^11.0.2",
+    "class-validator": "^0.14.2"
   }
 }
