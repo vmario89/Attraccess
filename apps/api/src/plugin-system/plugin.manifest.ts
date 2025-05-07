@@ -107,14 +107,16 @@ export class LoadedPluginManifest extends PluginManifest {
   id: string;
 }
 
+const mainSchema = z.object({
+  directory: z.string(),
+  entryPoint: z.string(),
+});
+
 export const PluginManifestSchema = z.object({
   name: z.string(),
   main: z.object({
-    frontend: z.object({
-      directory: z.string(),
-      entryPoint: z.string(),
-    }),
-    backend: z.string(),
+    frontend: mainSchema,
+    backend: mainSchema,
   }),
   version: z.string(),
   attraccessVersion: z
