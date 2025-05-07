@@ -140,6 +140,13 @@ export type CreateSessionResponse = {
     authToken: string;
 };
 
+/**
+ * The type of the provider
+ */
+export enum SSOProviderType {
+    OIDC = 'OIDC'
+}
+
 export type SSOProviderOIDCConfiguration = {
     /**
      * The unique identifier of the provider
@@ -195,7 +202,7 @@ export type SSOProvider = {
     /**
      * The type of the provider
      */
-    type: string;
+    type: SSOProviderType;
     /**
      * When the user was created
      */

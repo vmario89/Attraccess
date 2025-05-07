@@ -7,11 +7,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
 import { SSOProvidersPage } from '../sso/SSOProvidersPage';
 import { UserManagementPage } from '../users/UserManagementPage';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import usePluginState, { PluginManifestWithPlugin } from '@frontend/plugins/plugin.state';
 import { usePluginStore } from 'react-pluggable';
 import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
 import { PluginsList } from '../plugins/PluginsList';
+import { PluginManifestWithPlugin } from '../plugins/plugin.state';
+import usePluginState from '../plugins/plugin.state';
 
 const coreRoutes: RouteConfig[] = [
   {

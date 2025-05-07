@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
-
 import { WebhookFormValues, defaultFormValues, webhookToFormValues } from '../types';
 import { WebhookFormProvider } from '../context/WebhookFormContext';
 import WebhookBasicSettings from './WebhookBasicSettings';
@@ -17,6 +14,7 @@ import {
   useWebhooksServiceGetOneWebhookConfigurationById,
   useWebhooksServiceUpdateOneWebhookConfiguration,
 } from '@attraccess/react-query-client';
+import { useToastMessage } from '../../../../../components/toastProvider';
 
 export interface WebhookFormProps {
   webhookId?: number;

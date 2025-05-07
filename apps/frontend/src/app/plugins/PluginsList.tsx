@@ -24,9 +24,8 @@ import { Trash2, Upload } from 'lucide-react';
 import de from './PluginsList.de.json';
 import en from './PluginsList.en.json';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import { UploadPluginModal } from './UploadPluginModal';
+import { useToastMessage } from '../../components/toastProvider';
 
 export function PluginsList() {
   const { data: plugins, isLoading } = usePluginServiceGetPlugins();

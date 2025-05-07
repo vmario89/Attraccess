@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '@heroui/react';
 import { Trash2, RefreshCw, Save } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import { useWebhookForm } from '../context/WebhookFormContext';
 
 // Translations for this component only
@@ -13,6 +11,7 @@ import {
   useWebhooksServiceDeleteOneWebhookConfiguration,
   useWebhooksServiceTest,
 } from '@attraccess/react-query-client';
+import { useToastMessage } from '../../../../../components/toastProvider';
 
 interface WebhookFormActionsProps {
   onCancel?: () => void;

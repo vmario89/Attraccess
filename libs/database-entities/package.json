@@ -20,6 +20,7 @@
     "@nestjs/swagger": "*",
     "class-transformer": "*",
     "@nx/webpack": "*",
-    "glob": "*"
+    "glob": "*",
+    "class-validator": "*"
   }
 }

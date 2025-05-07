@@ -5,10 +5,7 @@ import { readFileSync } from 'fs';
 async function generate() {
   console.log('Generating API Client...');
 
-  const swaggerJsonPath = path.resolve(
-    __dirname,
-    '../../../dist/apps/api-swagger/swagger.json'
-  );
+  const swaggerJsonPath = path.resolve(__dirname, '../../../dist/apps/api-swagger/swagger.json');
   const outputPath = path.resolve(__dirname, '../src/lib');
 
   console.log('Swagger JSON path:', swaggerJsonPath);
@@ -17,7 +14,6 @@ async function generate() {
   const swaggerSpec = JSON.parse(readFileSync(swaggerJsonPath, 'utf8'));
 
   await generateApi({
-    name: 'api.ts',
     output: outputPath,
     spec: swaggerSpec,
     httpClientType: 'fetch', // or 'axios'

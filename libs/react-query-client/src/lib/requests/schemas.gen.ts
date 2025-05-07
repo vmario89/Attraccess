@@ -231,6 +231,12 @@ export const $CreateSessionResponse = {
     required: ['user', 'authToken']
 } as const;
 
+export const $SSOProviderType = {
+    type: 'string',
+    enum: ['OIDC'],
+    description: 'The type of the provider'
+} as const;
+
 export const $SSOProviderOIDCConfiguration = {
     type: 'object',
     properties: {
@@ -302,9 +308,13 @@ export const $SSOProvider = {
             example: 'Keycloak'
         },
         type: {
-            type: 'string',
             description: 'The type of the provider',
-            example: 'OIDC'
+            example: 'OIDC',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/SSOProviderType'
+                }
+            ]
         },
         createdAt: {
             format: 'date-time',

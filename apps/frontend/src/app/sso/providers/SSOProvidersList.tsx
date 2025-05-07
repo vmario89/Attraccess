@@ -22,13 +22,13 @@ import {
 } from '@heroui/react';
 import { Pencil, Trash, Key, FileCode, Eye, EyeOff, Download } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
-import { SSOProviderType } from '@attraccess/database-entities';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/en';
 import * as de from './translations/de';
 import {
   CreateSSOProviderDto,
   SSOProvider,
+  SSOProviderType,
   UpdateSSOProviderDto,
   useSsoServiceCreateOneSsoProvider,
   useSsoServiceDeleteOneSsoProvider,
@@ -365,7 +365,12 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
       )}
 
       {/* Discover Configuration Dialog */}
-      <Modal isOpen={isDiscoverDialogOpen} onOpenChange={(open) => setIsDiscoverDialogOpen(open)} size="md" scrollBehavior='inside'>
+      <Modal
+        isOpen={isDiscoverDialogOpen}
+        onOpenChange={(open) => setIsDiscoverDialogOpen(open)}
+        size="md"
+        scrollBehavior="inside"
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -409,7 +414,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
       </Modal>
 
       {/* Main Provider Form Modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior='inside'>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>

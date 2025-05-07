@@ -76,7 +76,6 @@ export function ManageResourceGroups({ resourceId }: ManageResourceGroupsProps) 
         });
         // Invalidate the general resource list query (this will also invalidate infinite queries derived from it)
         queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetAllResourcesKeyFn() });
-        queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetAllResourcesKeyFn()[0] });
         setSearchTerm(''); // Clear search after adding
       } catch (err) {
         console.error('Failed to add group:', err);
@@ -103,7 +102,7 @@ export function ManageResourceGroups({ resourceId }: ManageResourceGroupsProps) 
           queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId }),
         });
         // Invalidate the general resource list query (this will also invalidate infinite queries derived from it)
-        queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetAllResourcesKeyFn()[0] });
+        queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetAllResourcesKeyFn() });
       } catch (err) {
         console.error('Failed to remove group:', err);
         showError({
