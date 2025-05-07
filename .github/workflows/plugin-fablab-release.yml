@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PLUGIN_NAME }}
-          path: dist/${{ env.PLUGIN_NAME }}.zip
+          path: dist/libs/${{ env.PLUGIN_NAME }}
           retention-days: 7
 
       # Attach to PR if it's a pull request
@@ -76,7 +76,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `📦 FABReader plugin built and available as artifact: [${artifactName}.zip](${artifactUrl}) (unzip before uploading)`
+              body: `📦 FABReader plugin built and available as artifact: [${artifactName}.zip](${artifactUrl})`
             });
 
       # Attach to release
