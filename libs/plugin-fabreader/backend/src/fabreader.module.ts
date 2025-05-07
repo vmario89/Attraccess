@@ -10,6 +10,7 @@ import { DbService } from './modules/persistence/db.service';
 import { WebsocketService } from './modules/websockets/websocket.service';
 import { FabreaderGateway } from './modules/websockets/websocket.gateway';
 import { CardController } from './card.controller';
+import 'tslib';
 
 @Module({
   imports: [
