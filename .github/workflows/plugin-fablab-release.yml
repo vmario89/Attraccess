@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'libs/plugin-fablab/**'
+      - 'libs/plugin-fabreader/**'
 
   # Allow manual triggering
   workflow_dispatch:
