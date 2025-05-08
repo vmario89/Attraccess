@@ -1,3 +1,11 @@
+## 0.0.13 (2025-05-08)
+
+This was a version bump only, there were no code changes.
+
+## 0.0.12 (2025-05-08)
+
+This was a version bump only, there were no code changes.
+
 ## 0.0.11 (2025-05-08)
 
 ### 🩹 Fixes
