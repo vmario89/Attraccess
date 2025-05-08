@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/api-client",
-  "version": "0.0.13",
+  "version": "0.0.15",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
