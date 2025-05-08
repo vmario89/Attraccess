@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/database-entities",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "private": false,
   "type": "commonjs",
   "main": "./src/index.js",

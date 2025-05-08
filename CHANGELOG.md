@@ -1,3 +1,17 @@
+## 0.0.11 (2025-05-08)
+
+### 🩹 Fixes
+
+- **plugins:** fabreader now bundling deps ([e1764e6](https://github.com/jappyjan/Attraccess/commit/e1764e6))
+- **plugins:** fabreader now bundling deps ([f8b2f9e](https://github.com/jappyjan/Attraccess/commit/f8b2f9e))
+- **plugins:** correct artifact download link ([32d2cfc](https://github.com/jappyjan/Attraccess/commit/32d2cfc))
+- **plugins:** correctly bundle and resolve deps ([3c85010](https://github.com/jappyjan/Attraccess/commit/3c85010))
+- **plugins:** correctly bundle and resolve deps ([ffce4c7](https://github.com/jappyjan/Attraccess/commit/ffce4c7))
+
+### ❤️ Thank You
+
+- Jan Jaap
+
 ## 0.0.9 (2025-05-07)
 
 This was a version bump only, there were no code changes.
