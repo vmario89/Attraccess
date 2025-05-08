@@ -1,6 +1,7 @@
 {
   "name": "@attraccess/plugins-frontend-ui",
-  "version": "0.0.7",
+  "version": "0.0.16",
+  "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
   "publishConfig": {
@@ -8,8 +9,14 @@
   },
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
     }
-  }
+  },
+  "files": [
+    "index*.js",
+    "index.d.ts",
+    "lib"
+  ]
 }

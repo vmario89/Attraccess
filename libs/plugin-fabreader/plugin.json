@@ -3,14 +3,14 @@
     "main": {
         "backend": {
             "directory": "backend",
-            "entryPoint": "/main.js"
+            "entryPoint": "src/fabreader.module.js"
         },
         "frontend": {
             "directory": "frontend",
             "entryPoint": "assets/remoteEntry.js"
         }
     },
-    "version": "0.0.7",
+    "version": "0.0.16",
     "description": "Plugin to add support for the FABReader",
     "attraccessVersion": {
         "min": "0.0.0"

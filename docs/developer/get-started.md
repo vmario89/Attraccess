@@ -23,7 +23,7 @@ Attraccess is a comprehensive resource management system for tracking and managi
 ### Backend
 
 - **Framework**: NestJS (Node.js)
-- **Database**: TypeORM with PostgreSQL/MySQL/SQLite support
+- **Database**: TypeORM with SQLite support
 - **API Documentation**: Swagger/OpenAPI
 - **Authentication**: JWT, Passport.js
 - **Testing**: Jest

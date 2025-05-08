@@ -11,7 +11,7 @@
                 "command": "cp libs/plugin-fabreader/plugin.json dist/libs/plugin-fabreader/plugin.json"
             },
             "dependsOn": [
-                "plugin-fabreader-backend:build",
+                "plugin-fabreader-backend:bundle",
                 "plugin-fabreader-frontend:build"
             ]
         }

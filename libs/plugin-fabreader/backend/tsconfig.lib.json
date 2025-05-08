@@ -1,9 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "importHelpers": false,
     "outDir": "../../dist/out-tsc",
     "declaration": true,
     "types": ["node"],
+    "module": "CommonJS",
+    "moduleResolution": "node"
   },
   "include": ["src/**/*.ts"],
   "exclude": [

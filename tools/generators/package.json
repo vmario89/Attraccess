@@ -1,6 +1,6 @@
 {
   "name": "@attraccess/generators",
-  "version": "0.0.7",
+  "version": "0.0.16",
   "private": true,
   "type": "commonjs",
   "main": "./src/index.js",

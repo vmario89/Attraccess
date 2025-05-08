@@ -1,29 +1,46 @@
-const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join, resolve } = require('path');
+const { join } = require('path');
+const nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack');
 
-const outputPath = resolve(join(__dirname, '../../../dist/libs/plugin-fabreader/backend'));
-console.log('outputPath', outputPath);
+const lazyImports = ['@nestjs/microservices', 'cache-manager', 'class-validator', 'class-transformer'];
 
 module.exports = {
+  entry: join(__dirname, '../../../dist/libs/plugin-fabreader/backend-js/src/fabreader.module.js'),
   output: {
-    path: outputPath,
+    path: join(__dirname, '../../../dist/libs/plugin-fabreader/backend'),
     library: {
-      type: 'commonjs2'
-    }
+      type: 'commonjs2',
+    },
   },
-  plugins: [
-    new NxAppWebpackPlugin({
-      target: 'node',
-      compiler: 'tsc',
-      main: './src/fabreader.module.ts',
-      tsConfig: './tsconfig.lib.json',
-      optimization: false,
-      outputHashing: 'none',
-      generatePackageJson: true,
-      deleteOutputPath: true,
-    })
+  target: 'node',
+  mode: 'none',
+  optimization: {
+    nodeEnv: false,
+  },
+  node: {
+    __filename: false,
+    __dirname: false,
+  },
+  externals: [
+    nodeExternals({
+      externals: ['pg'],
+    }),
   ],
-  entry: {
-    main: './src/fabreader.module.ts',
-  }
+  plugins: [
+    new webpack.IgnorePlugin({
+      checkResource(resource) {
+        if (!lazyImports.includes(resource)) {
+          return false;
+        }
+        try {
+          require.resolve(resource, {
+            paths: [process.cwd()],
+          });
+        } catch {
+          return true;
+        }
+        return false;
+      },
+    }),
+  ],
 };

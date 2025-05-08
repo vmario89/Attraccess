@@ -14,13 +14,14 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/plugin-fabreader/backend",
-        "main": "libs/plugin-fabreader/backend/src/fabreader.module.ts",
         "tsConfig": "libs/plugin-fabreader/backend/tsconfig.lib.json",
-        "webpackConfig": "libs/plugin-fabreader/backend/webpack.config.js"
+        "packageJson": "libs/plugin-fabreader/backend/package.json",
+        "main": "libs/plugin-fabreader/backend/src/fabreader.module.ts",
+        "assets": []
       }
     },
     "nx-release-publish": {

@@ -4,7 +4,7 @@
   "noPlugins": "Keine Plugins installiert",
   "columns": {
     "name": "Name",
-    "version": "Version",
+    "version": "0.0.16",
     "directory": "Verzeichnis",
     "actions": "Aktionen"
   },

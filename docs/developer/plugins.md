@@ -65,7 +65,7 @@ The `plugin.json` file is required for all plugins and defines the plugin's meta
       "entryPoint": "assets/remoteEntry.js"
     }
   },
-  "version": "1.0.0",
+  "version": "0.0.16",
   "description": "Description of the plugin",
   "attraccessVersion": {
     "min": "0.0.0",

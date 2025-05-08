@@ -11,6 +11,7 @@ vitest.config.*.timestamp*
 *.sqlite
 
 storage/
+storage-docker/
 .env
 .env.*
 !.env.example
