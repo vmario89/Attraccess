@@ -15,6 +15,20 @@ export class PluginMainFrontend {
   entryPoint: string;
 }
 
+export class PluginMainBackend {
+  @ApiProperty({
+    description: 'The directory of the plugins backend files',
+    example: 'backend',
+  })
+  directory: string;
+
+  @ApiProperty({
+    description: 'The entry point of the plugin, relative to the backend directory',
+    example: 'index.mjs',
+  })
+  entryPoint: string;
+}
+
 export class PluginMain {
   @ApiProperty({
     description: 'The frontend files of the plugin',
@@ -27,9 +41,12 @@ export class PluginMain {
 
   @ApiProperty({
     description: 'The backend file of the plugin',
-    example: 'backend/src/plugin.js',
+    example: {
+      directory: 'backend',
+      entryPoint: 'src/plugin.js',
+    },
   })
-  backend?: string;
+  backend?: PluginMainBackend;
 }
 
 export class PluginAttraccessVersion {
@@ -90,14 +107,16 @@ export class LoadedPluginManifest extends PluginManifest {
   id: string;
 }
 
+const mainSchema = z.object({
+  directory: z.string(),
+  entryPoint: z.string(),
+});
+
 export const PluginManifestSchema = z.object({
   name: z.string(),
   main: z.object({
-    frontend: z.object({
-      directory: z.string(),
-      entryPoint: z.string(),
-    }),
-    backend: z.string(),
+    frontend: mainSchema,
+    backend: mainSchema,
   }),
   version: z.string(),
   attraccessVersion: z

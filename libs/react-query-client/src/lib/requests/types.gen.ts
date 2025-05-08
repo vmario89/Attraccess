@@ -140,6 +140,13 @@ export type CreateSessionResponse = {
     authToken: string;
 };
 
+/**
+ * The type of the provider
+ */
+export enum SSOProviderType {
+    OIDC = 'OIDC'
+}
+
 export type SSOProviderOIDCConfiguration = {
     /**
      * The unique identifier of the provider
@@ -195,7 +202,7 @@ export type SSOProvider = {
     /**
      * The type of the provider
      */
-    type: string;
+    type: SSOProviderType;
     /**
      * When the user was created
      */
@@ -1102,6 +1109,17 @@ export type PluginMainFrontend = {
     entryPoint: string;
 };
 
+export type PluginMainBackend = {
+    /**
+     * The directory of the plugins backend files
+     */
+    directory: string;
+    /**
+     * The entry point of the plugin, relative to the backend directory
+     */
+    entryPoint: string;
+};
+
 export type PluginMain = {
     /**
      * The frontend files of the plugin
@@ -1110,7 +1128,7 @@ export type PluginMain = {
     /**
      * The backend file of the plugin
      */
-    backend: string;
+    backend: PluginMainBackend;
 };
 
 export type PluginAttraccessVersion = {

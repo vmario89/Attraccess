@@ -1,10 +1,9 @@
-import { useResourcesServiceGetOneResourceById } from "@attraccess/react-query-client";
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useAuth } from "@frontend/hooks/useAuth";
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
+import { useAuth } from '../../../../../hooks/useAuth';
 
 export const useTemplatePreview = (resourceId: number) => {
   // Fetch the resource data
-  const { data: resource } = useResourcesServiceGetOneResourceById({id: resourceId});
+  const { data: resource } = useResourcesServiceGetOneResourceById({ id: resourceId });
   const { user } = useAuth();
 
   // Create a preview context for rendering templates

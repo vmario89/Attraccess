@@ -4,12 +4,11 @@ import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useEffect } from 'react';
 import de from './MqttServerSelector.de.json';
 import en from './MqttServerSelector.en.json';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { Select } from '@frontend/components/select';
 import {
   useMqttResourceConfigurationServiceGetOneMqttConfiguration,
   useMqttServersServiceGetAllMqttServers,
 } from '@attraccess/react-query-client';
+import { Select } from '../../../../../components/select';
 
 interface MqttServerSelectorProps {
   resourceId: number;

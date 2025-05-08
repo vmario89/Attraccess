@@ -20,13 +20,14 @@
         "outputPath": "dist/libs/plugin-fabreader/backend",
         "tsConfig": "libs/plugin-fabreader/backend/tsconfig.lib.json",
         "packageJson": "libs/plugin-fabreader/backend/package.json",
-        "main": "libs/plugin-fabreader/backend/src/index.ts",
-        "assets": ["libs/plugin-fabreader/backend/*.md"]
+        "main": "libs/plugin-fabreader/backend/src/fabreader.module.ts",
+        "assets": []
       }
     },
     "nx-release-publish": {
       "options": {
-        "packageRoot": "dist/{projectRoot}"
+        "packageRoot": "dist/{projectRoot}",
+        "access": "public"
       }
     },
     "build-migration-datasource": {

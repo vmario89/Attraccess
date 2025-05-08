@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import {
   Button,
   Form,
@@ -12,8 +10,6 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { FileUpload } from '@frontend/components/fileUpload';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceCreateModal.en';
 import * as de from './translations/resourceCreateModal.de';
@@ -25,6 +21,8 @@ import {
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { FileUpload } from '../../components/fileUpload';
+import { useToastMessage } from '../../components/toastProvider';
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -159,7 +157,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior='inside'>
+      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <Form

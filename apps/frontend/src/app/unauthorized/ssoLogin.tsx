@@ -3,12 +3,10 @@ import { Button, Divider, Link } from '@heroui/react';
 import * as de from './translations/ssoLoginButon.de';
 import * as en from './translations/ssoLoginButton.en';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { getBaseUrl } from '@frontend/api';
 import { useLocation } from 'react-router-dom';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useAuth } from '@frontend/hooks/useAuth';
 import { useSsoServiceGetAllSsoProviders, SSOProvider } from '@attraccess/react-query-client';
+import { getBaseUrl } from '../../api';
+import { useAuth } from '../../hooks/useAuth';
 
 function useCallbackURL(providerId: number, providerType: SSOProvider['type']) {
   return useMemo(() => {

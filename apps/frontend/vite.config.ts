@@ -26,17 +26,17 @@ export default defineConfig({
       name: 'attraccess',
       remotes: {
         // Dynamic remotes will be loaded at runtime
+        // dummy remote so that vite prepares the shared libs,
+        // otherwise the shared libs are not loaded and the dynamic remotes are not working
+        dummy: './dummy.js',
       },
       shared: {
         react: { requiredVersion: '*' },
-        'react/jsx-runtime': { requiredVersion: '*' },
         'react-dom': { requiredVersion: '*' },
         'react-router-dom': { requiredVersion: '*' },
         'react-pluggable': { requiredVersion: '*' },
         '@heroui/react': { requiredVersion: '*' },
         '@tanstack/react-query': { requiredVersion: '*' },
-        '@attraccess/react-query-client': { requiredVersion: '*' },
-        '@attraccess/plugins-frontend-ui': { requiredVersion: '*' },
       },
     }),
   ],

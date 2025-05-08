@@ -1,41 +1,18 @@
 import { OpenAPI, LoadedPluginManifest, usePluginServiceGetPlugins } from '@attraccess/react-query-client';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { getBaseUrl } from '@frontend/api';
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { createPluginStore, PluginProvider as PluginProviderBase, RendererPlugin } from 'react-pluggable';
-import usePluginState from './plugin.state';
+import usePluginState, { PluginManifestWithPlugin } from './plugin.state';
 import {
-  __federation_method_getRemote as getRemote,
-  __federation_method_setRemote as setRemote,
-  __federation_method_unwrapDefault as unwrapModule,
+  __federation_method_getRemote,
+  __federation_method_setRemote,
   // eslint-disable-next-line
   // @ts-ignore
 } from 'virtual:__federation__';
 import { AttraccessFrontendPlugin, AttraccessFrontendPluginAuthData } from '@attraccess/plugins-frontend-sdk';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useAuth } from '@frontend/hooks/useAuth';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { ToastType, useToastMessage } from '@frontend/components/toastProvider';
-
-// eslint-disable-next-line
-// @ts-ignore
-declare module 'virtual:__federation__' {
-  interface IRemoteConfig {
-    url: (() => Promise<string>) | string;
-    format: 'esm' | 'systemjs' | 'var';
-    from: 'vite' | 'webpack';
-  }
-
-  export function __federation_method_setRemote(name: string, config: IRemoteConfig): void;
-
-  export function __federation_method_getRemote(name: string, exposedPath: string): Promise<unknown>;
-
-  export function __federation_method_unwrapDefault(unwrappedModule: unknown): Promise<unknown>;
-
-  export function __federation_method_ensure(remoteName: string): Promise<unknown>;
-
-  export function __federation_method_wrapDefault(module: unknown, need: boolean): Promise<unknown>;
-}
+import { ToastType, useToastMessage } from '../../components/toastProvider';
+import { useAuth } from '../../hooks/useAuth';
+import { getBaseUrl } from '../../api';
+import FabreaderPlugin from '@attraccess/attraccess-plugin-fabreader-frontend';
 
 export class PluginLoadedEvent extends Event {
   constructor(public readonly pluginManifest: LoadedPluginManifest) {
@@ -90,32 +67,37 @@ export function PluginProvider(props: PropsWithChildren) {
   }, [toast]);
 
   const loadPlugin = useCallback(
-    async (pluginManifest: LoadedPluginManifest) => {
+    async (pluginManifest: LoadedPluginManifest, plugin?: AttraccessFrontendPlugin) => {
       try {
-        console.log(`Attraccess Plugin System: loading plugin ${pluginManifest.name}`);
-        const entryPointFile = pluginManifest.main.frontend?.entryPoint;
+        if (!plugin) {
+          console.log(`Attraccess Plugin System: loading plugin ${pluginManifest.name}`);
+          const entryPointFile = pluginManifest.main.frontend?.entryPoint;
 
-        if (!entryPointFile) {
-          console.log(
-            `Attraccess Plugin System: Plugin ${pluginManifest.name} has no entry point file for frontend, skipping`
-          );
-          return;
+          if (!entryPointFile) {
+            console.log(
+              `Attraccess Plugin System: Plugin ${pluginManifest.name} has no entry point file for frontend, skipping`
+            );
+            return;
+          }
+
+          const baseUrl = getBaseUrl();
+          const remoteUrl = `${baseUrl}/api/plugins/${pluginManifest.name}/frontend/module-federation/${entryPointFile}`;
+
+          __federation_method_setRemote(pluginManifest.name, {
+            url: () => Promise.resolve(remoteUrl),
+            format: 'esm',
+            from: 'vite',
+          });
+
+          let pluginClass = await __federation_method_getRemote(pluginManifest.name, './plugin');
+
+          if (pluginClass.default) {
+            pluginClass = pluginClass.default;
+          }
+
+          // Initialize the plugin
+          plugin = new pluginClass() as AttraccessFrontendPlugin;
         }
-
-        const baseUrl = getBaseUrl();
-        const remoteUrl = `${baseUrl}/api/plugins/${pluginManifest.name}/frontend/module-federation/${entryPointFile}`;
-
-        setRemote(pluginManifest.name, {
-          url: remoteUrl,
-          externalType: 'url',
-          format: 'esm',
-        });
-
-        const pluginClassModule = await getRemote(pluginManifest.name, './plugin');
-        const pluginClass = await unwrapModule(pluginClassModule);
-
-        // Initialize the plugin
-        const plugin = new pluginClass() as AttraccessFrontendPlugin;
 
         const pluginName = plugin.getPluginName();
         console.log(`Attraccess Plugin System: Checking if plugin ${pluginName} is installed`);
@@ -143,6 +125,16 @@ export function PluginProvider(props: PropsWithChildren) {
   );
 
   useEffect(() => {
+    loadPlugin(
+      {
+        name: 'FABreader',
+        id: new Date().toISOString(),
+      } as PluginManifestWithPlugin,
+      new FabreaderPlugin()
+    );
+  }, [loadPlugin]);
+
+  useEffect(() => {
     plugins.forEach((plugin) => {
       plugin.plugin.onApiEndpointChange(getBaseUrl());
       plugin.plugin.onApiAuthStateChange({
@@ -158,7 +150,7 @@ export function PluginProvider(props: PropsWithChildren) {
 
     const plugins = await refetchPlugins();
     const pluginsArray = plugins.data ?? [];
-    await Promise.all(pluginsArray.map(loadPlugin));
+    await Promise.all(pluginsArray.map((manifest) => loadPlugin(manifest)));
 
     arePluginsLoaded.current = true;
     console.log('Attraccess Plugin System: All plugins loaded');

@@ -2,8 +2,6 @@ import { Button, CardFooter } from '@heroui/react';
 import { Save, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import * as en from './translations/actions/en';
 import * as de from './translations/actions/de';
 import {
@@ -14,6 +12,7 @@ import {
   UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useToastMessage } from '../../../../../components/toastProvider';
 
 interface MqttFormData {
   serverId: string;

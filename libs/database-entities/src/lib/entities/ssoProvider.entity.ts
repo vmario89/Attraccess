@@ -1,13 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SSOProviderOIDCConfiguration } from './ssoProvider.oidc';
+import { IsEnum } from 'class-validator';
 
 export enum SSOProviderType {
   OIDC = 'OIDC',
@@ -36,7 +30,10 @@ export class SSOProvider {
   @ApiProperty({
     description: 'The type of the provider',
     example: 'OIDC',
+    enum: SSOProviderType,
+    enumName: 'SSOProviderType',
   })
+  @IsEnum(SSOProviderType)
   type!: SSOProviderType;
 
   @CreateDateColumn()
@@ -51,10 +48,7 @@ export class SSOProvider {
   })
   updatedAt!: Date;
 
-  @OneToOne(
-    () => SSOProviderOIDCConfiguration,
-    (oidcConfiguration) => oidcConfiguration.ssoProvider
-  )
+  @OneToOne(() => SSOProviderOIDCConfiguration, (oidcConfiguration) => oidcConfiguration.ssoProvider)
   @ApiProperty({
     description: 'The OIDC configuration of the provider',
     type: SSOProviderOIDCConfiguration,

@@ -1,11 +1,11 @@
-name: Plugin FabLab Build & Attach
+name: Plugin FABReader Build & Attach
 
 on:
   # Run on pull requests
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'libs/plugin-fablab/**'
+      - 'libs/plugin-fabreader/**'
 
   # Allow manual triggering
   workflow_dispatch:
@@ -55,10 +55,11 @@ jobs:
           cd ../../..
 
       - name: Upload artifact
+        id: artifact-upload-step
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PLUGIN_NAME }}
-          path: dist/${{ env.PLUGIN_NAME }}.zip
+          path: dist/libs/${{ env.PLUGIN_NAME }}
           retention-days: 7
 
       # Attach to PR if it's a pull request
@@ -69,13 +70,13 @@ jobs:
           script: |
             const artifactName = '${{ env.PLUGIN_NAME }}';
             const workflowRunId = context.runId;
-            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${workflowRunId}/artifacts/${artifactName}`;
+            const artifactUrl = `${{ steps.artifact-upload-step.outputs.artifact-url }}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `📦 FabLab plugin built and available as artifact: [${artifactName}.zip](${artifactUrl})`
+              body: `📦 FABReader plugin built and available as artifact: [${artifactName}.zip](${artifactUrl})`
             });
 
       # Attach to release

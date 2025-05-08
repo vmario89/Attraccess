@@ -142,7 +142,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         {/* Helpful Links */}
         <div className="py-4">
           <nav className="px-2">
-            <NavLink href="/docs" target="_blank" icon={<Book />} label="Docs" isExternal />
+            <NavLink href="/docs" target="_blank" icon={<Book />} label={t('docs')} isExternal />
           </nav>
         </div>
 

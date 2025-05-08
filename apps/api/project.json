@@ -77,6 +77,6 @@
       "options": {
         "command": "docker compose -f docker-compose.dev.yml up -d --remove-orphans"
       }
-    },
+    }
   }
 }

@@ -5,11 +5,9 @@ import * as en from './utils/translations/en';
 import * as de from './utils/translations/de';
 import { generateHeaderColumns } from './utils/tableHeaders';
 import { generateRowCells } from './utils/tableRows';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { Select } from '@frontend/components/select';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useAuth } from '@frontend/hooks/useAuth';
 import { useResourceUsageServiceGetHistoryOfResourceUsage, ResourceUsage } from '@attraccess/react-query-client';
+import { useAuth } from '../../../../../hooks/useAuth';
+import { Select } from '../../../../../components/select';
 
 interface HistoryTableProps {
   resourceId: number;

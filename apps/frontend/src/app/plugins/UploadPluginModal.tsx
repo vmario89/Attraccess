@@ -5,8 +5,7 @@ import { Upload } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import en from './UploadPluginModal.en.json';
 import de from './UploadPluginModal.de.json';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
+import { useToastMessage } from '../../components/toastProvider';
 
 interface UploadPluginModalProps {
   isOpen: boolean;

@@ -28,13 +28,14 @@ ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 ENV STATIC_DOCS_FILE_PATH=/app/docs
 
 # Set environment variable to tell API about plugins location
-RUN mkdir -p /app/plugins
-ENV PLUGIN_DIR=/app/plugins
+RUN mkdir -p /app/storage/plugins
+ENV STORAGE_ROOT=/app/storage
+ENV PLUGIN_DIR=/app/storage/plugins
 
 # Install dependencies directly from the Nx-generated package.json
 WORKDIR /app/dist/apps/api
 RUN corepack enable && corepack prepare && \
-    pnpm install --frozen-lockfile
+    pnpm install # --frozen-lockfile
 
 # Back to app root for consistent starting dir
 WORKDIR /app

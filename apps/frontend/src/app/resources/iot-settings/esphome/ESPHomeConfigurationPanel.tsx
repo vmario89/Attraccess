@@ -5,8 +5,7 @@ import * as de from './translations/de';
 import { useMemo, useState } from 'react';
 import { ExternalLink, InfoIcon } from 'lucide-react';
 import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { getBaseUrl } from '@frontend/api';
+import { getBaseUrl } from '../../../../api';
 
 function useEspHomeConfigSnippet(resourceId: number) {
   // Get the resource details to use in the configuration

@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import {
   Button,
   Form,
@@ -25,6 +23,7 @@ import {
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import { useToastMessage } from '../../components/toastProvider';
 
 interface ResourceGroupUpsertModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -175,7 +174,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior='inside'>
+      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <Form onSubmit={handleSubmit}>

@@ -109,7 +109,16 @@
   },
   "release": {
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many -t build"
-    }
+      "preVersionCommand": "pnpm nx run-many -t build"
+    },
+    "projects": [
+      "api-client",
+      "database-entities",
+      "plugins-backend-sdk",
+      "plugins-frontend-sdk",
+      "plugins-frontend-ui",
+      "react-query-client",
+      "env"
+    ]
   }
 }

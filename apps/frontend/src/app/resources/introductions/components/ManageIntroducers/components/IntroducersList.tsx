@@ -3,8 +3,6 @@ import { Listbox, ListboxItem } from '@heroui/listbox';
 import { Trash2 } from 'lucide-react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
 import { Button } from '@heroui/button';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { useToastMessage } from '@frontend/components/toastProvider';
 import { AttraccessUser, useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -15,6 +13,7 @@ import {
 
 import * as en from './translations/introducersList.en';
 import * as de from './translations/introducersList.de';
+import { useToastMessage } from '../../../../../../components/toastProvider';
 
 export interface Introducer {
   id: number;
@@ -113,7 +112,7 @@ export function IntroducersList({ resourceId }: IntroducersListProps) {
       </Listbox>
 
       {/* Confirmation Modal */}
-      <Modal isOpen={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen} scrollBehavior='inside'>
+      <Modal isOpen={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen} scrollBehavior="inside">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">{t('removeConfirmation.title')}</ModalHeader>
           <ModalBody>

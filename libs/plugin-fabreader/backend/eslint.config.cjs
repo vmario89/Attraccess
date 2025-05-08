@@ -11,6 +11,7 @@ module.exports = [
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs}'],
         },
       ],
+      '@nx/dependency-checks': 'off',
     },
     languageOptions: {
       parser: require('jsonc-eslint-parser'),
