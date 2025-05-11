@@ -7,5 +7,5 @@ export interface ReaderState {
   onEvent(data: FabreaderEvent['data']): Promise<WsMessageThing>;
   onResponse(data: FabreaderResponse['data']): Promise<WsMessageThing>;
 
-  getInitMessage(): Promise<WsMessageThing> | WsMessageThing;
+  getInitMessage(): Promise<WsMessageThing>;
 }

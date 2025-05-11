@@ -63,7 +63,7 @@ describe('EnrollNTAG424State', () => {
 
   describe('getInitMessage', () => {
     it('should initialize enrollment state and return the correct init message', () => {
-      const initMessage = enrollState.getInitMessage();
+      const initMessage = await enrollState.getInitMessage();
 
       expect(mockSocket.enrollment).toEqual({
         nextExpectedEvent: FabreaderEventType.NFC_TAP,
@@ -292,7 +292,7 @@ describe('EnrollNTAG424State - Full Flow', () => {
 
   it('should complete successful enrollment flow', async () => {
     // Step 1: Initialize enrollment state
-    const initMessage = enrollState.getInitMessage();
+    const initMessage = await enrollState.getInitMessage();
 
     expect(initMessage.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
     expect(mockSocket.enrollment.nextExpectedEvent).toBe(FabreaderEventType.NFC_TAP);
@@ -345,30 +345,9 @@ describe('EnrollNTAG424State - Full Flow', () => {
     expect(successMessage.data.payload.message).toBe('Enrollment successful');
   });
 
-  it('should handle card removal during enrollment', async () => {
-    // Initialize enrollment
-    enrollState.getInitMessage();
-
-    // Simulate card removal
-    const nfcRemovedResponse = await enrollState.onEvent({
-      type: FabreaderEventType.NFC_REMOVED,
-      payload: {},
-    });
-
-    // Verify error message was sent
-    expect(mockSocket.send).toHaveBeenCalled();
-    const sendArg = (mockSocket.send as jest.Mock).mock.calls[0][0];
-    expect(JSON.parse(sendArg).data.type).toBe(FabreaderEventType.DISPLAY_ERROR);
-
-    // Verify transition back to initial state
-    expect(mockSocket.enrollment).toBeUndefined();
-    expect(nfcRemovedResponse.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
-    expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
-  });
-
   it('should handle key change failure', async () => {
     // Initialize and tap card
-    enrollState.getInitMessage();
+    await enrollState.getInitMessage();
     (mockServices.dbService.getNFCCardByUID as jest.Mock).mockResolvedValue(null);
 
     await enrollState.onEvent({
@@ -393,7 +372,7 @@ describe('EnrollNTAG424State - Full Flow', () => {
 
   it('should handle authentication failure and NOT store card data', async () => {
     // Initialize and tap card
-    enrollState.getInitMessage();
+    await enrollState.getInitMessage();
     (mockServices.dbService.getNFCCardByUID as jest.Mock).mockResolvedValue(null);
 
     await enrollState.onEvent({
@@ -451,7 +430,7 @@ describe('EnrollNTAG424State - Full Flow', () => {
 
   it('should ignore unexpected events', async () => {
     // Initialize enrollment
-    enrollState.getInitMessage();
+    await enrollState.getInitMessage();
 
     // Send unexpected event
     const response = await enrollState.onEvent({

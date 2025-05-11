@@ -13,7 +13,7 @@ import { MqttModule } from '../mqtt/mqtt.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
 import { Module } from '@nestjs/common';
 import { PluginModule } from '../plugin-system/plugin.module';
-import FabReaderModule from '../plugin-fabreader/fabreader.module';
+import FabReaderModule from '@attraccess/attraccess-plugin-fabreader-backend';
 
 const frontendPath = resolve(process.env.STATIC_FRONTEND_FILE_PATH || join(__dirname, 'public'));
 console.log('Serving frontend from ', frontendPath);

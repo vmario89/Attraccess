@@ -53,7 +53,7 @@ export class InitialReaderState implements ReaderState {
       this.logger.debug('No resources attached to reader, moving reader to NoResourcesAttachedState');
       const nextState = new NoResourcesAttachedState(this.socket, this.services);
       this.socket.state = nextState;
-      return nextState.getInitMessage();
+      return await nextState.getInitMessage();
     }
 
     if (resourcesOfReader.length > 1) {
@@ -61,7 +61,7 @@ export class InitialReaderState implements ReaderState {
 
       const nextState = new WaitForResourceSelectionState(this.socket, this.services, resourcesOfReader);
       this.socket.state = nextState;
-      return nextState.getInitMessage();
+      return await nextState.getInitMessage();
     }
 
     this.logger.debug('Reader has only one resource attached, moving reader to WaitForNFCTapState');

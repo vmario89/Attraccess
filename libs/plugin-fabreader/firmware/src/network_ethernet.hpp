@@ -1,7 +1,7 @@
 #pragma once
 
 #include "network_interface.hpp"
-#include "pins.hpp"
+#include "board_config.h"
 
 #include <EthernetENC.h>
 

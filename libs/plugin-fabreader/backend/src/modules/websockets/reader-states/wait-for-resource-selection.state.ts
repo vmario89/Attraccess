@@ -15,7 +15,7 @@ export class WaitForResourceSelectionState implements ReaderState {
     private readonly resourcesOfReader: Resource[]
   ) {}
 
-  public getInitMessage() {
+  public async getInitMessage() {
     return new FabreaderEvent(FabreaderEventType.PROMPT_SELECTION, {
       message: `Select a resource`,
       options: this.resourcesOfReader.map((resource) => ({

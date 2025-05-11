@@ -35,10 +35,6 @@ export class EnrollNTAG424State implements ReaderState {
   ) {}
 
   public async onEvent(eventData: FabreaderEvent['data']) {
-    if (eventData.type === FabreaderEventType.NFC_REMOVED) {
-      return this.onNfcRemoved();
-    }
-
     if (
       eventData.type === FabreaderEventType.NFC_TAP &&
       this.socket.enrollment?.nextExpectedEvent === FabreaderEventType.NFC_TAP
@@ -141,10 +137,10 @@ export class EnrollNTAG424State implements ReaderState {
         JSON.stringify(
           new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
             message: 'Enrollment failed',
+            duration: 10000,
           })
         )
       );
-      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       this.socket.enrollment = undefined;
       const nextState = new InitialReaderState(this.socket, this.services);
@@ -168,36 +164,17 @@ export class EnrollNTAG424State implements ReaderState {
       JSON.stringify(
         new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
           message: 'Enrollment successful',
+          duration: 10000,
         })
       )
     );
-    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const nextState = new InitialReaderState(this.socket, this.services);
     this.socket.state = nextState;
     return await nextState.getInitMessage();
   }
 
-  private async onNfcRemoved() {
-    this.socket.enrollment = undefined;
-
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-          message: 'NFC Card removed',
-        })
-      )
-    );
-    this.socket.enrollment = undefined;
-
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const nextState = new InitialReaderState(this.socket, this.services);
-    this.socket.state = nextState;
-    return await nextState.getInitMessage();
-  }
-
-  public getInitMessage(): FabreaderEvent {
+  public async getInitMessage(): Promise<FabreaderEvent> {
     this.socket.enrollment = {
       nextExpectedEvent: FabreaderEventType.NFC_TAP,
       data: {},

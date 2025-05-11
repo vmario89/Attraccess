@@ -41,12 +41,12 @@ export class WaitForNFCTapState implements ReaderState {
 
     if (resourceIsInUse) {
       return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-        message: `Tap your card to stop`,
+        message: `Tap to stop`,
       });
     }
 
     return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-      message: `Tap your card to start`,
+      message: `Tap to start`,
     });
   }
 
@@ -69,15 +69,17 @@ export class WaitForNFCTapState implements ReaderState {
       JSON.stringify(
         new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
           message: `Invalid card`,
+          duration: 10000,
         })
       )
     );
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     return await this.getInitMessage();
   }
 
   private async onNFCTap(data: FabreaderEvent<{ cardUID: string }>['data']) {
     this.sendDisableCardChecking('Do not remove card!');
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const nfcCard = await this.services.dbService.getNFCCardByUID(data.payload.cardUID);
 
@@ -131,12 +133,11 @@ export class WaitForNFCTapState implements ReaderState {
       });
     }
 
-    if (this.socket.reader.hasAccessToResourceIds.length > 1) {
-      const nextState = new InitialReaderState(this.socket, this.services);
-      this.socket.state = nextState;
-      return await nextState.getInitMessage();
-    }
+    // wait 10 seconds
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
-    return await this.getInitMessage();
+    const nextState = new InitialReaderState(this.socket, this.services);
+    this.socket.state = nextState;
+    return await nextState.getInitMessage();
   }
 }

@@ -79,6 +79,10 @@ bool API::isConnected()
     {
         return true;
     }
+    else
+    {
+        this->display->set_api_connected(false);
+    }
 
     this->is_authenticated = false;
     this->authentication_sent_at = 0;
@@ -88,6 +92,7 @@ bool API::isConnected()
 
     if (!tcp_connected)
     {
+        this->display->set_api_connected(false);
         return false;
     }
 
@@ -100,6 +105,11 @@ bool API::isConnected()
     if (this->is_connected)
     {
         Serial.println("[API] WS connection to " + String(Persistence::getSettings().Config.api.hostname) + ":" + String(Persistence::getSettings().Config.api.port) + " established");
+    }
+
+    if (!this->is_connected)
+    {
+        this->display->set_api_connected(false);
     }
 
     return this->is_connected;
@@ -158,18 +168,22 @@ void API::onUnauthorized(JsonObject data)
     PersistSettings<PersistenceData> settings = Persistence::getSettings();
     settings.Config.api.has_auth = false;
     Persistence::saveSettings(settings);
+    this->display->set_api_connected(false);
 }
 
 void API::onEnableCardChecking(JsonObject data)
 {
     Serial.println("[API] ENABLE_CARD_CHECKING");
     this->nfc->enableCardChecking();
+    this->display->set_nfc_tap_enabled(true);
+    this->display->set_nfc_tap_text(data["payload"]["message"].as<String>());
 }
 
 void API::onDisableCardChecking(JsonObject data)
 {
     Serial.println("[API] DISABLE_CARD_CHECKING");
     this->nfc->disableCardChecking();
+    this->display->set_nfc_tap_enabled(false);
 }
 
 void API::hexStringToBytes(const String &hexString, uint8_t *byteArray, size_t byteArrayLength)
@@ -348,6 +362,9 @@ void API::processData()
     else if (eventType == "READER_AUTHENTICATED")
     {
         this->is_authenticated = true;
+        this->display->set_api_connected(true);
+        // TODO: parse payload and set device name
+        // this->display->set_device_name(payload["deviceName"].as<String>());
         Serial.println("[API] Authentication successful.");
     }
     else if (eventType == "ENABLE_CARD_CHECKING")
@@ -365,6 +382,14 @@ void API::processData()
     else if (eventType == "AUTHENTICATE")
     {
         this->onAuthenticate(data);
+    }
+    else if (eventType == "DISPLAY_SUCCESS")
+    {
+        this->display->show_success(data["payload"]["message"].as<String>(), data["payload"]["duration"].as<unsigned long>());
+    }
+    else if (eventType == "DISPLAY_ERROR")
+    {
+        this->display->show_error(data["payload"]["message"].as<String>(), data["payload"]["duration"].as<unsigned long>());
     }
     else
     {

@@ -3,9 +3,10 @@
 #include <Arduino.h>
 #include <Adafruit_PN532_NTAG424.h>
 #include <Wire.h>
+#include "board_config.h"
+
 // Forward declare API instead of including the header
 class API; // Forward declaration instead of #include "api.hpp"
-#include "pins.hpp"
 
 class NFC
 {
@@ -23,6 +24,8 @@ public:
     bool changeKey(uint8_t keyNumber, uint8_t authKey[16], uint8_t newKey[16]);
     bool writeData(uint8_t authKey[16], uint8_t keyNumber, uint8_t data[], size_t dataLength);
     bool authenticate(uint8_t keyNumber, uint8_t authKey[16]);
+
+    void waitForCardRemoval();
 
 private:
     Adafruit_PN532 nfc;

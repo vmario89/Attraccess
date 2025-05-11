@@ -95,11 +95,10 @@ export class ResetNTAG424State implements ReaderState {
       JSON.stringify(
         new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
           message: 'Reset successful',
+          duration: 10000,
         })
       )
     );
-
-    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const initialState = new InitialReaderState(this.socket, this.services);
     this.socket.state = initialState;

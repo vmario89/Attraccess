@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "network.hpp"
 
-Network::Network()
+Network::Network(Display *display)
 {
-    // Constructor remains mostly empty or for other initializations
+    this->display = display;
     this->_is_healthy = false;
     this->lastHealthCheck = 0;
 }
@@ -43,41 +43,27 @@ void Network::loop()
         this->lastHealthCheck = currentMillis;
         bool is_currently_healthy = this->interface.isHealthy();
 
+        IPAddress ip = this->interface.getCurrentIp();
+        this->display->set_ip_address(ip);
+
         if (is_currently_healthy != this->_is_healthy)
         {
             if (is_currently_healthy)
             {
-                Serial.println("[Health Check] Connection established. IP: " + this->interface.getCurrentIp().toString());
+                Serial.println("[Network] Connection established. IP: " + ip.toString());
             }
             else // Connection lost
             {
-                Serial.println("[Health Check] Connection lost.");
+                Serial.println("[Network] Connection lost.");
             }
             this->_is_healthy = is_currently_healthy; // Update status
+
+            this->display->set_network_connected(is_currently_healthy);
         }
-        // Optional: Log if still unhealthy
-        // else if (!is_currently_healthy) {
-        //    Serial.println("[Health Check] Still disconnected.");
-        // }
     }
 }
 
-// Added public getter for health status
 bool Network::isHealthy()
 {
-    // Optionally, could perform a quick check here instead of relying solely on the timed check
-    // return this->interface.isHealthy();
-    // For now, just return the status updated by the loop's periodic check
     return this->_is_healthy;
 }
-
-// Removed task handler methods
-// void Network::health_check_task_handler()
-// {
-//     ...
-// }
-
-// void Network::interface_loop_task_handler()
-// {
-//     ...
-// }

@@ -2,6 +2,8 @@
 
 #include "network_interface.hpp"
 #include <Arduino.h>
+#include "board_config.h"
+#include "display.hpp"
 
 #ifdef NETWORK_ETHERNET
 #ifdef NETWORK_WIFI
@@ -21,12 +23,12 @@
 #include "network_wifi.hpp"
 #endif
 
-#define HEALTH_CHECK_INTERVAL_MS 10000 // Check every 10 seconds
+#define HEALTH_CHECK_INTERVAL_MS 2000 // Check every 2 seconds
 
 class Network
 {
 public:
-    Network();
+    Network(Display *display);
     ~Network();
 
     void setup();
@@ -38,7 +40,9 @@ public:
 #elif NETWORK_WIFI
     NetworkWifi interface;
 #endif
+
 private:
     bool _is_healthy = false;
     unsigned long lastHealthCheck = 0;
+    Display *display;
 };

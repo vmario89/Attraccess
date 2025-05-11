@@ -176,7 +176,7 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       data.userId
     );
     socket.state = nextState;
-    const initMessage = nextState.getInitMessage();
+    const initMessage = await nextState.getInitMessage();
     this.logger.debug(`Sending enrollment init message: ${JSON.stringify(initMessage)}`);
     socket.send(JSON.stringify(initMessage));
   }
