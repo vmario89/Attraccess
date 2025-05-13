@@ -5,6 +5,7 @@ import { PluginManifest } from './plugin.manifest';
 import { PluginService } from './plugin.service';
 import { PluginController } from './plugin.controller';
 import { join } from 'path';
+import FabReaderModule from '../plugin-fabreader/fabreader.module';
 
 @Global()
 @Module({})
@@ -13,6 +14,18 @@ export class PluginModule {
   private static logger = new Logger(PluginModule.name);
 
   public static forRoot(): DynamicModule {
+    if (process.env.DISABLE_PLUGINS === 'true') {
+      PluginModule.logger.log('Plugins are disabled');
+
+      return {
+        module: PluginModule,
+        providers: [PluginApiService, PluginService],
+        imports: [PluginApiModule],
+        exports: [PluginApiService],
+        controllers: [PluginController],
+      };
+    }
+
     this.pluginManifests = PluginService.getPlugins();
 
     const pluginModules = this.pluginManifests
@@ -32,7 +45,7 @@ export class PluginModule {
     return {
       module: PluginModule,
       providers: [PluginApiService, PluginService],
-      imports: [PluginApiModule, ...pluginModules],
+      imports: [PluginApiModule, ...pluginModules, FabReaderModule],
       exports: [PluginApiService],
       controllers: [PluginController],
     };
