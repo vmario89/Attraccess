@@ -17,29 +17,14 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "6793686fbf01147bf9015e7f",
+  "nxCloudId": "68232b3a5aa475a0500b5174",
   "plugins": [
     {
       "plugin": "@nx/webpack/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "previewTargetName": "preview"
-      }
+      "options": { "buildTargetName": "build", "serveTargetName": "serve", "previewTargetName": "preview" }
     },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      },
-      "exclude": ["apps/api-e2e/**/*"]
-    },
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
+    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" }, "exclude": ["apps/api-e2e/**/*"] },
     {
       "plugin": "@nx/vite/plugin",
       "options": {
@@ -70,47 +55,20 @@
     }
   ],
   "targetDefaults": {
-    "@nx/js:tsc": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
-    },
-    "e2e-ci--**/*": {
-      "dependsOn": ["^build"]
-    },
-    "lint": {
-      "options": {
-        "max-warnings": 0
-      }
-    },
-    "@nx/esbuild:esbuild": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
-    }
+    "@nx/js:tsc": { "cache": true, "dependsOn": ["^build"], "inputs": ["production", "^production"] },
+    "e2e-ci--**/*": { "dependsOn": ["^build"] },
+    "lint": { "options": { "max-warnings": 0 } },
+    "@nx/esbuild:esbuild": { "cache": true, "dependsOn": ["^build"], "inputs": ["production", "^production"] }
   },
   "generators": {
     "@nx/react": {
-      "application": {
-        "babel": true,
-        "style": "tailwind",
-        "linter": "eslint",
-        "bundler": "vite"
-      },
-      "component": {
-        "style": "tailwind"
-      },
-      "library": {
-        "style": "tailwind",
-        "linter": "eslint",
-        "unitTestRunner": "vitest"
-      }
+      "application": { "babel": true, "style": "tailwind", "linter": "eslint", "bundler": "vite" },
+      "component": { "style": "tailwind" },
+      "library": { "style": "tailwind", "linter": "eslint", "unitTestRunner": "vitest" }
     }
   },
   "release": {
-    "version": {
-      "preVersionCommand": "pnpm nx run-many -t build"
-    },
+    "version": { "preVersionCommand": "pnpm nx run-many -t build" },
     "projects": [
       "api-client",
       "database-entities",
