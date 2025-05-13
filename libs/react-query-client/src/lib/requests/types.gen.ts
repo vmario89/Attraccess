@@ -1770,6 +1770,64 @@ export type DeletePluginData = {
 
 export type DeletePluginResponse = unknown;
 
+export type EnrollNfcCardData = {
+    /**
+     * The ID of the reader to enroll the NFC card on
+     */
+    readerId: number;
+};
+
+export type EnrollNfcCardResponse = unknown;
+
+export type ResetNfcCardData = {
+    /**
+     * The ID of the NFC card to reset
+     */
+    cardId: number;
+    /**
+     * The ID of the reader to reset the NFC card on
+     */
+    readerId: number;
+};
+
+export type ResetNfcCardResponse = unknown;
+
+export type UpdateReaderData = {
+    /**
+     * The ID of the reader to update
+     */
+    readerId: number;
+    requestBody: {
+        /**
+         * The new name for the reader
+         */
+        name?: string;
+        /**
+         * IDs of resources connected to this reader
+         */
+        connectedResources?: Array<(number)>;
+    };
+};
+
+export type UpdateReaderResponse = unknown;
+
+export type GetReadersResponse = unknown;
+
+export type GetAppKeyByUidData = {
+    /**
+     * The UID of the card to get the app key for
+     */
+    cardUid: string;
+    /**
+     * The key number to generate
+     */
+    keyNo: number;
+};
+
+export type GetAppKeyByUidResponse = unknown;
+
+export type CardControllerGetCardsResponse = unknown;
+
 export type $OpenApiTs = {
     '/api/ping': {
         get: {
@@ -3115,6 +3173,98 @@ export type $OpenApiTs = {
             res: {
                 /**
                  * The plugin has been deleted
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/{readerId}/enroll-nfc-card': {
+        post: {
+            req: EnrollNfcCardData;
+            res: {
+                /**
+                 * Enrollment initiated, continue on Reader
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/{readerId}/reset-nfc-card/{cardId}': {
+        post: {
+            req: ResetNfcCardData;
+            res: {
+                /**
+                 * Reset initiated, continue on Reader
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/{readerId}': {
+        patch: {
+            req: UpdateReaderData;
+            res: {
+                /**
+                 * Reader updated successfully
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Reader not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers': {
+        get: {
+            res: {
+                /**
+                 * The list of readers
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/cards/{cardUID}/keys/{keyNo}': {
+        post: {
+            req: GetAppKeyByUidData;
+            res: {
+                /**
+                 * The app key for the card
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/cards': {
+        get: {
+            res: {
+                /**
+                 * The list of all cards
                  */
                 200: unknown;
                 /**
