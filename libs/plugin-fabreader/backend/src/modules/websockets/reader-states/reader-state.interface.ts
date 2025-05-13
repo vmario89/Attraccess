@@ -8,4 +8,7 @@ export interface ReaderState {
   onResponse(data: FabreaderResponse['data']): Promise<WsMessageThing>;
 
   getInitMessage(): Promise<WsMessageThing>;
+
+  // TODO: implement this
+  // cleanup(): Promise<void>;
 }

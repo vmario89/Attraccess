@@ -121,4 +121,13 @@ export class ReaderController {
       };
     });
   }
+
+  @Get(':readerId')
+  @Auth()
+  @ApiParam({ name: 'readerId', type: Number, description: 'The ID of the reader to get' })
+  @ApiOperation({ summary: 'Get a reader by ID', operationId: 'getReaderById' })
+  @ApiResponse({ status: 200, description: 'The reader' })
+  async getReaderById(@Param('readerId', ParseIntPipe) readerId: number) {
+    return await this.dbService.findReaderById(readerId);
+  }
 }

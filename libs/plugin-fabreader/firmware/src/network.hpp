@@ -2,7 +2,7 @@
 
 #include "network_interface.hpp"
 #include <Arduino.h>
-#include "board_config.h"
+#include "configuration.hpp"
 #include "display.hpp"
 
 #ifdef NETWORK_ETHERNET
@@ -42,7 +42,7 @@ public:
 #endif
 
 private:
-    bool _is_healthy = false;
     unsigned long lastHealthCheck = 0;
     Display *display;
+    bool was_healthy = false;
 };

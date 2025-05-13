@@ -6,21 +6,51 @@ import { InitialReaderState } from './initial.state';
 import { ReaderState } from './reader-state.interface';
 import { NFCCard } from '../../persistence/db/entities/nfcCard.entity';
 
-interface SocketWithData extends AuthenticatedWebSocket {
-  card?: NFCCard;
-}
-
 export class WaitForNFCTapState implements ReaderState {
   private readonly logger = new Logger(WaitForNFCTapState.name);
 
+  private timeout?: NodeJS.Timeout;
+
+  private card?: NFCCard;
+
   public constructor(
-    private readonly socket: SocketWithData,
+    private readonly socket: AuthenticatedWebSocket,
     private readonly services: GatewayServices,
-    private readonly selectedResourceId: number
-  ) {}
+    private readonly selectedResourceId: number,
+    private readonly timeout_ms = 0,
+    private readonly timout_transition_state?: ReaderState,
+    private readonly success_transition_state?: ReaderState
+  ) {
+    this.restartTimeout();
+  }
+
+  private restartTimeout() {
+    if (!this.timeout_ms) {
+      return;
+    }
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(async () => {
+      this.logger.debug(
+        `Reader has not tapped a card within ${this.timeout_ms}ms, moving to ${this.timout_transition_state?.constructor.name}`
+      );
+
+      this.sendDisableCardChecking();
+
+      this.socket.state = this.timout_transition_state;
+      const initMessage = await this.timout_transition_state.getInitMessage();
+      console.log('initMessage', initMessage);
+      this.socket.send(JSON.stringify(initMessage));
+    }, this.timeout_ms);
+  }
 
   public async onEvent(data: FabreaderEvent['data']) {
     if (data.type === FabreaderEventType.NFC_TAP) {
+      this.restartTimeout();
+
       return this.onNFCTap(data);
     }
 
@@ -29,6 +59,8 @@ export class WaitForNFCTapState implements ReaderState {
 
   public async onResponse(data: FabreaderResponse['data']) {
     if (data.type === FabreaderEventType.AUTHENTICATE) {
+      this.restartTimeout();
+
       return await this.onAuthenticate(data);
     }
 
@@ -88,7 +120,7 @@ export class WaitForNFCTapState implements ReaderState {
       return this.onInvalidCard();
     }
 
-    this.socket.card = nfcCard;
+    this.card = nfcCard;
 
     return new FabreaderEvent(FabreaderEventType.AUTHENTICATE, {
       authenticationKey: nfcCard.keys[0],
@@ -97,17 +129,15 @@ export class WaitForNFCTapState implements ReaderState {
   }
 
   private async onAuthenticate(data: FabreaderEvent<{ cardUID: string }>['data']) {
-    if (!this.socket.card) {
+    if (!this.card) {
       this.logger.error('No card attached to socket..');
       return;
     }
 
-    const userOfNFCCard = await this.services.dbService.getUserById(this.socket.card.userId);
+    const userOfNFCCard = await this.services.dbService.getUserById(this.card.userId);
 
     if (!userOfNFCCard) {
-      this.logger.debug(
-        `User (of NFC Card with UID ${data.payload.cardUID}) with ID ${this.socket.card.userId} not found`
-      );
+      this.logger.debug(`User (of NFC Card with UID ${data.payload.cardUID}) with ID ${this.card.userId} not found`);
       return this.onInvalidCard();
     }
 
@@ -115,29 +145,44 @@ export class WaitForNFCTapState implements ReaderState {
 
     const resourceIsInUse = !!activeUsageSession;
 
+    let responseMessage = '-';
     if (resourceIsInUse) {
+      responseMessage = 'Resource stopped';
       this.logger.debug(`Stopping resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.dbService.stopResourceUsage({
         resourceId: this.selectedResourceId,
         userId: userOfNFCCard.id,
         readerId: this.socket.reader.id,
-        cardId: this.socket.card.id,
+        cardId: this.card.id,
       });
     } else {
+      responseMessage = 'Resource started';
       this.logger.debug(`Starting resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.dbService.startResourceUsage({
         userId: userOfNFCCard.id,
         resourceId: this.selectedResourceId,
         readerId: this.socket.reader.id,
-        cardId: this.socket.card.id,
+        cardId: this.card.id,
       });
     }
 
-    // wait 10 seconds
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    this.restartTimeout();
 
-    const nextState = new InitialReaderState(this.socket, this.services);
-    this.socket.state = nextState;
-    return await nextState.getInitMessage();
+    // wait 10 seconds
+    this.socket.send(
+      JSON.stringify(
+        new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
+          message: responseMessage,
+          duration: 10000,
+        })
+      )
+    );
+
+    if (this.success_transition_state) {
+      this.socket.state = this.success_transition_state;
+      return await this.success_transition_state.getInitMessage();
+    }
+
+    return await this.getInitMessage();
   }
 }

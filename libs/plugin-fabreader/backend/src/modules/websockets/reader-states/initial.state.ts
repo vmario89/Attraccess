@@ -18,7 +18,12 @@ export class InitialReaderState implements ReaderState {
 
   public constructor(private readonly socket: AuthenticatedWebSocket, private readonly services: GatewayServices) {}
 
-  public async getInitMessage() {
+  public async getInitMessage(forceInit = false) {
+    if (forceInit === true) {
+      this.socket.reader = null;
+      return new FabreaderEvent(FabreaderEventType.REAUTHENTICATE, {});
+    }
+
     if (this.socket.reader) {
       return await this.onIsAuthenticated();
     }
@@ -101,7 +106,9 @@ export class InitialReaderState implements ReaderState {
       return unauthorizedResponse;
     }
 
-    const authenticatedResponse = new FabreaderResponse(FabreaderEventType.READER_AUTHENTICATED, {});
+    const authenticatedResponse = new FabreaderResponse(FabreaderEventType.READER_AUTHENTICATED, {
+      name: reader.name,
+    });
     this.socket.send(JSON.stringify(authenticatedResponse));
     await new Promise((resolve) => setTimeout(resolve, 400));
 

@@ -5,7 +5,7 @@
 #include "persistence.hpp"
 #include <ArduinoJson.h>
 #include "display.hpp"
-
+#include "keypad.hpp"
 class NFC; // Forward declaration instead of #include "nfc.hpp"
 
 #define API_WS_PATH "/api/fabreader/websocket"
@@ -13,7 +13,7 @@ class NFC; // Forward declaration instead of #include "nfc.hpp"
 class API
 {
 public:
-    API(Client &client, Display *display) : websocket(client, API_WS_PATH), client(client), display(display) {}
+    API(Client &client, Display *display, Keypad *keypad) : websocket(client, API_WS_PATH), client(client), display(display), keypad(keypad) {}
     ~API() {}
 
     void setup(NFC *nfc);
@@ -26,6 +26,7 @@ private:
     Client &client;
     NFC *nfc;
     Display *display;
+    Keypad *keypad;
 
     bool isConnected();
     void processData();
@@ -54,6 +55,8 @@ private:
     void onDisableCardChecking(JsonObject data);
     void onChangeKeys(JsonObject data);
     void onAuthenticate(JsonObject data);
+    void onReauthenticate(JsonObject data);
+    void onShowText(JsonObject data);
 
     void hexStringToBytes(const String &hexString, uint8_t *byteArray, size_t byteArrayLength);
 };

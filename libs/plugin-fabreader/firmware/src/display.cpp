@@ -14,13 +14,13 @@ void Display::setup()
 
     display.clearDisplay();
 
-    uint8_t boot_logo_width = 50;
+    uint8_t boot_logo_width = 80;
     uint8_t boot_logo_height = 48;
     uint8_t x = (display.width() - boot_logo_width) / 2;
     uint8_t y = (display.height() - boot_logo_height) / 2;
     display.drawBitmap(x, y, icon_boot_logo, boot_logo_width, boot_logo_height, WHITE);
     display.display();
-    delay(5000);
+    vTaskDelay(2000);
 
     Serial.println("[Display] SSD1306 initialized");
 }
@@ -48,6 +48,10 @@ void Display::loop()
     else if (this->is_nfc_tap_enabled)
     {
         this->draw_nfc_tap_ui();
+    }
+    else if (this->is_displaying_text)
+    {
+        this->draw_text_ui();
     }
 
     display.display();
@@ -185,11 +189,29 @@ void Display::draw_two_line_message(String line1, String line2)
 void Display::show_error(String error, unsigned long duration)
 {
     this->error = error;
+
     this->error_end_at = millis() + duration;
 }
 
 void Display::show_success(String success, unsigned long duration)
 {
     this->success = success;
+
     this->success_end_at = millis() + duration;
+}
+
+void Display::show_text(bool show)
+{
+    this->is_displaying_text = show;
+}
+
+void Display::set_text(String lineOne, String lineTwo)
+{
+    this->text_line_one = lineOne;
+    this->text_line_two = lineTwo;
+}
+
+void Display::draw_text_ui()
+{
+    this->draw_two_line_message(this->text_line_one, this->text_line_two);
 }

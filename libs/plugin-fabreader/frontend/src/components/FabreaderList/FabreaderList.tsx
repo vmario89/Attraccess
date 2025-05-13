@@ -94,7 +94,7 @@ export const FabreaderList = () => {
 
                 {userCanManage ? (
                   <FabreaderEditor
-                    reader={reader}
+                    readerId={reader.id}
                     isOpen={openedReaderEditor === reader.id}
                     onCancel={() => setOpenedReaderEditor(null)}
                     onSave={() => setOpenedReaderEditor(null)}

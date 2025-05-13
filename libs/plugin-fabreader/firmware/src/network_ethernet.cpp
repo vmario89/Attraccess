@@ -38,6 +38,9 @@ void NetworkEthernet::setup()
 bool NetworkEthernet::isHealthy()
 {
     Ethernet.maintain();
+
+    IPAddress currentIp = this->getCurrentIp();
+
     return Ethernet.linkStatus() == LinkON;
 }
 

@@ -11,7 +11,7 @@
 #elif
 #error "No display driver defined"
 #endif
-#include "board_config.h"
+#include "configuration.hpp"
 
 class Display
 {
@@ -21,6 +21,7 @@ public:
 #elif SCREEN_DRIVER_SSD1306
     Display() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RESET) {}
 #endif
+
     ~Display() {}
 
     void setup();
@@ -34,6 +35,8 @@ public:
     void set_device_name(String name);
     void show_error(String error, unsigned long duration = 0);
     void show_success(String success, unsigned long duration = 0);
+    void show_text(bool show);
+    void set_text(String lineOne, String lineTwo);
 
 private:
 #ifdef SCREEN_DRIVER_SH1106
@@ -52,12 +55,17 @@ private:
     String success = "";
     unsigned long error_end_at = 0;
     unsigned long success_end_at = 0;
+    bool is_displaying_text = false;
+    String text_line_one = "";
+    String text_line_two = "";
+
     void draw_main_elements();
     void draw_nfc_tap_ui();
     void draw_network_connecting_ui();
     void draw_api_connecting_ui();
     void draw_error_ui();
     void draw_success_ui();
+    void draw_text_ui();
 
     void draw_two_line_message(String line1, String line2);
 };

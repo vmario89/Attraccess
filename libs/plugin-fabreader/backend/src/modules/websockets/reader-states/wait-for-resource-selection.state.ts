@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { AuthenticatedWebSocket, FabreaderEvent, FabreaderEventType } from '../websocket.types';
-import { FabreaderResponse } from '../websocket.types';
 import { ReaderState } from './reader-state.interface';
 import { WaitForNFCTapState } from './wait-for-nfc-tap.state';
 import { GatewayServices } from '../websocket.gateway';
@@ -8,6 +7,7 @@ import { Resource } from '@attraccess/plugins-backend-sdk';
 
 export class WaitForResourceSelectionState implements ReaderState {
   private readonly logger = new Logger(WaitForResourceSelectionState.name);
+  private value = '';
 
   public constructor(
     private readonly socket: AuthenticatedWebSocket,
@@ -16,33 +16,71 @@ export class WaitForResourceSelectionState implements ReaderState {
   ) {}
 
   public async getInitMessage() {
-    return new FabreaderEvent(FabreaderEventType.PROMPT_SELECTION, {
-      message: `Select a resource`,
-      options: this.resourcesOfReader.map((resource) => ({
-        label: resource.name,
-        value: resource.id,
-      })),
+    return new FabreaderEvent(FabreaderEventType.SHOW_TEXT, {
+      lineOne: 'Select a resource',
+      lineTwo: `> ${this.value} <`,
     });
   }
 
-  public async onEvent(/* data: FabreaderEvent['data'] */) {
+  public async onEvent(data: FabreaderEvent['data']) {
+    if (data.type === FabreaderEventType.KEY_PRESSED) {
+      return await this.onKeyPressed(data.payload);
+    }
+
     return undefined;
   }
 
-  public async onResponse(data: FabreaderResponse<{ selection: number }>['data']) {
-    if (data.type !== FabreaderEventType.PROMPT_SELECTION) {
-      return undefined;
+  private async onKeyPressed(data: FabreaderEvent['data']['payload']) {
+    if (data.key !== '#') {
+      this.value += data.key;
+      return await this.getInitMessage();
     }
 
-    const selectedResourceId = data.payload.selection;
-    if (typeof selectedResourceId !== 'number') {
-      this.logger.error('Selected resource id is not a number, closing connection');
-      this.socket.close();
-      return undefined;
+    return await this.onValueConfirmed();
+  }
+
+  private async onValueConfirmed() {
+    const selectedResourceId = parseInt(this.value, 10);
+
+    if (isNaN(selectedResourceId)) {
+      this.logger.error('Selected resource id is not a number, clearing input');
+      this.value = '';
+      return await this.getInitMessage();
     }
+
+    const resource = this.resourcesOfReader.find((resource) => resource.id === selectedResourceId);
+
+    if (!resource) {
+      this.logger.error('Selected resource id is not a number, clearing input');
+      this.value = '';
+
+      this.socket.send(
+        JSON.stringify(
+          new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
+            message: 'Unknown resource',
+            duration: 3000,
+          })
+        )
+      );
+      return await this.getInitMessage();
+    }
+
+    this.socket.send(JSON.stringify(new FabreaderEvent(FabreaderEventType.HIDE_TEXT)));
 
     this.logger.debug(`Reader has selected resource with id ${selectedResourceId}, moving to WaitForNFCTapState`);
-    this.socket.state = new WaitForNFCTapState(this.socket, this.services, selectedResourceId);
-    return await this.socket.state.getInitMessage();
+    const nextState = new WaitForNFCTapState(
+      this.socket,
+      this.services,
+      selectedResourceId,
+      30000,
+      new WaitForResourceSelectionState(this.socket, this.services, this.resourcesOfReader),
+      new WaitForResourceSelectionState(this.socket, this.services, this.resourcesOfReader)
+    );
+    this.socket.state = nextState;
+    return await nextState.getInitMessage();
+  }
+
+  public async onResponse(/* data: FabreaderResponse<{ selection: number }>['data'] */) {
+    return undefined;
   }
 }

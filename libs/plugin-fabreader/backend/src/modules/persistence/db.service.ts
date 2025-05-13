@@ -7,6 +7,8 @@ import { NFCCard } from './db/entities/nfcCard.entity';
 import { securelyHashToken } from '../websockets/websocket.utils';
 import { Resource, ResourceUsage, User, PLUGIN_API_SERVICE, PluginApiService } from '@attraccess/plugins-backend-sdk';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ReaderUpdatedEvent } from '../../events';
 
 @Injectable()
 export class DbService {
@@ -18,7 +20,8 @@ export class DbService {
     @InjectRepository(NFCCard, FABREADER_DB_DATASOURCE_NAME)
     private readonly nfcCardRepository: Repository<NFCCard>,
     @Inject(PLUGIN_API_SERVICE)
-    private readonly pluginApiService: PluginApiService
+    private readonly pluginApiService: PluginApiService,
+    private eventEmitter: EventEmitter2
   ) {}
 
   public async createNewReader(): Promise<{ reader: Reader; token: string }> {
@@ -135,6 +138,10 @@ export class DbService {
       reader.hasAccessToResourceIds = updateData.connectedResources;
     }
 
-    return await this.readerRepository.save(reader);
+    const response = await this.readerRepository.save(reader);
+
+    this.eventEmitter.emit('reader.updated', new ReaderUpdatedEvent(response));
+
+    return response;
   }
 }

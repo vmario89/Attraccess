@@ -4,18 +4,14 @@ import en from './fabreader-editor.en.json';
 import { Button, Form, ModalBody, Modal, ModalContent, ModalHeader, ModalFooter } from '@heroui/react';
 import { Input } from '@heroui/input';
 import { useCallback, useState, useEffect } from 'react';
-import { useUpdateReader } from '../../queries/reader.queries';
+import { useOneReader, useUpdateReader } from '../../queries/reader.queries';
 import { ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import { useStore } from '../../store/store';
 import { useQueryClient } from '@tanstack/react-query';
 import { getQueryKey } from '../../queries/keys';
 
 interface Props {
-  reader: {
-    id: number;
-    name: string;
-    hasAccessToResourceIds: number[];
-  };
+  readerId: number;
   isOpen: boolean;
   onSave: () => void;
   onCancel: () => void;
@@ -29,8 +25,10 @@ export function FabreaderEditor(props: Props) {
   const { pluginStore } = useStore();
   const queryClient = useQueryClient();
 
-  const [name, setName] = useState(props.reader.name);
-  const [connectedResources, setConnectedResources] = useState<number[]>(props.reader.hasAccessToResourceIds);
+  const { data: reader } = useOneReader(props.readerId);
+
+  const [name, setName] = useState('');
+  const [connectedResources, setConnectedResources] = useState<number[]>([]);
   const updateReaderMutation = useUpdateReader({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: getQueryKey('readers', ['getAll']) });
@@ -52,13 +50,13 @@ export function FabreaderEditor(props: Props) {
   });
 
   useEffect(() => {
-    setName(props.reader.name);
-    setConnectedResources(props.reader.hasAccessToResourceIds);
-  }, [props.reader]);
+    setName(reader?.name || '');
+    setConnectedResources(reader?.hasAccessToResourceIds || []);
+  }, [reader]);
 
   const save = useCallback(async () => {
     await updateReaderMutation.mutateAsync({
-      readerId: props.reader.id,
+      readerId: props.readerId,
       data: {
         name,
         connectedResources,
@@ -76,7 +74,7 @@ export function FabreaderEditor(props: Props) {
 
   return (
     <Form onSubmit={onSubmit}>
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior='inside'>
+      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside">
         <ModalContent>
           {() => (
             <>

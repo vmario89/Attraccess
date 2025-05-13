@@ -94,7 +94,7 @@ export class ResetNTAG424State implements ReaderState {
     this.socket.send(
       JSON.stringify(
         new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
-          message: 'Reset successful',
+          message: 'Card erased',
           duration: 10000,
         })
       )
@@ -113,7 +113,7 @@ export class ResetNTAG424State implements ReaderState {
     }
 
     return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-      displayText: 'Tap your NFC card to reset it',
+      message: 'Tap your NFC card to reset it',
     });
   }
 }

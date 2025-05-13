@@ -222,4 +222,31 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
     this.logger.debug(`Sending reset init message: ${JSON.stringify(initMessage)}`);
     socket.send(JSON.stringify(initMessage));
   }
+
+  public async restartReader(readerId: number) {
+    this.logger.debug(`Restarting reader ${readerId}.`);
+    const sockets = Array.from(this.websocketService.sockets.values()).filter(
+      (socket) => socket.reader?.id === readerId
+    );
+
+    await Promise.all(
+      sockets.map(async (socket) => {
+        this.logger.debug(`Resetting client ${socket.id} for reader ${readerId}.`);
+
+        const nextState = new InitialReaderState(socket, {
+          dbService: this.dbService,
+          websocketService: this.websocketService,
+          fabreaderService: this.fabreaderService,
+        });
+        socket.state = nextState;
+        const initMessage = await nextState.getInitMessage(true);
+        this.logger.debug(`Sending init message: ${JSON.stringify(initMessage)}`);
+        socket.send(JSON.stringify(initMessage));
+
+        socket.addEventListener('error', (event) => {
+          this.logger.error(`Error on client ${socket.id}: ${event}`);
+        });
+      })
+    );
+  }
 }

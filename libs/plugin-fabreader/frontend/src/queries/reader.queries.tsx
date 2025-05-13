@@ -31,6 +31,24 @@ const readerApi = {
     return response.json();
   },
 
+  getOneReader: async (readerId: number): Promise<Reader> => {
+    const { auth, endpoint } = useStore.getState();
+
+    const response = await fetch(`${endpoint}/api/fabreader/readers/${readerId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: auth?.authToken ? `Bearer ${auth.authToken}` : '',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch reader');
+    }
+
+    return response.json();
+  },
+
   enrollNfcCard: async (readerId: number): Promise<{ message: string }> => {
     const { auth, endpoint } = useStore.getState();
 
@@ -110,6 +128,14 @@ export const useReaders = (options?: Partial<UseQueryOptions<Reader[], Error>>) 
     queryKey: getQueryKey('readers', ['getAll']),
     queryFn: readerApi.getReaders,
     enabled: !!endpoint && !!auth?.authToken,
+    ...options,
+  });
+};
+
+export const useOneReader = (readerId: number, options?: Partial<UseQueryOptions<Reader, Error>>) => {
+  return useQuery({
+    queryKey: getQueryKey('readers', ['getOne', readerId.toString()]),
+    queryFn: () => readerApi.getOneReader(readerId),
     ...options,
   });
 };

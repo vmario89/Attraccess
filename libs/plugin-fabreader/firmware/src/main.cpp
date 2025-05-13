@@ -5,14 +5,34 @@
 #include "api.hpp"
 #include "nfc.hpp"
 #include "display.hpp"
+#include "keypad.hpp"
 
 #include <SPI.h>
 #include <Wire.h>
 
 Display display;
 Network network(&display);
-API api(network.interface.getClient(), &display);
+Keypad keypad;
+API api(network.interface.getClient(), &display, &keypad);
 NFC nfc(&api);
+
+// Task handle for the display task
+TaskHandle_t displayTaskHandle = NULL;
+
+// Display task function
+void userTask(void *parameter)
+{
+  const int REFRESH_RATE_HZ = 60;
+  const int MS_PER_SECOND = 1000;
+  const int LOOP_DELAY_MS = (MS_PER_SECOND / REFRESH_RATE_HZ) / portTICK_PERIOD_MS;
+
+  display.setup();
+  for (;;)
+  {
+    display.loop();
+    vTaskDelay(LOOP_DELAY_MS);
+  }
+}
 
 void setup()
 {
@@ -29,9 +49,20 @@ void setup()
 
   Persistence::setup();
   nfc.setup();
-  display.setup();
+  keypad.setup();
   network.setup();
   api.setup(&nfc);
+
+  // Create the display task (core 1, priority 1)
+  xTaskCreatePinnedToCore(
+      userTask,           // Task function
+      "DisplayTask",      // Task name
+      4096,               // Stack size (bytes)
+      NULL,               // Task parameters
+      3,                  // Priority (1 is low, configMAX_PRIORITIES-1 is highest)
+      &displayTaskHandle, // Task handle
+      NULL                // Run on core 1 (ESP32 has 2 cores: 0 and 1)
+  );
 }
 
 void loop()
@@ -42,5 +73,4 @@ void loop()
     api.loop();
     nfc.loop();
   }
-  display.loop();
 }

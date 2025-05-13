@@ -12,13 +12,16 @@ import { FabreaderGateway } from './modules/websockets/websocket.gateway';
 import { CardController } from './card.controller';
 import 'sqlite3';
 import '@nestjs/common';
+import { WebSocketEventService } from './modules/websockets/websocket-event.service';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot(datasourceConfig),
     TypeOrmModule.forFeature([Reader, NFCCard], FABREADER_DB_DATASOURCE_NAME),
   ],
-  providers: [FabreaderService, DbService, WebsocketService, FabreaderGateway],
+  providers: [FabreaderService, DbService, WebsocketService, FabreaderGateway, WebSocketEventService],
   controllers: [ReaderController, CardController],
 })
 export default class FabReaderModule {}

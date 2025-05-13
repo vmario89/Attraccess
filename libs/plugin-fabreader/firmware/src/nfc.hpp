@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <Adafruit_PN532_NTAG424.h>
 #include <Wire.h>
-#include "board_config.h"
+#include "configuration.hpp"
 
 // Forward declare API instead of including the header
 class API; // Forward declaration instead of #include "api.hpp"

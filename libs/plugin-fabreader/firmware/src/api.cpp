@@ -120,10 +120,10 @@ void API::onRegistrationData(JsonObject data)
     Serial.println("[API] Received registration response.");
 
     // Extract and save registration info
-    if (data.containsKey("payload"))
+    if (data["payload"].is<JsonObject>())
     {
         auto payload = data["payload"].as<JsonObject>();
-        if (payload.containsKey("id") && payload.containsKey("token"))
+        if (payload["id"].is<uint32_t>() && payload["token"].is<String>())
         {
             uint32_t readerId = payload["id"].as<uint32_t>();
             String apiKey = payload["token"].as<String>();
@@ -144,18 +144,13 @@ void API::onRegistrationData(JsonObject data)
     }
 }
 
-void API::onDisplayText(JsonObject data)
-{
-    Serial.println("[API] DISPLAY_TEXT: " + data["payload"]["message"].as<String>());
-}
-
 void API::onUnauthorized(JsonObject data)
 {
     String message = "Unknown error";
-    if (data.containsKey("payload") && data["payload"].is<JsonObject>())
+    if (data["payload"].is<JsonObject>())
     {
         JsonObject payload = data["payload"].as<JsonObject>();
-        if (payload.containsKey("message") && !payload["message"].isNull())
+        if (payload["message"].is<String>() && !payload["message"].isNull())
         {
             message = payload["message"].as<String>();
         }
@@ -324,6 +319,21 @@ void API::onAuthenticate(JsonObject data)
     this->sendMessage(true, "AUTHENTICATE", payload);
 }
 
+void API::onReauthenticate(JsonObject data)
+{
+    Serial.println("[API] REAUTHENTICATE Api flow");
+    this->display->show_success("Resetting...", 0);
+    this->authentication_sent_at = 0;
+    this->is_authenticated = false;
+}
+
+void API::onShowText(JsonObject data)
+{
+    Serial.println("[API] SHOW_TEXT");
+    this->display->show_text(true);
+    this->display->set_text(data["payload"]["lineOne"].as<String>(), data["payload"]["lineTwo"].as<String>());
+}
+
 void API::processData()
 {
     if (!this->websocket.available())
@@ -355,16 +365,11 @@ void API::processData()
     {
         this->onUnauthorized(data);
     }
-    else if (eventType == "DISPLAY_TEXT")
-    {
-        this->onDisplayText(data);
-    }
     else if (eventType == "READER_AUTHENTICATED")
     {
         this->is_authenticated = true;
         this->display->set_api_connected(true);
-        // TODO: parse payload and set device name
-        // this->display->set_device_name(payload["deviceName"].as<String>());
+        this->display->set_device_name(payload["name"].as<String>());
         Serial.println("[API] Authentication successful.");
     }
     else if (eventType == "ENABLE_CARD_CHECKING")
@@ -391,6 +396,18 @@ void API::processData()
     {
         this->display->show_error(data["payload"]["message"].as<String>(), data["payload"]["duration"].as<unsigned long>());
     }
+    else if (eventType == "REAUTHENTICATE")
+    {
+        this->onReauthenticate(data);
+    }
+    else if (eventType == "SHOW_TEXT")
+    {
+        this->onShowText(data);
+    }
+    else if (eventType == "HIDE_TEXT")
+    {
+        this->display->show_text(false);
+    }
     else
     {
         Serial.println("[API] Unknown event type: " + eventType);
@@ -406,7 +423,7 @@ bool API::isRegistered()
 
 void API::sendMessage(bool is_response, const char *type, JsonObject payload)
 {
-    StaticJsonDocument<512> event;
+    JsonDocument event;
     if (is_response)
     {
         event["event"] = "RESPONSE";
@@ -418,7 +435,7 @@ void API::sendMessage(bool is_response, const char *type, JsonObject payload)
     event["data"]["type"] = type;
 
     // Create a copy of the payload in the destination document
-    JsonObject eventPayload = event["data"].createNestedObject("payload");
+    JsonObject eventPayload = event["data"]["payload"].to<JsonObject>();
     for (JsonPair p : payload)
     {
         eventPayload[p.key()] = p.value();
@@ -534,4 +551,12 @@ void API::loop()
 
     this->sendHeartbeat();
     this->processData();
+    char key = this->keypad->readKey();
+    if (key != '\0')
+    {
+        StaticJsonDocument<256> doc;
+        JsonObject payload = doc.to<JsonObject>();
+        payload["key"] = String(key);
+        this->sendMessage(false, "KEY_PRESSED", payload);
+    }
 }

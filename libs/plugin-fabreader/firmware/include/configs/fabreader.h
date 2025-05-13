@@ -20,3 +20,6 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define SCREEN_RESET -1
+
+// I2C KeyPad configuration
+#define I2C_KEYPAD_ADDRESS 0x20
