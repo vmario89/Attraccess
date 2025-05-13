@@ -24,7 +24,7 @@ Attraccess is a powerful platform designed to simplify and secure access managem
 
 ## Support
 
-Need help? Open an issue on our [GitHub repository](https://github.com/attraccess).
+Need help? Open an issue on our [GitHub repository](https://github.com/FabInfra/Attraccess).
 
 > [!NOTE]
 > This documentation is also accessible directly from your running Attraccess instance at `<your-attraccess-url>/docs`.
