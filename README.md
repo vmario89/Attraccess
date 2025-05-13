@@ -13,7 +13,7 @@ A comprehensive resource management system for tracking and managing access to s
 
 ## ESPHome Integration
 
-Attraccess provides [ESPHome components](https://github.com/jappyjan/Attraccess-esphome-components) for easily integrating IoT devices with your access control system:
+Attraccess provides [ESPHome components](https://github.com/FabInfra/Attraccess-esphome-components) for easily integrating IoT devices with your access control system:
 
 - Real-time resource status monitoring via Server-Sent Events (SSE)
 - No polling required - uses persistent connections for efficient updates
@@ -28,11 +28,11 @@ To integrate your IoT devices with Attraccess, add this to your ESPHome configur
 external_components:
   - source:
       type: git
-      url: https://github.com/jappyjan/Attraccess-esphome-components.git
+      url: https://github.com/FabInfra/Attraccess-esphome-components.git
     components: [attraccess_resource]
 ```
 
-See the [Attraccess ESPHome Components repository](https://github.com/jappyjan/Attraccess-esphome-components) for detailed documentation and examples.
+See the [Attraccess ESPHome Components repository](https://github.com/FabInfra/Attraccess-esphome-components) for detailed documentation and examples.
 
 ## Image Support
 
