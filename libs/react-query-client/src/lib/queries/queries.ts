@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, CardService, MqttResourceConfigurationService, MqttServersService, PluginService, ReaderService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import { BulkUpdateUserPermissionsDto, CompleteIntroductionDto, CreateMqttResourceConfigDto, CreateMqttServerDto, CreateResourceDto, CreateResourceGroupDto, CreateSSOProviderDto, CreateUserDto, CreateWebhookConfigDto, EndUsageSessionDto, RevokeIntroductionDto, StartUsageSessionDto, UnrevokeIntroductionDto, UpdateMqttServerDto, UpdateResourceDto, UpdateResourceGroupDto, UpdateSSOProviderDto, UpdateUserPermissionsDto, UpdateWebhookConfigDto, UploadPluginDto, VerifyEmailDto, WebhookStatusDto } from "../requests/types.gen";
 import * as Common from "./common";
 export const useApplicationServicePing2 = <TData = Common.ApplicationServicePing2DefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseApplicationServicePing2KeyFn(queryKey), queryFn: () => ApplicationService.ping2() as TData, ...options });
@@ -120,6 +120,8 @@ export const usePluginServiceGetFrontendPluginFile = <TData = Common.PluginServi
   filePath: string;
   pluginName: string;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePluginServiceGetFrontendPluginFileKeyFn({ filePath, pluginName }, queryKey), queryFn: () => PluginService.getFrontendPluginFile({ filePath, pluginName }) as TData, ...options });
+export const useReaderServiceGetReaders = <TData = Common.ReaderServiceGetReadersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseReaderServiceGetReadersKeyFn(queryKey), queryFn: () => ReaderService.getReaders() as TData, ...options });
+export const useCardServiceCardControllerGetCards = <TData = Common.CardServiceCardControllerGetCardsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCardServiceCardControllerGetCardsKeyFn(queryKey), queryFn: () => CardService.cardControllerGetCards() as TData, ...options });
 export const useUsersServiceCreateOneUser = <TData = Common.UsersServiceCreateOneUserMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   requestBody: CreateUserDto;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
@@ -249,6 +251,25 @@ export const usePluginServiceUploadPlugin = <TData = Common.PluginServiceUploadP
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   formData: UploadPluginDto;
 }, TContext>({ mutationFn: ({ formData }) => PluginService.uploadPlugin({ formData }) as unknown as Promise<TData>, ...options });
+export const useReaderServiceEnrollNfcCard = <TData = Common.ReaderServiceEnrollNfcCardMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  readerId: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  readerId: number;
+}, TContext>({ mutationFn: ({ readerId }) => ReaderService.enrollNfcCard({ readerId }) as unknown as Promise<TData>, ...options });
+export const useReaderServiceResetNfcCard = <TData = Common.ReaderServiceResetNfcCardMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  cardId: number;
+  readerId: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  cardId: number;
+  readerId: number;
+}, TContext>({ mutationFn: ({ cardId, readerId }) => ReaderService.resetNfcCard({ cardId, readerId }) as unknown as Promise<TData>, ...options });
+export const useCardServiceGetAppKeyByUid = <TData = Common.CardServiceGetAppKeyByUidMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  cardUid: string;
+  keyNo: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  cardUid: string;
+  keyNo: number;
+}, TContext>({ mutationFn: ({ cardUid, keyNo }) => CardService.getAppKeyByUid({ cardUid, keyNo }) as unknown as Promise<TData>, ...options });
 export const useSsoServiceUpdateOneSsoProvider = <TData = Common.SsoServiceUpdateOneSsoProviderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
   requestBody: UpdateSSOProviderDto;
@@ -309,6 +330,13 @@ export const useResourceGroupsServiceUpdateOneResourceGroup = <TData = Common.Re
   id: number;
   requestBody: UpdateResourceGroupDto;
 }, TContext>({ mutationFn: ({ id, requestBody }) => ResourceGroupsService.updateOneResourceGroup({ id, requestBody }) as unknown as Promise<TData>, ...options });
+export const useReaderServiceUpdateReader = <TData = Common.ReaderServiceUpdateReaderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  readerId: number;
+  requestBody: { name?: string; connectedResources?: number[]; };
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  readerId: number;
+  requestBody: { name?: string; connectedResources?: number[]; };
+}, TContext>({ mutationFn: ({ readerId, requestBody }) => ReaderService.updateReader({ readerId, requestBody }) as unknown as Promise<TData>, ...options });
 export const useAuthenticationServiceEndSession = <TData = Common.AuthenticationServiceEndSessionMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, void, TContext>, "mutationFn">) => useMutation<TData, TError, void, TContext>({ mutationFn: () => AuthenticationService.endSession() as unknown as Promise<TData>, ...options });
 export const useSsoServiceDeleteOneSsoProvider = <TData = Common.SsoServiceDeleteOneSsoProviderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
