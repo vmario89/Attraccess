@@ -173,7 +173,7 @@ export class WaitForNFCTapState implements ReaderState {
       JSON.stringify(
         new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
           message: responseMessage,
-          duration: 10000,
+          duration: 3000,
         })
       )
     );
