@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, CardService, MqttResourceConfigurationService, MqttServersService, PluginService, ReaderService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
 export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useApplicationServicePing2Key = "ApplicationServicePing2";
@@ -220,14 +220,6 @@ export const UsePluginServiceGetFrontendPluginFileKeyFn = ({ filePath, pluginNam
   filePath: string;
   pluginName: string;
 }, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginFileKey, ...(queryKey ?? [{ filePath, pluginName }])];
-export type ReaderServiceGetReadersDefaultResponse = Awaited<ReturnType<typeof ReaderService.getReaders>>;
-export type ReaderServiceGetReadersQueryResult<TData = ReaderServiceGetReadersDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useReaderServiceGetReadersKey = "ReaderServiceGetReaders";
-export const UseReaderServiceGetReadersKeyFn = (queryKey?: Array<unknown>) => [useReaderServiceGetReadersKey, ...(queryKey ?? [])];
-export type CardServiceCardControllerGetCardsDefaultResponse = Awaited<ReturnType<typeof CardService.cardControllerGetCards>>;
-export type CardServiceCardControllerGetCardsQueryResult<TData = CardServiceCardControllerGetCardsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useCardServiceCardControllerGetCardsKey = "CardServiceCardControllerGetCards";
-export const UseCardServiceCardControllerGetCardsKeyFn = (queryKey?: Array<unknown>) => [useCardServiceCardControllerGetCardsKey, ...(queryKey ?? [])];
 export type UsersServiceCreateOneUserMutationResult = Awaited<ReturnType<typeof UsersService.createOneUser>>;
 export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof UsersService.verifyEmail>>;
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;
@@ -249,9 +241,6 @@ export type WebhooksServiceCreateOneWebhookConfigurationMutationResult = Awaited
 export type WebhooksServiceTestMutationResult = Awaited<ReturnType<typeof WebhooksService.test>>;
 export type WebhooksServiceRegenerateSecretMutationResult = Awaited<ReturnType<typeof WebhooksService.regenerateSecret>>;
 export type PluginServiceUploadPluginMutationResult = Awaited<ReturnType<typeof PluginService.uploadPlugin>>;
-export type ReaderServiceEnrollNfcCardMutationResult = Awaited<ReturnType<typeof ReaderService.enrollNfcCard>>;
-export type ReaderServiceResetNfcCardMutationResult = Awaited<ReturnType<typeof ReaderService.resetNfcCard>>;
-export type CardServiceGetAppKeyByUidMutationResult = Awaited<ReturnType<typeof CardService.getAppKeyByUid>>;
 export type SsoServiceUpdateOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.updateOneSsoProvider>>;
 export type ResourcesServiceUpdateOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.updateOneResource>>;
 export type ResourceUsageServiceEndSessionMutationResult = Awaited<ReturnType<typeof ResourceUsageService.endSession>>;
@@ -260,7 +249,6 @@ export type WebhooksServiceUpdateOneWebhookConfigurationMutationResult = Awaited
 export type WebhooksServiceUpdateStatusMutationResult = Awaited<ReturnType<typeof WebhooksService.updateStatus>>;
 export type UsersServiceUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.updatePermissions>>;
 export type ResourceGroupsServiceUpdateOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.updateOneResourceGroup>>;
-export type ReaderServiceUpdateReaderMutationResult = Awaited<ReturnType<typeof ReaderService.updateReader>>;
 export type AuthenticationServiceEndSessionMutationResult = Awaited<ReturnType<typeof AuthenticationService.endSession>>;
 export type SsoServiceDeleteOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.deleteOneSsoProvider>>;
 export type ResourceGroupsServiceDeleteOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.deleteOneResourceGroup>>;

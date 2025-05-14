@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, CardService, MqttResourceConfigurationService, MqttServersService, PluginService, ReaderService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const ensureUseApplicationServicePing2Data = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const ensureUseUsersServiceGetAllUsersData = (queryClient: QueryClient, { limit, page, search }: {
@@ -119,5 +119,3 @@ export const ensureUsePluginServiceGetFrontendPluginFileData = (queryClient: Que
   filePath: string;
   pluginName: string;
 }) => queryClient.ensureQueryData({ queryKey: Common.UsePluginServiceGetFrontendPluginFileKeyFn({ filePath, pluginName }), queryFn: () => PluginService.getFrontendPluginFile({ filePath, pluginName }) });
-export const ensureUseReaderServiceGetReadersData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseReaderServiceGetReadersKeyFn(), queryFn: () => ReaderService.getReaders() });
-export const ensureUseCardServiceCardControllerGetCardsData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseCardServiceCardControllerGetCardsKeyFn(), queryFn: () => CardService.cardControllerGetCards() });

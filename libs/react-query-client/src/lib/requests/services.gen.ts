@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse, GetPluginsResponse, UploadPluginData, GetFrontendPluginFileData, GetFrontendPluginFileResponse, DeletePluginData, DeletePluginResponse, EnrollNfcCardData, EnrollNfcCardResponse, ResetNfcCardData, ResetNfcCardResponse, UpdateReaderData, UpdateReaderResponse, GetReadersResponse, GetAppKeyByUidData, GetAppKeyByUidResponse, CardControllerGetCardsResponse } from './types.gen';
+import type { Ping2Response, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpsertOneData, UpsertOneResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse, GetPluginsResponse, UploadPluginData, GetFrontendPluginFileData, GetFrontendPluginFileResponse, DeletePluginData, DeletePluginResponse } from './types.gen';
 
 export class ApplicationService {
     /**
@@ -1702,130 +1702,6 @@ export class PluginService {
             path: {
                 pluginId: data.pluginId
             },
-            errors: {
-                401: 'Unauthorized'
-            }
-        });
-    }
-    
-}
-
-export class ReaderService {
-    /**
-     * Enroll a new NFC card
-     * @param data The data for the request.
-     * @param data.readerId The ID of the reader to enroll the NFC card on
-     * @returns unknown Enrollment initiated, continue on Reader
-     * @throws ApiError
-     */
-    public static enrollNfcCard(data: EnrollNfcCardData): CancelablePromise<EnrollNfcCardResponse> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/api/fabreader/readers/{readerId}/enroll-nfc-card',
-            path: {
-                readerId: data.readerId
-            },
-            errors: {
-                401: 'Unauthorized'
-            }
-        });
-    }
-    
-    /**
-     * Reset an NFC card
-     * @param data The data for the request.
-     * @param data.readerId The ID of the reader to reset the NFC card on
-     * @param data.cardId The ID of the NFC card to reset
-     * @returns unknown Reset initiated, continue on Reader
-     * @throws ApiError
-     */
-    public static resetNfcCard(data: ResetNfcCardData): CancelablePromise<ResetNfcCardResponse> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/api/fabreader/readers/{readerId}/reset-nfc-card/{cardId}',
-            path: {
-                readerId: data.readerId,
-                cardId: data.cardId
-            },
-            errors: {
-                401: 'Unauthorized'
-            }
-        });
-    }
-    
-    /**
-     * Update reader name and connected resources
-     * @param data The data for the request.
-     * @param data.readerId The ID of the reader to update
-     * @param data.requestBody
-     * @returns unknown Reader updated successfully
-     * @throws ApiError
-     */
-    public static updateReader(data: UpdateReaderData): CancelablePromise<UpdateReaderResponse> {
-        return __request(OpenAPI, {
-            method: 'PATCH',
-            url: '/api/fabreader/readers/{readerId}',
-            path: {
-                readerId: data.readerId
-            },
-            body: data.requestBody,
-            mediaType: 'application/json',
-            errors: {
-                401: 'Unauthorized',
-                404: 'Reader not found'
-            }
-        });
-    }
-    
-    /**
-     * Get all readers
-     * @returns unknown The list of readers
-     * @throws ApiError
-     */
-    public static getReaders(): CancelablePromise<GetReadersResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/fabreader/readers',
-            errors: {
-                401: 'Unauthorized'
-            }
-        });
-    }
-    
-}
-
-export class CardService {
-    /**
-     * Get the app key for a card by UID
-     * @param data The data for the request.
-     * @param data.cardUid The UID of the card to get the app key for
-     * @param data.keyNo The key number to generate
-     * @returns unknown The app key for the card
-     * @throws ApiError
-     */
-    public static getAppKeyByUid(data: GetAppKeyByUidData): CancelablePromise<GetAppKeyByUidResponse> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/api/fabreader/cards/{cardUID}/keys/{keyNo}',
-            path: {
-                cardUID: data.cardUid,
-                keyNo: data.keyNo
-            },
-            errors: {
-                401: 'Unauthorized'
-            }
-        });
-    }
-    
-    /**
-     * Get all cards (to which you have access)
-     * @returns unknown The list of all cards
-     * @throws ApiError
-     */
-    public static cardControllerGetCards(): CancelablePromise<CardControllerGetCardsResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/fabreader/cards',
             errors: {
                 401: 'Unauthorized'
             }
