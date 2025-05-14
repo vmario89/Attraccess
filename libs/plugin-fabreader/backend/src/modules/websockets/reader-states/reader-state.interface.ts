@@ -1,14 +1,9 @@
-import { FabreaderEvent, FabreaderMessage, FabreaderResponse } from '../websocket.types';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WsMessageThing = undefined | FabreaderMessage<any> | FabreaderEvent<any> | FabreaderResponse<any>;
+import { FabreaderEvent, FabreaderResponse } from '../websocket.types';
 
 export interface ReaderState {
-  onEvent(data: FabreaderEvent['data']): Promise<WsMessageThing>;
-  onResponse(data: FabreaderResponse['data']): Promise<WsMessageThing>;
+  onEvent(data: FabreaderEvent['data']): Promise<void>;
+  onResponse(data: FabreaderResponse['data']): Promise<void>;
 
-  getInitMessage(): Promise<WsMessageThing>;
-
-  // TODO: implement this
-  // cleanup(): Promise<void>;
+  onStateEnter(): Promise<void>;
+  onStateExit(): Promise<void>;
 }

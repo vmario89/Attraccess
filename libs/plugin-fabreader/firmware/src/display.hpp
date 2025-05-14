@@ -5,6 +5,7 @@
 #ifdef SCREEN_DRIVER_SH1106
 #include <Adafruit_SH1106.h>
 #include "icons.hpp"
+#include "leds.hpp"
 
 #elif SCREEN_DRIVER_SSD1306
 #include <Adafruit_SSD1306.h>
@@ -17,9 +18,9 @@ class Display
 {
 public:
 #ifdef SCREEN_DRIVER_SH1106
-    Display() : display(SCREEN_RESET) {}
+    Display(Leds *leds) : display(SCREEN_RESET), leds(leds) {}
 #elif SCREEN_DRIVER_SSD1306
-    Display() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RESET) {}
+    Display(Leds *leds) : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RESET), leds(leds) {}
 #endif
 
     ~Display() {}
@@ -45,6 +46,9 @@ private:
     Adafruit_SSD1306 display;
 #endif
 
+    unsigned long boot_time = 0;
+
+    Leds *leds;
     bool is_network_connected = false;
     bool is_api_connected = false;
     bool is_nfc_tap_enabled = false;

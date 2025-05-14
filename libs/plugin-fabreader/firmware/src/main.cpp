@@ -6,11 +6,13 @@
 #include "nfc.hpp"
 #include "display.hpp"
 #include "keypad.hpp"
+#include "leds.hpp"
 
 #include <SPI.h>
 #include <Wire.h>
 
-Display display;
+Leds leds;
+Display display(&leds);
 Network network(&display);
 Keypad keypad;
 API api(network.interface.getClient(), &display, &keypad);
@@ -26,7 +28,6 @@ void userTask(void *parameter)
   const int MS_PER_SECOND = 1000;
   const int LOOP_DELAY_MS = (MS_PER_SECOND / REFRESH_RATE_HZ) / portTICK_PERIOD_MS;
 
-  display.setup();
   for (;;)
   {
     display.loop();
@@ -48,6 +49,8 @@ void setup()
   Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL, I2C_FREQ);
 
   Persistence::setup();
+  display.setup();
+  leds.setup();
   nfc.setup();
   keypad.setup();
   network.setup();
@@ -71,6 +74,7 @@ void loop()
   if (network.isHealthy())
   {
     api.loop();
+
     nfc.loop();
   }
 }

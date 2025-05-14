@@ -1,12 +1,12 @@
 import { ResetNTAG424State } from './reset-ntag424.state';
 import { InitialReaderState } from './initial.state';
-import { AuthenticatedWebSocket, FabreaderEvent, FabreaderEventType } from '../websocket.types';
+import { AuthenticatedWebSocket, FabreaderEventType } from '../websocket.types';
 import { GatewayServices } from '../websocket.gateway';
 
 // Mock InitialReaderState
 jest.mock('./initial.state', () => ({
   InitialReaderState: jest.fn().mockImplementation(() => ({
-    getInitMessage: jest.fn().mockReturnValue(new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {})),
+    onStateEnter: jest.fn().mockResolvedValue(undefined),
   })),
 }));
 
@@ -23,7 +23,8 @@ describe('ResetNTAG424State', () => {
     jest.clearAllMocks();
 
     mockSocket = {
-      send: jest.fn(),
+      sendMessage: jest.fn(),
+      transitionToState: jest.fn().mockResolvedValue(undefined),
       state: undefined,
     } as unknown as AuthenticatedWebSocket;
 
@@ -48,14 +49,19 @@ describe('ResetNTAG424State', () => {
     resetState = new ResetNTAG424State(mockSocket, mockServices, mockCardId);
   });
 
-  describe('getInitMessage', () => {
-    it('should fetch the card and return the correct init message', async () => {
-      const initMessage = await resetState.getInitMessage();
+  describe('onStateEnter', () => {
+    it('should fetch the card and send correct init message', async () => {
+      await resetState.onStateEnter();
 
       expect(mockServices.dbService.getNFCCardByID).toHaveBeenCalledWith(mockCardId);
-      expect(initMessage).toEqual(
-        new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-          displayText: 'Tap your NFC card to reset it',
+      expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.ENABLE_CARD_CHECKING,
+            payload: expect.objectContaining({
+              message: 'Tap your NFC card to reset it',
+            }),
+          }),
         })
       );
     });
@@ -63,14 +69,21 @@ describe('ResetNTAG424State', () => {
     it('should throw an error if the card is not found', async () => {
       (mockServices.dbService.getNFCCardByID as jest.Mock).mockResolvedValue(null);
 
-      await expect(resetState.getInitMessage()).rejects.toThrow(`Card not found: ${mockCardId}`);
+      await expect(resetState.onStateEnter()).rejects.toThrow(`Card not found: ${mockCardId}`);
+    });
+  });
+
+  describe('onStateExit', () => {
+    it('should return void', async () => {
+      const result = await resetState.onStateExit();
+      expect(result).toBeUndefined();
     });
   });
 
   describe('onEvent', () => {
     it('should handle NFC_TAP event with the correct card', async () => {
       // Setup
-      await resetState.getInitMessage(); // Initialize card
+      await resetState.onStateEnter(); // Initialize card
 
       // Mock getNFCCardByUID to return the same card
       (mockServices.dbService.getNFCCardByUID as jest.Mock).mockResolvedValue({
@@ -80,73 +93,114 @@ describe('ResetNTAG424State', () => {
       });
 
       // Test
-      const result = await resetState.onEvent({
+      await resetState.onEvent({
         type: FabreaderEventType.NFC_TAP,
         payload: { cardUID: mockCardUID },
       });
 
       // Assert
-      expect(mockSocket.send).toHaveBeenCalled();
+      expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.DISABLE_CARD_CHECKING,
+          }),
+        })
+      );
       expect(mockServices.dbService.getNFCCardByUID).toHaveBeenCalledWith(mockCardUID);
-      expect(result).toBeInstanceOf(FabreaderEvent);
-      expect(result.data.type).toBe(FabreaderEventType.CHANGE_KEYS);
-      // The authentication key should be the master key from the card
-      expect(result.data.payload.authenticationKey).toBe(mockMasterKey);
-      expect(result.data.payload.keys[0]).toBe(mockDefaultMasterKey);
+
+      // Check the CHANGE_KEYS message was sent with correct parameters
+      expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.CHANGE_KEYS,
+            payload: expect.objectContaining({
+              authenticationKey: mockMasterKey,
+              keys: expect.objectContaining({
+                0: mockDefaultMasterKey,
+              }),
+            }),
+          }),
+        })
+      );
     });
 
     it('should use default key if card record is not found', async () => {
       // Setup
-      await resetState.getInitMessage(); // Initialize card
+      await resetState.onStateEnter(); // Initialize card
 
       // Mock getNFCCardByUID to return null
       (mockServices.dbService.getNFCCardByUID as jest.Mock).mockResolvedValue(null);
 
       // Test
-      const result = await resetState.onEvent({
+      await resetState.onEvent({
         type: FabreaderEventType.NFC_TAP,
         payload: { cardUID: mockCardUID },
       });
 
       // Assert
-      expect(result).toBeInstanceOf(FabreaderEvent);
-      expect(result.data.type).toBe(FabreaderEventType.CHANGE_KEYS);
-      // The authentication key should be the default master key
-      expect(result.data.payload.authenticationKey).toBe(mockDefaultMasterKey);
-      expect(result.data.payload.keys[0]).toBe(mockDefaultMasterKey);
+      // Check the CHANGE_KEYS message was sent with default key
+      expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.CHANGE_KEYS,
+            payload: expect.objectContaining({
+              authenticationKey: mockDefaultMasterKey,
+              keys: expect.objectContaining({
+                0: mockDefaultMasterKey,
+              }),
+            }),
+          }),
+        })
+      );
     });
 
     it('should ignore NFC_TAP event with incorrect card UID', async () => {
       // Setup
-      await resetState.getInitMessage(); // Initialize card
+      await resetState.onStateEnter(); // Initialize card
 
       // Test
-      const result = await resetState.onEvent({
+      await resetState.onEvent({
         type: FabreaderEventType.NFC_TAP,
         payload: { cardUID: 'wrong-card-uid' },
       });
 
-      // Assert
-      expect(result).toBeUndefined();
+      // Assert - The CHANGE_KEYS message should not be sent
+      expect(mockSocket.sendMessage).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.CHANGE_KEYS,
+          }),
+        })
+      );
     });
 
     it('should ignore unexpected events', async () => {
-      const result = await resetState.onEvent({
-        type: FabreaderEventType.NFC_REMOVED,
+      const initialCallCount = (mockSocket.sendMessage as jest.Mock).mock.calls.length;
+
+      await resetState.onEvent({
+        type: 'UNEXPECTED_EVENT' as FabreaderEventType,
         payload: {},
       });
 
-      expect(result).toBeUndefined();
+      // No new messages should be sent
+      expect((mockSocket.sendMessage as jest.Mock).mock.calls.length).toBe(initialCallCount);
     });
   });
 
   describe('onResponse', () => {
+    beforeEach(() => {
+      // Reset mock call histories before each test
+      (mockSocket.sendMessage as jest.Mock).mockClear();
+      (mockSocket.transitionToState as jest.Mock).mockClear();
+    });
+
     it('should handle successful key change', async () => {
       // Setup
-      await resetState.getInitMessage(); // Initialize card
+      await resetState.onStateEnter();
+      (mockSocket.sendMessage as jest.Mock).mockClear(); // Clear the init message
 
       // Test
-      const result = await resetState.onResponse({
+      await resetState.onResponse({
         type: FabreaderEventType.CHANGE_KEYS,
         payload: {
           successfulKeys: [0],
@@ -155,24 +209,33 @@ describe('ResetNTAG424State', () => {
       });
 
       // Assert
+      expect(mockServices.dbService.deleteNFCCard).toHaveBeenCalledTimes(1);
       expect(mockServices.dbService.deleteNFCCard).toHaveBeenCalledWith(mockCardId);
-      expect(mockSocket.send).toHaveBeenCalled();
 
-      // Verify success message sent to socket
-      const sendArg = (mockSocket.send as jest.Mock).mock.calls[0][0];
-      const sentEvent = JSON.parse(sendArg);
-      expect(sentEvent.data.type).toBe(FabreaderEventType.DISPLAY_SUCCESS);
-      expect(sentEvent.data.payload.message).toBe('Reset successful');
+      // Verify success message sent exactly once
+      expect(mockSocket.sendMessage).toHaveBeenCalledTimes(1);
+      expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: FabreaderEventType.DISPLAY_SUCCESS,
+            payload: expect.objectContaining({
+              message: 'Card erased',
+              duration: 10000,
+            }),
+          }),
+        })
+      );
 
-      // Verify state transition
+      // Verify state transition happened exactly once
+      expect(InitialReaderState).toHaveBeenCalledTimes(1);
       expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
-      expect(result).toBeInstanceOf(FabreaderEvent);
-      expect(result.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+      expect(mockSocket.transitionToState).toHaveBeenCalledTimes(1);
+      expect(mockSocket.transitionToState).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should handle failed key change', async () => {
       // Test
-      const result = await resetState.onResponse({
+      await resetState.onResponse({
         type: FabreaderEventType.CHANGE_KEYS,
         payload: {
           successfulKeys: [],
@@ -182,18 +245,24 @@ describe('ResetNTAG424State', () => {
 
       // Assert
       expect(mockServices.dbService.deleteNFCCard).not.toHaveBeenCalled();
+      // No messages should be sent on failed key change
+      expect(mockSocket.sendMessage).not.toHaveBeenCalled();
+      // Only state transition happens
+      expect(InitialReaderState).toHaveBeenCalledTimes(1);
       expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
-      expect(result).toBeInstanceOf(FabreaderEvent);
-      expect(result.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+      expect(mockSocket.transitionToState).toHaveBeenCalledTimes(1);
     });
 
     it('should ignore unexpected response types', async () => {
-      const result = await resetState.onResponse({
+      await resetState.onResponse({
         type: FabreaderEventType.AUTHENTICATE,
         payload: {},
       });
 
-      expect(result).toBeUndefined();
+      // No operations should happen for unexpected response types
+      expect(mockSocket.sendMessage).not.toHaveBeenCalled();
+      expect(mockSocket.transitionToState).not.toHaveBeenCalled();
+      expect(mockServices.dbService.deleteNFCCard).not.toHaveBeenCalled();
     });
   });
 });
@@ -214,7 +283,8 @@ describe('ResetNTAG424State - Full Flow', () => {
     jest.clearAllMocks();
 
     mockSocket = {
-      send: jest.fn(),
+      sendMessage: jest.fn(),
+      transitionToState: jest.fn().mockResolvedValue(undefined),
       state: undefined,
     } as unknown as AuthenticatedWebSocket;
 
@@ -241,24 +311,61 @@ describe('ResetNTAG424State - Full Flow', () => {
   });
 
   it('should complete successful reset flow', async () => {
-    // Step 1: Initialize reset state
-    const initMessage = await resetState.getInitMessage();
+    // Reset call history before starting the test
+    (mockSocket.sendMessage as jest.Mock).mockClear();
+    (mockSocket.transitionToState as jest.Mock).mockClear();
 
-    expect(initMessage.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+    // Step 1: Initialize reset state
+    await resetState.onStateEnter();
+
+    // Verify only the ENABLE_CARD_CHECKING message was sent at this point
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(1);
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.ENABLE_CARD_CHECKING,
+          payload: expect.objectContaining({
+            message: 'Tap your NFC card to reset it',
+          }),
+        }),
+      })
+    );
     expect(mockServices.dbService.getNFCCardByID).toHaveBeenCalledWith(mockCardId);
 
     // Step 2: User taps the NFC card
-    const nfcTapResponse = await resetState.onEvent({
+    await resetState.onEvent({
       type: FabreaderEventType.NFC_TAP,
       payload: { cardUID: mockCardUID },
     });
 
-    expect(nfcTapResponse.data.type).toBe(FabreaderEventType.CHANGE_KEYS);
-    expect(nfcTapResponse.data.payload.authenticationKey).toBe(mockMasterKey);
-    expect(nfcTapResponse.data.payload.keys[0]).toBe(mockDefaultMasterKey);
+    // Verify the exact sequence and count of messages sent so far
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(3);
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.DISABLE_CARD_CHECKING,
+        }),
+      })
+    );
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.CHANGE_KEYS,
+          payload: expect.objectContaining({
+            authenticationKey: mockMasterKey,
+            keys: expect.objectContaining({
+              0: mockDefaultMasterKey,
+            }),
+          }),
+        }),
+      })
+    );
 
     // Step 3: Keys changed successfully
-    const changeKeysResponse = await resetState.onResponse({
+    await resetState.onResponse({
       type: FabreaderEventType.CHANGE_KEYS,
       payload: {
         successfulKeys: [0],
@@ -266,39 +373,69 @@ describe('ResetNTAG424State - Full Flow', () => {
       },
     });
 
-    // Step 4: Card deleted and transition to initial state
+    // Verify the complete message sequence and state transitions
     expect(mockServices.dbService.deleteNFCCard).toHaveBeenCalledWith(mockCardId);
-    expect(mockSocket.send).toHaveBeenCalled();
 
-    // Verify success message
-    const successMessageJSON = (mockSocket.send as jest.Mock).mock.calls.find(
-      (call) => JSON.parse(call[0]).data.type === FabreaderEventType.DISPLAY_SUCCESS
-    )[0];
-    const successMessage = JSON.parse(successMessageJSON);
-    expect(successMessage.data.payload.message).toBe('Reset successful');
+    // Verify all messages sent in the full flow
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(4);
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.DISPLAY_SUCCESS,
+          payload: expect.objectContaining({
+            message: 'Card erased',
+            duration: 10000,
+          }),
+        }),
+      })
+    );
 
-    expect(changeKeysResponse.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+    // Verify transition to initial state happens exactly once
+    expect(InitialReaderState).toHaveBeenCalledTimes(1);
     expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
+    expect(mockSocket.transitionToState).toHaveBeenCalledTimes(1);
+    expect(mockSocket.transitionToState).toHaveBeenCalledWith(expect.any(Object));
   });
 
   it('should handle wrong card tap', async () => {
+    // Reset call history before starting the test
+    (mockSocket.sendMessage as jest.Mock).mockClear();
+
     // Initialize reset state
-    await resetState.getInitMessage();
+    await resetState.onStateEnter();
+
+    // Verify initial message
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(1);
+    expect(mockSocket.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.ENABLE_CARD_CHECKING,
+        }),
+      })
+    );
 
     // User taps the wrong NFC card
-    const nfcTapResponse = await resetState.onEvent({
+    await resetState.onEvent({
       type: FabreaderEventType.NFC_TAP,
       payload: { cardUID: 'wrong-card-uid' },
     });
 
-    // Wrong card should be ignored
-    expect(nfcTapResponse).toBeUndefined();
+    // Wrong card should be ignored - still only 1 message sent
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(1);
+    // No state transitions should have occurred
+    expect(mockSocket.transitionToState).not.toHaveBeenCalled();
     expect(mockServices.dbService.deleteNFCCard).not.toHaveBeenCalled();
   });
 
   it('should handle key change failure', async () => {
+    // Reset call history before starting the test
+    (mockSocket.sendMessage as jest.Mock).mockClear();
+    (mockSocket.transitionToState as jest.Mock).mockClear();
+
     // Initialize reset state
-    await resetState.getInitMessage();
+    await resetState.onStateEnter();
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(1);
 
     // User taps the correct NFC card
     await resetState.onEvent({
@@ -306,8 +443,27 @@ describe('ResetNTAG424State - Full Flow', () => {
       payload: { cardUID: mockCardUID },
     });
 
+    // Verify the DISABLE_CARD_CHECKING and CHANGE_KEYS messages
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(3);
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.DISABLE_CARD_CHECKING,
+        }),
+      })
+    );
+    expect(mockSocket.sendMessage).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: FabreaderEventType.CHANGE_KEYS,
+        }),
+      })
+    );
+
     // Keys failed to change
-    const changeKeysResponse = await resetState.onResponse({
+    await resetState.onResponse({
       type: FabreaderEventType.CHANGE_KEYS,
       payload: {
         successfulKeys: [],
@@ -318,8 +474,12 @@ describe('ResetNTAG424State - Full Flow', () => {
     // Card should not be deleted
     expect(mockServices.dbService.deleteNFCCard).not.toHaveBeenCalled();
 
-    // Should transition to initial state
-    expect(changeKeysResponse.data.type).toBe(FabreaderEventType.ENABLE_CARD_CHECKING);
+    // No additional messages sent on failure
+    expect(mockSocket.sendMessage).toHaveBeenCalledTimes(3);
+
+    // Should transition to initial state exactly once
+    expect(InitialReaderState).toHaveBeenCalledTimes(1);
     expect(InitialReaderState).toHaveBeenCalledWith(mockSocket, mockServices);
+    expect(mockSocket.transitionToState).toHaveBeenCalledTimes(1);
   });
 });

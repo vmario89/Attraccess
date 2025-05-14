@@ -28,7 +28,7 @@ export enum FabreaderEventType {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class FabreaderEvent<TPayload = any | undefined> {
-  public readonly event: 'EVENT';
+  public readonly event = 'EVENT';
   public readonly data: FabreaderMessageBaseData<TPayload> & {
     type: FabreaderEventType;
   };
@@ -43,7 +43,7 @@ export class FabreaderEvent<TPayload = any | undefined> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class FabreaderResponse<TPayload = any | undefined> {
-  public readonly event: 'RESPONSE';
+  public readonly event = 'RESPONSE';
   public readonly data: FabreaderMessageBaseData<TPayload> & {
     type: FabreaderEventType;
   };
@@ -67,9 +67,11 @@ export class FabreaderResponse<TPayload = any | undefined> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FabreaderMessage<TPayload = any | undefined> = FabreaderEvent<TPayload> | FabreaderResponse<TPayload>;
 
-export interface AuthenticatedWebSocket extends WebSocket {
+export interface AuthenticatedWebSocket extends Omit<WebSocket, 'send'> {
   id: string;
   disconnectTimeout?: NodeJS.Timeout;
   reader?: Reader;
   state?: ReaderState;
+  transitionToState: (state: ReaderState) => Promise<void>;
+  sendMessage: (message: FabreaderMessage) => void;
 }

@@ -2,6 +2,8 @@
 
 void Display::setup()
 {
+    this->boot_time = millis();
+
     Serial.println("[Display] Setup");
 
 #ifdef SCREEN_DRIVER_SH1106
@@ -20,37 +22,49 @@ void Display::setup()
     uint8_t y = (display.height() - boot_logo_height) / 2;
     display.drawBitmap(x, y, icon_boot_logo, boot_logo_width, boot_logo_height, WHITE);
     display.display();
-    vTaskDelay(2000);
 
     Serial.println("[Display] SSD1306 initialized");
 }
 
 void Display::loop()
 {
+    unsigned long boot_end_time = this->boot_time + 2000;
+
+    if (millis() < boot_end_time)
+    {
+        return;
+    }
+
     draw_main_elements();
 
     if (this->error_end_at > millis())
     {
+        this->leds->setBlinking(CRGB::Red, 1000);
         this->draw_error_ui();
     }
     else if (this->success_end_at > millis())
     {
+        this->leds->setBlinking(CRGB::Green, 1000);
         this->draw_success_ui();
     }
     else if (!this->is_network_connected)
     {
+        this->leds->setBlinking(CRGB::Yellow, 500);
         this->draw_network_connecting_ui();
     }
     else if (!this->is_api_connected)
     {
+        this->leds->setBlinking(CRGB::Blue, 500);
         this->draw_api_connecting_ui();
     }
     else if (this->is_nfc_tap_enabled)
     {
+        this->leds->setBreathing(CRGB::White, 500);
         this->draw_nfc_tap_ui();
     }
     else if (this->is_displaying_text)
     {
+        this->leds->setOn(CRGB::Blue);
         this->draw_text_ui();
     }
 

@@ -23,34 +23,49 @@ export class ResetNTAG424State implements ReaderState {
     private readonly cardId: NFCCard['id']
   ) {}
 
-  public async onEvent(eventData: FabreaderEvent['data']) {
+  public async onStateEnter(): Promise<void> {
+    this.card = await this.services.dbService.getNFCCardByID(this.cardId);
+
+    if (!this.card) {
+      throw new Error(`Card not found: ${this.cardId}`);
+    }
+
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
+        message: 'Tap your NFC card to reset it',
+      })
+    );
+  }
+
+  public async onStateExit(): Promise<void> {
+    return;
+  }
+
+  public async onEvent(eventData: FabreaderEvent['data']): Promise<void> {
     if (eventData.type === FabreaderEventType.NFC_TAP) {
       return this.onGetNfcUID(eventData);
     }
 
     this.logger.warn(`Unexpected event type ${eventData.type}`);
-
-    return undefined;
   }
 
-  public async onResponse(responseData: FabreaderResponse['data']) {
+  public async onResponse(responseData: FabreaderResponse['data']): Promise<void> {
     if (responseData.type === FabreaderEventType.CHANGE_KEYS) {
       return await this.onKeysChanged(responseData);
     }
 
     this.logger.warn(`Unexpected response type ${responseData.type} `);
-
-    return undefined;
   }
 
-  private async onGetNfcUID(responseData: FabreaderResponse['data']) {
-    this.socket.send(JSON.stringify(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING)));
-
+  private async onGetNfcUID(responseData: FabreaderResponse['data']): Promise<void> {
     const cardUID = responseData.payload.cardUID;
     if (cardUID !== this.card?.uid) {
       this.logger.warn(`Unexpected card UID ${cardUID}, ignoring`);
-      return undefined;
+      return;
     }
+
+    // Only if the card UID matches, disable card checking
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING));
 
     const nfcCard = await this.services.dbService.getNFCCardByUID(cardUID);
 
@@ -69,13 +84,15 @@ export class ResetNTAG424State implements ReaderState {
       keys: newKeys,
     });
 
-    return new FabreaderEvent(FabreaderEventType.CHANGE_KEYS, {
-      authenticationKey: masterKey,
-      keys: newKeys,
-    });
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.CHANGE_KEYS, {
+        authenticationKey: masterKey,
+        keys: newKeys,
+      })
+    );
   }
 
-  private async onKeysChanged(responseData: FabreaderResponse['data']) {
+  private async onKeysChanged(responseData: FabreaderResponse['data']): Promise<void> {
     const failedKeys = responseData.payload.failedKeys as number[];
     const successfulKeys = responseData.payload.successfulKeys as number[];
 
@@ -85,35 +102,19 @@ export class ResetNTAG424State implements ReaderState {
       );
 
       const nextState = new InitialReaderState(this.socket, this.services);
-      this.socket.state = nextState;
-      return await nextState.getInitMessage();
+      return this.socket.transitionToState(nextState);
     }
 
     await this.services.dbService.deleteNFCCard(this.cardId);
 
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
-          message: 'Card erased',
-          duration: 10000,
-        })
-      )
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
+        message: 'Card erased',
+        duration: 10000,
+      })
     );
 
     const initialState = new InitialReaderState(this.socket, this.services);
-    this.socket.state = initialState;
-    return await initialState.getInitMessage();
-  }
-
-  public async getInitMessage(): Promise<FabreaderEvent> {
-    this.card = await this.services.dbService.getNFCCardByID(this.cardId);
-
-    if (!this.card) {
-      throw new Error(`Card not found: ${this.cardId}`);
-    }
-
-    return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-      message: 'Tap your NFC card to reset it',
-    });
+    this.socket.transitionToState(initialState);
   }
 }

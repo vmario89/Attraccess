@@ -14,7 +14,6 @@ public:
 
 private:
     I2CKeyPad keyPad;
-    char keymap[19] = "NNNNN4N5N7N8#N3NN";
-    char confirm_key = '#';
-    char released_key = 'N';
+    char keymap[17] = "DCBA#9630852*741";
+    char released_key_num = 16;
 };

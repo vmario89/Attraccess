@@ -15,11 +15,21 @@ export class WaitForResourceSelectionState implements ReaderState {
     private readonly resourcesOfReader: Resource[]
   ) {}
 
-  public async getInitMessage() {
-    return new FabreaderEvent(FabreaderEventType.SHOW_TEXT, {
-      lineOne: 'Select a resource',
-      lineTwo: `> ${this.value} <`,
-    });
+  public async onStateEnter(): Promise<void> {
+    this.updateDisplay();
+  }
+
+  public updateDisplay() {
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.SHOW_TEXT, {
+        lineOne: 'Select a resource',
+        lineTwo: `> ${this.value} <`,
+      })
+    );
+  }
+
+  public async onStateExit(): Promise<void> {
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.HIDE_TEXT));
   }
 
   public async onEvent(data: FabreaderEvent['data']) {
@@ -30,42 +40,60 @@ export class WaitForResourceSelectionState implements ReaderState {
     return undefined;
   }
 
+  public async onResponse(/* data: FabreaderResponse<{ selection: number }>['data'] */) {
+    return undefined;
+  }
+
   private async onKeyPressed(data: FabreaderEvent['data']['payload']) {
-    if (data.key !== '#') {
-      this.value += data.key;
-      return await this.getInitMessage();
+    if (data.key === '#') {
+      this.logger.debug('Confirming value', this.value);
+      return await this.onValueConfirmed();
     }
 
-    return await this.onValueConfirmed();
+    if (data.key === '*') {
+      this.logger.debug('Removing last character', this.value);
+      this.value = this.value.slice(0, -1);
+    }
+
+    if (data.key === 'D') {
+      this.logger.debug('Clearing input', this.value);
+      this.value = '';
+    }
+
+    this.logger.debug('Adding character', data.key, this.value);
+    this.value += data.key;
+    return this.updateDisplay();
   }
 
   private async onValueConfirmed() {
     const selectedResourceId = parseInt(this.value, 10);
 
     if (isNaN(selectedResourceId)) {
-      this.logger.error('Selected resource id is not a number, clearing input');
+      this.logger.error('Selected resource id is not a number, clearing input', {
+        value: this.value,
+        intValue: selectedResourceId,
+      });
       this.value = '';
-      return await this.getInitMessage();
+      return this.updateDisplay();
     }
 
     const resource = this.resourcesOfReader.find((resource) => resource.id === selectedResourceId);
 
     if (!resource) {
-      this.logger.error('Selected resource id is not a number, clearing input');
+      this.logger.error('Resource with id not found', selectedResourceId);
       this.value = '';
 
-      this.socket.send(
-        JSON.stringify(
-          new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-            message: 'Unknown resource',
-            duration: 3000,
-          })
-        )
+      this.socket.sendMessage(
+        new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
+          message: 'Unknown resource',
+          duration: 3000,
+        })
       );
-      return await this.getInitMessage();
+
+      return await this.updateDisplay();
     }
 
-    this.socket.send(JSON.stringify(new FabreaderEvent(FabreaderEventType.HIDE_TEXT)));
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.HIDE_TEXT));
 
     this.logger.debug(`Reader has selected resource with id ${selectedResourceId}, moving to WaitForNFCTapState`);
     const nextState = new WaitForNFCTapState(
@@ -76,11 +104,6 @@ export class WaitForResourceSelectionState implements ReaderState {
       new WaitForResourceSelectionState(this.socket, this.services, this.resourcesOfReader),
       new WaitForResourceSelectionState(this.socket, this.services, this.resourcesOfReader)
     );
-    this.socket.state = nextState;
-    return await nextState.getInitMessage();
-  }
-
-  public async onResponse(/* data: FabreaderResponse<{ selection: number }>['data'] */) {
-    return undefined;
+    return await this.socket.transitionToState(nextState);
   }
 }

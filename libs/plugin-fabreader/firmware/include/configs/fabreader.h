@@ -23,3 +23,8 @@
 
 // I2C KeyPad configuration
 #define I2C_KEYPAD_ADDRESS 0x20
+
+// LEDs
+#define PIN_LED 0
+#define LED_COUNT 5
+#define LED_MAX_BRIGHTNESS 150

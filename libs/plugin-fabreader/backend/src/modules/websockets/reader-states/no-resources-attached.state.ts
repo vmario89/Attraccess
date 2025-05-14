@@ -9,18 +9,24 @@ export class NoResourcesAttachedState implements ReaderState {
 
   public constructor(private readonly socket: AuthenticatedWebSocket, private readonly services: GatewayServices) {}
 
+  public async onStateEnter(): Promise<void> {
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
+        message: `No Resources`,
+        duration: 10000,
+      })
+    );
+  }
+
+  public async onStateExit(): Promise<void> {
+    return;
+  }
+
   public async onEvent(/* data: FabreaderEvent['data'] */) {
-    return undefined;
+    return;
   }
 
   public async onResponse(/* data: FabreaderResponse['data'] */) {
-    return undefined;
-  }
-
-  public async getInitMessage(): Promise<FabreaderEvent> {
-    return new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-      message: `No Resources`,
-      duration: 10000,
-    });
+    return;
   }
 }

@@ -13,10 +13,11 @@ import { DbService } from '../persistence/db.service';
 import { WebsocketService } from './websocket.service';
 import { InitialReaderState } from './reader-states/initial.state';
 import { EnrollNTAG424State } from './reader-states/enroll-ntag424.state';
-import { AuthenticatedWebSocket, FabreaderEvent } from './websocket.types';
+import { AuthenticatedWebSocket, FabreaderEvent, FabreaderMessage } from './websocket.types';
 import { FabreaderService } from '../../fabreader.service';
 import { nanoid } from 'nanoid';
 import { ResetNTAG424State } from './reader-states/reset-ntag424.state';
+import { ReaderState } from './reader-states/reader-state.interface';
 
 export interface GatewayServices {
   dbService: DbService;
@@ -47,12 +48,26 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     client.id = nanoid(5);
 
-    client.state = new InitialReaderState(client, {
-      dbService: this.dbService,
-      websocketService: this.websocketService,
-      fabreaderService: this.fabreaderService,
-    });
-    client.send(JSON.stringify(await client.state.getInitMessage()));
+    client.transitionToState = async (state: ReaderState) => {
+      if (client.state) {
+        await client.state.onStateExit();
+      }
+      client.state = state;
+      await client.state.onStateEnter();
+    };
+
+    client.sendMessage = (message: FabreaderMessage) => {
+      this.logger.debug(`Sending ${message.event} of type ${message.data.type}`, message.data.payload);
+      (client as unknown as WebSocket).send(JSON.stringify(message));
+    };
+
+    client.transitionToState(
+      new InitialReaderState(client, {
+        dbService: this.dbService,
+        websocketService: this.websocketService,
+        fabreaderService: this.fabreaderService,
+      })
+    );
 
     this.websocketService.sockets.set(client.id, client);
 
@@ -108,17 +123,13 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       return;
     }
 
+    this.logger.debug(`Received event from client ${client.id}: ${eventData}`);
+
     await this.clientWasActive(client);
 
-    const response = await client.state.onEvent(eventData);
+    await client.state.onEvent(eventData);
 
-    this.logger.debug(
-      `Processed event ${eventData.type} with payload ${JSON.stringify(
-        eventData.payload
-      )}, sending response: ${JSON.stringify(response)}`
-    );
-
-    return response;
+    return undefined;
   }
 
   @SubscribeMessage('RESPONSE')
@@ -132,17 +143,13 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       return;
     }
 
+    this.logger.debug(`Received response from client ${client.id}: ${responseData}`);
+
     await this.clientWasActive(client);
 
-    const response = await client.state.onResponse(responseData);
+    await client.state.onResponse(responseData);
 
-    this.logger.debug(
-      `Processed response ${responseData.type} with payload ${JSON.stringify(
-        responseData.payload
-      )}, sending response: ${JSON.stringify(response)}`
-    );
-
-    return response;
+    return undefined;
   }
 
   public async startEnrollOfNewNfcCard(data: { readerId: number; userId: number }) {
@@ -175,10 +182,8 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       },
       data.userId
     );
-    socket.state = nextState;
-    const initMessage = await nextState.getInitMessage();
-    this.logger.debug(`Sending enrollment init message: ${JSON.stringify(initMessage)}`);
-    socket.send(JSON.stringify(initMessage));
+
+    await socket.transitionToState(nextState);
   }
 
   public async startResetOfNfcCard(data: { readerId: number; userId: number; cardId: number }) {
@@ -217,10 +222,7 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
       },
       nfcCard.id
     );
-    socket.state = nextState;
-    const initMessage = await nextState.getInitMessage();
-    this.logger.debug(`Sending reset init message: ${JSON.stringify(initMessage)}`);
-    socket.send(JSON.stringify(initMessage));
+    await socket.transitionToState(nextState);
   }
 
   public async restartReader(readerId: number) {
@@ -238,14 +240,8 @@ export class FabreaderGateway implements OnGatewayConnection, OnGatewayDisconnec
           websocketService: this.websocketService,
           fabreaderService: this.fabreaderService,
         });
-        socket.state = nextState;
-        const initMessage = await nextState.getInitMessage(true);
-        this.logger.debug(`Sending init message: ${JSON.stringify(initMessage)}`);
-        socket.send(JSON.stringify(initMessage));
 
-        socket.addEventListener('error', (event) => {
-          this.logger.error(`Error on client ${socket.id}: ${event}`);
-        });
+        await socket.transitionToState(nextState);
       })
     );
   }

@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common';
 import { GatewayServices } from '../websocket.gateway';
 import { AuthenticatedWebSocket, FabreaderEventType, FabreaderResponse } from '../websocket.types';
 import { FabreaderEvent } from '../websocket.types';
-import { InitialReaderState } from './initial.state';
 import { ReaderState } from './reader-state.interface';
 import { NFCCard } from '../../persistence/db/entities/nfcCard.entity';
 
@@ -24,7 +23,57 @@ export class WaitForNFCTapState implements ReaderState {
     this.restartTimeout();
   }
 
-  private restartTimeout() {
+  public async onStateEnter(): Promise<void> {
+    const activeUsageSession = await this.services.dbService.getActiveResourceUsageSession(this.selectedResourceId);
+    const resourceIsInUse = !!activeUsageSession;
+
+    if (resourceIsInUse) {
+      return this.socket.sendMessage(
+        new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
+          message: `Tap to stop`,
+        })
+      );
+    }
+
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
+        message: `Tap to start`,
+      })
+    );
+  }
+
+  public async onStateExit(): Promise<void> {
+    clearTimeout(this.timeout);
+    this.sendDisableCardChecking();
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.HIDE_TEXT));
+  }
+
+  public async restart(): Promise<void> {
+    await this.onStateExit();
+    return await this.onStateEnter();
+  }
+
+  public async onEvent(data: FabreaderEvent['data']): Promise<void> {
+    if (data.type === FabreaderEventType.NFC_TAP) {
+      this.restartTimeout();
+
+      return this.onNFCTap(data);
+    }
+
+    return undefined;
+  }
+
+  public async onResponse(data: FabreaderResponse['data']): Promise<void> {
+    if (data.type === FabreaderEventType.AUTHENTICATE) {
+      this.restartTimeout();
+
+      return await this.onAuthenticate(data);
+    }
+
+    return undefined;
+  }
+
+  private restartTimeout(): Promise<void> {
     if (!this.timeout_ms) {
       return;
     }
@@ -40,78 +89,38 @@ export class WaitForNFCTapState implements ReaderState {
 
       this.sendDisableCardChecking();
 
-      this.socket.state = this.timout_transition_state;
-      const initMessage = await this.timout_transition_state.getInitMessage();
-      console.log('initMessage', initMessage);
-      this.socket.send(JSON.stringify(initMessage));
+      this.socket.transitionToState(this.timout_transition_state);
     }, this.timeout_ms);
   }
 
-  public async onEvent(data: FabreaderEvent['data']) {
-    if (data.type === FabreaderEventType.NFC_TAP) {
-      this.restartTimeout();
+  private sendDisableCardChecking(textToDisplay?: string): void {
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING));
 
-      return this.onNFCTap(data);
-    }
-
-    return undefined;
-  }
-
-  public async onResponse(data: FabreaderResponse['data']) {
-    if (data.type === FabreaderEventType.AUTHENTICATE) {
-      this.restartTimeout();
-
-      return await this.onAuthenticate(data);
-    }
-
-    return undefined;
-  }
-
-  public async getInitMessage(): Promise<FabreaderEvent> {
-    const activeUsageSession = await this.services.dbService.getActiveResourceUsageSession(this.selectedResourceId);
-    const resourceIsInUse = !!activeUsageSession;
-
-    if (resourceIsInUse) {
-      return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-        message: `Tap to stop`,
-      });
-    }
-
-    return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-      message: `Tap to start`,
-    });
-  }
-
-  private sendDisableCardChecking(textToDisplay?: string) {
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING, {
-          message: textToDisplay,
+    if (textToDisplay) {
+      this.socket.sendMessage(
+        new FabreaderEvent(FabreaderEventType.SHOW_TEXT, {
+          lineOne: textToDisplay,
+          lineTwo: '',
         })
-      )
-    );
+      );
+    }
   }
 
-  private async onInvalidCard() {
+  private async onInvalidCard(): Promise<void> {
     this.sendDisableCardChecking();
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-          message: `Invalid card`,
-          duration: 10000,
-        })
-      )
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
+        message: `Invalid card`,
+        duration: 3000,
+      })
     );
 
-    return await this.getInitMessage();
+    await this.restart();
   }
 
-  private async onNFCTap(data: FabreaderEvent<{ cardUID: string }>['data']) {
+  private async onNFCTap(data: FabreaderEvent<{ cardUID: string }>['data']): Promise<void> {
     this.sendDisableCardChecking('Do not remove card!');
-    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const nfcCard = await this.services.dbService.getNFCCardByUID(data.payload.cardUID);
 
@@ -122,13 +131,15 @@ export class WaitForNFCTapState implements ReaderState {
 
     this.card = nfcCard;
 
-    return new FabreaderEvent(FabreaderEventType.AUTHENTICATE, {
-      authenticationKey: nfcCard.keys[0],
-      keyNumber: 0,
-    });
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.AUTHENTICATE, {
+        authenticationKey: nfcCard.keys[0],
+        keyNumber: 0,
+      })
+    );
   }
 
-  private async onAuthenticate(data: FabreaderEvent<{ cardUID: string }>['data']) {
+  private async onAuthenticate(data: FabreaderEvent<{ cardUID: string }>['data']): Promise<void> {
     if (!this.card) {
       this.logger.error('No card attached to socket..');
       return;
@@ -168,21 +179,18 @@ export class WaitForNFCTapState implements ReaderState {
 
     this.restartTimeout();
 
-    // wait 10 seconds
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
-          message: responseMessage,
-          duration: 3000,
-        })
-      )
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
+        message: responseMessage,
+        duration: 3000,
+      })
     );
 
     if (this.success_transition_state) {
       this.socket.state = this.success_transition_state;
-      return await this.success_transition_state.getInitMessage();
+      return await this.socket.transitionToState(this.success_transition_state);
     }
 
-    return await this.getInitMessage();
+    return await this.restart();
   }
 }

@@ -36,7 +36,23 @@ export class EnrollNTAG424State implements ReaderState {
     private readonly userId: User['id']
   ) {}
 
-  public async onEvent(eventData: FabreaderEvent['data']) {
+  public async onStateEnter(): Promise<void> {
+    this.enrollment = {
+      nextExpectedEvent: FabreaderEventType.NFC_TAP,
+      data: {},
+    };
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
+        message: 'Tap to enroll',
+      })
+    );
+  }
+
+  public async onStateExit(): Promise<void> {
+    this.enrollment = undefined;
+  }
+
+  public async onEvent(eventData: FabreaderEvent['data']): Promise<void> {
     if (
       eventData.type === FabreaderEventType.NFC_TAP &&
       this.enrollment?.nextExpectedEvent === FabreaderEventType.NFC_TAP
@@ -45,14 +61,12 @@ export class EnrollNTAG424State implements ReaderState {
     }
 
     this.logger.debug(`Unexpected event type ${eventData.type} in state ${this.enrollment?.nextExpectedEvent}`);
-
-    return undefined;
   }
 
-  public async onResponse(responseData: FabreaderResponse['data']) {
+  public async onResponse(responseData: FabreaderResponse['data']): Promise<void> {
     if (this.enrollment?.nextExpectedEvent !== responseData.type) {
       this.logger.warn(`Unexpected response type ${responseData.type} in state ${this.enrollment?.nextExpectedEvent}`);
-      return undefined;
+      return;
     }
 
     if (responseData.type === FabreaderEventType.CHANGE_KEYS) {
@@ -63,11 +77,11 @@ export class EnrollNTAG424State implements ReaderState {
       return this.onAuthenticate(responseData);
     }
 
-    return undefined;
+    this.logger.warn(`Unknown response type ${responseData.type} in state ${this.enrollment?.nextExpectedEvent}`);
   }
 
-  private async onGetNfcUID(responseData: FabreaderResponse['data']) {
-    this.socket.send(JSON.stringify(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING)));
+  private async onGetNfcUID(responseData: FabreaderResponse['data']): Promise<void> {
+    this.socket.sendMessage(new FabreaderEvent(FabreaderEventType.DISABLE_CARD_CHECKING));
 
     const cardUID = responseData.payload.cardUID;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -93,13 +107,15 @@ export class EnrollNTAG424State implements ReaderState {
       keys: this.enrollment.data.newKeys,
     });
     this.enrollment.nextExpectedEvent = FabreaderEventType.CHANGE_KEYS;
-    return new FabreaderEvent(FabreaderEventType.CHANGE_KEYS, {
-      authenticationKey: masterKey,
-      keys: this.enrollment.data.newKeys,
-    });
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.CHANGE_KEYS, {
+        authenticationKey: masterKey,
+        keys: this.enrollment.data.newKeys,
+      })
+    );
   }
 
-  private async onKeysChanged(responseData: FabreaderResponse['data']) {
+  private async onKeysChanged(responseData: FabreaderResponse['data']): Promise<void> {
     const failedKeys = responseData.payload.failedKeys as number[];
     const successfulKeys = responseData.payload.successfulKeys as number[];
 
@@ -110,20 +126,21 @@ export class EnrollNTAG424State implements ReaderState {
           enrollmentState: this.enrollment,
         }
       );
+
       this.enrollment = undefined;
-      const nextState = new InitialReaderState(this.socket, this.services);
-      this.socket.state = nextState;
-      return await nextState.getInitMessage();
+      return this.socket.transitionToState(new InitialReaderState(this.socket, this.services));
     }
 
     this.enrollment.nextExpectedEvent = FabreaderEventType.AUTHENTICATE;
-    return new FabreaderEvent(FabreaderEventType.AUTHENTICATE, {
-      authenticationKey: this.enrollment.data.newKeys[this.KEY_ZERO_MASTER],
-      keyNumber: this.KEY_ZERO_MASTER,
-    });
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.AUTHENTICATE, {
+        authenticationKey: this.enrollment.data.newKeys[this.KEY_ZERO_MASTER],
+        keyNumber: this.KEY_ZERO_MASTER,
+      })
+    );
   }
 
-  private async onAuthenticate(responseData: FabreaderResponse['data']) {
+  private async onAuthenticate(responseData: FabreaderResponse['data']): Promise<void> {
     const authenticationSuccessful = responseData.payload.authenticationSuccessful as boolean;
 
     if (!authenticationSuccessful) {
@@ -131,21 +148,15 @@ export class EnrollNTAG424State implements ReaderState {
         enrollmentState: this.enrollment,
       });
 
-      this.enrollment = undefined;
-
-      this.socket.send(
-        JSON.stringify(
-          new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
-            message: 'Enrollment failed',
-            duration: 10000,
-          })
-        )
+      this.socket.sendMessage(
+        new FabreaderEvent(FabreaderEventType.DISPLAY_ERROR, {
+          message: 'Enrollment failed',
+          duration: 10000,
+        })
       );
 
-      this.enrollment = undefined;
       const nextState = new InitialReaderState(this.socket, this.services);
-      this.socket.state = nextState;
-      return await nextState.getInitMessage();
+      return this.socket.transitionToState(nextState);
     }
 
     const nfcCard = await this.services.dbService.createNFCCard({
@@ -158,29 +169,14 @@ export class EnrollNTAG424State implements ReaderState {
 
     this.logger.log(`Created NFC card ${nfcCard.id} for user ${this.userId}`);
 
-    this.enrollment = undefined;
-
-    this.socket.send(
-      JSON.stringify(
-        new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
-          message: 'Enrollment successful',
-          duration: 10000,
-        })
-      )
+    this.socket.sendMessage(
+      new FabreaderEvent(FabreaderEventType.DISPLAY_SUCCESS, {
+        message: 'Enrollment successful',
+        duration: 10000,
+      })
     );
 
     const nextState = new InitialReaderState(this.socket, this.services);
-    this.socket.state = nextState;
-    return await nextState.getInitMessage();
-  }
-
-  public async getInitMessage(): Promise<FabreaderEvent> {
-    this.enrollment = {
-      nextExpectedEvent: FabreaderEventType.NFC_TAP,
-      data: {},
-    };
-    return new FabreaderEvent(FabreaderEventType.ENABLE_CARD_CHECKING, {
-      message: 'Tap to enroll',
-    });
+    this.socket.transitionToState(nextState);
   }
 }

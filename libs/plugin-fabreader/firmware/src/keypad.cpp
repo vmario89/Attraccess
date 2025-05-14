@@ -14,16 +14,19 @@ void Keypad::setup()
 
 char Keypad::readKey()
 {
-    char key = this->keymap[this->keyPad.getKey()];
+    uint8_t pressedKeyNum = this->keyPad.getKey();
 
-    if (key == this->released_key)
+    if (pressedKeyNum == this->released_key_num)
     {
         return '\0'; // Return null character instead of undefined 'null'
     }
 
+    char key = this->keymap[pressedKeyNum];
+
+    Serial.println("Pressed key number: " + String(pressedKeyNum));
     Serial.println("Key pressed (" + String(key) + ")");
 
-    while (this->keymap[this->keyPad.getKey()] != this->released_key)
+    while (this->keyPad.getKey() != this->released_key_num)
     {
         delay(10);
     }
