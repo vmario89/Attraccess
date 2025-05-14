@@ -161,14 +161,30 @@ jobs:
             - [Docker Hub](https://hub.docker.com/r/${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }})
           append_body: true
 
-  # Optionally add a deployment step
-  deploy:
-    needs: build-push-container
+  publish-npm-packages:
+    needs: build-test
     runs-on: ubuntu-latest
-    # Only deploy on actual releases, not manual workflow runs
-    if: github.event_name == 'release'
     steps:
-      - name: Deployment notification
-        run: echo "Container was built and pushed. Ready for deployment to production."
-      # Add deployment steps here when you're ready
-      # For example, update k8s manifests, trigger a deployment API, etc.
+      - uses: pnpm/action-setup@v4
+
+      # Cache node_modules
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Download build artifacts - Updated path to ensure dist directory structure is preserved
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      - name: Publish NPM packages
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          pnpm exec nx release publish --yes
