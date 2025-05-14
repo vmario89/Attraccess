@@ -17,7 +17,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  DOCKERHUB_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
@@ -128,7 +127,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-            ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
 
@@ -149,16 +148,16 @@ jobs:
 
             ### Docker Hub
             ```bash
-            docker pull ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
             ```
 
             ### Image Details
             - GitHub Registry: `${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
-            - Docker Hub: `${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
+            - Docker Hub: `${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
 
             ### Docker Run Example
             ```bash
-            docker run -p 3000:3000 ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            docker run -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
             ```
 
             ### Links

@@ -8,7 +8,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  DOCKERHUB_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
@@ -114,7 +113,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
-            ${{ env.DOCKERHUB_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
           labels: |
@@ -136,7 +135,7 @@ jobs:
               body: `🐳 Docker images built and pushed:
 
             GitHub Container Registry: \`${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
-            Docker Hub: \`${{ env.DOCKERHUB_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
+            Docker Hub: \`${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
 
             Image Digest: \`${{ steps.build-and-push.outputs.digest }}\``
             })
