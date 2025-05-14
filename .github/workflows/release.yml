@@ -15,8 +15,8 @@ on:
 
 # Define environment variables
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  GHCR_IMAGE_NAME: ${{ vars.GHCR_IMAGE_NAME }}
+  DOCKERHUB_IMAGE_NAME: ${{ vars.DOCKERHUB_IMAGE_NAME }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
@@ -96,7 +96,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ghcr.io/${{ env.GHCR_IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -106,10 +106,6 @@ jobs:
       - name: Get Node.js Version
         id: node-version
         run: echo "NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
-
-      # Create lowercase image name for Docker compatibility
-      - name: Set lowercase image name
-        run: echo "LOWERCASE_IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       # Debug step to verify dist directory existence
       - name: Debug dist directory
@@ -126,8 +122,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
 
@@ -143,21 +139,21 @@ jobs:
 
             ### GitHub Container Registry
             ```bash
-            docker pull ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            docker pull ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
             ```
 
             ### Docker Hub
             ```bash
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            docker pull ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
             ```
 
             ### Image Details
-            - GitHub Registry: `${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
-            - Docker Hub: `${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
+            - GitHub Registry: `ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
+            - Docker Hub: `${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
 
             ### Docker Run Example
             ```bash
-            docker run -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            docker run -p 3000:3000 ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
             ```
 
             ### Links

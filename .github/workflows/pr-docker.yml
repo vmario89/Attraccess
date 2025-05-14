@@ -6,8 +6,8 @@ on:
 
 # Define environment variables
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  GHCR_IMAGE_NAME: ${{ vars.GHCR_IMAGE_NAME }}
+  DOCKERHUB_IMAGE_NAME: ${{ vars.DOCKERHUB_IMAGE_NAME }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
@@ -95,10 +95,6 @@ jobs:
         id: node-version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
-      # Create lowercase image name for Docker compatibility
-      - name: Set lowercase image name
-        run: echo "LOWERCASE_IMAGE_NAME=$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
       # Add step to get short SHA
       - name: Get short SHA
         id: vars
@@ -112,8 +108,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
           labels: |
@@ -134,8 +130,8 @@ jobs:
               repo: context.repo.repo,
               body: `🐳 Docker images built and pushed:
 
-            GitHub Container Registry: \`${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
-            Docker Hub: \`${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
+            GitHub Container Registry: \`ghcr.io/${{ env.GHCR_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
+            Docker Hub: \`${{ env.DOCKERHUB_IMAGE_NAME }}:pr-${{ github.event.number }}-${{ steps.vars.outputs.SHORT_SHA }}\`
 
             Image Digest: \`${{ steps.build-and-push.outputs.digest }}\``
             })
