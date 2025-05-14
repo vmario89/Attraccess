@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DOCKERHUB_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   # Enable Docker BuildKit
   DOCKER_BUILDKIT: 1
@@ -83,6 +84,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       # Read Node.js version from .nvmrc
       - name: Get Node.js Version
         id: node-version
@@ -100,7 +108,9 @@ jobs:
           context: .
           push: true
           # Tag image as 'latest' for main branch pushes
-          tags: ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:latest
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.LOWERCASE_IMAGE_NAME }}:latest
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:latest
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
           labels: |
