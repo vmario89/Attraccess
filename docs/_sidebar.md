@@ -2,7 +2,11 @@
 
 - **Setup & Maintenance**
 
-  - [using Docker](setup/installation.md)
+  - [Installation](setup/installation.md)
+  - **Beginner Guides**
+    - [Complete Beginner Guide](setup/beginner-guide.md)
+    - [Docker Compose Guide](setup/docker-compose-guide.md)
+    - [Portainer Guide](setup/portainer-guide.md)
 
 - **User Guides**
 
