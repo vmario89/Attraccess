@@ -9,7 +9,7 @@ Attraccess is distributed as a single Docker container that includes everything 
 Get the latest version from our GitHub Docker registry:
 
 ```bash
-docker pull jappyjan/attraccess:latest
+docker pull fabaccess/attraccess:latest
 ```
 
 > [!TIP]
@@ -81,7 +81,7 @@ docker run -d \
   -e LOG_LEVELS=error,warn,log \
   -v /path/to/plugins:/app/plugins \
   -v /path/to/storage:/app/storage \
-  jappyjan/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 ### 📂 Storage Volume
@@ -125,7 +125,7 @@ docker run -d \
   -e VITE_ATTRACCESS_URL=https://attraccess.yourdomain.com \
   -v /path/to/jwt/secret:/app/secrets \
   -v /path/to/storage:/app/storage \
-  jappyjan/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 > [!NOTE]
@@ -158,7 +158,7 @@ docker run -d \
   -e VITE_ATTRACCESS_URL=https://attraccess.yourdomain.com \
   -v /path/to/plugins:/app/plugins \
   -v /path/to/storage:/app/storage \
-  jappyjan/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 ## 🔧 Troubleshooting
