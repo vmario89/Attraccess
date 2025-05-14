@@ -2,9 +2,9 @@
 
 > [!NOTE] > **Are you new to Docker or server deployment?** Check out our beginner-friendly guides:
 >
-> - [Complete Beginner's Guide](./beginner-guide.md) - Step-by-step instructions for first-time users
-> - [Docker Compose Guide](./docker-compose-guide.md) - Simplified deployment with Docker Compose
-> - [Portainer Guide](./portainer-guide.md) - Visual deployment using the Portainer web interface
+> - [Complete Beginner's Guide](setup/beginner-guide.md) - Step-by-step instructions for first-time users
+> - [Docker Compose Guide](setup/docker-compose-guide.md) - Simplified deployment with Docker Compose
+> - [Portainer Guide](setup/portainer-guide.md) - Visual deployment using the Portainer web interface
 
 ## 🚀 Getting Started with Attraccess
 
@@ -184,12 +184,12 @@ If you prefer simpler deployment options or are new to Docker, we offer several 
 
 ### For Beginners
 
-If you're new to Docker or server deployment, our [Complete Beginner's Guide](./beginner-guide.md) provides detailed explanations and step-by-step instructions with no prior knowledge required.
+If you're new to Docker or server deployment, our [Complete Beginner's Guide](setup/beginner-guide.md) provides detailed explanations and step-by-step instructions with no prior knowledge required.
 
 ### Using Docker Compose
 
-Docker Compose provides a simpler way to manage your Attraccess configuration through a YAML file. Follow our [Docker Compose Guide](./docker-compose-guide.md) to get started.
+Docker Compose provides a simpler way to manage your Attraccess configuration through a YAML file. Follow our [Docker Compose Guide](setup/docker-compose-guide.md) to get started.
 
 ### Using Portainer (GUI-based approach)
 
-If you prefer a graphical interface over command line, Portainer offers a user-friendly web interface for managing Docker containers. Our [Portainer Guide](./portainer-guide.md) walks you through the entire process.
+If you prefer a graphical interface over command line, Portainer offers a user-friendly web interface for managing Docker containers. Our [Portainer Guide](setup/portainer-guide.md) walks you through the entire process.
