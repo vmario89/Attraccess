@@ -20,13 +20,11 @@ permissions:
   # pull-requests: write is not needed for main branch builds
 
 jobs:
-  # Build and test to ensure everything is working before building the image
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        # Fetch depth 0 needed for some build tools, keep if necessary
         with:
           fetch-depth: 0
 
@@ -36,14 +34,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Use the same version as release.yml or specify as needed
+          node-version: 20
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run build steps (adjust target as needed)
-        run: pnpm nx run-many --target=build # Assuming only build is needed for the image
+        run: pnpm nx run-many --target=build
 
       # Upload build artifacts to be used in Docker build
       - name: Upload build artifacts
@@ -55,7 +53,7 @@ jobs:
 
   # Build and push Docker container
   build-push-container:
-    needs: build-test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
