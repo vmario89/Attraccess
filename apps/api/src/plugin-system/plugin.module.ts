@@ -5,7 +5,7 @@ import { PluginManifest } from './plugin.manifest';
 import { PluginService } from './plugin.service';
 import { PluginController } from './plugin.controller';
 import { join } from 'path';
-import FabReaderModule from '../plugin-fabreader/fabreader.module';
+import FabReaderModule from '@attraccess/attraccess-plugin-fabreader-backend';
 
 @Global()
 @Module({})
