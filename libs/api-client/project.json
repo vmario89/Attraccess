@@ -13,7 +13,8 @@
         "tsConfig": "libs/api-client/tsconfig.lib.json",
         "packageJson": "libs/api-client/package.json",
         "main": "libs/api-client/src/index.ts",
-        "assets": ["libs/api-client/*.md"]
+        "assets": ["libs/api-client/*.md"],
+        "clean": true
       },
       "dependsOn": ["generate"]
     },
@@ -22,7 +23,7 @@
       "cache": true,
       "outputs": ["{projectRoot}/src/lib/api.ts"],
       "options": {
-        "command": "ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
+        "command": "rm -rf libs/api-client/src/lib && ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
       },
       "dependsOn": ["api:export-swagger"]
     },

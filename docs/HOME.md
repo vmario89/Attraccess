@@ -16,15 +16,15 @@ Attraccess is a powerful platform designed to simplify and secure access managem
 ## Getting Started
 
 - For new installations, visit the [Setup Guide](setup/installation.md)
-- Existing users should check the [User Guides](user/)
-- Developers interested in extending Attraccess can explore the [Developer Documentation](developer/)
+- Existing users should check the [User Guides](user/getting-started.md)
+- Developers interested in extending Attraccess can explore the [Developer Documentation](developer/get-started.md)
 
 > [!TIP]
 > If you're setting up Attraccess for the first time, we recommend starting with our [Docker installation guide](setup/docker.md) for the quickest deployment.
 
 ## Support
 
-Need help? Open an issue on our [GitHub repository](https://github.com/attraccess).
+Need help? Open an issue on our [GitHub repository](https://github.com/FabInfra/Attraccess).
 
 > [!NOTE]
 > This documentation is also accessible directly from your running Attraccess instance at `<your-attraccess-url>/docs`.

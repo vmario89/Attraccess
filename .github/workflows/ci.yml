@@ -42,10 +42,3 @@ jobs:
       # Modified to run lint with max-warnings=0 to fail on warnings
       - name: Run lint, test, build and e2e
         run: pnpm exec nx affected -t lint, test, build, e2e
-
-      # Publish packages if on main branch
-      - name: Publish packages
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          pnpm exec nx release publish --yes

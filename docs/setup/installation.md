@@ -1,5 +1,11 @@
 # Installation
 
+> [!NOTE] > **Are you new to Docker or server deployment?** Check out our beginner-friendly guides:
+>
+> - [Complete Beginner's Guide](setup/beginner-guide.md) - Step-by-step instructions for first-time users
+> - [Docker Compose Guide](setup/docker-compose-guide.md) - Simplified deployment with Docker Compose
+> - [Portainer Guide](setup/portainer-guide.md) - Visual deployment using the Portainer web interface
+
 ## 🚀 Getting Started with Attraccess
 
 Attraccess is distributed as a single Docker container that includes everything you need to get up and running quickly. Follow these simple steps to deploy your instance:
@@ -9,7 +15,7 @@ Attraccess is distributed as a single Docker container that includes everything 
 Get the latest version from our GitHub Docker registry:
 
 ```bash
-docker pull ghcr.io/attraccess/attraccess:latest
+docker pull fabaccess/attraccess:latest
 ```
 
 > [!TIP]
@@ -81,7 +87,7 @@ docker run -d \
   -e LOG_LEVELS=error,warn,log \
   -v /path/to/plugins:/app/plugins \
   -v /path/to/storage:/app/storage \
-  ghcr.io/attraccess/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 ### 📂 Storage Volume
@@ -125,7 +131,7 @@ docker run -d \
   -e VITE_ATTRACCESS_URL=https://attraccess.yourdomain.com \
   -v /path/to/jwt/secret:/app/secrets \
   -v /path/to/storage:/app/storage \
-  ghcr.io/attraccess/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 > [!NOTE]
@@ -158,7 +164,7 @@ docker run -d \
   -e VITE_ATTRACCESS_URL=https://attraccess.yourdomain.com \
   -v /path/to/plugins:/app/plugins \
   -v /path/to/storage:/app/storage \
-  ghcr.io/attraccess/attraccess:latest
+  fabaccess/attraccess:latest
 ```
 
 ## 🔧 Troubleshooting
@@ -171,3 +177,19 @@ If you encounter issues during installation:
 4. Verify network connectivity to required services
 
 For additional support, please visit our [GitHub repository](https://github.com/attraccess/attraccess).
+
+## 🌱 Alternative Deployment Methods
+
+If you prefer simpler deployment options or are new to Docker, we offer several alternative approaches:
+
+### For Beginners
+
+If you're new to Docker or server deployment, our [Complete Beginner's Guide](setup/beginner-guide.md) provides detailed explanations and step-by-step instructions with no prior knowledge required.
+
+### Using Docker Compose
+
+Docker Compose provides a simpler way to manage your Attraccess configuration through a YAML file. Follow our [Docker Compose Guide](setup/docker-compose-guide.md) to get started.
+
+### Using Portainer (GUI-based approach)
+
+If you prefer a graphical interface over command line, Portainer offers a user-friendly web interface for managing Docker containers. Our [Portainer Guide](setup/portainer-guide.md) walks you through the entire process.
