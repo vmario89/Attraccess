@@ -72,6 +72,10 @@ export function SSOLogin() {
     return null;
   }
 
+  if ((providers ?? []).length === 0) {
+    return null;
+  }
+
   return (
     <>
       <Divider />

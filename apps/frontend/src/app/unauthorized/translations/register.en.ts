@@ -7,6 +7,7 @@ export default {
   username: 'Pick a username',
   email: 'Your email address',
   password: 'Create your password',
+  passwordConfirmation: 'Confirm your password',
   createAccountButton: 'Create account and start making!',
   creatingAccount: 'Creating your account...',
   error: {
@@ -19,4 +20,5 @@ export default {
       'We have sent an activation email to {email}. Please check your inbox and click the activation link to complete your registration.',
     closeButton: 'Got it',
   },
+  passwordConfirmationError: 'The passwords do not match',
 };

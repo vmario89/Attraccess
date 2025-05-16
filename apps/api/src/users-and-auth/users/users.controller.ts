@@ -28,6 +28,8 @@ import { UpdateUserPermissionsDto } from './dtos/updateUserPermissions.dto';
 import { BulkUpdateUserPermissionsDto } from './dtos/bulkUpdateUserPermissions.dto';
 import { SystemPermissions } from '@attraccess/database-entities';
 import { GetUsersWithPermissionQueryDto, PermissionFilter } from './dtos/getUsersWithPermissionQuery.dto';
+import { ResetPasswordDto } from './dtos/resetPassword.dto';
+import { ChangePasswordDto } from './dtos/changePassword.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -130,6 +132,73 @@ export class UsersController {
     await this.authService.verifyEmail(body.email, body.token);
     this.logger.debug(`Email verified successfully for: ${body.email}`);
     return { message: 'Email verified successfully' };
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Request a password reset', operationId: 'requestPasswordReset' })
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  async requestPasswordReset(@Body() body: ResetPasswordDto) {
+    this.logger.debug(`Resetting password for: ${body.email}`);
+
+    const token = await this.authService.generatePasswordResetToken(body.email);
+    if (!token) {
+      this.logger.debug(`No user found with email: ${body.email}`);
+
+      return { message: 'OK' };
+    }
+
+    const user = await this.usersService.findOne({ email: body.email });
+    if (!user) {
+      this.logger.debug(`No user found with email: ${body.email}`);
+
+      return { message: 'OK' };
+    }
+
+    await this.emailService.sendPasswordResetEmail(user, token);
+    this.logger.debug(`Password reset e-mail sent to: ${body.email}`);
+
+    return { message: 'OK' };
+  }
+
+  @Post('/:userId/change-password')
+  @ApiOperation({ summary: 'Change a user password after password reset', operationId: 'changePasswordViaResetToken' })
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  async changePasswordViaResetToken(@Param('userId', ParseIntPipe) userId: number, @Body() body: ChangePasswordDto) {
+    this.logger.debug(`Changing password for user ID: ${userId}`);
+
+    const user = await this.usersService.findOne({ id: userId });
+    if (!user) {
+      this.logger.debug(`User not found with ID: ${userId}`);
+      throw new UserNotFoundException(userId);
+    }
+
+    if (user.passwordResetToken !== body.token) {
+      this.logger.debug(`Invalid token for user ID: ${userId}`);
+      throw new ForbiddenException('Invalid token');
+    }
+
+    await this.authService.changePassword(user, body.password);
+
+    await this.usersService.updateUser(userId, {
+      passwordResetToken: null,
+      passwordResetTokenExpiresAt: null,
+    });
+
+    return { message: 'OK' };
   }
 
   @Auth()

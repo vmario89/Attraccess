@@ -7,6 +7,7 @@ export default {
   username: 'Wähle einen Benutzernamen',
   email: 'Deine E-Mail-Adresse',
   password: 'Erstelle dein Passwort',
+  passwordConfirmation: 'Bestätige dein Passwort',
   createAccountButton: 'Konto erstellen und loslegen!',
   creatingAccount: 'Dein Konto wird erstellt...',
   error: {
@@ -19,4 +20,5 @@ export default {
       'Wir haben eine Aktivierungs-E-Mail an {email} gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Aktivierungslink, um deine Registrierung abzuschließen.',
     closeButton: 'Verstanden',
   },
+  passwordConfirmationError: 'Die Passwörter stimmen nicht überein',
 };

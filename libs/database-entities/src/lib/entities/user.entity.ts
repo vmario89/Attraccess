@@ -70,6 +70,14 @@ export class User {
   @Exclude()
   emailVerificationTokenExpiresAt!: Date | null;
 
+  @Column({ type: 'text', nullable: true })
+  @Exclude()
+  passwordResetToken!: string | null;
+
+  @Column({ type: 'datetime', nullable: true })
+  @Exclude()
+  passwordResetTokenExpiresAt!: Date | null;
+
   @Column(() => SystemPermissions, { prefix: '' })
   @ApiProperty({
     description: 'System-wide permissions for the user',
