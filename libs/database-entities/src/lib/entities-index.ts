@@ -2,6 +2,7 @@
 import { AuthenticationDetail } from './entities/authenticationDetail.entity';
 import { MqttResourceConfig } from './entities/mqttResourceConfig.entity';
 import { MqttServer } from './entities/mqttServer.entity';
+import { NFCCard } from './entities/nfcCard.entity';
 import { Resource, ResourceComputedView } from './entities/resource.entity';
 import { ResourceGroup } from './entities/resourceGroup.entity';
 import { ResourceIntroduction } from './entities/resourceIntroduction.entity';
@@ -16,6 +17,7 @@ import { SSOProvider, SSOProviderType } from './entities/ssoProvider.entity';
 import { SSOProviderOIDCConfiguration } from './entities/ssoProvider.oidc';
 import { User, SystemPermissions, type SystemPermission } from './entities/user.entity';
 import { WebhookConfig } from './entities/webhookConfig.entity';
+import { FabReader } from './entities/fabReader.entity';
 
 // Export all entities individually
 export {
@@ -38,6 +40,8 @@ export {
   SystemPermissions,
   SystemPermission,
   WebhookConfig,
+  NFCCard,
+  FabReader,
 };
 
 // Export the entities object
@@ -57,4 +61,6 @@ export const entities = {
   WebhookConfig,
   SSOProvider,
   SSOProviderOIDCConfiguration,
+  NFCCard,
+  FabReader,
 };

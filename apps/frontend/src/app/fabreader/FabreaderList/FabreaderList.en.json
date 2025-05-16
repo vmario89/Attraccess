@@ -1,0 +1,8 @@
+{
+  "editReader": "Edit",
+  "fabreaders": "FABreaders",
+  "lastConnection": "Last connection: {{timestamp}}",
+  "errorFetchReaders": "Could not fetch FABreaders",
+  "connected": "Connected",
+  "disconnected": "Disconnected"
+}

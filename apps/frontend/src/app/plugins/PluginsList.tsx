@@ -19,6 +19,7 @@ import {
   TableCell,
   Spinner,
   Tooltip,
+  Alert,
 } from '@heroui/react';
 import { Trash2, Upload } from 'lucide-react';
 import de from './PluginsList.de.json';
@@ -81,72 +82,77 @@ export function PluginsList() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">{t('title')}</h1>
-        <Button color="primary" startContent={<Upload size={18} />} onPress={() => setUploadModalOpen(true)}>
-          {t('uploadButton')}
-        </Button>
-      </CardHeader>
-      <CardBody>
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <Spinner size="lg" />
-          </div>
-        ) : plugins && plugins.length > 0 ? (
-          <Table aria-label="Plugins table">
-            <TableHeader>
-              <TableColumn>{t('columns.name')}</TableColumn>
-              <TableColumn>{t('columns.version')}</TableColumn>
-              <TableColumn>{t('columns.directory')}</TableColumn>
-              <TableColumn>{t('columns.actions')}</TableColumn>
-            </TableHeader>
-            <TableBody>
-              {plugins.map((plugin) => (
-                <TableRow key={plugin.name}>
-                  <TableCell>{plugin.name}</TableCell>
-                  <TableCell>
-                    <Chip size="sm" variant="flat" color="primary">
-                      {plugin.version}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>{plugin.pluginDirectory || '-'}</TableCell>
-                  <TableCell>
-                    <Tooltip content={t('deleteTooltip')}>
-                      <Button isIconOnly variant="light" color="danger" onPress={() => handleDeleteClick(plugin.id)}>
-                        <Trash2 size={18} />
-                      </Button>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8 text-gray-500">{t('noPlugins')}</div>
-        )}
-      </CardBody>
+    <>
+      <Alert color="danger" className="mb-4">
+        {t('workInProgressAlert')}
+      </Alert>
+      <Card className="w-full">
+        <CardHeader className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">{t('title')}</h1>
+          <Button color="primary" startContent={<Upload size={18} />} onPress={() => setUploadModalOpen(true)}>
+            {t('uploadButton')}
+          </Button>
+        </CardHeader>
+        <CardBody>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner size="lg" />
+            </div>
+          ) : plugins && plugins.length > 0 ? (
+            <Table aria-label="Plugins table">
+              <TableHeader>
+                <TableColumn>{t('columns.name')}</TableColumn>
+                <TableColumn>{t('columns.version')}</TableColumn>
+                <TableColumn>{t('columns.directory')}</TableColumn>
+                <TableColumn>{t('columns.actions')}</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {plugins.map((plugin) => (
+                  <TableRow key={plugin.name}>
+                    <TableCell>{plugin.name}</TableCell>
+                    <TableCell>
+                      <Chip size="sm" variant="flat" color="primary">
+                        {plugin.version}
+                      </Chip>
+                    </TableCell>
+                    <TableCell>{plugin.pluginDirectory || '-'}</TableCell>
+                    <TableCell>
+                      <Tooltip content={t('deleteTooltip')}>
+                        <Button isIconOnly variant="light" color="danger" onPress={() => handleDeleteClick(plugin.id)}>
+                          <Trash2 size={18} />
+                        </Button>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-gray-500">{t('noPlugins')}</div>
+          )}
+        </CardBody>
 
-      <Modal isOpen={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <ModalContent>
-          <ModalHeader>{t('deleteConfirmation.title')}</ModalHeader>
-          <ModalBody>
-            {t('deleteConfirmation.message', {
-              pluginName: plugins?.find((plugin) => plugin.id === pluginToDelete)?.name,
-            })}
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={handleDeleteCancel} isDisabled={isDeleting}>
-              {t('deleteConfirmation.cancel')}
-            </Button>
-            <Button color="danger" onPress={handleDeleteConfirm} isLoading={isDeleting}>
-              {t('deleteConfirmation.delete')}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        <Modal isOpen={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+          <ModalContent>
+            <ModalHeader>{t('deleteConfirmation.title')}</ModalHeader>
+            <ModalBody>
+              {t('deleteConfirmation.message', {
+                pluginName: plugins?.find((plugin) => plugin.id === pluginToDelete)?.name,
+              })}
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onPress={handleDeleteCancel} isDisabled={isDeleting}>
+                {t('deleteConfirmation.cancel')}
+              </Button>
+              <Button color="danger" onPress={handleDeleteConfirm} isLoading={isDeleting}>
+                {t('deleteConfirmation.delete')}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
-      <UploadPluginModal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)} />
-    </Card>
+        <UploadPluginModal isOpen={uploadModalOpen} onClose={() => setUploadModalOpen(false)} />
+      </Card>
+    </>
   );
 }

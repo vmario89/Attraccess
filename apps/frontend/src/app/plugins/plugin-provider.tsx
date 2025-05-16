@@ -12,7 +12,6 @@ import { AttraccessFrontendPlugin, AttraccessFrontendPluginAuthData } from '@att
 import { ToastType, useToastMessage } from '../../components/toastProvider';
 import { useAuth } from '../../hooks/useAuth';
 import { getBaseUrl } from '../../api';
-import FabreaderPlugin from '@attraccess/attraccess-plugin-fabreader-frontend';
 
 export class PluginLoadedEvent extends Event {
   constructor(public readonly pluginManifest: LoadedPluginManifest) {
@@ -125,13 +124,10 @@ export function PluginProvider(props: PropsWithChildren) {
   );
 
   useEffect(() => {
-    loadPlugin(
-      {
-        name: 'FABreader',
-        id: new Date().toISOString(),
-      } as PluginManifestWithPlugin,
-      new FabreaderPlugin()
-    );
+    loadPlugin({
+      name: 'FABreader',
+      id: new Date().toISOString(),
+    } as PluginManifestWithPlugin);
   }, [loadPlugin]);
 
   useEffect(() => {
