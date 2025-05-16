@@ -1,12 +1,18 @@
+import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import React from 'react';
+import * as en from './en.json';
+import * as de from './de.json';
 
 interface UnauthorizedLayoutProps {
   children: React.ReactNode;
-  title: string;
-  subtitle: string;
 }
 
-export function UnauthorizedLayout({ children, title, subtitle }: UnauthorizedLayoutProps) {
+export function UnauthorizedLayout({ children }: UnauthorizedLayoutProps) {
+  const { t } = useTranslations('unauthorized-layout', {
+    en,
+    de,
+  });
+
   return (
     <div className="flex min-h-screen">
       {/* Left side with background image */}
@@ -18,8 +24,8 @@ export function UnauthorizedLayout({ children, title, subtitle }: UnauthorizedLa
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20" />
         <div className="relative z-10 p-12 text-white">
-          <h2 className="text-4xl font-bold mb-4">{title}</h2>
-          <p className="text-lg text-gray-200">{subtitle}</p>
+          <h2 className="text-4xl font-bold mb-4">{t('title')}</h2>
+          <p className="text-lg text-gray-200">{t('subtitle')}</p>
         </div>
       </div>
 

@@ -38,7 +38,13 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
       const formData = new FormData(event.currentTarget as HTMLFormElement);
       const username = formData.get('username');
       const password = formData.get('password');
+      const passwordConfirmation = formData.get('password_confirmation');
       const email = formData.get('email');
+
+      if (password !== passwordConfirmation) {
+        setError(t('passwordConfirmationError'));
+        return;
+      }
 
       if (typeof username !== 'string' || typeof password !== 'string' || typeof email !== 'string') {
         return;
@@ -60,7 +66,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         setError(error.error?.message || 'An unexpected error occurred');
       }
     },
-    [createUser, onOpen]
+    [createUser, onOpen, t]
   );
 
   return (
@@ -106,6 +112,16 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           isDisabled={createUser.isPending}
         />
 
+        <Input
+          id="password_confirmation"
+          name="password_confirmation"
+          type="password"
+          label={t('passwordConfirmation')}
+          required
+          variant="underlined"
+          isDisabled={createUser.isPending}
+        />
+
         <Button
           color="primary"
           fullWidth
@@ -120,7 +136,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         {error && <Alert color="danger" title={t('error.title')} description={error} />}
       </form>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>

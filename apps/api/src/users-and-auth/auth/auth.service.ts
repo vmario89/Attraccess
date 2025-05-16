@@ -116,6 +116,10 @@ export class AuthService {
     return isValid;
   }
 
+  private async hashPassword(password: string) {
+    return await bcrypt.hash(password, this.SALT_ROUNDS);
+  }
+
   async addAuthenticationDetails<T extends AuthenticationType>(
     userId: number,
     options: AuthenticationOptions<T>
@@ -126,7 +130,7 @@ export class AuthService {
 
     if (options.type === AuthenticationType.LOCAL_PASSWORD) {
       this.logger.debug(`Hashing password for user ID: ${userId}`);
-      authenticationDetail.password = await bcrypt.hash(options.details.password, this.SALT_ROUNDS);
+      authenticationDetail.password = await this.hashPassword(options.details.password);
     }
 
     const saved = await this.authenticationDetailRepository.save(authenticationDetail);
@@ -208,5 +212,28 @@ export class AuthService {
       emailVerificationTokenExpiresAt: null,
     });
     this.logger.debug(`Email successfully verified for user ID: ${user.id}`);
+  }
+
+  async generatePasswordResetToken(email: string): Promise<string> {
+    const user = await this.usersService.findOne({ email });
+    if (!user) {
+      this.logger.debug(`No user found with email: ${email}`);
+      return null;
+    }
+
+    const token = nanoid();
+    await this.usersService.updateUser(user.id, {
+      passwordResetToken: token,
+      passwordResetTokenExpiresAt: addDays(new Date(), 1),
+    });
+
+    return token;
+  }
+
+  async changePassword(user: User, password: string): Promise<void> {
+    const authenticationDetail = await this.getAuthenticationDetail(AuthenticationType.LOCAL_PASSWORD, user.id);
+
+    authenticationDetail.password = await this.hashPassword(password);
+    await this.authenticationDetailRepository.save(authenticationDetail);
   }
 }

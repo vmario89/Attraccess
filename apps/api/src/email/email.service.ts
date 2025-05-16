@@ -24,9 +24,7 @@ export class EmailService {
     this.config = loadEnv((z) => ({
       FRONTEND_URL: z.string().url().default(process.env.VITE_ATTRACCESS_URL),
     })) as EnvConfig;
-    this.logger.debug(
-      `EmailService initialized with FRONTEND_URL: ${this.config.FRONTEND_URL}`
-    );
+    this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.config.FRONTEND_URL}`);
   }
 
   private async loadTemplates() {
@@ -57,9 +55,7 @@ export class EmailService {
     }
 
     if (!templatesPath) {
-      this.logger.error(
-        'Email templates path not found in any of the possible locations'
-      );
+      this.logger.error('Email templates path not found in any of the possible locations');
       throw new Error('Email templates path not found');
     }
 
@@ -71,21 +67,14 @@ export class EmailService {
       if (file.endsWith('.mjml')) {
         const templateName = file.replace('.mjml', '');
         this.logger.debug(`Loading template: ${templateName}`);
-        const templateContent = await readFile(
-          join(templatesPath, file),
-          'utf-8'
-        );
+        const templateContent = await readFile(join(templatesPath, file), 'utf-8');
 
-        this.templates[templateName] = Handlebars.compile(
-          mjml2html(templateContent).html
-        );
+        this.templates[templateName] = Handlebars.compile(mjml2html(templateContent).html);
         this.logger.debug(`Compiled template: ${templateName}`);
       }
     }
 
-    this.logger.debug(
-      `Loaded ${Object.keys(this.templates).length} email templates`
-    );
+    this.logger.debug(`Loaded ${Object.keys(this.templates).length} email templates`);
   }
 
   private async getTemplate(name: string) {
@@ -104,12 +93,8 @@ export class EmailService {
   }
 
   async sendVerificationEmail(user: User, verificationToken: string) {
-    this.logger.debug(
-      `Sending verification email to user ID: ${user.id}, email: ${user.email}`
-    );
-    const verificationUrl = `${
-      this.config.FRONTEND_URL
-    }/verify-email?email=${encodeURIComponent(
+    this.logger.debug(`Sending verification email to user ID: ${user.id}, email: ${user.email}`);
+    const verificationUrl = `${this.config.FRONTEND_URL}/verify-email?email=${encodeURIComponent(
       user.email
     )}&token=${verificationToken}`;
     this.logger.debug(`Verification URL: ${verificationUrl}`);
@@ -132,25 +117,18 @@ export class EmailService {
         subject: 'Verify your email address',
         html,
       });
-      this.logger.debug(
-        `Verification email sent successfully to: ${user.email}`
-      );
+      this.logger.debug(`Verification email sent successfully to: ${user.email}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send verification email to: ${user.email}`,
-        error.stack
-      );
+      this.logger.error(`Failed to send verification email to: ${user.email}`, error.stack);
       throw error;
     }
   }
 
   async sendPasswordResetEmail(user: User, resetToken: string) {
-    this.logger.debug(
-      `Sending password reset email to user ID: ${user.id}, email: ${user.email}`
-    );
-    const resetUrl = `${
-      this.config.FRONTEND_URL
-    }/reset-password?token=${encodeURIComponent(resetToken)}`;
+    this.logger.debug(`Sending password reset email to user ID: ${user.id}, email: ${user.email}`);
+    const resetUrl = `${this.config.FRONTEND_URL}/reset-password?userId=${user.id}&token=${encodeURIComponent(
+      resetToken
+    )}`;
     this.logger.debug(`Reset URL: ${resetUrl}`);
 
     const template = await this.getTemplate('reset-password');
@@ -171,14 +149,9 @@ export class EmailService {
         subject: 'Reset your password',
         html,
       });
-      this.logger.debug(
-        `Password reset email sent successfully to: ${user.email}`
-      );
+      this.logger.debug(`Password reset email sent successfully to: ${user.email}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send password reset email to: ${user.email}`,
-        error.stack
-      );
+      this.logger.error(`Failed to send password reset email to: ${user.email}`, error.stack);
       throw error;
     }
   }

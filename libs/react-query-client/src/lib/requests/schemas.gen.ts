@@ -112,6 +112,28 @@ export const $VerifyEmailDto = {
     required: ['token', 'email']
 } as const;
 
+export const $ResetPasswordDto = {
+    type: 'object',
+    properties: {}
+} as const;
+
+export const $ChangePasswordDto = {
+    type: 'object',
+    properties: {
+        password: {
+            type: 'string',
+            description: 'The new password for the user',
+            example: 'password123'
+        },
+        token: {
+            type: 'string',
+            description: 'The token for the user',
+            example: '1234567890'
+        }
+    },
+    required: ['password', 'token']
+} as const;
+
 export const $UserNotFoundException = {
     type: 'object',
     properties: {}

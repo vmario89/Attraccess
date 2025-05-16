@@ -16,6 +16,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import de from './app.de.json';
 import en from './app.en.json';
+import { ResetPassword } from './reset-password/resetPassword';
+import { UnauthorizedLayout } from './unauthorized/unauthorized-layout/layout';
 
 function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();
@@ -115,6 +117,14 @@ export function App() {
           <Layout noLayout={!isAuthenticated}>
             <Routes>
               <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route
+                path="/reset-password"
+                element={
+                  <UnauthorizedLayout>
+                    <ResetPassword />
+                  </UnauthorizedLayout>
+                }
+              />
 
               {routesWithAuthElements}
 

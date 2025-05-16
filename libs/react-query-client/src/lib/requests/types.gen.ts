@@ -80,6 +80,21 @@ export type VerifyEmailDto = {
     email: string;
 };
 
+export type ResetPasswordDto = {
+    [key: string]: unknown;
+};
+
+export type ChangePasswordDto = {
+    /**
+     * The new password for the user
+     */
+    password: string;
+    /**
+     * The token for the user
+     */
+    token: string;
+};
+
 export type UserNotFoundException = {
     [key: string]: unknown;
 };
@@ -1331,6 +1346,19 @@ export type VerifyEmailResponse = {
     message?: string;
 };
 
+export type RequestPasswordResetData = {
+    requestBody: ResetPasswordDto;
+};
+
+export type RequestPasswordResetResponse = unknown;
+
+export type ChangePasswordViaResetTokenData = {
+    requestBody: ChangePasswordDto;
+    userId: number;
+};
+
+export type ChangePasswordViaResetTokenResponse = unknown;
+
 export type GetCurrentResponse = User;
 
 export type GetOneUserByIdData = {
@@ -1990,6 +2018,36 @@ export type $OpenApiTs = {
                 };
                 /**
                  * Invalid token or email.
+                 */
+                400: unknown;
+            };
+        };
+    };
+    '/api/users/reset-password': {
+        post: {
+            req: RequestPasswordResetData;
+            res: {
+                /**
+                 * OK
+                 */
+                200: unknown;
+                /**
+                 * Invalid input data.
+                 */
+                400: unknown;
+            };
+        };
+    };
+    '/api/users/{userId}/change-password': {
+        post: {
+            req: ChangePasswordViaResetTokenData;
+            res: {
+                /**
+                 * OK
+                 */
+                200: unknown;
+                /**
+                 * Invalid input data.
                  */
                 400: unknown;
             };

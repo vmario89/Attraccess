@@ -9,3 +9,4 @@ export * from './1744911268510-resource-groups';
 export * from './1744912425272-resource-groups-2';
 export * from './1747398210875-diff';
 export * from './1747398859244-fabreader-init';
+export * from './1747403591279-user-password-reset';
