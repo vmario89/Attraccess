@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalContent,
+  Alert,
 } from '@heroui/react';
 import { Card } from '@heroui/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -202,37 +203,40 @@ export function NfcCardList() {
   const [cardToDeleteId, setCardToDeleteId] = useState<number | null>(null);
 
   return (
-    <Card>
-      <CardHeader className="flex justify-between items-center">
-        <h1>{t('nfcCards')}</h1>
-        <EnrollNfcCardButton />
-      </CardHeader>
-      <CardBody>
-        <NfcCardDeleteModal
-          show={cardToDeleteId !== null}
-          close={() => setCardToDeleteId(null)}
-          cardId={cardToDeleteId}
-        />
+    <>
+      <Alert color="danger">{t('workInProgress')}</Alert>
+      <Card>
+        <CardHeader className="flex justify-between items-center">
+          <h1>{t('nfcCards')}</h1>
+          <EnrollNfcCardButton />
+        </CardHeader>
+        <CardBody>
+          <NfcCardDeleteModal
+            show={cardToDeleteId !== null}
+            close={() => setCardToDeleteId(null)}
+            cardId={cardToDeleteId}
+          />
 
-        <Table aria-label={t('nfcCards')} removeWrapper>
-          <TableHeader>
-            {headers.map((header) => (
-              <TableColumn key={header}>{t('nfcCardsTable.headers.' + header)}</TableColumn>
-            ))}
-          </TableHeader>
-          <TableBody emptyContent={t('noNfcCardsFound')}>
-            {(cards ?? []).map((card) => (
-              <TableRow key={card.id}>
-                {headers.map((header) => (
-                  <TableCell key={header}>
-                    <NfcCardTableCell header={header} card={card} onDeleteClick={() => setCardToDeleteId(card.id)} />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardBody>
-    </Card>
+          <Table aria-label={t('nfcCards')} removeWrapper>
+            <TableHeader>
+              {headers.map((header) => (
+                <TableColumn key={header}>{t('nfcCardsTable.headers.' + header)}</TableColumn>
+              ))}
+            </TableHeader>
+            <TableBody emptyContent={t('noNfcCardsFound')}>
+              {(cards ?? []).map((card) => (
+                <TableRow key={card.id}>
+                  {headers.map((header) => (
+                    <TableCell key={header}>
+                      <NfcCardTableCell header={header} card={card} onDeleteClick={() => setCardToDeleteId(card.id)} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardBody>
+      </Card>
+    </>
   );
 }

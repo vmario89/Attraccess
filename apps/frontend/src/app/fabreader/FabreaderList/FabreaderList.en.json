@@ -1,4 +1,5 @@
 {
+  "workInProgress": "This feature is still in development, use at your own risk!",
   "editReader": "Edit",
   "fabreaders": "FABreaders",
   "lastConnection": "Last connection: {{timestamp}}",

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Accordion, AccordionItem, Button, Card, CardBody, CardHeader, Chip } from '@heroui/react';
+import { Accordion, AccordionItem, Alert, Button, Card, CardBody, CardHeader, Chip } from '@heroui/react';
 import { Cloud, CloudOff } from 'lucide-react';
 import { useDateTimeFormatter, useTranslations } from '@attraccess/plugins-frontend-ui';
 import { FabreaderEditor } from '../FabreaderEditor/FabreaderEditor';
@@ -41,42 +41,45 @@ export const FabreaderList = () => {
   const formatDateTime = useDateTimeFormatter();
 
   return (
-    <Card>
-      <CardHeader>
-        <h1>{t('fabreaders')}</h1>
-      </CardHeader>
-      <CardBody>
-        <Accordion>
-          {(readers ?? []).map((reader) => (
-            <AccordionItem
-              key={reader.id}
-              aria-label={reader.name}
-              subtitle={t('lastConnection', { timestamp: formatDateTime(reader.lastConnection) })}
-              title={reader.name}
-              startContent={
-                <Chip color={reader.connected ? 'success' : 'danger'}>
-                  {reader.connected ? <Cloud /> : <CloudOff />}
-                </Chip>
-              }
-            >
-              <div className="flex gap-2">
-                {userCanManage ? (
-                  <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('editReader')}</Button>
-                ) : null}
-              </div>
+    <>
+      <Alert color="danger">{t('workInProgress')}</Alert>
+      <Card>
+        <CardHeader>
+          <h1>{t('fabreaders')}</h1>
+        </CardHeader>
+        <CardBody>
+          <Accordion>
+            {(readers ?? []).map((reader) => (
+              <AccordionItem
+                key={reader.id}
+                aria-label={reader.name}
+                subtitle={t('lastConnection', { timestamp: formatDateTime(reader.lastConnection) })}
+                title={reader.name}
+                startContent={
+                  <Chip color={reader.connected ? 'success' : 'danger'}>
+                    {reader.connected ? <Cloud /> : <CloudOff />}
+                  </Chip>
+                }
+              >
+                <div className="flex gap-2">
+                  {userCanManage ? (
+                    <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('editReader')}</Button>
+                  ) : null}
+                </div>
 
-              {userCanManage ? (
-                <FabreaderEditor
-                  readerId={reader.id}
-                  isOpen={openedReaderEditor === reader.id}
-                  onCancel={() => setOpenedReaderEditor(null)}
-                  onSave={() => setOpenedReaderEditor(null)}
-                />
-              ) : null}
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </CardBody>
-    </Card>
+                {userCanManage ? (
+                  <FabreaderEditor
+                    readerId={reader.id}
+                    isOpen={openedReaderEditor === reader.id}
+                    onCancel={() => setOpenedReaderEditor(null)}
+                    onSave={() => setOpenedReaderEditor(null)}
+                  />
+                ) : null}
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardBody>
+      </Card>
+    </>
   );
 };
