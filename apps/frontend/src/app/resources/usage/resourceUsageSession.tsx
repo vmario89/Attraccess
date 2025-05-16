@@ -1,6 +1,19 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Button, Card, CardBody, CardHeader, Spinner, Divider, Alert } from '@heroui/react';
-import { Play, StopCircle, Clock, Users } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Spinner,
+  Divider,
+  Alert,
+  ButtonGroup,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from '@heroui/react';
+import { StopCircle, Clock, Users, ChevronDownIcon, PlayIcon } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './translations/resourceUsageSession.en';
@@ -185,6 +198,20 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
   // Users with canManageResources permission can always start a session
   const canStartSession = canManageResources || hasCompletedIntroduction || isIntroducer;
 
+  const immediatelyEndSession = useCallback(() => {
+    endSession.mutate({
+      resourceId,
+      requestBody: {},
+    });
+  }, [endSession, resourceId]);
+
+  const immediatelyStartSession = useCallback(() => {
+    startSession.mutate({
+      resourceId,
+      requestBody: {},
+    });
+  }, [startSession, resourceId]);
+
   return (
     <>
       <Card>
@@ -216,16 +243,32 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
                     <p className="font-medium text-xl text-gray-900 dark:text-white">{elapsedTime}</p>
                   </div>
                 </div>
-                <Button
-                  color="danger"
-                  variant="solid"
-                  fullWidth
-                  startContent={<StopCircle className="w-4 h-4" />}
-                  onPress={handleOpenEndSessionModal}
-                  isLoading={endSession.isPending}
-                >
-                  {t('endSession')}
-                </Button>
+
+                <ButtonGroup fullWidth color="danger">
+                  <Button
+                    isLoading={endSession.isPending}
+                    startContent={<StopCircle className="w-4 h-4" />}
+                    onPress={immediatelyEndSession}
+                  >
+                    {t('endSession')}
+                  </Button>
+                  <Dropdown placement="bottom-end">
+                    <DropdownTrigger>
+                      <Button isIconOnly>
+                        <ChevronDownIcon />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu disallowEmptySelection aria-label={t('alternativeEndSessionOptionsMenu.label')}>
+                      <DropdownItem
+                        key="endWithNotes"
+                        description={t('alternativeEndSessionOptionsMenu.endWithNotes.description')}
+                        onPress={handleOpenEndSessionModal}
+                      >
+                        {t('alternativeEndSessionOptionsMenu.endWithNotes.label')}
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </ButtonGroup>
               </div>
             ) : (
               // Active session belongs to another user: Show info message
@@ -269,16 +312,32 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
           ) : (
             <div className="space-y-4">
               <p className="text-gray-500 dark:text-gray-400">{t('noActiveSession')}</p>
-              <Button
-                color="primary"
-                variant="solid"
-                fullWidth
-                startContent={<Play className="w-4 h-4" />}
-                onPress={handleOpenStartSessionModal}
-                isLoading={startSession.isPending}
-              >
-                {t('startSession')}
-              </Button>
+
+              <ButtonGroup fullWidth color="primary">
+                <Button
+                  isLoading={startSession.isPending}
+                  startContent={<PlayIcon className="w-4 h-4" />}
+                  onPress={immediatelyStartSession}
+                >
+                  {t('startSession')}
+                </Button>
+                <Dropdown placement="bottom-end">
+                  <DropdownTrigger>
+                    <Button isIconOnly>
+                      <ChevronDownIcon />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu disallowEmptySelection aria-label={t('alternativeStartSessionOptionsMenu.label')}>
+                    <DropdownItem
+                      key="startWithNotes"
+                      description={t('alternativeStartSessionOptionsMenu.startWithNotes.description')}
+                      onPress={handleOpenStartSessionModal}
+                    >
+                      {t('alternativeStartSessionOptionsMenu.startWithNotes.label')}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </ButtonGroup>
             </div>
           )}
         </CardBody>
