@@ -1,7 +1,7 @@
 import { OpenAPI, LoadedPluginManifest, usePluginServiceGetPlugins } from '@attraccess/react-query-client';
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { createPluginStore, PluginProvider as PluginProviderBase, RendererPlugin } from 'react-pluggable';
-import usePluginState, { PluginManifestWithPlugin } from './plugin.state';
+import usePluginState from './plugin.state';
 import {
   __federation_method_getRemote,
   __federation_method_setRemote,
@@ -12,7 +12,6 @@ import { AttraccessFrontendPlugin, AttraccessFrontendPluginAuthData } from '@att
 import { ToastType, useToastMessage } from '../../components/toastProvider';
 import { useAuth } from '../../hooks/useAuth';
 import { getBaseUrl } from '../../api';
-import FabreaderPlugin from '@attraccess/attraccess-plugin-fabreader-frontend';
 
 export class PluginLoadedEvent extends Event {
   constructor(public readonly pluginManifest: LoadedPluginManifest) {
@@ -123,16 +122,6 @@ export function PluginProvider(props: PropsWithChildren) {
     },
     [addPlugin, isInstalled]
   );
-
-  useEffect(() => {
-    loadPlugin(
-      {
-        name: 'FABreader',
-        id: new Date().toISOString(),
-      } as PluginManifestWithPlugin,
-      new FabreaderPlugin()
-    );
-  }, [loadPlugin]);
 
   useEffect(() => {
     plugins.forEach((plugin) => {

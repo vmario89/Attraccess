@@ -1,4 +1,5 @@
 {
+  "workInProgressAlert": "Diese Funktionen sind noch in Arbeit und werden bald verfügbar sein.",
   "title": "Installierte Plugins",
   "uploadButton": "Plugin hochladen",
   "noPlugins": "Keine Plugins installiert",

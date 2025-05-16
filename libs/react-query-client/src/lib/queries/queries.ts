@@ -1,8 +1,8 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
-import { BulkUpdateUserPermissionsDto, CompleteIntroductionDto, CreateMqttResourceConfigDto, CreateMqttServerDto, CreateResourceDto, CreateResourceGroupDto, CreateSSOProviderDto, CreateUserDto, CreateWebhookConfigDto, EndUsageSessionDto, RevokeIntroductionDto, StartUsageSessionDto, UnrevokeIntroductionDto, UpdateMqttServerDto, UpdateResourceDto, UpdateResourceGroupDto, UpdateSSOProviderDto, UpdateUserPermissionsDto, UpdateWebhookConfigDto, UploadPluginDto, VerifyEmailDto, WebhookStatusDto } from "../requests/types.gen";
+import { ApplicationService, AuthenticationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { AppKeyRequestDto, BulkUpdateUserPermissionsDto, CompleteIntroductionDto, CreateMqttResourceConfigDto, CreateMqttServerDto, CreateResourceDto, CreateResourceGroupDto, CreateSSOProviderDto, CreateUserDto, CreateWebhookConfigDto, EndUsageSessionDto, EnrollNfcCardDto, ResetNfcCardDto, RevokeIntroductionDto, StartUsageSessionDto, UnrevokeIntroductionDto, UpdateMqttServerDto, UpdateReaderDto, UpdateResourceDto, UpdateResourceGroupDto, UpdateSSOProviderDto, UpdateUserPermissionsDto, UpdateWebhookConfigDto, UploadPluginDto, VerifyEmailDto, WebhookStatusDto } from "../requests/types.gen";
 import * as Common from "./common";
 export const useApplicationServicePing2 = <TData = Common.ApplicationServicePing2DefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseApplicationServicePing2KeyFn(queryKey), queryFn: () => ApplicationService.ping2() as TData, ...options });
 export const useUsersServiceGetAllUsers = <TData = Common.UsersServiceGetAllUsersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ limit, page, search }: {
@@ -120,6 +120,11 @@ export const usePluginServiceGetFrontendPluginFile = <TData = Common.PluginServi
   filePath: string;
   pluginName: string;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePluginServiceGetFrontendPluginFileKeyFn({ filePath, pluginName }, queryKey), queryFn: () => PluginService.getFrontendPluginFile({ filePath, pluginName }) as TData, ...options });
+export const useFabReaderReadersServiceGetReaderById = <TData = Common.FabReaderReadersServiceGetReaderByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ readerId }: {
+  readerId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseFabReaderReadersServiceGetReaderByIdKeyFn({ readerId }, queryKey), queryFn: () => FabReaderReadersService.getReaderById({ readerId }) as TData, ...options });
+export const useFabReaderReadersServiceGetReaders = <TData = Common.FabReaderReadersServiceGetReadersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseFabReaderReadersServiceGetReadersKeyFn(queryKey), queryFn: () => FabReaderReadersService.getReaders() as TData, ...options });
+export const useFabReaderNfcCardsServiceGetAllCards = <TData = Common.FabReaderNfcCardsServiceGetAllCardsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseFabReaderNfcCardsServiceGetAllCardsKeyFn(queryKey), queryFn: () => FabReaderNfcCardsService.getAllCards() as TData, ...options });
 export const useUsersServiceCreateOneUser = <TData = Common.UsersServiceCreateOneUserMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   requestBody: CreateUserDto;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
@@ -249,6 +254,21 @@ export const usePluginServiceUploadPlugin = <TData = Common.PluginServiceUploadP
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   formData: UploadPluginDto;
 }, TContext>({ mutationFn: ({ formData }) => PluginService.uploadPlugin({ formData }) as unknown as Promise<TData>, ...options });
+export const useFabReaderReadersServiceEnrollNfcCard = <TData = Common.FabReaderReadersServiceEnrollNfcCardMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  requestBody: EnrollNfcCardDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  requestBody: EnrollNfcCardDto;
+}, TContext>({ mutationFn: ({ requestBody }) => FabReaderReadersService.enrollNfcCard({ requestBody }) as unknown as Promise<TData>, ...options });
+export const useFabReaderReadersServiceResetNfcCard = <TData = Common.FabReaderReadersServiceResetNfcCardMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  requestBody: ResetNfcCardDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  requestBody: ResetNfcCardDto;
+}, TContext>({ mutationFn: ({ requestBody }) => FabReaderReadersService.resetNfcCard({ requestBody }) as unknown as Promise<TData>, ...options });
+export const useFabReaderNfcCardsServiceGetAppKeyByUid = <TData = Common.FabReaderNfcCardsServiceGetAppKeyByUidMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  requestBody: AppKeyRequestDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  requestBody: AppKeyRequestDto;
+}, TContext>({ mutationFn: ({ requestBody }) => FabReaderNfcCardsService.getAppKeyByUid({ requestBody }) as unknown as Promise<TData>, ...options });
 export const useSsoServiceUpdateOneSsoProvider = <TData = Common.SsoServiceUpdateOneSsoProviderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
   requestBody: UpdateSSOProviderDto;
@@ -309,6 +329,13 @@ export const useResourceGroupsServiceUpdateOneResourceGroup = <TData = Common.Re
   id: number;
   requestBody: UpdateResourceGroupDto;
 }, TContext>({ mutationFn: ({ id, requestBody }) => ResourceGroupsService.updateOneResourceGroup({ id, requestBody }) as unknown as Promise<TData>, ...options });
+export const useFabReaderReadersServiceUpdateReader = <TData = Common.FabReaderReadersServiceUpdateReaderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  readerId: number;
+  requestBody: UpdateReaderDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  readerId: number;
+  requestBody: UpdateReaderDto;
+}, TContext>({ mutationFn: ({ readerId, requestBody }) => FabReaderReadersService.updateReader({ readerId, requestBody }) as unknown as Promise<TData>, ...options });
 export const useAuthenticationServiceEndSession = <TData = Common.AuthenticationServiceEndSessionMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, void, TContext>, "mutationFn">) => useMutation<TData, TError, void, TContext>({ mutationFn: () => AuthenticationService.endSession() as unknown as Promise<TData>, ...options });
 export const useSsoServiceDeleteOneSsoProvider = <TData = Common.SsoServiceDeleteOneSsoProviderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;

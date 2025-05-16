@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const ensureUseApplicationServicePing2Data = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const ensureUseUsersServiceGetAllUsersData = (queryClient: QueryClient, { limit, page, search }: {
@@ -119,3 +119,8 @@ export const ensureUsePluginServiceGetFrontendPluginFileData = (queryClient: Que
   filePath: string;
   pluginName: string;
 }) => queryClient.ensureQueryData({ queryKey: Common.UsePluginServiceGetFrontendPluginFileKeyFn({ filePath, pluginName }), queryFn: () => PluginService.getFrontendPluginFile({ filePath, pluginName }) });
+export const ensureUseFabReaderReadersServiceGetReaderByIdData = (queryClient: QueryClient, { readerId }: {
+  readerId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseFabReaderReadersServiceGetReaderByIdKeyFn({ readerId }), queryFn: () => FabReaderReadersService.getReaderById({ readerId }) });
+export const ensureUseFabReaderReadersServiceGetReadersData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseFabReaderReadersServiceGetReadersKeyFn(), queryFn: () => FabReaderReadersService.getReaders() });
+export const ensureUseFabReaderNfcCardsServiceGetAllCardsData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseFabReaderNfcCardsServiceGetAllCardsKeyFn(), queryFn: () => FabReaderNfcCardsService.getAllCards() });

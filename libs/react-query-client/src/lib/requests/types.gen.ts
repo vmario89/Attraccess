@@ -1174,6 +1174,128 @@ export type UploadPluginDto = {
     pluginZip: (Blob | File);
 };
 
+export type EnrollNfcCardDto = {
+    /**
+     * The ID of the reader to enroll the NFC card on
+     */
+    readerId: number;
+};
+
+export type EnrollNfcCardResponseDto = {
+    /**
+     * Success message
+     */
+    message: string;
+};
+
+export type ResetNfcCardDto = {
+    /**
+     * The ID of the reader to reset the NFC card on
+     */
+    readerId: number;
+    /**
+     * The ID of the NFC card to reset
+     */
+    cardId: number;
+};
+
+export type ResetNfcCardResponseDto = {
+    /**
+     * Success message
+     */
+    message: string;
+};
+
+export type UpdateReaderDto = {
+    /**
+     * The name of the reader
+     */
+    name: string;
+    /**
+     * The IDs of the resources that the reader has access to
+     */
+    connectedResources: Array<(number)>;
+};
+
+export type FabReader = {
+    /**
+     * The ID of the reader
+     */
+    id: number;
+    /**
+     * The name of the reader
+     */
+    name: string;
+    /**
+     * The IDs of the resources that the reader has access to
+     */
+    hasAccessToResourceIds: Array<(number)>;
+    /**
+     * The last time the reader connected to the server
+     */
+    lastConnection: string;
+    /**
+     * The first time the reader connected to the server
+     */
+    firstConnection: string;
+    /**
+     * Whether the reader is currently connected
+     */
+    connected: boolean;
+};
+
+export type UpdateReaderResponseDto = {
+    /**
+     * Success message
+     */
+    message: string;
+    /**
+     * The updated reader
+     */
+    reader: FabReader;
+};
+
+export type AppKeyRequestDto = {
+    /**
+     * The UID of the card to get the app key for
+     */
+    cardUID: string;
+    /**
+     * The key number to generate
+     */
+    keyNo: number;
+};
+
+export type AppKeyResponseDto = {
+    /**
+     * Generated key in hex format
+     */
+    key: string;
+};
+
+export type NFCCard = {
+    /**
+     * The ID of the NFC card
+     */
+    id: number;
+    /**
+     * The UID of the NFC card
+     */
+    uid: string;
+    /**
+     * The ID of the user that owns the NFC card
+     */
+    userId: number;
+    /**
+     * The date and time the NFC card was created
+     */
+    createdAt: string;
+    /**
+     * The date and time the NFC card was last updated
+     */
+    updatedAt: string;
+};
+
 export type Ping2Response = {
     message?: string;
 };
@@ -1769,6 +1891,47 @@ export type DeletePluginData = {
 };
 
 export type DeletePluginResponse = unknown;
+
+export type EnrollNfcCardData = {
+    requestBody: EnrollNfcCardDto;
+};
+
+export type EnrollNfcCardResponse = EnrollNfcCardResponseDto;
+
+export type ResetNfcCardData = {
+    requestBody: ResetNfcCardDto;
+};
+
+export type ResetNfcCardResponse = ResetNfcCardResponseDto;
+
+export type UpdateReaderData = {
+    /**
+     * The ID of the reader to update
+     */
+    readerId: number;
+    requestBody: UpdateReaderDto;
+};
+
+export type UpdateReaderResponse = UpdateReaderResponseDto;
+
+export type GetReaderByIdData = {
+    /**
+     * The ID of the reader to get
+     */
+    readerId: number;
+};
+
+export type GetReaderByIdResponse = FabReader;
+
+export type GetReadersResponse = Array<FabReader>;
+
+export type GetAppKeyByUidData = {
+    requestBody: AppKeyRequestDto;
+};
+
+export type GetAppKeyByUidResponse = AppKeyResponseDto;
+
+export type GetAllCardsResponse = Array<NFCCard>;
 
 export type $OpenApiTs = {
     '/api/ping': {
@@ -3117,6 +3280,115 @@ export type $OpenApiTs = {
                  * The plugin has been deleted
                  */
                 200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/enroll-nfc-card': {
+        post: {
+            req: EnrollNfcCardData;
+            res: {
+                /**
+                 * Enrollment initiated, continue on Reader
+                 */
+                200: EnrollNfcCardResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/reset-nfc-card': {
+        post: {
+            req: ResetNfcCardData;
+            res: {
+                /**
+                 * Reset initiated, continue on Reader
+                 */
+                200: ResetNfcCardResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers/{readerId}': {
+        patch: {
+            req: UpdateReaderData;
+            res: {
+                /**
+                 * Reader updated successfully
+                 */
+                200: UpdateReaderResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Reader not found
+                 */
+                404: unknown;
+            };
+        };
+        get: {
+            req: GetReaderByIdData;
+            res: {
+                /**
+                 * The reader
+                 */
+                200: FabReader;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Reader not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/fabreader/readers': {
+        get: {
+            res: {
+                /**
+                 * The list of readers
+                 */
+                200: Array<FabReader>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/cards/keys': {
+        post: {
+            req: GetAppKeyByUidData;
+            res: {
+                /**
+                 * The app key for the card
+                 */
+                200: AppKeyResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/fabreader/cards': {
+        get: {
+            res: {
+                /**
+                 * The list of all cards
+                 */
+                200: Array<NFCCard>;
                 /**
                  * Unauthorized
                  */

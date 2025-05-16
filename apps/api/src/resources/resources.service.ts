@@ -40,17 +40,29 @@ export class ResourcesService {
     return resource;
   }
 
-  async getResourceById(id: number): Promise<Resource | null> {
-    const resource = await this.resourceRepository.findOne({
-      where: { id },
+  async getResourceById<Tid extends number | number[]>(
+    idOrArrayOfIds: Tid
+  ): Promise<Tid extends number ? Resource | null : Resource[]> {
+    const arrayOfIds: number[] = Array.isArray(idOrArrayOfIds) ? idOrArrayOfIds : [idOrArrayOfIds];
+
+    if (arrayOfIds.length === 0) {
+      return (typeof idOrArrayOfIds === 'number' ? null : ([] as Resource[])) as Tid extends number
+        ? Resource | null
+        : Resource[];
+    }
+
+    const resources = await this.resourceRepository.find({
+      where: { id: In(arrayOfIds) },
       relations: ['introductions', 'usages', 'groups'],
     });
 
-    if (!resource) {
-      throw new ResourceNotFoundException(id);
+    if (resources.length !== arrayOfIds.length) {
+      throw new ResourceNotFoundException(arrayOfIds.find((id) => !resources.some((resource) => resource.id === id)));
     }
 
-    return resource;
+    return (typeof idOrArrayOfIds === 'number' ? resources[0] : resources) as Tid extends number
+      ? Resource
+      : Resource[];
   }
 
   async updateResource(id: number, dto: UpdateResourceDto, image?: FileUpload): Promise<Resource> {

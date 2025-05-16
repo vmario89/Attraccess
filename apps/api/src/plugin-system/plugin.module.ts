@@ -1,11 +1,9 @@
-import { PluginApiModule, PluginApiService } from '@attraccess/plugins-backend-sdk';
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { createRequire } from 'module';
 import { PluginManifest } from './plugin.manifest';
 import { PluginService } from './plugin.service';
 import { PluginController } from './plugin.controller';
 import { join } from 'path';
-import FabReaderModule from '../plugin-fabreader/fabreader.module';
 
 @Global()
 @Module({})
@@ -19,9 +17,7 @@ export class PluginModule {
 
       return {
         module: PluginModule,
-        providers: [PluginApiService, PluginService],
-        imports: [PluginApiModule],
-        exports: [PluginApiService],
+        providers: [PluginService],
         controllers: [PluginController],
       };
     }
@@ -44,9 +40,8 @@ export class PluginModule {
 
     return {
       module: PluginModule,
-      providers: [PluginApiService, PluginService],
-      imports: [PluginApiModule, ...pluginModules, FabReaderModule],
-      exports: [PluginApiService],
+      providers: [PluginService],
+      imports: [...pluginModules],
       controllers: [PluginController],
     };
   }

@@ -42,7 +42,6 @@ export class UsersService {
   ) {}
 
   async findOne(options: FindOneOptions): Promise<User | null> {
-    this.logger.debug(`Finding user with options: ${JSON.stringify(options)}`);
     const validatedOptions = FindOneOptionsSchema.parse(options);
 
     // Build a where condition that uses case-insensitive comparison for username
@@ -60,7 +59,6 @@ export class UsersService {
       whereCondition.email = validatedOptions.email;
     }
 
-    this.logger.debug(`Searching user with where condition: ${JSON.stringify(whereCondition)}`);
     const user = await this.userRepository.findOne({
       where: whereCondition,
     });

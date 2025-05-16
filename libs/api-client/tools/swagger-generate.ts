@@ -6,7 +6,7 @@ async function generate() {
   console.log('Generating API Client...');
 
   const swaggerJsonPath = path.resolve(__dirname, '../../../dist/apps/api-swagger/swagger.json');
-  const outputPath = path.resolve(__dirname, '../src/lib');
+  const outputPath = path.resolve(__dirname, '../src/generated');
 
   console.log('Swagger JSON path:', swaggerJsonPath);
   console.log('Output path:', outputPath);

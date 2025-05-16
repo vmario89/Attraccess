@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { ApplicationService, AuthenticationService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { ApplicationService, AuthenticationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
 export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useApplicationServicePing2Key = "ApplicationServicePing2";
@@ -220,6 +220,20 @@ export const UsePluginServiceGetFrontendPluginFileKeyFn = ({ filePath, pluginNam
   filePath: string;
   pluginName: string;
 }, queryKey?: Array<unknown>) => [usePluginServiceGetFrontendPluginFileKey, ...(queryKey ?? [{ filePath, pluginName }])];
+export type FabReaderReadersServiceGetReaderByIdDefaultResponse = Awaited<ReturnType<typeof FabReaderReadersService.getReaderById>>;
+export type FabReaderReadersServiceGetReaderByIdQueryResult<TData = FabReaderReadersServiceGetReaderByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useFabReaderReadersServiceGetReaderByIdKey = "FabReaderReadersServiceGetReaderById";
+export const UseFabReaderReadersServiceGetReaderByIdKeyFn = ({ readerId }: {
+  readerId: number;
+}, queryKey?: Array<unknown>) => [useFabReaderReadersServiceGetReaderByIdKey, ...(queryKey ?? [{ readerId }])];
+export type FabReaderReadersServiceGetReadersDefaultResponse = Awaited<ReturnType<typeof FabReaderReadersService.getReaders>>;
+export type FabReaderReadersServiceGetReadersQueryResult<TData = FabReaderReadersServiceGetReadersDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useFabReaderReadersServiceGetReadersKey = "FabReaderReadersServiceGetReaders";
+export const UseFabReaderReadersServiceGetReadersKeyFn = (queryKey?: Array<unknown>) => [useFabReaderReadersServiceGetReadersKey, ...(queryKey ?? [])];
+export type FabReaderNfcCardsServiceGetAllCardsDefaultResponse = Awaited<ReturnType<typeof FabReaderNfcCardsService.getAllCards>>;
+export type FabReaderNfcCardsServiceGetAllCardsQueryResult<TData = FabReaderNfcCardsServiceGetAllCardsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useFabReaderNfcCardsServiceGetAllCardsKey = "FabReaderNfcCardsServiceGetAllCards";
+export const UseFabReaderNfcCardsServiceGetAllCardsKeyFn = (queryKey?: Array<unknown>) => [useFabReaderNfcCardsServiceGetAllCardsKey, ...(queryKey ?? [])];
 export type UsersServiceCreateOneUserMutationResult = Awaited<ReturnType<typeof UsersService.createOneUser>>;
 export type UsersServiceVerifyEmailMutationResult = Awaited<ReturnType<typeof UsersService.verifyEmail>>;
 export type UsersServiceBulkUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.bulkUpdatePermissions>>;
@@ -241,6 +255,9 @@ export type WebhooksServiceCreateOneWebhookConfigurationMutationResult = Awaited
 export type WebhooksServiceTestMutationResult = Awaited<ReturnType<typeof WebhooksService.test>>;
 export type WebhooksServiceRegenerateSecretMutationResult = Awaited<ReturnType<typeof WebhooksService.regenerateSecret>>;
 export type PluginServiceUploadPluginMutationResult = Awaited<ReturnType<typeof PluginService.uploadPlugin>>;
+export type FabReaderReadersServiceEnrollNfcCardMutationResult = Awaited<ReturnType<typeof FabReaderReadersService.enrollNfcCard>>;
+export type FabReaderReadersServiceResetNfcCardMutationResult = Awaited<ReturnType<typeof FabReaderReadersService.resetNfcCard>>;
+export type FabReaderNfcCardsServiceGetAppKeyByUidMutationResult = Awaited<ReturnType<typeof FabReaderNfcCardsService.getAppKeyByUid>>;
 export type SsoServiceUpdateOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.updateOneSsoProvider>>;
 export type ResourcesServiceUpdateOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.updateOneResource>>;
 export type ResourceUsageServiceEndSessionMutationResult = Awaited<ReturnType<typeof ResourceUsageService.endSession>>;
@@ -249,6 +266,7 @@ export type WebhooksServiceUpdateOneWebhookConfigurationMutationResult = Awaited
 export type WebhooksServiceUpdateStatusMutationResult = Awaited<ReturnType<typeof WebhooksService.updateStatus>>;
 export type UsersServiceUpdatePermissionsMutationResult = Awaited<ReturnType<typeof UsersService.updatePermissions>>;
 export type ResourceGroupsServiceUpdateOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.updateOneResourceGroup>>;
+export type FabReaderReadersServiceUpdateReaderMutationResult = Awaited<ReturnType<typeof FabReaderReadersService.updateReader>>;
 export type AuthenticationServiceEndSessionMutationResult = Awaited<ReturnType<typeof AuthenticationService.endSession>>;
 export type SsoServiceDeleteOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.deleteOneSsoProvider>>;
 export type ResourceGroupsServiceDeleteOneResourceGroupMutationResult = Awaited<ReturnType<typeof ResourceGroupsService.deleteOneResourceGroup>>;

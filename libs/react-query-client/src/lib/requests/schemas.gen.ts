@@ -1770,3 +1770,189 @@ export const $UploadPluginDto = {
     },
     required: ['pluginZip']
 } as const;
+
+export const $EnrollNfcCardDto = {
+    type: 'object',
+    properties: {
+        readerId: {
+            type: 'number',
+            description: 'The ID of the reader to enroll the NFC card on',
+            example: 1
+        }
+    },
+    required: ['readerId']
+} as const;
+
+export const $EnrollNfcCardResponseDto = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+            description: 'Success message',
+            example: 'Enrollment initiated, continue on Reader'
+        }
+    },
+    required: ['message']
+} as const;
+
+export const $ResetNfcCardDto = {
+    type: 'object',
+    properties: {
+        readerId: {
+            type: 'number',
+            description: 'The ID of the reader to reset the NFC card on',
+            example: 1
+        },
+        cardId: {
+            type: 'number',
+            description: 'The ID of the NFC card to reset',
+            example: 123
+        }
+    },
+    required: ['readerId', 'cardId']
+} as const;
+
+export const $ResetNfcCardResponseDto = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+            description: 'Success message',
+            example: 'Reset initiated, continue on Reader'
+        }
+    },
+    required: ['message']
+} as const;
+
+export const $UpdateReaderDto = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            description: 'The name of the reader',
+            example: 'Main Entrance Reader'
+        },
+        connectedResources: {
+            description: 'The IDs of the resources that the reader has access to',
+            type: 'array',
+            items: {
+                type: 'number'
+            }
+        }
+    },
+    required: ['name', 'connectedResources']
+} as const;
+
+export const $FabReader = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'number',
+            description: 'The ID of the reader'
+        },
+        name: {
+            type: 'string',
+            description: 'The name of the reader'
+        },
+        hasAccessToResourceIds: {
+            description: 'The IDs of the resources that the reader has access to',
+            type: 'array',
+            items: {
+                type: 'number'
+            }
+        },
+        lastConnection: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The last time the reader connected to the server'
+        },
+        firstConnection: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The first time the reader connected to the server'
+        },
+        connected: {
+            type: 'boolean',
+            description: 'Whether the reader is currently connected'
+        }
+    },
+    required: ['id', 'name', 'hasAccessToResourceIds', 'lastConnection', 'firstConnection', 'connected']
+} as const;
+
+export const $UpdateReaderResponseDto = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+            description: 'Success message',
+            example: 'Reader updated successfully'
+        },
+        reader: {
+            description: 'The updated reader',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/FabReader'
+                }
+            ]
+        }
+    },
+    required: ['message', 'reader']
+} as const;
+
+export const $AppKeyRequestDto = {
+    type: 'object',
+    properties: {
+        cardUID: {
+            type: 'string',
+            description: 'The UID of the card to get the app key for',
+            example: '04A2B3C4D5E6'
+        },
+        keyNo: {
+            type: 'number',
+            description: 'The key number to generate',
+            example: 1
+        }
+    },
+    required: ['cardUID', 'keyNo']
+} as const;
+
+export const $AppKeyResponseDto = {
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string',
+            description: 'Generated key in hex format',
+            example: '0A1B2C3D4E5F6789'
+        }
+    },
+    required: ['key']
+} as const;
+
+export const $NFCCard = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'number',
+            description: 'The ID of the NFC card'
+        },
+        uid: {
+            type: 'string',
+            description: 'The UID of the NFC card'
+        },
+        userId: {
+            type: 'number',
+            description: 'The ID of the user that owns the NFC card'
+        },
+        createdAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the NFC card was created'
+        },
+        updatedAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the NFC card was last updated'
+        }
+    },
+    required: ['id', 'uid', 'userId', 'createdAt', 'updatedAt']
+} as const;
