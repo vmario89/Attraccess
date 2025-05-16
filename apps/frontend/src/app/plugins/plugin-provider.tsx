@@ -1,7 +1,7 @@
 import { OpenAPI, LoadedPluginManifest, usePluginServiceGetPlugins } from '@attraccess/react-query-client';
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { createPluginStore, PluginProvider as PluginProviderBase, RendererPlugin } from 'react-pluggable';
-import usePluginState, { PluginManifestWithPlugin } from './plugin.state';
+import usePluginState from './plugin.state';
 import {
   __federation_method_getRemote,
   __federation_method_setRemote,
@@ -122,13 +122,6 @@ export function PluginProvider(props: PropsWithChildren) {
     },
     [addPlugin, isInstalled]
   );
-
-  useEffect(() => {
-    loadPlugin({
-      name: 'FABreader',
-      id: new Date().toISOString(),
-    } as PluginManifestWithPlugin);
-  }, [loadPlugin]);
 
   useEffect(() => {
     plugins.forEach((plugin) => {
