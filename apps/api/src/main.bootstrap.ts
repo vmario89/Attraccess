@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
 import { loadEnv } from '@attraccess/env';
+import { DataSource } from 'typeorm';
 
 const env = loadEnv((z) => ({
   AUTH_SESSION_SECRET: z.string(),
@@ -24,6 +25,30 @@ export async function bootstrap() {
     logger: logLevels,
   });
   bootstrapLogger.log('Main application instance created.');
+
+  // Run migrations before the app fully starts
+  try {
+    bootstrapLogger.log('Running database migrations...');
+    const dataSource = app.get(DataSource);
+
+    if (!dataSource.isInitialized) {
+      await dataSource.initialize();
+      bootstrapLogger.log('Database connection initialized.');
+    }
+
+    const pendingMigrations = await dataSource.showMigrations();
+    if (pendingMigrations) {
+      bootstrapLogger.log('Pending migrations detected, running migrations...');
+      await dataSource.runMigrations();
+      bootstrapLogger.log('Migrations completed successfully.');
+    } else {
+      bootstrapLogger.log('No pending migrations found.');
+    }
+  } catch (error) {
+    bootstrapLogger.error('Failed to run database migrations');
+    bootstrapLogger.error(error);
+    process.exit(1);
+  }
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
