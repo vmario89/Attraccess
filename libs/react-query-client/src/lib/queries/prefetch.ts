@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { AnalyticsService, ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const prefetchUseApplicationServicePing2 = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseApplicationServicePing2KeyFn(), queryFn: () => ApplicationService.ping2() });
 export const prefetchUseUsersServiceGetAllUsers = (queryClient: QueryClient, { limit, page, search }: {
@@ -124,3 +124,7 @@ export const prefetchUseFabReaderReadersServiceGetReaderById = (queryClient: Que
 }) => queryClient.prefetchQuery({ queryKey: Common.UseFabReaderReadersServiceGetReaderByIdKeyFn({ readerId }), queryFn: () => FabReaderReadersService.getReaderById({ readerId }) });
 export const prefetchUseFabReaderReadersServiceGetReaders = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseFabReaderReadersServiceGetReadersKeyFn(), queryFn: () => FabReaderReadersService.getReaders() });
 export const prefetchUseFabReaderNfcCardsServiceGetAllCards = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseFabReaderNfcCardsServiceGetAllCardsKeyFn(), queryFn: () => FabReaderNfcCardsService.getAllCards() });
+export const prefetchUseAnalyticsServiceAnalyticsControllerGetResourceUsageHoursInDateRange = (queryClient: QueryClient, { end, start }: {
+  end: string;
+  start: string;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAnalyticsServiceAnalyticsControllerGetResourceUsageHoursInDateRangeKeyFn({ end, start }), queryFn: () => AnalyticsService.analyticsControllerGetResourceUsageHoursInDateRange({ end, start }) });

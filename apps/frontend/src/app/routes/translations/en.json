@@ -3,6 +3,7 @@
   "mqttServers": "MQTT Servers",
   "ssoProviders": "SSO Providers",
   "userManagement": "User Management",
-  "plugins": "Plugins"
+  "plugins": "Plugins",
+  "csvExport": "CSV Export"
 }
 

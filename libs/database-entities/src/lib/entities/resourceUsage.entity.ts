@@ -60,13 +60,17 @@ export class ResourceUsage {
 
   @ManyToOne(() => Resource, (resource) => resource.usages)
   @JoinColumn({ name: 'resourceId' })
+  @ApiProperty({
+    description: 'The resource being used',
+    type: () => Resource,
+    required: false,
+  })
   resource!: Resource;
 
   @ManyToOne(() => User, (user) => user.resourceUsages, { nullable: true })
   @JoinColumn({ name: 'userId' })
   @ApiProperty({
     description: 'The user who used the resource',
-    example: 1,
     required: false,
     type: () => User,
   })
