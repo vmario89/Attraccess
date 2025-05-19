@@ -112,7 +112,7 @@ export function App() {
         </div>
       }
     >
-      <HeroUIProvider navigate={navigate}>
+      <HeroUIProvider navigate={navigate} labelPlacement="outside">
         <ToastProvider>
           <Layout noLayout={!isAuthenticated}>
             <Routes>

@@ -7,7 +7,6 @@ import {
   OneToMany,
   ViewEntity,
   ViewColumn,
-  OneToOne,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
@@ -72,8 +71,8 @@ export class Resource {
   @OneToMany(() => ResourceIntroductionUser, (introducer) => introducer.resource)
   introducers!: ResourceIntroductionUser[];
 
-  @OneToOne(() => MqttResourceConfig, (config) => config.resource)
-  mqttConfig!: MqttResourceConfig;
+  @OneToMany(() => MqttResourceConfig, (config) => config.resource)
+  mqttConfigs!: MqttResourceConfig[];
 
   @OneToMany(() => WebhookConfig, (config) => config.resource)
   webhookConfigs!: WebhookConfig[];

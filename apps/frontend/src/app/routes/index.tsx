@@ -13,7 +13,7 @@ import {
   FileChartColumnIncreasingIcon,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MqttServersPage } from '../mqtt/MqttServersPage';
+import { MqttServersPage, CreateMqttServerPage, EditMqttServerPage } from '../mqtt';
 import { SSOProvidersPage } from '../sso/SSOProvidersPage';
 import { UserManagementPage } from '../users/UserManagementPage';
 import { usePluginStore } from 'react-pluggable';
@@ -24,6 +24,7 @@ import usePluginState from '../plugins/plugin.state';
 import { FabreaderList } from '../fabreader/FabreaderList/FabreaderList';
 import { NfcCardList } from '../fabreader/NfcCardList/NfcCardList';
 import { CsvExport } from '../csv-export/csv-export';
+import { CreateMqttConfig, EditMqttConfig, TestMqttConfig } from '../resources/iot-settings/mqtt';
 
 const coreRoutes: RouteConfig[] = [
   {
@@ -52,6 +53,21 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
+    path: '/resources/:resourceId/iot/mqtt/create',
+    element: <CreateMqttConfig />,
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/resources/:resourceId/iot/mqtt/edit/:configId',
+    element: <EditMqttConfig />,
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/resources/:resourceId/iot/mqtt/test/:configId',
+    element: <TestMqttConfig />,
+    authRequired: 'canManageResources',
+  },
+  {
     path: '/mqtt/servers',
     element: <MqttServersPage />,
     sidebar: {
@@ -59,6 +75,16 @@ const coreRoutes: RouteConfig[] = [
       icon: <ServerIcon className="h-5 w-5" />,
       order: 2,
     },
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/mqtt/servers/create',
+    element: <CreateMqttServerPage />,
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/mqtt/servers/:serverId/edit',
+    element: <EditMqttServerPage />,
     authRequired: 'canManageResources',
   },
   {

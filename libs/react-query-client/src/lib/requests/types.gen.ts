@@ -668,6 +668,10 @@ export type MqttResourceConfig = {
      */
     resourceId: number;
     /**
+     * Name of this MQTT configuration
+     */
+    name: string;
+    /**
      * The ID of the MQTT server to publish to
      */
     serverId: number;
@@ -703,6 +707,10 @@ export type CreateMqttResourceConfigDto = {
      */
     serverId: number;
     /**
+     * Name of this MQTT configuration
+     */
+    name: string;
+    /**
      * Topic template for when resource is in use
      */
     inUseTopic: string;
@@ -718,6 +726,33 @@ export type CreateMqttResourceConfigDto = {
      * Message template for when resource is not in use
      */
     notInUseMessage: string;
+};
+
+export type UpdateMqttResourceConfigDto = {
+    /**
+     * ID of the MQTT server to use
+     */
+    serverId?: number;
+    /**
+     * Name of this MQTT configuration
+     */
+    name?: string;
+    /**
+     * Topic template for when resource is in use
+     */
+    inUseTopic?: string;
+    /**
+     * Message template for when resource is in use
+     */
+    inUseMessage?: string;
+    /**
+     * Topic template for when resource is not in use
+     */
+    notInUseTopic?: string;
+    /**
+     * Message template for when resource is not in use
+     */
+    notInUseMessage?: string;
 };
 
 export type TestMqttConfigResponseDto = {
@@ -1734,26 +1769,43 @@ export type RemoveOneData = {
 
 export type RemoveOneResponse = void;
 
+export type GetAllMqttConfigurationsData = {
+    resourceId: number;
+};
+
+export type GetAllMqttConfigurationsResponse = Array<MqttResourceConfig>;
+
+export type CreateMqttConfigurationData = {
+    requestBody: CreateMqttResourceConfigDto;
+    resourceId: number;
+};
+
+export type CreateMqttConfigurationResponse = MqttResourceConfig;
+
 export type GetOneMqttConfigurationData = {
+    configId: number;
     resourceId: number;
 };
 
 export type GetOneMqttConfigurationResponse = MqttResourceConfig;
 
-export type UpsertOneData = {
-    requestBody: CreateMqttResourceConfigDto;
+export type UpdateMqttConfigurationData = {
+    configId: number;
+    requestBody: UpdateMqttResourceConfigDto;
     resourceId: number;
 };
 
-export type UpsertOneResponse = MqttResourceConfig;
+export type UpdateMqttConfigurationResponse = MqttResourceConfig;
 
 export type DeleteOneMqttConfigurationData = {
+    configId: number;
     resourceId: number;
 };
 
 export type DeleteOneMqttConfigurationResponse = unknown;
 
 export type TestOneData = {
+    configId: number;
     resourceId: number;
 };
 
@@ -2905,12 +2957,12 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/mqtt/config': {
         get: {
-            req: GetOneMqttConfigurationData;
+            req: GetAllMqttConfigurationsData;
             res: {
                 /**
-                 * Returns the MQTT configuration for the resource
+                 * Returns all MQTT configurations for the resource
                  */
-                200: MqttResourceConfig;
+                200: Array<MqttResourceConfig>;
                 /**
                  * User is not authenticated
                  */
@@ -2926,10 +2978,10 @@ export type $OpenApiTs = {
             };
         };
         post: {
-            req: UpsertOneData;
+            req: CreateMqttConfigurationData;
             res: {
                 /**
-                 * MQTT configuration created or updated successfully
+                 * MQTT configuration created successfully
                  */
                 201: MqttResourceConfig;
                 /**
@@ -2942,6 +2994,50 @@ export type $OpenApiTs = {
                 403: unknown;
                 /**
                  * Resource not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/mqtt/config/{configId}': {
+        get: {
+            req: GetOneMqttConfigurationData;
+            res: {
+                /**
+                 * Returns the specific MQTT configuration
+                 */
+                200: MqttResourceConfig;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource or configuration not found
+                 */
+                404: unknown;
+            };
+        };
+        put: {
+            req: UpdateMqttConfigurationData;
+            res: {
+                /**
+                 * MQTT configuration updated successfully
+                 */
+                200: MqttResourceConfig;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+                /**
+                 * Resource or configuration not found
                  */
                 404: unknown;
             };
@@ -2968,7 +3064,7 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/{resourceId}/mqtt/config/test': {
+    '/api/resources/{resourceId}/mqtt/config/{configId}/test': {
         post: {
             req: TestOneData;
             res: {

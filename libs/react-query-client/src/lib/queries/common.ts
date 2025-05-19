@@ -164,12 +164,19 @@ export const useResourceIntroducersServiceCheckCanManagePermissionKey = "Resourc
 export const UseResourceIntroducersServiceCheckCanManagePermissionKeyFn = ({ resourceId }: {
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useResourceIntroducersServiceCheckCanManagePermissionKey, ...(queryKey ?? [{ resourceId }])];
+export type MqttResourceConfigurationServiceGetAllMqttConfigurationsDefaultResponse = Awaited<ReturnType<typeof MqttResourceConfigurationService.getAllMqttConfigurations>>;
+export type MqttResourceConfigurationServiceGetAllMqttConfigurationsQueryResult<TData = MqttResourceConfigurationServiceGetAllMqttConfigurationsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useMqttResourceConfigurationServiceGetAllMqttConfigurationsKey = "MqttResourceConfigurationServiceGetAllMqttConfigurations";
+export const UseMqttResourceConfigurationServiceGetAllMqttConfigurationsKeyFn = ({ resourceId }: {
+  resourceId: number;
+}, queryKey?: Array<unknown>) => [useMqttResourceConfigurationServiceGetAllMqttConfigurationsKey, ...(queryKey ?? [{ resourceId }])];
 export type MqttResourceConfigurationServiceGetOneMqttConfigurationDefaultResponse = Awaited<ReturnType<typeof MqttResourceConfigurationService.getOneMqttConfiguration>>;
 export type MqttResourceConfigurationServiceGetOneMqttConfigurationQueryResult<TData = MqttResourceConfigurationServiceGetOneMqttConfigurationDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useMqttResourceConfigurationServiceGetOneMqttConfigurationKey = "MqttResourceConfigurationServiceGetOneMqttConfiguration";
-export const UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn = ({ resourceId }: {
+export const UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn = ({ configId, resourceId }: {
+  configId: number;
   resourceId: number;
-}, queryKey?: Array<unknown>) => [useMqttResourceConfigurationServiceGetOneMqttConfigurationKey, ...(queryKey ?? [{ resourceId }])];
+}, queryKey?: Array<unknown>) => [useMqttResourceConfigurationServiceGetOneMqttConfigurationKey, ...(queryKey ?? [{ configId, resourceId }])];
 export type MqttServersServiceGetAllMqttServersDefaultResponse = Awaited<ReturnType<typeof MqttServersService.getAllMqttServers>>;
 export type MqttServersServiceGetAllMqttServersQueryResult<TData = MqttServersServiceGetAllMqttServersDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useMqttServersServiceGetAllMqttServersKey = "MqttServersServiceGetAllMqttServers";
@@ -256,7 +263,7 @@ export type ResourceIntroductionsServiceMarkCompletedMutationResult = Awaited<Re
 export type ResourceIntroductionsServiceMarkRevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionsService.markRevoked>>;
 export type ResourceIntroductionsServiceMarkUnrevokedMutationResult = Awaited<ReturnType<typeof ResourceIntroductionsService.markUnrevoked>>;
 export type ResourceIntroducersServiceAddOneMutationResult = Awaited<ReturnType<typeof ResourceIntroducersService.addOne>>;
-export type MqttResourceConfigurationServiceUpsertOneMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.upsertOne>>;
+export type MqttResourceConfigurationServiceCreateMqttConfigurationMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.createMqttConfiguration>>;
 export type MqttResourceConfigurationServiceTestOneMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.testOne>>;
 export type MqttServersServiceCreateOneMqttServerMutationResult = Awaited<ReturnType<typeof MqttServersService.createOneMqttServer>>;
 export type MqttServersServiceTestConnectionMutationResult = Awaited<ReturnType<typeof MqttServersService.testConnection>>;
@@ -270,6 +277,7 @@ export type FabReaderNfcCardsServiceGetAppKeyByUidMutationResult = Awaited<Retur
 export type SsoServiceUpdateOneSsoProviderMutationResult = Awaited<ReturnType<typeof SsoService.updateOneSsoProvider>>;
 export type ResourcesServiceUpdateOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.updateOneResource>>;
 export type ResourceUsageServiceEndSessionMutationResult = Awaited<ReturnType<typeof ResourceUsageService.endSession>>;
+export type MqttResourceConfigurationServiceUpdateMqttConfigurationMutationResult = Awaited<ReturnType<typeof MqttResourceConfigurationService.updateMqttConfiguration>>;
 export type MqttServersServiceUpdateOneMqttServerMutationResult = Awaited<ReturnType<typeof MqttServersService.updateOneMqttServer>>;
 export type WebhooksServiceUpdateOneWebhookConfigurationMutationResult = Awaited<ReturnType<typeof WebhooksService.updateOneWebhookConfiguration>>;
 export type WebhooksServiceUpdateStatusMutationResult = Awaited<ReturnType<typeof WebhooksService.updateStatus>>;
