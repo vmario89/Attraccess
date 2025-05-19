@@ -5,6 +5,7 @@ import { loadEnv } from '@attraccess/env';
 import { join, resolve } from 'path';
 import { entities } from '@attraccess/database-entities';
 import * as migrations from './migrations';
+import { storageConfig } from '../config/storage.config';
 
 const envType = loadEnv((z) => ({
   DB_TYPE: z.enum(['postgres', 'sqlite']).default('sqlite'),
@@ -47,7 +48,7 @@ function loadSqliteConfig() {
     DB_FILE: z.string().default('attraccess.sqlite'),
   }));
 
-  const dbFile = resolve(join(process.cwd(), 'storage', env.DB_FILE));
+  const dbFile = resolve(join(storageConfig().storage.root, env.DB_FILE));
 
   dbConfig = {
     ...dbConfig,
