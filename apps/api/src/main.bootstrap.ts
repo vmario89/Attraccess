@@ -36,6 +36,10 @@ export async function bootstrap() {
       bootstrapLogger.log('Database connection initialized.');
     }
 
+    bootstrapLogger.log(
+      'Known Migrations: ',
+      dataSource.migrations.map((m) => m.name)
+    );
     const pendingMigrations = await dataSource.showMigrations();
     if (pendingMigrations) {
       bootstrapLogger.log('Pending migrations detected, running migrations...');
