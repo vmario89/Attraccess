@@ -177,87 +177,85 @@ export class MqttPublisherService {
 
   @OnEvent('resource.usage.started')
   async handleResourceUsageStarted(event: ResourceUsageStartedEvent) {
-    try {
-      const config = await this.mqttResourceConfigRepository.findOne({
-        where: { resourceId: event.resourceId },
-        relations: ['server'],
-      });
+    const configs = await this.mqttResourceConfigRepository.find({
+      where: { resourceId: event.resourceId },
+      relations: ['server'],
+    });
 
-      if (!config) {
-        this.logger.debug(`No MQTT configuration found for resource ID ${event.resourceId}`);
-        return; // No MQTT config for this resource
-      }
+    await Promise.all(
+      configs.map(async (config) => {
+        try {
+          const resource = await this.resourceRepository.findOne({
+            where: { id: event.resourceId },
+          });
 
-      const resource = await this.resourceRepository.findOne({
-        where: { id: event.resourceId },
-      });
+          if (!resource) {
+            this.logger.warn(`Resource with ID ${event.resourceId} not found`);
+            return;
+          }
 
-      if (!resource) {
-        this.logger.warn(`Resource with ID ${event.resourceId} not found`);
-        return;
-      }
+          // Create template context
+          const context = {
+            id: resource.id,
+            name: resource.name,
+            timestamp: new Date().toISOString(),
+          };
 
-      // Create template context
-      const context = {
-        id: resource.id,
-        name: resource.name,
-        timestamp: new Date().toISOString(),
-      };
+          // Process templates
+          const topic = this.processTemplate(config.inUseTopic, context);
+          const message = this.processTemplate(config.inUseMessage, context);
 
-      // Process templates
-      const topic = this.processTemplate(config.inUseTopic, context);
-      const message = this.processTemplate(config.inUseMessage, context);
+          this.logger.debug(`Publishing resource in-use event to ${topic}`);
 
-      this.logger.debug(`Publishing resource in-use event to ${topic}`);
-
-      // Publish to MQTT with retry capability
-      await this.publishWithRetry(config.serverId, resource.id, topic, message);
-    } catch (error) {
-      // Log error but don't fail the operation
-      this.logger.error('Failed to publish resource usage started event to MQTT', error);
-    }
+          // Publish to MQTT with retry capability
+          await this.publishWithRetry(config.serverId, resource.id, topic, message);
+        } catch (error) {
+          // Log error but don't fail the operation
+          this.logger.error('Failed to publish resource usage started event to MQTT', config, error);
+        }
+      })
+    );
   }
 
   @OnEvent('resource.usage.ended')
   async handleResourceUsageEnded(event: ResourceUsageEndedEvent) {
-    try {
-      const config = await this.mqttResourceConfigRepository.findOne({
-        where: { resourceId: event.resourceId },
-        relations: ['server'],
-      });
+    const configs = await this.mqttResourceConfigRepository.find({
+      where: { resourceId: event.resourceId },
+      relations: ['server'],
+    });
 
-      if (!config) {
-        this.logger.debug(`No MQTT configuration found for resource ID ${event.resourceId}`);
-        return; // No MQTT config for this resource
-      }
+    await Promise.all(
+      configs.map(async (config) => {
+        try {
+          const resource = await this.resourceRepository.findOne({
+            where: { id: event.resourceId },
+          });
 
-      const resource = await this.resourceRepository.findOne({
-        where: { id: event.resourceId },
-      });
+          if (!resource) {
+            this.logger.warn(`Resource with ID ${event.resourceId} not found`);
+            return;
+          }
 
-      if (!resource) {
-        this.logger.warn(`Resource with ID ${event.resourceId} not found`);
-        return;
-      }
+          // Create template context
+          const context = {
+            id: resource.id,
+            name: resource.name,
+            timestamp: new Date().toISOString(),
+          };
 
-      // Create template context
-      const context = {
-        id: resource.id,
-        name: resource.name,
-        timestamp: new Date().toISOString(),
-      };
+          // Process templates
+          const topic = this.processTemplate(config.notInUseTopic, context);
+          const message = this.processTemplate(config.notInUseMessage, context);
 
-      // Process templates
-      const topic = this.processTemplate(config.notInUseTopic, context);
-      const message = this.processTemplate(config.notInUseMessage, context);
+          this.logger.debug(`Publishing resource not-in-use event to ${topic}`);
 
-      this.logger.debug(`Publishing resource not-in-use event to ${topic}`);
-
-      // Publish to MQTT with retry capability
-      await this.publishWithRetry(config.serverId, resource.id, topic, message);
-    } catch (error) {
-      // Log error but don't fail the operation
-      this.logger.error('Failed to publish resource usage ended event to MQTT', error);
-    }
+          // Publish to MQTT with retry capability
+          await this.publishWithRetry(config.serverId, resource.id, topic, message);
+        } catch (error) {
+          // Log error but don't fail the operation
+          this.logger.error('Failed to publish resource usage ended event to MQTT', config, error);
+        }
+      })
+    );
   }
 }
