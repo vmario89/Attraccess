@@ -27,6 +27,13 @@ export class MqttResourceConfig {
   })
   resourceId!: number;
 
+  @Column({ type: 'text' })
+  @ApiProperty({
+    description: 'Name of this MQTT configuration',
+    example: 'Primary Status Feed',
+  })
+  name!: string;
+
   @Column({ type: 'integer' })
   @ApiProperty({
     description: 'The ID of the MQTT server to publish to',

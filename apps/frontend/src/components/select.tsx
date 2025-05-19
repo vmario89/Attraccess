@@ -1,10 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from '@heroui/react';
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@heroui/react';
 import { ReactNode, useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
 
@@ -18,10 +12,12 @@ interface SelectProps {
   selectedKey: string;
   onSelectionChange: (key: string) => void;
   items: SelectItem[];
+  id?: string;
+  name?: string;
 }
 
 export function Select(props: SelectProps) {
-  const { selectedKey, onSelectionChange, items, label } = props;
+  const { selectedKey, onSelectionChange, items, label, id, name } = props;
 
   const selectedItem = useMemo(() => {
     return items.find((item) => item.key === selectedKey);
@@ -30,6 +26,7 @@ export function Select(props: SelectProps) {
   return (
     <div className="flex flex-col items-start gap-2">
       <label className="text-gray-500 text-xs">{label}</label>
+      <input type="hidden" id={id} name={name} value={selectedKey} />
       <Dropdown>
         <DropdownTrigger>
           <Button endContent={<ChevronDown size={16} />}>
@@ -38,10 +35,7 @@ export function Select(props: SelectProps) {
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions">
           {items.map((item) => (
-            <DropdownItem
-              key={item.key}
-              onPress={() => onSelectionChange(item.key)}
-            >
+            <DropdownItem key={item.key} onPress={() => onSelectionChange(item.key)}>
               {item.label}
             </DropdownItem>
           ))}

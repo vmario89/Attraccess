@@ -93,9 +93,13 @@ export const ensureUseResourceIntroducersServiceGetAllResourceIntroducersData = 
 export const ensureUseResourceIntroducersServiceCheckCanManagePermissionData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourceIntroducersServiceCheckCanManagePermissionKeyFn({ resourceId }), queryFn: () => ResourceIntroducersService.checkCanManagePermission({ resourceId }) });
-export const ensureUseMqttResourceConfigurationServiceGetOneMqttConfigurationData = (queryClient: QueryClient, { resourceId }: {
+export const ensureUseMqttResourceConfigurationServiceGetAllMqttConfigurationsData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn({ resourceId }), queryFn: () => MqttResourceConfigurationService.getOneMqttConfiguration({ resourceId }) });
+}) => queryClient.ensureQueryData({ queryKey: Common.UseMqttResourceConfigurationServiceGetAllMqttConfigurationsKeyFn({ resourceId }), queryFn: () => MqttResourceConfigurationService.getAllMqttConfigurations({ resourceId }) });
+export const ensureUseMqttResourceConfigurationServiceGetOneMqttConfigurationData = (queryClient: QueryClient, { configId, resourceId }: {
+  configId: number;
+  resourceId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseMqttResourceConfigurationServiceGetOneMqttConfigurationKeyFn({ configId, resourceId }), queryFn: () => MqttResourceConfigurationService.getOneMqttConfiguration({ configId, resourceId }) });
 export const ensureUseMqttServersServiceGetAllMqttServersData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseMqttServersServiceGetAllMqttServersKeyFn(), queryFn: () => MqttServersService.getAllMqttServers() });
 export const ensureUseMqttServersServiceGetOneMqttServerByIdData = (queryClient: QueryClient, { id }: {
   id: number;

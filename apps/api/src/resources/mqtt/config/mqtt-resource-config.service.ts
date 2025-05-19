@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MqttResourceConfig, Resource } from '@attraccess/database-entities';
-import { CreateMqttResourceConfigDto } from './dtos/mqtt-resource-config.dto';
+import { CreateMqttResourceConfigDto, UpdateMqttResourceConfigDto } from './dtos/mqtt-resource-config.dto';
 
 @Injectable()
 export class MqttResourceConfigService {
@@ -14,9 +14,9 @@ export class MqttResourceConfigService {
   ) {}
 
   /**
-   * Get MQTT configuration for a resource
+   * Get all MQTT configurations for a resource
    */
-  async findByResourceId(resourceId: number): Promise<MqttResourceConfig | null> {
+  async findAllByResourceId(resourceId: number): Promise<MqttResourceConfig[]> {
     // First check if the resource exists
     const resource = await this.resourceRepository.findOne({
       where: { id: resourceId },
@@ -25,64 +25,92 @@ export class MqttResourceConfigService {
       throw new NotFoundException(`Resource with ID ${resourceId} not found`);
     }
 
-    // Find the MQTT config for this resource
-    return this.mqttResourceConfigRepository.findOne({
+    // Find all MQTT configs for this resource
+    return this.mqttResourceConfigRepository.find({
       where: { resourceId },
       relations: ['server'],
     });
   }
 
   /**
-   * Create or update MQTT configuration for a resource
+   * Get a specific MQTT configuration by ID
    */
-  async createOrUpdate(resourceId: number, dto: CreateMqttResourceConfigDto): Promise<MqttResourceConfig> {
-    // First check if the resource exists
-    const resource = await this.resourceRepository.findOne({
-      where: { id: resourceId },
-    });
-    if (!resource) {
-      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
-    }
-
-    // Check if a config already exists for this resource
-    const existingConfig = await this.mqttResourceConfigRepository.findOne({
-      where: { resourceId },
-    });
-
-    if (existingConfig) {
-      // Update existing config
-      Object.assign(existingConfig, dto);
-      return this.mqttResourceConfigRepository.save(existingConfig);
-    } else {
-      // Create new config
-      const newConfig = this.mqttResourceConfigRepository.create({
-        resourceId,
-        ...dto,
-      });
-      return this.mqttResourceConfigRepository.save(newConfig);
-    }
-  }
-
-  /**
-   * Delete MQTT configuration for a resource
-   */
-  async remove(resourceId: number): Promise<void> {
-    // First check if the resource exists
-    const resource = await this.resourceRepository.findOne({
-      where: { id: resourceId },
-    });
-    if (!resource) {
-      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
-    }
-
-    // Find the config
+  async findById(id: number): Promise<MqttResourceConfig> {
     const config = await this.mqttResourceConfigRepository.findOne({
-      where: { resourceId },
+      where: { id },
+      relations: ['server'],
     });
 
     if (!config) {
-      throw new NotFoundException(`MQTT configuration for resource with ID ${resourceId} not found`);
+      throw new NotFoundException(`MQTT configuration with ID ${id} not found`);
     }
+
+    return config;
+  }
+
+  /**
+   * Get a specific MQTT configuration for a resource
+   */
+  async findOne(resourceId: number, configId: number): Promise<MqttResourceConfig> {
+    // First check if the resource exists
+    const resource = await this.resourceRepository.findOne({
+      where: { id: resourceId },
+    });
+    if (!resource) {
+      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
+    }
+
+    // Find the specific MQTT config for this resource
+    const config = await this.mqttResourceConfigRepository.findOne({
+      where: { id: configId, resourceId },
+      relations: ['server'],
+    });
+
+    if (!config) {
+      throw new NotFoundException(`MQTT configuration with ID ${configId} for resource ${resourceId} not found`);
+    }
+
+    return config;
+  }
+
+  /**
+   * Create a new MQTT configuration for a resource
+   */
+  async create(resourceId: number, dto: CreateMqttResourceConfigDto): Promise<MqttResourceConfig> {
+    // First check if the resource exists
+    const resource = await this.resourceRepository.findOne({
+      where: { id: resourceId },
+    });
+    if (!resource) {
+      throw new NotFoundException(`Resource with ID ${resourceId} not found`);
+    }
+
+    // Create new config
+    const newConfig = this.mqttResourceConfigRepository.create({
+      resourceId,
+      ...dto,
+    });
+    return this.mqttResourceConfigRepository.save(newConfig);
+  }
+
+  /**
+   * Update an existing MQTT configuration
+   */
+  async update(resourceId: number, configId: number, dto: UpdateMqttResourceConfigDto): Promise<MqttResourceConfig> {
+    // First get the existing config
+    const config = await this.findOne(resourceId, configId);
+
+    // Update the config
+    Object.assign(config, dto);
+    return this.mqttResourceConfigRepository.save(config);
+  }
+
+  /**
+   * Delete a specific MQTT configuration
+   */
+  async remove(resourceId: number, configId: number): Promise<void> {
+    // First get the existing config
+    const config = await this.findOne(resourceId, configId);
 
     // Remove the config
     await this.mqttResourceConfigRepository.remove(config);

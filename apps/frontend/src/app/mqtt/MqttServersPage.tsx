@@ -1,24 +1,18 @@
-import React from 'react';
-import { PageHeader } from '../../components/pageHeader';
-import { MqttServersList, MqttServersListRef } from './servers/MqttServersList';
-import { useAuth } from '../../hooks/useAuth';
-import { Navigate } from 'react-router-dom';
-import { Button } from '@heroui/react';
-import { Plus } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as serverListEn from './servers/translations/en';
-import * as serverListDe from './servers/translations/de';
+import { Button, Card, CardHeader } from '@heroui/react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import en from './translations/en.json';
+import de from './translations/de.json';
+import { MqttServerList } from './servers/MqttServerList';
 
-export const MqttServersPage: React.FC = () => {
+export function MqttServersPage() {
   const { hasPermission } = useAuth();
-  const canManageMqtt = hasPermission('canManageResources');
-  const { t } = useTranslations('mqttServersPage', {
-    en: serverListEn,
-    de: serverListDe,
-  });
+  const navigate = useNavigate();
+  const { t } = useTranslations('mqttServersPage', { en, de });
 
-  // Reference to the MqttServersList component
-  const serverListRef = React.useRef<MqttServersListRef>(null);
+  const canManageMqtt = hasPermission('canManageResources');
 
   // Redirect if user doesn't have permission
   if (!canManageMqtt) {
@@ -26,42 +20,24 @@ export const MqttServersPage: React.FC = () => {
   }
 
   const handleAddNewServer = () => {
-    if (serverListRef.current) {
-      serverListRef.current.handleAddNew();
-    }
+    navigate('/mqtt/servers/create');
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <PageHeader
-        title="MQTT Servers"
-        subtitle="Manage MQTT server connections for resource integration"
-        backTo="/"
-        actions={
-          <Button
-            color="primary"
-            startContent={<Plus size={16} />}
-            onPress={handleAddNewServer}
-            className="hidden md:flex"
-          >
-            {t('addNewServer')}
-          </Button>
-        }
-      />
-
-      <Button
-        color="primary"
-        fullWidth
-        startContent={<Plus size={16} />}
-        onPress={handleAddNewServer}
-        className="md:hidden"
-      >
-        {t('addNewServer')}
-      </Button>
-
-      <div className="mt-6">
-        <MqttServersList ref={serverListRef} />
-      </div>
+      <Card>
+        <CardHeader>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2>{t('title')}</h2>
+            <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewServer}>
+              {t('addNewServer')}
+            </Button>
+          </div>
+        </CardHeader>
+        <div style={{ padding: '1rem' }}>
+          <MqttServerList />
+        </div>
+      </Card>
     </div>
   );
-};
+}

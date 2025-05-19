@@ -17,6 +17,14 @@ export class CreateMqttResourceConfigDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
+    description: 'Name of this MQTT configuration',
+    example: 'Primary Status Feed',
+  })
+  name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
     description: 'Topic template for when resource is in use',
     example: 'resources/{{id}}/status',
   })
@@ -26,8 +34,7 @@ export class CreateMqttResourceConfigDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Message template for when resource is in use',
-    example:
-      '{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}',
+    example: '{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}',
   })
   inUseMessage!: string;
 
@@ -43,8 +50,7 @@ export class CreateMqttResourceConfigDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Message template for when resource is not in use',
-    example:
-      '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}',
+    example: '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}',
   })
   notInUseMessage!: string;
 }
@@ -53,9 +59,7 @@ export class CreateMqttResourceConfigDto {
  * DTO for updating an MQTT resource configuration
  * Extends CreateMqttResourceConfigDto but makes all properties optional
  */
-export class UpdateMqttResourceConfigDto extends PartialType(
-  CreateMqttResourceConfigDto
-) {}
+export class UpdateMqttResourceConfigDto extends PartialType(CreateMqttResourceConfigDto) {}
 
 /**
  * Response DTO for MQTT configuration test
@@ -69,8 +73,7 @@ export class TestMqttConfigResponseDto {
 
   @ApiProperty({
     description: 'Message describing the test result',
-    example:
-      'MQTT configuration is valid and connection to server was successful',
+    example: 'MQTT configuration is valid and connection to server was successful',
   })
   message!: string;
 }

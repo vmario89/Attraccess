@@ -1050,6 +1050,11 @@ export const $MqttResourceConfig = {
             description: 'The ID of the resource this configuration is for',
             example: 1
         },
+        name: {
+            type: 'string',
+            description: 'Name of this MQTT configuration',
+            example: 'Primary Status Feed'
+        },
         serverId: {
             type: 'number',
             description: 'The ID of the MQTT server to publish to',
@@ -1086,7 +1091,7 @@ export const $MqttResourceConfig = {
             description: 'When the MQTT resource configuration was last updated'
         }
     },
-    required: ['id', 'resourceId', 'serverId', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage', 'createdAt', 'updatedAt']
+    required: ['id', 'resourceId', 'name', 'serverId', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage', 'createdAt', 'updatedAt']
 } as const;
 
 export const $CreateMqttResourceConfigDto = {
@@ -1096,6 +1101,11 @@ export const $CreateMqttResourceConfigDto = {
             type: 'number',
             description: 'ID of the MQTT server to use',
             example: 1
+        },
+        name: {
+            type: 'string',
+            description: 'Name of this MQTT configuration',
+            example: 'Primary Status Feed'
         },
         inUseTopic: {
             type: 'string',
@@ -1118,7 +1128,43 @@ export const $CreateMqttResourceConfigDto = {
             example: '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}'
         }
     },
-    required: ['serverId', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage']
+    required: ['serverId', 'name', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage']
+} as const;
+
+export const $UpdateMqttResourceConfigDto = {
+    type: 'object',
+    properties: {
+        serverId: {
+            type: 'number',
+            description: 'ID of the MQTT server to use',
+            example: 1
+        },
+        name: {
+            type: 'string',
+            description: 'Name of this MQTT configuration',
+            example: 'Primary Status Feed'
+        },
+        inUseTopic: {
+            type: 'string',
+            description: 'Topic template for when resource is in use',
+            example: 'resources/{{id}}/status'
+        },
+        inUseMessage: {
+            type: 'string',
+            description: 'Message template for when resource is in use',
+            example: '{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}'
+        },
+        notInUseTopic: {
+            type: 'string',
+            description: 'Topic template for when resource is not in use',
+            example: 'resources/{{id}}/status'
+        },
+        notInUseMessage: {
+            type: 'string',
+            description: 'Message template for when resource is not in use',
+            example: '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}'
+        }
+    }
 } as const;
 
 export const $TestMqttConfigResponseDto = {

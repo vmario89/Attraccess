@@ -1,17 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Delete,
-  Body,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MqttResourceConfig } from '@attraccess/database-entities';
 import { MqttResourceConfigService } from './mqtt-resource-config.service';
 import {
   CreateMqttResourceConfigDto,
+  UpdateMqttResourceConfigDto,
   TestMqttConfigResponseDto,
 } from './dtos/mqtt-resource-config.dto';
 import { MqttClientService } from '../../../mqtt/mqtt-client.service';
@@ -28,42 +21,71 @@ export class MqttResourceConfigController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get MQTT configuration for a resource', operationId: 'getOneMQTTConfiguration' })
+  @ApiOperation({ summary: 'Get all MQTT configurations for a resource', operationId: 'getAllMQTTConfigurations' })
   @ApiResponse({
     status: 200,
-    description: 'Returns the MQTT configuration for the resource',
-    type: MqttResourceConfig,
+    description: 'Returns all MQTT configurations for the resource',
+    type: [MqttResourceConfig],
   })
   @ApiResponse({ status: 404, description: 'Resource not found' })
+  async getAll(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<MqttResourceConfig[]> {
+    return this.mqttResourceConfigService.findAllByResourceId(resourceId);
+  }
+
+  @Get(':configId')
+  @ApiOperation({ summary: 'Get a specific MQTT configuration for a resource', operationId: 'getOneMQTTConfiguration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the specific MQTT configuration',
+    type: MqttResourceConfig,
+  })
+  @ApiResponse({ status: 404, description: 'Resource or configuration not found' })
   async getOne(
-    @Param('resourceId', ParseIntPipe) resourceId: number
-  ): Promise<MqttResourceConfig | null> {
-    return this.mqttResourceConfigService.findByResourceId(resourceId);
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('configId', ParseIntPipe) configId: number
+  ): Promise<MqttResourceConfig> {
+    return this.mqttResourceConfigService.findOne(resourceId, configId);
   }
 
   @Post()
   @ApiOperation({
-    summary: 'Create or update MQTT configuration for a resource',
-    operationId: 'upsertOne',
+    summary: 'Create a new MQTT configuration for a resource',
+    operationId: 'createMQTTConfiguration',
   })
   @ApiResponse({
     status: 201,
-    description: 'MQTT configuration created or updated successfully',
+    description: 'MQTT configuration created successfully',
     type: MqttResourceConfig,
   })
   @ApiResponse({ status: 404, description: 'Resource not found' })
-  async upsertOne(
+  async create(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() mqttConfigDto: CreateMqttResourceConfigDto
   ): Promise<MqttResourceConfig> {
-    return this.mqttResourceConfigService.createOrUpdate(
-      resourceId,
-      mqttConfigDto
-    );
+    return this.mqttResourceConfigService.create(resourceId, mqttConfigDto);
   }
 
-  @Delete()
-  @ApiOperation({ summary: 'Delete MQTT configuration for a resource', operationId: 'deleteOneMQTTConfiguration' })
+  @Put(':configId')
+  @ApiOperation({
+    summary: 'Update a specific MQTT configuration',
+    operationId: 'updateMQTTConfiguration',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'MQTT configuration updated successfully',
+    type: MqttResourceConfig,
+  })
+  @ApiResponse({ status: 404, description: 'Resource or configuration not found' })
+  async update(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('configId', ParseIntPipe) configId: number,
+    @Body() mqttConfigDto: UpdateMqttResourceConfigDto
+  ): Promise<MqttResourceConfig> {
+    return this.mqttResourceConfigService.update(resourceId, configId, mqttConfigDto);
+  }
+
+  @Delete(':configId')
+  @ApiOperation({ summary: 'Delete a specific MQTT configuration', operationId: 'deleteOneMQTTConfiguration' })
   @ApiResponse({
     status: 200,
     description: 'MQTT configuration deleted successfully',
@@ -73,13 +95,14 @@ export class MqttResourceConfigController {
     description: 'Resource or MQTT configuration not found',
   })
   async deleteOne(
-    @Param('resourceId', ParseIntPipe) resourceId: number
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('configId', ParseIntPipe) configId: number
   ): Promise<void> {
-    return this.mqttResourceConfigService.remove(resourceId);
+    return this.mqttResourceConfigService.remove(resourceId, configId);
   }
 
-  @Post('test')
-  @ApiOperation({ summary: 'Test MQTT configuration', operationId: 'testOne' })
+  @Post(':configId/test')
+  @ApiOperation({ summary: 'Test a specific MQTT configuration', operationId: 'testOne' })
   @ApiResponse({
     status: 200,
     description: 'Test result',
@@ -90,25 +113,15 @@ export class MqttResourceConfigController {
     description: 'Resource or MQTT configuration not found',
   })
   async testOne(
-    @Param('resourceId', ParseIntPipe) resourceId: number
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('configId', ParseIntPipe) configId: number
   ): Promise<TestMqttConfigResponseDto> {
-    // Get the MQTT configuration for this resource
-    const config = await this.mqttResourceConfigService.findByResourceId(
-      resourceId
-    );
-
-    if (!config) {
-      return {
-        success: false,
-        message: 'No MQTT configuration found for this resource',
-      };
-    }
+    // Get the specific MQTT configuration
+    const config = await this.mqttResourceConfigService.findOne(resourceId, configId);
 
     try {
       // Test the connection to the MQTT server
-      const connectionResult = await this.mqttClientService.testConnection(
-        config.serverId
-      );
+      const connectionResult = await this.mqttClientService.testConnection(config.serverId);
 
       if (!connectionResult.success) {
         return connectionResult;
@@ -123,23 +136,18 @@ export class MqttResourceConfigController {
 
         return {
           success: true,
-          message:
-            'MQTT configuration is valid and connection to server was successful',
+          message: 'MQTT configuration is valid and connection to server was successful',
         };
       } catch (error) {
         return {
           success: false,
-          message: `Template validation failed: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
+          message: `Template validation failed: ${error instanceof Error ? error.message : String(error)}`,
         };
       }
     } catch (error) {
       return {
         success: false,
-        message: `Failed to test MQTT configuration: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
+        message: `Failed to test MQTT configuration: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
   }
