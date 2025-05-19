@@ -44,11 +44,9 @@ function loadPostgresConfig() {
 }
 
 function loadSqliteConfig() {
-  const env = loadEnv((z) => ({
-    DB_FILE: z.string().default('attraccess.sqlite'),
-  }));
+  const dbFile = resolve(join(storageConfig().storage.root, 'attraccess.sqlite'));
 
-  const dbFile = resolve(join(storageConfig().storage.root, env.DB_FILE));
+  console.log('dbFile', dbFile);
 
   dbConfig = {
     ...dbConfig,
