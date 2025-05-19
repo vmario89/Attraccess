@@ -731,9 +731,16 @@ export const $ResourceUsage = {
             description: 'Notes provided when ending the session',
             example: 'Completed initial prototype, material usage: 500g'
         },
+        resource: {
+            description: 'The resource being used',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/Resource'
+                }
+            ]
+        },
         user: {
             description: 'The user who used the resource',
-            example: 1,
             allOf: [
                 {
                     '$ref': '#/components/schemas/User'

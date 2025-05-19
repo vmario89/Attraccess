@@ -2,7 +2,16 @@ import { Navigate } from 'react-router-dom';
 import { ResourceList } from '../resources/list.group';
 import { ResourceDetails } from '../resources/resourceDetails';
 import { IoTSettings } from '../resources/iot-settings/iotSettings';
-import { Database, ServerIcon, Key, Users, Package, NfcIcon, ComputerIcon } from 'lucide-react';
+import {
+  Database,
+  ServerIcon,
+  Key,
+  Users,
+  Package,
+  NfcIcon,
+  ComputerIcon,
+  FileChartColumnIncreasingIcon,
+} from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage } from '../mqtt/MqttServersPage';
 import { SSOProvidersPage } from '../sso/SSOProvidersPage';
@@ -14,6 +23,7 @@ import { PluginManifestWithPlugin } from '../plugins/plugin.state';
 import usePluginState from '../plugins/plugin.state';
 import { FabreaderList } from '../fabreader/FabreaderList/FabreaderList';
 import { NfcCardList } from '../fabreader/NfcCardList/NfcCardList';
+import { CsvExport } from '../csv-export/csv-export';
 
 const coreRoutes: RouteConfig[] = [
   {
@@ -92,13 +102,23 @@ const coreRoutes: RouteConfig[] = [
     },
   },
   {
+    path: '/csv-export',
+    element: <CsvExport />,
+    authRequired: 'canManageResources',
+    sidebar: {
+      translationKey: 'csvExport',
+      icon: <FileChartColumnIncreasingIcon />,
+      order: 7,
+    },
+  },
+  {
     path: '/plugins',
     element: <PluginsList />,
     authRequired: 'canManageSystemConfiguration',
     sidebar: {
       translationKey: 'plugins',
       icon: <Package className="h-5 w-5" />,
-      order: 7,
+      order: 8,
     },
   },
 ];

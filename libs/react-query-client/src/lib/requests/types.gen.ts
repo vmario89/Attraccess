@@ -474,6 +474,10 @@ export type ResourceUsage = {
      */
     endNotes?: string;
     /**
+     * The resource being used
+     */
+    resource?: Resource;
+    /**
      * The user who used the resource
      */
     user?: User;
@@ -1961,6 +1965,19 @@ export type GetAppKeyByUidResponse = AppKeyResponseDto;
 
 export type GetAllCardsResponse = Array<NFCCard>;
 
+export type AnalyticsControllerGetResourceUsageHoursInDateRangeData = {
+    /**
+     * The end date of the range
+     */
+    end: string;
+    /**
+     * The start date of the range
+     */
+    start: string;
+};
+
+export type AnalyticsControllerGetResourceUsageHoursInDateRangeResponse = Array<ResourceUsage>;
+
 export type $OpenApiTs = {
     '/api/ping': {
         get: {
@@ -3447,6 +3464,21 @@ export type $OpenApiTs = {
                  * The list of all cards
                  */
                 200: Array<NFCCard>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/analytics/resource-usage-hours': {
+        get: {
+            req: AnalyticsControllerGetResourceUsageHoursInDateRangeData;
+            res: {
+                /**
+                 * The resource usage hours in the date range
+                 */
+                200: Array<ResourceUsage>;
                 /**
                  * Unauthorized
                  */
