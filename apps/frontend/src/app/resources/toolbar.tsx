@@ -6,8 +6,8 @@ import { ResourceCreateModal } from './resourceCreateModal';
 import { ResourceGroupUpsertModal } from './resourceGroupUpsertModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/toolbar.en';
-import * as de from './translations/toolbar.de';
+import * as en from './toolbar.en.json';
+import * as de from './toolbar.de.json';
 
 interface ToolbarProps {
   onSearch: (value: string) => void;
