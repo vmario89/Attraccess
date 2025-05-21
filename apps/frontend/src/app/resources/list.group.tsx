@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Toolbar } from './toolbar';
 import { Accordion, AccordionItem, Selection, Spinner } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/resourceList.en';
-import * as de from './translations/resourceList.de';
+import * as en from './resourceList.en.json';
+import * as de from './resourceList.de.json';
 import {
   PaginatedResourceGroupResponseDto,
   useResourceGroupsServiceGetAllResourceGroupsInfinite,

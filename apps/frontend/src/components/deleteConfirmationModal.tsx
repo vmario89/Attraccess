@@ -2,8 +2,8 @@ import React from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalProps } from '@heroui/modal';
 import { Button } from '@heroui/button';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/deleteConfirmation.en';
-import * as de from './translations/deleteConfirmation.de';
+import * as en from './deleteConfirmation.en.json';
+import * as de from './deleteConfirmation.de.json';
 import { Trans } from 'react-i18next';
 
 interface DeleteConfirmationModalProps {

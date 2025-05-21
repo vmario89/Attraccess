@@ -11,8 +11,8 @@ import {
   useDisclosure,
 } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/resourceCreateModal.en';
-import * as de from './translations/resourceCreateModal.de';
+import * as en from './resourceCreateModal.en.json';
+import * as de from './resourceCreateModal.de.json';
 import {
   useResourcesServiceCreateOneResource,
   CreateResourceDto,

@@ -3,8 +3,8 @@ import { Checkbox, Button, Card } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 
 import { useToastMessage } from '../../../components/toastProvider';
-import * as en from '../translations/en';
-import * as de from '../translations/de';
+import * as en from '../userManagement.en.json';
+import * as de from '../userManagement.de.json';
 import { AttraccessUser } from '@attraccess/plugins-frontend-ui';
 import {
   User,

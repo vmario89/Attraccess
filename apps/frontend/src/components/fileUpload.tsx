@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useToastMessage } from './toastProvider';
 import { ImageIcon, X } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './translations/fileUpload.en';
-import * as de from './translations/fileUpload.de';
+import * as en from './fileUpload.en.json';
+import * as de from './fileUpload.de.json';
 
 interface FileUploadProps {
   id: string;
