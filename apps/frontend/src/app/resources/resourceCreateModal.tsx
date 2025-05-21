@@ -23,6 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { FileUpload } from '../../components/fileUpload';
 import { useToastMessage } from '../../components/toastProvider';
+import { DocumentationType } from './documentation';
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -41,6 +42,9 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const [formData, setFormData] = useState<CreateResourceDto>({
     name: '',
     description: '',
+    documentationType: undefined,
+    documentationMarkdown: '',
+    documentationUrl: '',
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { success, error } = useToastMessage();
@@ -53,7 +57,13 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const navigate = useNavigate();
 
   const clearForm = useCallback(() => {
-    setFormData({ name: '', description: '' });
+    setFormData({
+      name: '',
+      description: '',
+      documentationType: undefined,
+      documentationMarkdown: '',
+      documentationUrl: '',
+    });
     setSelectedImage(null);
   }, []);
 
@@ -148,6 +158,9 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
           name: formData.name,
           description: formData.description,
           image: selectedImage ?? undefined,
+          documentationType: formData.documentationType,
+          documentationMarkdown: formData.documentationType === DocumentationType.MARKDOWN ? formData.documentationMarkdown : undefined,
+          documentationUrl: formData.documentationType === DocumentationType.URL ? formData.documentationUrl : undefined,
         },
       });
     },
@@ -191,6 +204,11 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   className="w-full"
                   disabled={isSubmitting}
                 />
+                
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h3 className="text-md font-medium mb-2">{t('documentation.title')}</h3>
+                  <p className="text-sm text-gray-500">{t('documentation.note')}</p>
+                </div>
               </ModalBody>
 
               <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">

@@ -1,0 +1,12 @@
+{
+  "title": "Dokumentation",
+  "noDocumentation": "Keine Dokumentation für diese Ressource verfügbar.",
+  "actions": {
+    "edit": "Dokumentation bearbeiten",
+    "fullscreen": "Vollbild",
+    "exitFullscreen": "Vollbild beenden",
+    "openInNewTab": "In neuem Tab öffnen",
+    "close": "Schließen"
+  },
+  "loading": "Dokumentation wird geladen..."
+}
