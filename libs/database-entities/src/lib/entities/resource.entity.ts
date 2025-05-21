@@ -58,7 +58,7 @@ export class Resource {
   })
   imageFilename!: string | null;
   
-  @Column({ type: 'enum', enum: DocumentationType, nullable: true })
+  @Column({ type: 'text', nullable: true })
   @ApiProperty({
     description: 'The type of documentation (markdown or url)',
     enum: DocumentationType,

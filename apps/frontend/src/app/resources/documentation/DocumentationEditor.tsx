@@ -144,8 +144,8 @@ function DocumentationEditorComponent() {
   // Handle loading state
   if (isLoadingResource) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" color="primary" />
+      <div className="flex justify-center items-center h-[50vh]">
+        <Spinner size="lg" label={t('loading')} />
       </div>
     );
   }
@@ -153,44 +153,54 @@ function DocumentationEditorComponent() {
   // Handle error state
   if (isResourceError) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Error loading resource</h2>
-          <p className="text-gray-500 mb-4">
-            {resourceError instanceof Error ? resourceError.message : 'An unknown error occurred'}
+      <Card className="max-w-xl mx-auto my-8">
+        <CardHeader>
+          <h2 className="text-xl">{t('error.title')}</h2>
+        </CardHeader>
+        <CardBody>
+          <p className="text-danger">
+            {resourceError instanceof Error ? resourceError.message : t('error.unknown')}
           </p>
-          <div className="flex justify-center space-x-4">
-            <Button 
-              onPress={() => refetchResource()} 
-              color="primary"
-            >
-              Try Again
-            </Button>
-            <Button 
-              onPress={() => navigate('/resources')} 
-              variant="light" 
-              startContent={<ArrowLeft className="w-4 h-4" />}
-            >
-              Back to Resources
-            </Button>
-          </div>
-        </div>
-      </div>
+        </CardBody>
+        <CardFooter className="flex justify-center gap-4">
+          <Button 
+            onPress={() => refetchResource()} 
+            color="primary"
+          >
+            {t('actions.retry')}
+          </Button>
+          <Button 
+            onPress={() => navigate('/resources')} 
+            variant="flat" 
+            startContent={<ArrowLeft size={16} />}
+          >
+            {t('actions.backToResources')}
+          </Button>
+        </CardFooter>
+      </Card>
     );
   }
 
   // Handle not found state
   if (!resource) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Resource not found</h2>
-          <p className="text-gray-500 mb-4">The requested resource could not be found.</p>
-          <Button onPress={() => navigate('/resources')} variant="light" startContent={<ArrowLeft className="w-4 h-4" />}>
-            Back to Resources
+      <Card className="max-w-xl mx-auto my-8">
+        <CardHeader>
+          <h2 className="text-xl">{t('notFound.title')}</h2>
+        </CardHeader>
+        <CardBody>
+          <p>{t('notFound.message')}</p>
+        </CardBody>
+        <CardFooter className="justify-center">
+          <Button 
+            onPress={() => navigate('/resources')} 
+            variant="flat" 
+            startContent={<ArrowLeft size={16} />}
+          >
+            {t('actions.backToResources')}
           </Button>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     );
   }
 
@@ -227,32 +237,29 @@ function DocumentationEditorComponent() {
         </CardHeader>
         <CardBody>
           {documentationType === DocumentationType.MARKDOWN && (
-            <div className="space-y-4">
-              <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab as (key: string) => void}>
-                <Tab key="edit" title={t('edit')}>
-                  <Textarea
-                    label={t('markdownContent.label')}
-                    placeholder={t('markdownContent.placeholder')}
-                    value={markdownContent}
-                    onChange={(e) => setMarkdownContent(e.target.value)}
-                    minRows={15}
-                    className="w-full"
-                    isInvalid={!!validationErrors.markdown}
-                    errorMessage={validationErrors.markdown}
-                    isDisabled={updateResource.isPending}
-                  />
-                </Tab>
-                <Tab key="preview" title={t('preview')}>
-                  <div className="border rounded-md p-4 min-h-[300px] prose prose-sm md:prose-base lg:prose-lg max-w-none">
-                    {markdownContent ? (
-                      <ReactMarkdown>{markdownContent}</ReactMarkdown>
-                    ) : (
-                      <div className="text-gray-400 italic">{t('markdownContent.placeholder')}</div>
-                    )}
-                  </div>
-                </Tab>
-              </Tabs>
-            </div>
+            <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab as (key: string) => void}>
+              <Tab key="edit" title={t('edit')}>
+                <Textarea
+                  label={t('markdownContent.label')}
+                  placeholder={t('markdownContent.placeholder')}
+                  value={markdownContent}
+                  onChange={(e) => setMarkdownContent(e.target.value)}
+                  minRows={15}
+                  isInvalid={!!validationErrors.markdown}
+                  errorMessage={validationErrors.markdown}
+                  isDisabled={updateResource.isPending}
+                />
+              </Tab>
+              <Tab key="preview" title={t('preview')}>
+                <div className="border rounded p-4 min-h-[300px] prose max-w-none">
+                  {markdownContent ? (
+                    <ReactMarkdown>{markdownContent}</ReactMarkdown>
+                  ) : (
+                    <p className="text-default-400 italic">{t('markdownContent.placeholder')}</p>
+                  )}
+                </div>
+              </Tab>
+            </Tabs>
           )}
 
           {documentationType === DocumentationType.URL && (

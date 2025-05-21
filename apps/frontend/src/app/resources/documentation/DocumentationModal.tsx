@@ -90,24 +90,23 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   const renderDocumentationContent = useCallback(() => {
     if (isLoading || isFetching) {
       return (
-        <div className="flex items-center justify-center p-8">
-          <Spinner size="lg" color="primary" />
-          <span className="ml-2">{t('loading')}</span>
+        <div className="flex justify-center p-4">
+          <Spinner size="lg" label={t('loading')} color="primary" />
         </div>
       );
     }
 
     if (isError) {
       return (
-        <div className="p-8 text-center">
-          <div className="text-red-500 mb-4">
+        <div className="flex flex-col items-center gap-4 p-4">
+          <p className="text-danger">
             {error instanceof Error ? error.message : t('error.unknown')}
-          </div>
+          </p>
           <Button 
             color="primary" 
-            variant="light" 
+            variant="flat" 
             onPress={() => refetch()}
-            startContent={<RefreshCw className="h-4 w-4" />}
+            startContent={<RefreshCw size={16} />}
           >
             {t('actions.retry')}
           </Button>
@@ -116,16 +115,12 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     }
 
     if (!resource?.documentationType) {
-      return (
-        <div className="p-4 text-center text-gray-500">
-          {t('noDocumentation')}
-        </div>
-      );
+      return <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>;
     }
 
     if (resource.documentationType === DocumentationType.MARKDOWN && resource.documentationMarkdown) {
       return (
-        <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none p-4">
+        <div className="prose prose-sm md:prose-base max-w-none p-4">
           <ReactMarkdown>{resource.documentationMarkdown}</ReactMarkdown>
         </div>
       );
@@ -135,19 +130,14 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       return (
         <iframe
           src={resource.documentationUrl}
-          className="w-full h-full border-0"
-          style={{ minHeight: '500px' }}
+          className="w-full h-[500px] border-0"
           title={`${resource.name} Documentation`}
           sandbox="allow-scripts allow-same-origin allow-forms"
         />
       );
     }
 
-    return (
-      <div className="p-4 text-center text-gray-500">
-        {t('noDocumentation')}
-      </div>
-    );
+    return <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>;
   }, [isLoading, isFetching, isError, error, resource, refetch, t]);
 
   const modalSize = isFullscreen ? 'full' : '5xl';
@@ -168,46 +158,46 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
             <>
               <ModalHeader className="flex justify-between items-center">
                 <div>{t('title')}</div>
-                <div className="flex space-x-2">
+                <div className="flex gap-1">
                   <Button
                     isIconOnly
                     size="sm"
-                    variant="light"
+                    variant="flat"
                     onPress={handleEditDocumentation}
                     aria-label={t('actions.edit')}
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit size={16} />
                   </Button>
                   <Button
                     isIconOnly
                     size="sm"
-                    variant="light"
+                    variant="flat"
                     onPress={toggleFullscreen}
                     aria-label={isFullscreen ? t('actions.exitFullscreen') : t('actions.fullscreen')}
                   >
-                    {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                    {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
                   </Button>
                   {(resource?.documentationType === DocumentationType.URL || 
                    resource?.documentationType === DocumentationType.MARKDOWN) && (
                     <Button
                       isIconOnly
                       size="sm"
-                      variant="light"
+                      variant="flat"
                       onPress={handleOpenInNewTab}
                       aria-label={t('actions.openInNewTab')}
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink size={16} />
                     </Button>
                   )}
                   <Button
                     isIconOnly
                     size="sm"
-                    variant="light"
+                    variant="flat"
                     onPress={() => refetch()}
                     isLoading={isFetching}
                     aria-label={t('actions.refresh')}
                   >
-                    <RefreshCw className="h-4 w-4" />
+                    <RefreshCw size={16} />
                   </Button>
                 </div>
               </ModalHeader>
