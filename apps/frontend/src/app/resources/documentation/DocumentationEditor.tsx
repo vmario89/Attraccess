@@ -20,18 +20,21 @@ import { useToastMessage } from '../../../components/toastProvider';
 import { PageHeader } from '../../../components/pageHeader';
 import { 
   useResourcesServiceGetOneResourceById, 
-  useResourcesServiceUpdateOneResource 
+  useResourcesServiceUpdateOneResource,
+  UseResourcesServiceGetOneResourceByIdKeyFn
 } from '@attraccess/react-query-client';
 import { DocumentationType } from './types';
 import ReactMarkdown from 'react-markdown';
 import en from './documentationEditor.en.json';
 import de from './documentationEditor.de.json';
+import { useQueryClient } from '@tanstack/react-query';
 
 function DocumentationEditorComponent() {
   const { id } = useParams<{ id: string }>();
   const resourceId = parseInt(id || '', 10);
   const navigate = useNavigate();
   const { success, error: showError } = useToastMessage();
+  const queryClient = useQueryClient();
   
   const { t } = useTranslations('documentationEditor', {
     en,
@@ -43,14 +46,53 @@ function DocumentationEditorComponent() {
   const [urlContent, setUrlContent] = useState('');
   const [selectedTab, setSelectedTab] = useState('edit');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get resource query key for cache operations
+  const resourceQueryKey = UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId });
 
   const {
     data: resource,
     isLoading: isLoadingResource,
-  } = useResourcesServiceGetOneResourceById({ id: resourceId });
+    isError: isResourceError,
+    error: resourceError,
+    refetch: refetchResource
+  } = useResourcesServiceGetOneResourceById({ 
+    id: resourceId 
+  }, {
+    // Enable stale time to reduce unnecessary refetches
+    staleTime: 30000, // 30 seconds
+    // Retry failed requests
+    retry: 2,
+    // Handle errors
+    onError: (error) => {
+      console.error('Error fetching resource:', error);
+    }
+  });
 
-  const updateResource = useResourcesServiceUpdateOneResource();
+  const updateResource = useResourcesServiceUpdateOneResource({
+    // Invalidate queries after successful update
+    onSuccess: () => {
+      // Invalidate the specific resource query
+      queryClient.invalidateQueries({ queryKey: resourceQueryKey });
+      // Invalidate the resources list query if needed
+      queryClient.invalidateQueries({ queryKey: ['ResourcesService', 'getAllResources'] });
+      
+      success({
+        title: t('notifications.saveSuccess.title'),
+        description: t('notifications.saveSuccess.description'),
+      });
+
+      navigate(`/resources/${resourceId}`);
+    },
+    // Handle errors
+    onError: (error) => {
+      showError({
+        title: t('notifications.saveError.title'),
+        description: t('notifications.saveError.description'),
+      });
+      console.error('Failed to save documentation:', error);
+    }
+  });
 
   // Initialize form with resource data
   useEffect(() => {
@@ -84,51 +126,69 @@ function DocumentationEditorComponent() {
     return Object.keys(errors).length === 0;
   }, [documentationType, markdownContent, urlContent, t]);
 
-  const handleSave = useCallback(async () => {
-    if (!validateForm()) {
+  const handleSave = useCallback(() => {
+    if (!validateForm() || !resource) {
       return;
     }
 
-    setIsSubmitting(true);
+    // Create optimistic update data
+    const optimisticResource = {
+      ...resource,
+      documentationType: documentationType || null,
+      documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
+      documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
+    };
 
-    try {
-      await updateResource.mutateAsync({
+    // Perform mutation with optimistic update
+    updateResource.mutate(
+      {
         id: resourceId,
         formData: {
           documentationType: documentationType || null,
           documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
           documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
         },
-      });
-
-      success({
-        title: t('notifications.saveSuccess.title'),
-        description: t('notifications.saveSuccess.description'),
-      });
-
-      navigate(`/resources/${resourceId}`);
-    } catch (err) {
-      showError({
-        title: t('notifications.saveError.title'),
-        description: t('notifications.saveError.description'),
-      });
-      console.error('Failed to save documentation:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        // Optimistic update
+        onMutate: async () => {
+          // Cancel any outgoing refetches to avoid overwriting optimistic update
+          await queryClient.cancelQueries({ queryKey: resourceQueryKey });
+          
+          // Save previous value
+          const previousResource = queryClient.getQueryData(resourceQueryKey);
+          
+          // Optimistically update the cache
+          queryClient.setQueryData(resourceQueryKey, optimisticResource);
+          
+          // Return context with the previous value
+          return { previousResource };
+        },
+        // If mutation fails, use context returned from onMutate to roll back
+        onError: (err, variables, context) => {
+          if (context?.previousResource) {
+            queryClient.setQueryData(resourceQueryKey, context.previousResource);
+          }
+        },
+        // Always refetch after error or success
+        onSettled: () => {
+          queryClient.invalidateQueries({ queryKey: resourceQueryKey });
+        }
+      }
+    );
   }, [
     documentationType,
     markdownContent,
-    navigate,
+    resource,
     resourceId,
-    showError,
-    success,
-    t,
+    resourceQueryKey,
+    queryClient,
     updateResource,
     urlContent,
     validateForm,
   ]);
 
+  // Handle loading state
   if (isLoadingResource) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -137,6 +197,36 @@ function DocumentationEditorComponent() {
     );
   }
 
+  // Handle error state
+  if (isResourceError) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Error loading resource</h2>
+          <p className="text-gray-500 mb-4">
+            {resourceError instanceof Error ? resourceError.message : 'An unknown error occurred'}
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Button 
+              onPress={() => refetchResource()} 
+              color="primary"
+            >
+              Try Again
+            </Button>
+            <Button 
+              onPress={() => navigate('/resources')} 
+              variant="light" 
+              startContent={<ArrowLeft className="w-4 h-4" />}
+            >
+              Back to Resources
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle not found state
   if (!resource) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -161,7 +251,7 @@ function DocumentationEditorComponent() {
           <Button
             color="primary"
             onPress={handleSave}
-            isLoading={isSubmitting}
+            isLoading={updateResource.isPending}
             startContent={<Save className="w-4 h-4" />}
           >
             {t('actions.save')}
@@ -176,6 +266,7 @@ function DocumentationEditorComponent() {
             orientation="horizontal"
             value={documentationType}
             onValueChange={setDocumentationType as (value: string) => void}
+            isDisabled={updateResource.isPending}
           >
             <Radio value={DocumentationType.MARKDOWN}>{t('documentationType.markdown')}</Radio>
             <Radio value={DocumentationType.URL}>{t('documentationType.url')}</Radio>
@@ -195,6 +286,7 @@ function DocumentationEditorComponent() {
                     className="w-full"
                     isInvalid={!!validationErrors.markdown}
                     errorMessage={validationErrors.markdown}
+                    isDisabled={updateResource.isPending}
                   />
                 </Tab>
                 <Tab key="preview" title={t('preview')}>
@@ -218,6 +310,7 @@ function DocumentationEditorComponent() {
               onChange={(e) => setUrlContent(e.target.value)}
               isInvalid={!!validationErrors.url}
               errorMessage={validationErrors.url}
+              isDisabled={updateResource.isPending}
             />
           )}
         </CardBody>
@@ -226,13 +319,14 @@ function DocumentationEditorComponent() {
             <Button
               variant="light"
               onPress={() => navigate(`/resources/${resourceId}`)}
+              isDisabled={updateResource.isPending}
             >
               {t('actions.cancel')}
             </Button>
             <Button
               color="primary"
               onPress={handleSave}
-              isLoading={isSubmitting}
+              isLoading={updateResource.isPending}
             >
               {t('actions.save')}
             </Button>

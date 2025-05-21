@@ -6,7 +6,12 @@
     "fullscreen": "Vollbild",
     "exitFullscreen": "Vollbild beenden",
     "openInNewTab": "In neuem Tab öffnen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "refresh": "Aktualisieren",
+    "retry": "Erneut versuchen"
   },
-  "loading": "Dokumentation wird geladen..."
+  "loading": "Dokumentation wird geladen...",
+  "error": {
+    "unknown": "Ein unbekannter Fehler ist beim Laden der Dokumentation aufgetreten."
+  }
 }

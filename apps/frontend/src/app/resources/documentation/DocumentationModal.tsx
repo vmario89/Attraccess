@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -10,13 +10,17 @@ import {
   useDisclosure,
 } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { Edit, ExternalLink, Maximize, Minimize } from 'lucide-react';
+import { Edit, ExternalLink, Maximize, Minimize, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
+import { 
+  useResourcesServiceGetOneResourceById,
+  UseResourcesServiceGetOneResourceByIdKeyFn
+} from '@attraccess/react-query-client';
 import { DocumentationType } from './types';
 import en from './documentationModal.en.json';
 import de from './documentationModal.de.json';
 import ReactMarkdown from 'react-markdown';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DocumentationModalProps {
   resourceId: number;
@@ -27,16 +31,53 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { t } = useTranslations('documentationModal', {
     en,
     de,
   });
 
+  // Get resource query key for prefetching and cache operations
+  const resourceQueryKey = UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId });
+
   const {
     data: resource,
     isLoading,
-  } = useResourcesServiceGetOneResourceById({ id: resourceId });
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useResourcesServiceGetOneResourceById(
+    { id: resourceId },
+    {
+      // Only fetch when modal is open
+      enabled: isOpen,
+      // Stale time to reduce unnecessary refetches
+      staleTime: 30000, // 30 seconds
+      // Retry failed requests
+      retry: 1,
+      // Handle errors
+      onError: (err) => {
+        console.error('Error fetching resource documentation:', err);
+      }
+    }
+  );
+
+  // Prefetch resource data when hovering over the button that opens the modal
+  const handlePrefetch = useCallback(() => {
+    queryClient.prefetchQuery({
+      queryKey: resourceQueryKey,
+      queryFn: () => queryClient.fetchQuery({ queryKey: resourceQueryKey })
+    });
+  }, [queryClient, resourceQueryKey]);
+
+  // When modal opens, ensure we have fresh data
+  useEffect(() => {
+    if (isOpen) {
+      refetch();
+    }
+  }, [isOpen, refetch]);
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen((prev) => !prev);
@@ -55,11 +96,29 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   }, [resource, resourceId]);
 
   const renderDocumentationContent = useCallback(() => {
-    if (isLoading) {
+    if (isLoading || isFetching) {
       return (
         <div className="flex items-center justify-center p-8">
           <Spinner size="lg" color="primary" />
           <span className="ml-2">{t('loading')}</span>
+        </div>
+      );
+    }
+
+    if (isError) {
+      return (
+        <div className="p-8 text-center">
+          <div className="text-red-500 mb-4">
+            {error instanceof Error ? error.message : t('error.unknown')}
+          </div>
+          <Button 
+            color="primary" 
+            variant="light" 
+            onPress={() => refetch()}
+            startContent={<RefreshCw className="h-4 w-4" />}
+          >
+            {t('actions.retry')}
+          </Button>
         </div>
       );
     }
@@ -87,6 +146,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
           className="w-full h-full border-0"
           style={{ minHeight: '500px' }}
           title={`${resource.name} Documentation`}
+          sandbox="allow-scripts allow-same-origin allow-forms"
         />
       );
     }
@@ -96,13 +156,15 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
         {t('noDocumentation')}
       </div>
     );
-  }, [isLoading, resource, t]);
+  }, [isLoading, isFetching, isError, error, resource, refetch, t]);
 
   const modalSize = isFullscreen ? 'full' : '5xl';
 
   return (
     <>
-      {children(onOpen)}
+      <div onMouseEnter={handlePrefetch}>
+        {children(onOpen)}
+      </div>
       <Modal 
         isOpen={isOpen} 
         onOpenChange={onOpenChange} 
@@ -145,6 +207,16 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                   )}
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    onPress={() => refetch()}
+                    isLoading={isFetching}
+                    aria-label={t('actions.refresh')}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
                 </div>
               </ModalHeader>
               <ModalBody>

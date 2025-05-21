@@ -6,7 +6,12 @@
     "fullscreen": "Fullscreen",
     "exitFullscreen": "Exit Fullscreen",
     "openInNewTab": "Open in New Tab",
-    "close": "Close"
+    "close": "Close",
+    "refresh": "Refresh",
+    "retry": "Try Again"
   },
-  "loading": "Loading documentation..."
+  "loading": "Loading documentation...",
+  "error": {
+    "unknown": "An unknown error occurred while loading the documentation."
+  }
 }
