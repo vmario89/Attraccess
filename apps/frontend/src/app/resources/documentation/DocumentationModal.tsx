@@ -52,15 +52,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     { id: resourceId },
     {
       // Only fetch when modal is open
-      enabled: isOpen,
-      // Stale time to reduce unnecessary refetches
-      staleTime: 30000, // 30 seconds
-      // Retry failed requests
-      retry: 1,
-      // Handle errors
-      onError: (err) => {
-        console.error('Error fetching resource documentation:', err);
-      }
+      enabled: isOpen
     }
   );
 

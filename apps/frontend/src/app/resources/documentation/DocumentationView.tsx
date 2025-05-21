@@ -37,19 +37,7 @@ function DocumentationViewComponent() {
     error: resourceError,
     refetch: refetchResource,
     isFetching,
-  } = useResourcesServiceGetOneResourceById(
-    { id: resourceId },
-    {
-      // Stale time to reduce unnecessary refetches
-      staleTime: 30000, // 30 seconds
-      // Retry failed requests
-      retry: 2,
-      // Handle errors
-      onError: (error) => {
-        console.error('Error fetching resource for documentation view:', error);
-      }
-    }
-  );
+  } = useResourcesServiceGetOneResourceById({ id: resourceId });
 
   const handleEditDocumentation = useCallback(() => {
     navigate(`/resources/${resourceId}/documentation/edit`);

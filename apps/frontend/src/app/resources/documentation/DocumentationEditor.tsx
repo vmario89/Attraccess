@@ -58,15 +58,6 @@ function DocumentationEditorComponent() {
     refetch: refetchResource
   } = useResourcesServiceGetOneResourceById({ 
     id: resourceId 
-  }, {
-    // Enable stale time to reduce unnecessary refetches
-    staleTime: 30000, // 30 seconds
-    // Retry failed requests
-    retry: 2,
-    // Handle errors
-    onError: (error) => {
-      console.error('Error fetching resource:', error);
-    }
   });
 
   const updateResource = useResourcesServiceUpdateOneResource({
@@ -131,58 +122,20 @@ function DocumentationEditorComponent() {
       return;
     }
 
-    // Create optimistic update data
-    const optimisticResource = {
-      ...resource,
-      documentationType: documentationType || null,
-      documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
-      documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
-    };
-
-    // Perform mutation with optimistic update
-    updateResource.mutate(
-      {
-        id: resourceId,
-        formData: {
-          documentationType: documentationType || null,
-          documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
-          documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
-        },
+    // Perform mutation
+    updateResource.mutate({
+      id: resourceId,
+      formData: {
+        documentationType: documentationType || null,
+        documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
+        documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
       },
-      {
-        // Optimistic update
-        onMutate: async () => {
-          // Cancel any outgoing refetches to avoid overwriting optimistic update
-          await queryClient.cancelQueries({ queryKey: resourceQueryKey });
-          
-          // Save previous value
-          const previousResource = queryClient.getQueryData(resourceQueryKey);
-          
-          // Optimistically update the cache
-          queryClient.setQueryData(resourceQueryKey, optimisticResource);
-          
-          // Return context with the previous value
-          return { previousResource };
-        },
-        // If mutation fails, use context returned from onMutate to roll back
-        onError: (err, variables, context) => {
-          if (context?.previousResource) {
-            queryClient.setQueryData(resourceQueryKey, context.previousResource);
-          }
-        },
-        // Always refetch after error or success
-        onSettled: () => {
-          queryClient.invalidateQueries({ queryKey: resourceQueryKey });
-        }
-      }
-    );
+    });
   }, [
     documentationType,
     markdownContent,
     resource,
     resourceId,
-    resourceQueryKey,
-    queryClient,
     updateResource,
     urlContent,
     validateForm,
