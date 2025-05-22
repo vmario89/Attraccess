@@ -88,7 +88,14 @@ function DocumentationEditorComponent() {
   // Initialize form with resource data
   useEffect(() => {
     if (resource) {
-      setDocumentationType(resource.documentationType || '');
+      // Map from backend enum to frontend enum
+      if (resource.documentationType === 'markdown') {
+        setDocumentationType(DocumentationType.MARKDOWN);
+      } else if (resource.documentationType === 'url') {
+        setDocumentationType(DocumentationType.URL);
+      } else {
+        setDocumentationType('');
+      }
       setMarkdownContent(resource.documentationMarkdown || '');
       setUrlContent(resource.documentationUrl || '');
     }
@@ -126,9 +133,11 @@ function DocumentationEditorComponent() {
     updateResource.mutate({
       id: resourceId,
       formData: {
-        documentationType: documentationType || null,
-        documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : null,
-        documentationUrl: documentationType === DocumentationType.URL ? urlContent : null,
+        documentationType: documentationType ? 
+          (documentationType === DocumentationType.MARKDOWN ? 'MARKDOWN' : 'URL') 
+          : undefined,
+        documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : undefined,
+        documentationUrl: documentationType === DocumentationType.URL ? urlContent : undefined,
       },
     });
   }, [
@@ -237,7 +246,7 @@ function DocumentationEditorComponent() {
         </CardHeader>
         <CardBody>
           {documentationType === DocumentationType.MARKDOWN && (
-            <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab as (key: string) => void}>
+            <Tabs selectedKey={selectedTab} onSelectionChange={(key) => setSelectedTab(key.toString())}>
               <Tab key="edit" title={t('edit')}>
                 <Textarea
                   label={t('markdownContent.label')}

@@ -23,7 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { FileUpload } from '../../components/fileUpload';
 import { useToastMessage } from '../../components/toastProvider';
-import { DocumentationType } from './documentation';
+// Import removed to fix lint warning
 
 interface ResourceCreateModalProps {
   children: (onOpen: () => void) => React.ReactNode;
@@ -158,9 +158,11 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
           name: formData.name,
           description: formData.description,
           image: selectedImage ?? undefined,
-          documentationType: formData.documentationType,
-          documentationMarkdown: formData.documentationType === DocumentationType.MARKDOWN ? formData.documentationMarkdown : undefined,
-          documentationUrl: formData.documentationType === DocumentationType.URL ? formData.documentationUrl : undefined,
+          documentationType: formData.documentationType ? 
+            (formData.documentationType === 'MARKDOWN' ? 'MARKDOWN' : 'URL') 
+            : undefined,
+          documentationMarkdown: formData.documentationType === 'MARKDOWN' ? formData.documentationMarkdown : undefined,
+          documentationUrl: formData.documentationType === 'URL' ? formData.documentationUrl : undefined,
         },
       });
     },

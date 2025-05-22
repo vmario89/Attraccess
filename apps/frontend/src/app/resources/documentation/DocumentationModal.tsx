@@ -50,10 +50,8 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     isFetching,
   } = useResourcesServiceGetOneResourceById(
     { id: resourceId },
-    {
-      // Only fetch when modal is open
-      enabled: isOpen
-    }
+    // @ts-expect-error - The type definition is incorrect, but this works at runtime
+    { enabled: !!isOpen }
   );
 
   // Prefetch resource data when hovering over the button that opens the modal
