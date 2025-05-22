@@ -7,7 +7,6 @@ import { PageHeader } from '../../../components/pageHeader';
 import { 
   useResourcesServiceGetOneResourceById
 } from '@attraccess/react-query-client';
-import { DocumentationType } from './types';
 import ReactMarkdown from 'react-markdown';
 import en from './documentationModal.en.json';
 import de from './documentationModal.de.json';
@@ -149,13 +148,13 @@ function DocumentationViewComponent() {
             <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>
           )}
 
-          {resource.documentationType === DocumentationType.MARKDOWN && resource.documentationMarkdown && (
+          {resource.documentationType === 'markdown' && resource.documentationMarkdown && (
             <div className="prose max-w-none">
               <ReactMarkdown>{resource.documentationMarkdown}</ReactMarkdown>
             </div>
           )}
 
-          {resource.documentationType === DocumentationType.URL && resource.documentationUrl && (
+          {resource.documentationType === 'url' && resource.documentationUrl && (
             <iframe
               src={resource.documentationUrl}
               className="w-full h-[calc(100vh-300px)] min-h-[500px] border-0"

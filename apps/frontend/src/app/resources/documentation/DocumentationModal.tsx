@@ -78,9 +78,9 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   }, [navigate, resourceId]);
 
   const handleOpenInNewTab = useCallback(() => {
-    if (resource?.documentationType === DocumentationType.URL && resource?.documentationUrl) {
+    if (resource?.documentationType === 'url' && resource?.documentationUrl) {
       window.open(resource.documentationUrl, '_blank');
-    } else if (resource?.documentationType === DocumentationType.MARKDOWN) {
+    } else if (resource?.documentationType === 'markdown') {
       window.open(`/resources/${resourceId}/documentation`, '_blank');
     }
   }, [resource, resourceId]);
@@ -116,7 +116,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       return <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>;
     }
 
-    if (resource.documentationType === DocumentationType.MARKDOWN && resource.documentationMarkdown) {
+    if (resource.documentationType === 'markdown' && resource.documentationMarkdown) {
       return (
         <div className="prose prose-sm md:prose-base max-w-none p-4">
           <ReactMarkdown>{resource.documentationMarkdown}</ReactMarkdown>
@@ -124,7 +124,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       );
     }
 
-    if (resource.documentationType === DocumentationType.URL && resource.documentationUrl) {
+    if (resource.documentationType === 'url' && resource.documentationUrl) {
       return (
         <iframe
           src={resource.documentationUrl}

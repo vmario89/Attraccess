@@ -88,11 +88,9 @@ function DocumentationEditorComponent() {
   // Initialize form with resource data
   useEffect(() => {
     if (resource) {
-      // Map from backend enum to frontend enum
-      if (resource.documentationType === 'markdown') {
-        setDocumentationType(DocumentationType.MARKDOWN);
-      } else if (resource.documentationType === 'url') {
-        setDocumentationType(DocumentationType.URL);
+      // Set the documentation type directly from the resource
+      if (resource.documentationType) {
+        setDocumentationType(resource.documentationType as DocumentationType);
       } else {
         setDocumentationType('');
       }
@@ -133,9 +131,7 @@ function DocumentationEditorComponent() {
     updateResource.mutate({
       id: resourceId,
       formData: {
-        documentationType: documentationType ? 
-          (documentationType === DocumentationType.MARKDOWN ? 'markdown' : 'url') 
-          : undefined,
+        documentationType: documentationType || undefined,
         documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : undefined,
         documentationUrl: documentationType === DocumentationType.URL ? urlContent : undefined,
       },
