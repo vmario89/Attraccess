@@ -11,8 +11,8 @@ import { ResourceImageService } from '../common/services/resource-image.service'
 describe('ResourcesController', () => {
   let controller: ResourcesController;
   let service: ResourcesService;
-  let imageService: ResourceImageService;
-
+  // ResourceImageService is injected but not directly used in tests
+  
   beforeEach(async () => {
     const mockResourcesService = {
       listResources: jest.fn(),
@@ -46,7 +46,6 @@ describe('ResourcesController', () => {
 
     controller = module.get<ResourcesController>(ResourcesController);
     service = module.get<ResourcesService>(ResourcesService);
-    imageService = module.get<ResourceImageService>(ResourceImageService);
   });
 
   it('should be defined', () => {
@@ -185,10 +184,10 @@ describe('ResourcesController', () => {
 
       const updatedResource: Resource = {
         id: 1,
-        name: updateDto.name!,
-        description: updateDto.description!,
+        name: updateDto.name as string,
+        description: updateDto.description as string,
         imageFilename: null,
-        documentationType: updateDto.documentationType!,
+        documentationType: updateDto.documentationType as DocumentationType,
         documentationMarkdown: updateDto.documentationMarkdown,
         documentationUrl: updateDto.documentationUrl,
         createdAt: new Date(),

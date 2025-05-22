@@ -12,7 +12,7 @@ import { ResourceGroupsService } from './groups/resourceGroups.service';
 describe('ResourcesService', () => {
   let service: ResourcesService;
   let resourceRepository: jest.Mocked<Repository<Resource>>;
-  let resourceImageService: jest.Mocked<ResourceImageService>;
+  // ResourceImageService is injected but not directly used in these tests
   let resourceGroupsService: jest.Mocked<ResourceGroupsService>;
 
   const mockResourceRepository = () => ({
@@ -63,7 +63,7 @@ describe('ResourcesService', () => {
     resourceRepository = module.get(getRepositoryToken(Resource)) as jest.Mocked<
       Repository<Resource>
     >;
-    resourceImageService = module.get(ResourceImageService) as jest.Mocked<ResourceImageService>;
+    // ResourceImageService is available but not directly used in tests
     resourceGroupsService = module.get(ResourceGroupsService) as jest.Mocked<ResourceGroupsService>;
   });
 
