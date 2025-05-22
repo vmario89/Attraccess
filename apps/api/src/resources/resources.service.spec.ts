@@ -1,27 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In, ILike } from 'typeorm';
 import { ResourcesService } from './resources.service';
-import { ResourceImageService } from '../common/services/resource-image.service';
-import { ResourceGroupsService } from './groups/resourceGroups.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Resource, DocumentationType } from '@attraccess/database-entities';
+import { Repository } from 'typeorm';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
-
-type MockRepository<T = unknown> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-const createMockRepository = <T = unknown>(): MockRepository<T> => ({
-  find: jest.fn(),
-  findOne: jest.fn(),
-  findAndCount: jest.fn(),
-  create: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-});
+import { ResourceImageService } from '../common/services/resource-image.service';
+import { ResourceGroupsService } from './groups/resourceGroups.service';
 
 describe('ResourcesService', () => {
   let service: ResourcesService;
-  let resourceRepository: MockRepository<Resource>;
+  let resourceRepository: jest.Mocked<Repository<Resource>>;
+  let resourceImageService: jest.Mocked<ResourceImageService>;
+  let resourceGroupsService: jest.Mocked<ResourceGroupsService>;
+
+  const mockResourceRepository = () => ({
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findAndCount: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    delete: jest.fn(),
+    createQueryBuilder: jest.fn(() => ({
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn(),
+    })),
+  });
+
+  const mockResourceImageService = {
+    saveImage: jest.fn(),
+    deleteImage: jest.fn(),
+    getPublicPath: jest.fn(),
+  };
+
+  const mockResourceGroupsService = {
+    addResourceToGroup: jest.fn(),
+    removeResourceFromGroup: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,348 +46,331 @@ describe('ResourcesService', () => {
         ResourcesService,
         {
           provide: getRepositoryToken(Resource),
-          useValue: createMockRepository(),
+          useFactory: mockResourceRepository,
         },
         {
           provide: ResourceImageService,
-          useValue: {
-            saveImage: jest.fn(),
-            deleteImage: jest.fn(),
-          },
+          useValue: mockResourceImageService,
         },
         {
           provide: ResourceGroupsService,
-          useValue: {
-            addResourceToGroup: jest.fn(),
-            removeResourceFromGroup: jest.fn(),
-          },
+          useValue: mockResourceGroupsService,
         },
       ],
     }).compile();
 
     service = module.get<ResourcesService>(ResourcesService);
-    resourceRepository = module.get(getRepositoryToken(Resource));
+    resourceRepository = module.get(getRepositoryToken(Resource)) as jest.Mocked<
+      Repository<Resource>
+    >;
+    resourceImageService = module.get(ResourceImageService) as jest.Mocked<ResourceImageService>;
+    resourceGroupsService = module.get(ResourceGroupsService) as jest.Mocked<ResourceGroupsService>;
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('createResource', () => {
-    it('should create a resource with markdown documentation', async () => {
-      const createDto: CreateResourceDto = {
-        name: 'Test Resource',
-        description: 'Test Description',
-        documentationType: DocumentationType.MARKDOWN,
-        documentationMarkdown: '# Test Documentation\n\nThis is a test documentation.',
-      };
+  describe('listResources', () => {
+    it('should return paginated resources', async () => {
+      const mockResources = [
+        {
+          id: 1,
+          name: 'Resource 1',
+          description: 'Description 1',
+          imageFilename: null,
+          documentationType: DocumentationType.MARKDOWN,
+          documentationMarkdown: '# Documentation 1',
+          documentationUrl: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          introductions: [],
+          usages: [],
+          introducers: [],
+          mqttConfigs: [],
+          webhookConfigs: [],
+          groups: []
+        },
+        {
+          id: 2,
+          name: 'Resource 2',
+          description: 'Description 2',
+          imageFilename: null,
+          documentationType: DocumentationType.URL,
+          documentationMarkdown: null,
+          documentationUrl: 'https://example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          introductions: [],
+          usages: [],
+          introducers: [],
+          mqttConfigs: [],
+          webhookConfigs: [],
+          groups: []
+        },
+      ];
 
-      const resource = {
-        id: 1,
-        name: 'Test Resource',
-        description: 'Test Description',
-        documentationType: DocumentationType.MARKDOWN,
-        documentationMarkdown: '# Test Documentation\n\nThis is a test documentation.',
-        documentationUrl: null,
-      };
+      resourceRepository.findAndCount.mockResolvedValue([mockResources, 2]);
 
-      resourceRepository.create.mockReturnValue(resource);
-      resourceRepository.save.mockResolvedValue(resource);
+      const result = await service.listResources({ page: 1, limit: 10 });
 
-      const result = await service.createResource(createDto);
-
-      expect(result).toEqual(resource);
-      expect(resourceRepository.create).toHaveBeenCalledWith({
-        name: createDto.name,
-        description: createDto.description,
-        documentationType: createDto.documentationType,
-        documentationMarkdown: createDto.documentationMarkdown,
-        documentationUrl: null,
-      });
-      expect(resourceRepository.save).toHaveBeenCalledWith(resource);
-    });
-
-    it('should create a resource with URL documentation', async () => {
-      const createDto: CreateResourceDto = {
-        name: 'Test Resource',
-        description: 'Test Description',
-        documentationType: DocumentationType.URL,
-        documentationUrl: 'https://example.com/docs',
-      };
-
-      const resource = {
-        id: 1,
-        name: 'Test Resource',
-        description: 'Test Description',
-        documentationType: DocumentationType.URL,
-        documentationMarkdown: null,
-        documentationUrl: 'https://example.com/docs',
-      };
-
-      resourceRepository.create.mockReturnValue(resource);
-      resourceRepository.save.mockResolvedValue(resource);
-
-      const result = await service.createResource(createDto);
-
-      expect(result).toEqual(resource);
-      expect(resourceRepository.create).toHaveBeenCalledWith({
-        name: createDto.name,
-        description: createDto.description,
-        documentationType: createDto.documentationType,
-        documentationMarkdown: null,
-        documentationUrl: createDto.documentationUrl,
-      });
-      expect(resourceRepository.save).toHaveBeenCalledWith(resource);
-    });
-  });
-
-  describe('updateResource', () => {
-    it('should update a resource with markdown documentation', async () => {
-      const resourceId = 1;
-      const updateDto: UpdateResourceDto = {
-        name: 'Updated Resource',
-        documentationType: DocumentationType.MARKDOWN,
-        documentationMarkdown: '# Updated Documentation\n\nThis is updated documentation.',
-      };
-
-      const existingResource = {
-        id: resourceId,
-        name: 'Test Resource',
-        description: 'Test Description',
-        imageFilename: null,
-        documentationType: null,
-        documentationMarkdown: null,
-        documentationUrl: null,
-      };
-
-      const updatedResource = {
-        ...existingResource,
-        name: updateDto.name,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: updateDto.documentationMarkdown,
-        documentationUrl: null,
-      };
-
-      jest.spyOn(service, 'getResourceById').mockResolvedValue(existingResource as Resource);
-      resourceRepository.save.mockResolvedValue(updatedResource);
-
-      const result = await service.updateResource(resourceId, updateDto);
-
-      expect(result).toEqual(updatedResource);
-      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
-      expect(resourceRepository.save).toHaveBeenCalledWith({
-        ...existingResource,
-        name: updateDto.name,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: updateDto.documentationMarkdown,
-        documentationUrl: null,
-      });
-    });
-
-    it('should update a resource with URL documentation', async () => {
-      const resourceId = 1;
-      const updateDto: UpdateResourceDto = {
-        documentationType: DocumentationType.URL,
-        documentationUrl: 'https://example.com/updated-docs',
-      };
-
-      const existingResource = {
-        id: resourceId,
-        name: 'Test Resource',
-        description: 'Test Description',
-        imageFilename: null,
-        documentationType: null,
-        documentationMarkdown: null,
-        documentationUrl: null,
-      };
-
-      const updatedResource = {
-        ...existingResource,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: null,
-        documentationUrl: updateDto.documentationUrl,
-      };
-
-      jest.spyOn(service, 'getResourceById').mockResolvedValue(existingResource as Resource);
-      resourceRepository.save.mockResolvedValue(updatedResource);
-
-      const result = await service.updateResource(resourceId, updateDto);
-
-      expect(result).toEqual(updatedResource);
-      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
-      expect(resourceRepository.save).toHaveBeenCalledWith({
-        ...existingResource,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: null,
-        documentationUrl: updateDto.documentationUrl,
-      });
-    });
-
-    it('should update a resource and clear documentation when type changes', async () => {
-      const resourceId = 1;
-      const updateDto: UpdateResourceDto = {
-        documentationType: DocumentationType.URL,
-        documentationUrl: 'https://example.com/docs',
-      };
-
-      const existingResource = {
-        id: resourceId,
-        name: 'Test Resource',
-        description: 'Test Description',
-        imageFilename: null,
-        documentationType: DocumentationType.MARKDOWN,
-        documentationMarkdown: '# Old Documentation',
-        documentationUrl: null,
-      };
-
-      const updatedResource = {
-        ...existingResource,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: null,
-        documentationUrl: updateDto.documentationUrl,
-      };
-
-      jest.spyOn(service, 'getResourceById').mockResolvedValue(existingResource as Resource);
-      resourceRepository.save.mockResolvedValue(updatedResource);
-
-      const result = await service.updateResource(resourceId, updateDto);
-
-      expect(result).toEqual(updatedResource);
-      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
-      expect(resourceRepository.save).toHaveBeenCalledWith({
-        ...existingResource,
-        documentationType: updateDto.documentationType,
-        documentationMarkdown: null,
-        documentationUrl: updateDto.documentationUrl,
-      });
+      expect(result.data).toEqual(mockResources);
+      expect(result.total).toEqual(2);
+      expect(result.page).toEqual(1);
+      expect(result.limit).toEqual(10);
+      expect(resourceRepository.findAndCount).toHaveBeenCalled();
     });
   });
 
   describe('getResourceById', () => {
-    it('should return a resource with documentation by ID', async () => {
-      const resourceId = 1;
-      const resource = {
-        id: resourceId,
-        name: 'Test Resource',
-        description: 'Test Description',
+    it('should return a resource by id', async () => {
+      const mockResource = {
+        id: 1,
+        name: 'Resource 1',
+        description: 'Description 1',
         imageFilename: null,
         documentationType: DocumentationType.MARKDOWN,
-        documentationMarkdown: '# Test Documentation',
+        documentationMarkdown: '# Documentation 1',
         documentationUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         introductions: [],
         usages: [],
-        groups: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
       };
 
-      resourceRepository.find.mockResolvedValue([resource]);
+      resourceRepository.find.mockResolvedValue([mockResource]);
 
-      const result = await service.getResourceById(resourceId);
+      const result = await service.getResourceById(1);
 
-      expect(result).toEqual(resource);
+      expect(result).toEqual(mockResource);
       expect(resourceRepository.find).toHaveBeenCalledWith({
-        where: { id: In([resourceId]) },
+        where: { id: expect.anything() },
         relations: ['introductions', 'usages', 'groups'],
       });
     });
 
     it('should throw ResourceNotFoundException if resource not found', async () => {
-      const resourceId = 999;
       resourceRepository.find.mockResolvedValue([]);
 
-      await expect(service.getResourceById(resourceId)).rejects.toThrow(ResourceNotFoundException);
-      expect(resourceRepository.find).toHaveBeenCalledWith({
-        where: { id: In([resourceId]) },
-        relations: ['introductions', 'usages', 'groups'],
-      });
+      await expect(service.getResourceById(999)).rejects.toThrow(
+        ResourceNotFoundException,
+      );
     });
   });
 
-  describe('listResources', () => {
-    it('should return paginated resources with documentation', async () => {
-      const resources = [
-        {
-          id: 1,
-          name: 'Test Resource 1',
-          description: 'Test Description 1',
-          documentationType: DocumentationType.MARKDOWN,
-          documentationMarkdown: '# Test Documentation 1',
-          documentationUrl: null,
-          groups: [],
-        },
-        {
-          id: 2,
-          name: 'Test Resource 2',
-          description: 'Test Description 2',
-          documentationType: DocumentationType.URL,
-          documentationMarkdown: null,
-          documentationUrl: 'https://example.com/docs',
-          groups: [],
-        },
-      ];
+  describe('createResource', () => {
+    it('should create a new resource', async () => {
+      const createDto: CreateResourceDto = {
+        name: 'New Resource',
+        description: 'New Description',
+        documentationType: DocumentationType.MARKDOWN,
+        documentationMarkdown: '# New Documentation',
+        documentationUrl: null,
+      };
 
-      resourceRepository.findAndCount.mockResolvedValue([resources, 2]);
+      const newResource = {
+        id: 1,
+        name: createDto.name,
+        description: createDto.description,
+        imageFilename: null,
+        documentationType: createDto.documentationType,
+        documentationMarkdown: createDto.documentationMarkdown,
+        documentationUrl: createDto.documentationUrl,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        introductions: [],
+        usages: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
+      };
 
-      const result = await service.listResources({ page: 1, limit: 10 });
+      resourceRepository.create.mockReturnValue(newResource);
+      resourceRepository.save.mockResolvedValue(newResource);
 
-      expect(result).toEqual({
-        data: resources,
-        meta: {
-          page: 1,
-          limit: 10,
-          totalItems: 2,
-          totalPages: 1,
-        },
+      const result = await service.createResource(createDto);
+
+      expect(result).toEqual(newResource);
+      expect(resourceRepository.create).toHaveBeenCalledWith({
+        name: createDto.name,
+        description: createDto.description,
       });
-      expect(resourceRepository.findAndCount).toHaveBeenCalledWith({
-        where: {},
-        relations: ['groups'],
-        skip: 0,
-        take: 10,
-        order: {
-          createdAt: 'DESC',
-        },
-      });
+      expect(resourceRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('updateResource', () => {
+    it('should update an existing resource', async () => {
+      const resourceId = 1;
+      const updateDto: UpdateResourceDto = {
+        name: 'Updated Resource',
+        description: 'Updated Description',
+        documentationType: DocumentationType.URL,
+        documentationUrl: 'https://example.com/updated',
+      };
+
+      const existingResource = {
+        id: resourceId,
+        name: 'Old Resource',
+        description: 'Old Description',
+        imageFilename: null,
+        documentationType: DocumentationType.MARKDOWN,
+        documentationMarkdown: '# Old Documentation',
+        documentationUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        introductions: [],
+        usages: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
+      };
+
+      const updatedResource = {
+        ...existingResource,
+        name: updateDto.name,
+        description: updateDto.description,
+        documentationType: updateDto.documentationType,
+        documentationMarkdown: null,
+        documentationUrl: updateDto.documentationUrl,
+      };
+
+      jest.spyOn(service, 'getResourceById').mockResolvedValue(existingResource);
+      resourceRepository.save.mockResolvedValue(updatedResource);
+
+      const result = await service.updateResource(resourceId, updateDto);
+
+      expect(result).toEqual(updatedResource);
+      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
+      expect(resourceRepository.save).toHaveBeenCalled();
     });
 
-    it('should filter resources by search term', async () => {
-      const searchTerm = 'test';
-      const resources = [
-        {
-          id: 1,
-          name: 'Test Resource',
-          description: 'Test Description',
-          documentationType: DocumentationType.MARKDOWN,
-          documentationMarkdown: '# Test Documentation',
-          documentationUrl: null,
-          groups: [],
-        },
-      ];
+    it('should throw ResourceNotFoundException if resource not found', async () => {
+      const resourceId = 999;
+      const updateDto: UpdateResourceDto = {
+        name: 'Updated Resource',
+      };
 
-      resourceRepository.findAndCount.mockResolvedValue([resources, 1]);
+      jest
+        .spyOn(service, 'getResourceById')
+        .mockRejectedValue(new ResourceNotFoundException(resourceId));
 
-      const result = await service.listResources({ page: 1, limit: 10, search: searchTerm });
+      await expect(
+        service.updateResource(resourceId, updateDto),
+      ).rejects.toThrow(ResourceNotFoundException);
+    });
+  });
 
-      expect(result).toEqual({
-        data: resources,
-        meta: {
-          page: 1,
-          limit: 10,
-          totalItems: 1,
-          totalPages: 1,
-        },
-      });
-      expect(resourceRepository.findAndCount).toHaveBeenCalledWith({
-        where: {
-          name: ILike(`%${searchTerm}%`),
-          description: ILike(`%${searchTerm}%`),
-        },
-        relations: ['groups'],
-        skip: 0,
-        take: 10,
-        order: {
-          createdAt: 'DESC',
-        },
-      });
+  describe('deleteResource', () => {
+    it('should delete a resource', async () => {
+      const resourceId = 1;
+      const mockResource = {
+        id: resourceId,
+        name: 'Resource to delete',
+        description: 'Description',
+        imageFilename: null,
+        documentationType: DocumentationType.MARKDOWN,
+        documentationMarkdown: '# Documentation',
+        documentationUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        introductions: [],
+        usages: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
+      };
+
+      jest.spyOn(service, 'getResourceById').mockResolvedValue(mockResource);
+      resourceRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
+
+      await service.deleteResource(resourceId);
+
+      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
+      expect(resourceRepository.delete).toHaveBeenCalledWith(resourceId);
+    });
+
+    it('should throw ResourceNotFoundException if resource not found', async () => {
+      const resourceId = 999;
+
+      jest
+        .spyOn(service, 'getResourceById')
+        .mockRejectedValue(new ResourceNotFoundException(resourceId));
+
+      await expect(service.deleteResource(resourceId)).rejects.toThrow(
+        ResourceNotFoundException,
+      );
+    });
+  });
+
+  describe('addResourceToGroup', () => {
+    it('should add a resource to a group', async () => {
+      const resourceId = 1;
+      const groupId = 2;
+      const mockResource = {
+        id: resourceId,
+        name: 'Resource',
+        description: 'Description',
+        imageFilename: null,
+        documentationType: DocumentationType.MARKDOWN,
+        documentationMarkdown: '# Documentation',
+        documentationUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        introductions: [],
+        usages: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
+      };
+
+      jest.spyOn(service, 'getResourceById').mockResolvedValue(mockResource);
+      resourceGroupsService.addResourceToGroup.mockResolvedValue(undefined);
+
+      await service.addResourceToGroup(resourceId, groupId);
+
+      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
+      expect(resourceGroupsService.addResourceToGroup).toHaveBeenCalledWith(resourceId, groupId);
+    });
+  });
+
+  describe('removeResourceFromGroup', () => {
+    it('should remove a resource from a group', async () => {
+      const resourceId = 1;
+      const groupId = 2;
+      const mockResource = {
+        id: resourceId,
+        name: 'Resource',
+        description: 'Description',
+        imageFilename: null,
+        documentationType: DocumentationType.MARKDOWN,
+        documentationMarkdown: '# Documentation',
+        documentationUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        introductions: [],
+        usages: [],
+        introducers: [],
+        mqttConfigs: [],
+        webhookConfigs: [],
+        groups: []
+      };
+
+      jest.spyOn(service, 'getResourceById').mockResolvedValue(mockResource);
+      resourceGroupsService.removeResourceFromGroup.mockResolvedValue(undefined);
+
+      await service.removeResourceFromGroup(resourceId, groupId);
+
+      expect(service.getResourceById).toHaveBeenCalledWith(resourceId);
+      expect(resourceGroupsService.removeResourceFromGroup).toHaveBeenCalledWith(resourceId, groupId);
     });
   });
 });

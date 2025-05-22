@@ -18,13 +18,8 @@ import { MqttResourceConfig } from './mqttResourceConfig.entity';
 import { WebhookConfig } from './webhookConfig.entity';
 import { ResourceGroup } from './resourceGroup.entity';
 
-/**
- * Enum for documentation types
- */
-export enum DocumentationType {
-  MARKDOWN = 'markdown',
-  URL = 'url',
-}
+// Import the DocumentationType enum from the types directory
+import { DocumentationType } from '../types/documentationType.enum';
 
 @Entity()
 export class Resource {
