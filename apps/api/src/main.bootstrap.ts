@@ -6,12 +6,16 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
-import { loadEnv } from '@attraccess/env';
+import { createConfigSchema, validateConfig } from '@attraccess/env';
 import { DataSource } from 'typeorm';
+import { z } from 'zod';
 
-const env = loadEnv((z) => ({
+// Validate auth session secret at startup
+const authSchema = createConfigSchema((z) => ({
   AUTH_SESSION_SECRET: z.string(),
 }));
+
+const env = validateConfig(authSchema);
 
 export async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
