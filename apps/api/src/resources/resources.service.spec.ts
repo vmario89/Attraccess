@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In, ILike, IsNull } from 'typeorm';
+import { Repository, In, ILike } from 'typeorm';
 import { ResourcesService } from './resources.service';
 import { ResourceImageService } from '../common/services/resource-image.service';
 import { ResourceGroupsService } from './groups/resourceGroups.service';
@@ -9,8 +9,8 @@ import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
 
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-const createMockRepository = <T = any>(): MockRepository<T> => ({
+type MockRepository<T = unknown> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+const createMockRepository = <T = unknown>(): MockRepository<T> => ({
   find: jest.fn(),
   findOne: jest.fn(),
   findAndCount: jest.fn(),
@@ -22,8 +22,6 @@ const createMockRepository = <T = any>(): MockRepository<T> => ({
 describe('ResourcesService', () => {
   let service: ResourcesService;
   let resourceRepository: MockRepository<Resource>;
-  let resourceImageService: ResourceImageService;
-  let resourceGroupsService: ResourceGroupsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,8 +50,6 @@ describe('ResourcesService', () => {
 
     service = module.get<ResourcesService>(ResourcesService);
     resourceRepository = module.get(getRepositoryToken(Resource));
-    resourceImageService = module.get<ResourceImageService>(ResourceImageService);
-    resourceGroupsService = module.get<ResourceGroupsService>(ResourceGroupsService);
   });
 
   it('should be defined', () => {

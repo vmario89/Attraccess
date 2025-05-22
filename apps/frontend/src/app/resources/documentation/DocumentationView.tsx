@@ -5,30 +5,24 @@ import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { ArrowLeft, Edit, RefreshCw } from 'lucide-react';
 import { PageHeader } from '../../../components/pageHeader';
 import { 
-  useResourcesServiceGetOneResourceById,
-  UseResourcesServiceGetOneResourceByIdKeyFn
+  useResourcesServiceGetOneResourceById
 } from '@attraccess/react-query-client';
 import { DocumentationType } from './types';
 import ReactMarkdown from 'react-markdown';
 import en from './documentationModal.en.json';
 import de from './documentationModal.de.json';
 import { useAuth } from '../../../hooks/useAuth';
-import { useQueryClient } from '@tanstack/react-query';
 
 function DocumentationViewComponent() {
   const { id } = useParams<{ id: string }>();
   const resourceId = parseInt(id || '', 10);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
-  const queryClient = useQueryClient();
   
   const { t } = useTranslations('documentationModal', {
     en,
     de,
   });
-
-  // Get resource query key for cache operations
-  const resourceQueryKey = UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId });
 
   const {
     data: resource,

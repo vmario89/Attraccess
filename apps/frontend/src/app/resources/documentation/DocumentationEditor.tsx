@@ -104,7 +104,7 @@ function DocumentationEditorComponent() {
     if (documentationType === DocumentationType.URL && urlContent) {
       try {
         new URL(urlContent);
-      } catch (e) {
+      } catch {
         errors.url = t('validation.invalidUrl');
       }
     }
