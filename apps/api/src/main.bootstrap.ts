@@ -4,24 +4,31 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe, ClassSerializerInterceptor, Logger, LogLevel } from '@nestjs/common';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { ConfigService } from '@nestjs/config';
+import { registerAs } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
 import { createConfigSchema, validateConfig } from '@attraccess/env';
 import { DataSource } from 'typeorm';
 import { z } from 'zod';
 
-// Validate auth session secret at startup
-const authSchema = createConfigSchema((z) => ({
-  AUTH_SESSION_SECRET: z.string(),
-}));
-
-const env = validateConfig(authSchema);
+// Register auth configuration
+export const authConfig = registerAs('auth', () => {
+  const schema = createConfigSchema((z) => ({
+    AUTH_SESSION_SECRET: z.string(),
+    LOG_LEVELS: z.string().default('error,warn,log'),
+  }));
+  
+  return schema.parse(process.env);
+});
 
 export async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
   bootstrapLogger.log('Starting bootstrap process...');
 
-  const logLevels = (process.env.LOG_LEVELS || 'error,warn,log')
+  // Get auth config
+  const config = authConfig();
+  
+  const logLevels = config.LOG_LEVELS
     .split(',')
     .filter((level): level is LogLevel => ['error', 'warn', 'log', 'debug', 'verbose'].includes(level));
 
@@ -66,7 +73,7 @@ export async function bootstrap() {
 
   app.use(
     session({
-      secret: env.AUTH_SESSION_SECRET,
+      secret: config.AUTH_SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
     })
@@ -95,7 +102,7 @@ export async function bootstrap() {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('Attraccess API')
     .setDescription('The Attraccess API used to manage machine and tool access in a Makerspace or FabLab')
     .setVersion('1.0')
@@ -106,7 +113,7 @@ export async function bootstrap() {
       name: 'x-api-key',
     })
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, documentFactory);
 
   bootstrapLogger.log('Bootstrap process completed.');
