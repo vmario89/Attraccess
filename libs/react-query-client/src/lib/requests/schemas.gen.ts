@@ -586,8 +586,8 @@ export const $CreateResourceDto = {
         documentationType: {
             type: 'string',
             description: 'The type of documentation (markdown or url)',
-            enum: ['MARKDOWN', 'URL'],
-            example: 'MARKDOWN'
+            enum: ['markdown', 'url'],
+            example: 'markdown'
         },
         documentationMarkdown: {
             type: 'string',
@@ -718,8 +718,8 @@ export const $UpdateResourceDto = {
         documentationType: {
             type: 'string',
             description: 'The type of documentation (markdown or url)',
-            enum: ['MARKDOWN', 'URL'],
-            example: 'MARKDOWN'
+            enum: ['markdown', 'url'],
+            example: 'markdown'
         },
         documentationMarkdown: {
             type: 'string',

@@ -199,6 +199,9 @@ describe('ResourcesService', () => {
       expect(resourceRepository.create).toHaveBeenCalledWith({
         name: createDto.name,
         description: createDto.description,
+        documentationType: createDto.documentationType || null,
+        documentationMarkdown: createDto.documentationMarkdown || null,
+        documentationUrl: createDto.documentationUrl || null
       });
       expect(resourceRepository.save).toHaveBeenCalled();
     });

@@ -134,7 +134,7 @@ function DocumentationEditorComponent() {
       id: resourceId,
       formData: {
         documentationType: documentationType ? 
-          (documentationType === DocumentationType.MARKDOWN ? 'MARKDOWN' : 'URL') 
+          (documentationType === DocumentationType.MARKDOWN ? 'markdown' : 'url') 
           : undefined,
         documentationMarkdown: documentationType === DocumentationType.MARKDOWN ? markdownContent : undefined,
         documentationUrl: documentationType === DocumentationType.URL ? urlContent : undefined,

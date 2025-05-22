@@ -42,9 +42,6 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const [formData, setFormData] = useState<CreateResourceDto>({
     name: '',
     description: '',
-    documentationType: undefined,
-    documentationMarkdown: '',
-    documentationUrl: '',
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { success, error } = useToastMessage();
@@ -60,9 +57,6 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
     setFormData({
       name: '',
       description: '',
-      documentationType: undefined,
-      documentationMarkdown: '',
-      documentationUrl: '',
     });
     setSelectedImage(null);
   }, []);
@@ -158,11 +152,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
           name: formData.name,
           description: formData.description,
           image: selectedImage ?? undefined,
-          documentationType: formData.documentationType ? 
-            (formData.documentationType === 'MARKDOWN' ? 'MARKDOWN' : 'URL') 
-            : undefined,
-          documentationMarkdown: formData.documentationType === 'MARKDOWN' ? formData.documentationMarkdown : undefined,
-          documentationUrl: formData.documentationType === 'URL' ? formData.documentationUrl : undefined,
+          // Documentation will be added later in the resource details page
         },
       });
     },
@@ -206,11 +196,6 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   className="w-full"
                   disabled={isSubmitting}
                 />
-                
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h3 className="text-md font-medium mb-2">{t('documentation.title')}</h3>
-                  <p className="text-sm text-gray-500">{t('documentation.note')}</p>
-                </div>
               </ModalBody>
 
               <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">

@@ -418,9 +418,9 @@ export interface CreateResourceDto {
   image?: File;
   /**
    * The type of documentation (markdown or url)
-   * @example "MARKDOWN"
+   * @example "markdown"
    */
-  documentationType?: "MARKDOWN" | "URL";
+  documentationType?: "markdown" | "url";
   /**
    * Markdown content for resource documentation
    * @example "# Resource Documentation
@@ -515,9 +515,9 @@ export interface UpdateResourceDto {
   image?: File;
   /**
    * The type of documentation (markdown or url)
-   * @example "MARKDOWN"
+   * @example "markdown"
    */
-  documentationType?: "MARKDOWN" | "URL";
+  documentationType?: "markdown" | "url";
   /**
    * Markdown content for resource documentation
    * @example "# Resource Documentation

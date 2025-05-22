@@ -380,7 +380,7 @@ export type CreateResourceDto = {
     /**
      * The type of documentation (markdown or url)
      */
-    documentationType?: 'MARKDOWN' | 'URL';
+    documentationType?: 'markdown' | 'url';
     /**
      * Markdown content for resource documentation
      */
@@ -395,8 +395,8 @@ export type CreateResourceDto = {
  * The type of documentation (markdown or url)
  */
 export enum documentationType {
-    MARKDOWN = 'MARKDOWN',
-    URL = 'URL'
+    MARKDOWN = 'markdown',
+    URL = 'url'
 }
 
 export type Resource = {
@@ -442,14 +442,6 @@ export type Resource = {
     groups: Array<ResourceGroup>;
 };
 
-/**
- * The type of documentation (markdown or url)
- */
-export enum documentationType2 {
-    MARKDOWN = 'markdown',
-    URL = 'url'
-}
-
 export type PaginatedResourceResponseDto = {
     total: number;
     page: number;
@@ -478,7 +470,7 @@ export type UpdateResourceDto = {
     /**
      * The type of documentation (markdown or url)
      */
-    documentationType?: 'MARKDOWN' | 'URL';
+    documentationType?: 'markdown' | 'url';
     /**
      * Markdown content for resource documentation
      */
