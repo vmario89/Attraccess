@@ -52,16 +52,17 @@ export class Resource {
     required: false,
   })
   imageFilename!: string | null;
-  
+
   @Column({ type: 'text', nullable: true })
   @ApiProperty({
     description: 'The type of documentation (markdown or url)',
     enum: DocumentationType,
+    name: 'DocumentationType',
     required: false,
     example: DocumentationType.MARKDOWN,
   })
   documentationType!: DocumentationType | null;
-  
+
   @Column({ type: 'text', nullable: true })
   @ApiProperty({
     description: 'Markdown content for resource documentation',
@@ -69,7 +70,7 @@ export class Resource {
     example: '# Resource Documentation\n\nThis is a markdown documentation for the resource.',
   })
   documentationMarkdown!: string | null;
-  
+
   @Column({ type: 'text', nullable: true })
   @ApiProperty({
     description: 'URL to external documentation',

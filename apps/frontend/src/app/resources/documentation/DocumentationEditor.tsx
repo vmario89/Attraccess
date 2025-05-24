@@ -18,12 +18,12 @@ import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useToastMessage } from '../../../components/toastProvider';
 import { PageHeader } from '../../../components/pageHeader';
-import { 
-  useResourcesServiceGetOneResourceById, 
+import {
+  useResourcesServiceGetOneResourceById,
   useResourcesServiceUpdateOneResource,
-  UseResourcesServiceGetOneResourceByIdKeyFn
+  UseResourcesServiceGetOneResourceByIdKeyFn,
+  DocumentationType,
 } from '@attraccess/react-query-client';
-import { DocumentationType } from './types';
 import ReactMarkdown from 'react-markdown';
 import en from './documentationEditor.en.json';
 import de from './documentationEditor.de.json';
@@ -35,7 +35,7 @@ function DocumentationEditorComponent() {
   const navigate = useNavigate();
   const { success, error: showError } = useToastMessage();
   const queryClient = useQueryClient();
-  
+
   const { t } = useTranslations('documentationEditor', {
     en,
     de,
@@ -55,9 +55,9 @@ function DocumentationEditorComponent() {
     isLoading: isLoadingResource,
     isError: isResourceError,
     error: resourceError,
-    refetch: refetchResource
-  } = useResourcesServiceGetOneResourceById({ 
-    id: resourceId 
+    refetch: refetchResource,
+  } = useResourcesServiceGetOneResourceById({
+    id: resourceId,
   });
 
   const updateResource = useResourcesServiceUpdateOneResource({
@@ -67,7 +67,7 @@ function DocumentationEditorComponent() {
       queryClient.invalidateQueries({ queryKey: resourceQueryKey });
       // Invalidate the resources list query if needed
       queryClient.invalidateQueries({ queryKey: ['ResourcesService', 'getAllResources'] });
-      
+
       success({
         title: t('notifications.saveSuccess.title'),
         description: t('notifications.saveSuccess.description'),
@@ -82,15 +82,15 @@ function DocumentationEditorComponent() {
         description: t('notifications.saveError.description'),
       });
       console.error('Failed to save documentation:', error);
-    }
+    },
   });
 
   // Initialize form with resource data
   useEffect(() => {
     if (resource) {
       // Set the documentation type directly from the resource
-      if (resource.documentationType) {
-        setDocumentationType(resource.documentationType as DocumentationType);
+      if (resource.DocumentationType) {
+        setDocumentationType(resource.DocumentationType as DocumentationType);
       } else {
         setDocumentationType('');
       }
@@ -136,15 +136,7 @@ function DocumentationEditorComponent() {
         documentationUrl: documentationType === DocumentationType.URL ? urlContent : undefined,
       },
     });
-  }, [
-    documentationType,
-    markdownContent,
-    resource,
-    resourceId,
-    updateResource,
-    urlContent,
-    validateForm,
-  ]);
+  }, [documentationType, markdownContent, resource, resourceId, updateResource, urlContent, validateForm]);
 
   // Handle loading state
   if (isLoadingResource) {
@@ -163,22 +155,13 @@ function DocumentationEditorComponent() {
           <h2 className="text-xl">{t('error.title')}</h2>
         </CardHeader>
         <CardBody>
-          <p className="text-danger">
-            {resourceError instanceof Error ? resourceError.message : t('error.unknown')}
-          </p>
+          <p className="text-danger">{resourceError instanceof Error ? resourceError.message : t('error.unknown')}</p>
         </CardBody>
         <CardFooter className="flex justify-center gap-4">
-          <Button 
-            onPress={() => refetchResource()} 
-            color="primary"
-          >
+          <Button onPress={() => refetchResource()} color="primary">
             {t('actions.retry')}
           </Button>
-          <Button 
-            onPress={() => navigate('/resources')} 
-            variant="flat" 
-            startContent={<ArrowLeft size={16} />}
-          >
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -197,11 +180,7 @@ function DocumentationEditorComponent() {
           <p>{t('notFound.message')}</p>
         </CardBody>
         <CardFooter className="justify-center">
-          <Button 
-            onPress={() => navigate('/resources')} 
-            variant="flat" 
-            startContent={<ArrowLeft size={16} />}
-          >
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -288,11 +267,7 @@ function DocumentationEditorComponent() {
             >
               {t('actions.cancel')}
             </Button>
-            <Button
-              color="primary"
-              onPress={handleSave}
-              isLoading={updateResource.isPending}
-            >
+            <Button color="primary" onPress={handleSave} isLoading={updateResource.isPending}>
               {t('actions.save')}
             </Button>
           </div>

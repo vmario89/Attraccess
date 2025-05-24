@@ -13,7 +13,7 @@ export default {
     '\\.svg$': 'identity-obj-proxy',
     '\\.css$': 'identity-obj-proxy',
   },
-  transformIgnorePatterns: ['node_modules/(?!(@attraccess|react-markdown)/)'],
+  transformIgnorePatterns: ['node_modules/(?!(@attraccess)/)'],
   globals: {
     'import.meta': {
       env: {},

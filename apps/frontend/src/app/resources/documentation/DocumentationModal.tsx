@@ -58,9 +58,9 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   }, [navigate, resourceId]);
 
   const handleOpenInNewTab = useCallback(() => {
-    if (resource?.documentationType === 'url' && resource?.documentationUrl) {
+    if (resource?.DocumentationType === 'url' && resource?.documentationUrl) {
       window.open(resource.documentationUrl, '_blank');
-    } else if (resource?.documentationType === 'markdown') {
+    } else if (resource?.DocumentationType === 'markdown') {
       window.open(`/resources/${resourceId}/documentation`, '_blank');
     }
   }, [resource, resourceId]);
@@ -85,11 +85,11 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       );
     }
 
-    if (!resource?.documentationType) {
+    if (!resource?.DocumentationType) {
       return <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>;
     }
 
-    if (resource.documentationType === 'markdown' && resource.documentationMarkdown) {
+    if (resource.DocumentationType === 'markdown' && resource.documentationMarkdown) {
       return (
         <div
           className="prose prose-slate dark:prose-invert max-w-none p-6 
@@ -113,7 +113,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       );
     }
 
-    if (resource.documentationType === 'url' && resource.documentationUrl) {
+    if (resource.DocumentationType === 'url' && resource.documentationUrl) {
       return (
         <iframe
           src={resource.documentationUrl}
@@ -169,7 +169,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                     <ExternalLink size={16} />
                   </Button>
 
-                  {resource?.documentationType === 'url' && (
+                  {resource?.DocumentationType === 'url' && (
                     <Button
                       isIconOnly
                       size="sm"

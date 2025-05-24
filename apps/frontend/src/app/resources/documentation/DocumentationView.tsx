@@ -4,9 +4,7 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Spinner } from '@heroui
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { ArrowLeft, Edit, RefreshCw } from 'lucide-react';
 import { PageHeader } from '../../../components/pageHeader';
-import { 
-  useResourcesServiceGetOneResourceById
-} from '@attraccess/react-query-client';
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
 import ReactMarkdown from 'react-markdown';
 import en from './documentationModal.en.json';
 import de from './documentationModal.de.json';
@@ -17,7 +15,7 @@ function DocumentationViewComponent() {
   const resourceId = parseInt(id || '', 10);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
-  
+
   const { t } = useTranslations('documentationModal', {
     en,
     de,
@@ -55,23 +53,13 @@ function DocumentationViewComponent() {
           <h2 className="text-xl">{t('error.title')}</h2>
         </CardHeader>
         <CardBody>
-          <p className="text-danger">
-            {resourceError instanceof Error ? resourceError.message : t('error.unknown')}
-          </p>
+          <p className="text-danger">{resourceError instanceof Error ? resourceError.message : t('error.unknown')}</p>
         </CardBody>
         <CardFooter className="flex justify-center gap-4">
-          <Button 
-            onPress={() => refetchResource()} 
-            color="primary"
-            startContent={<RefreshCw size={16} />}
-          >
+          <Button onPress={() => refetchResource()} color="primary" startContent={<RefreshCw size={16} />}>
             {t('actions.retry')}
           </Button>
-          <Button 
-            onPress={() => navigate('/resources')} 
-            variant="flat" 
-            startContent={<ArrowLeft size={16} />}
-          >
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -90,11 +78,7 @@ function DocumentationViewComponent() {
           <p>{t('notFound.message')}</p>
         </CardBody>
         <CardFooter className="justify-center">
-          <Button 
-            onPress={() => navigate('/resources')} 
-            variant="flat" 
-            startContent={<ArrowLeft size={16} />}
-          >
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -143,18 +127,16 @@ function DocumentationViewComponent() {
               <Spinner size="lg" />
             </div>
           )}
-          
-          {!resource.documentationType && (
-            <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>
-          )}
 
-          {resource.documentationType === 'markdown' && resource.documentationMarkdown && (
+          {!resource.DocumentationType && <p className="text-center text-default-400 p-4">{t('noDocumentation')}</p>}
+
+          {resource.DocumentationType === 'markdown' && resource.documentationMarkdown && (
             <div className="prose max-w-none">
               <ReactMarkdown>{resource.documentationMarkdown}</ReactMarkdown>
             </div>
           )}
 
-          {resource.documentationType === 'url' && resource.documentationUrl && (
+          {resource.DocumentationType === 'url' && resource.documentationUrl && (
             <iframe
               src={resource.documentationUrl}
               className="w-full h-[calc(100vh-300px)] min-h-[500px] border-0"
