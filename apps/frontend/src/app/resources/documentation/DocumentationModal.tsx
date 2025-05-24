@@ -12,15 +12,11 @@ import {
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { Edit, ExternalLink, Maximize, Minimize, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  useResourcesServiceGetOneResourceById,
-  UseResourcesServiceGetOneResourceByIdKeyFn
-} from '@attraccess/react-query-client';
-import { DocumentationType } from './types';
+import { useResourcesServiceGetOneResourceById } from '@attraccess/react-query-client';
 import en from './documentationModal.en.json';
 import de from './documentationModal.de.json';
 import ReactMarkdown from 'react-markdown';
-import { useQueryClient } from '@tanstack/react-query';
+import remarkGfm from 'remark-gfm';
 
 interface DocumentationModalProps {
   resourceId: number;
@@ -31,15 +27,11 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const { t } = useTranslations('documentationModal', {
     en,
     de,
   });
-
-  // Get resource query key for prefetching and cache operations
-  const resourceQueryKey = UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId });
 
   const {
     data: resource,
@@ -48,19 +40,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     error,
     refetch,
     isFetching,
-  } = useResourcesServiceGetOneResourceById(
-    { id: resourceId },
-    // @ts-expect-error - The type definition is incorrect, but this works at runtime
-    { enabled: !!isOpen }
-  );
-
-  // Prefetch resource data when hovering over the button that opens the modal
-  const handlePrefetch = useCallback(() => {
-    queryClient.prefetchQuery({
-      queryKey: resourceQueryKey,
-      queryFn: () => queryClient.fetchQuery({ queryKey: resourceQueryKey })
-    });
-  }, [queryClient, resourceQueryKey]);
+  } = useResourcesServiceGetOneResourceById({ id: resourceId }, undefined, { enabled: !!isOpen });
 
   // When modal opens, ensure we have fresh data
   useEffect(() => {
@@ -97,15 +77,8 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     if (isError) {
       return (
         <div className="flex flex-col items-center gap-4 p-4">
-          <p className="text-danger">
-            {error instanceof Error ? error.message : t('error.unknown')}
-          </p>
-          <Button 
-            color="primary" 
-            variant="flat" 
-            onPress={() => refetch()}
-            startContent={<RefreshCw size={16} />}
-          >
+          <p className="text-danger">{error instanceof Error ? error.message : t('error.unknown')}</p>
+          <Button color="primary" variant="flat" onPress={() => refetch()} startContent={<RefreshCw size={16} />}>
             {t('actions.retry')}
           </Button>
         </div>
@@ -118,8 +91,24 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
 
     if (resource.documentationType === 'markdown' && resource.documentationMarkdown) {
       return (
-        <div className="prose prose-sm md:prose-base max-w-none p-4">
-          <ReactMarkdown>{resource.documentationMarkdown}</ReactMarkdown>
+        <div
+          className="prose prose-slate dark:prose-invert max-w-none p-6 
+                        prose-headings:text-foreground prose-headings:font-semibold
+                        prose-h1:text-2xl prose-h1:border-b prose-h1:border-divider prose-h1:pb-2
+                        prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4
+                        prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
+                        prose-p:text-foreground prose-p:leading-relaxed
+                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-foreground prose-strong:font-semibold
+                        prose-code:text-primary prose-code:bg-default-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+                        prose-pre:bg-default-100 prose-pre:border prose-pre:border-divider prose-pre:rounded-lg
+                        prose-blockquote:border-l-primary prose-blockquote:bg-default-50 prose-blockquote:rounded-r-lg prose-blockquote:py-2 prose-blockquote:text-foreground-600
+                        prose-ul:text-foreground prose-ol:text-foreground
+                        prose-li:text-foreground prose-li:marker:text-foreground-400
+                        prose-hr:border-divider
+                        prose-table:text-foreground prose-thead:border-divider prose-tbody:border-divider prose-th:text-foreground prose-td:text-foreground"
+        >
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.documentationMarkdown}</ReactMarkdown>
         </div>
       );
     }
@@ -128,7 +117,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       return (
         <iframe
           src={resource.documentationUrl}
-          className="w-full h-[500px] border-0"
+          className="w-full h-full border-0 min-h-[50vh]"
           title={`${resource.name} Documentation`}
           sandbox="allow-scripts allow-same-origin allow-forms"
         />
@@ -142,15 +131,9 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
 
   return (
     <>
-      <div onMouseEnter={handlePrefetch}>
-        {children(onOpen)}
-      </div>
-      <Modal 
-        isOpen={isOpen} 
-        onOpenChange={onOpenChange} 
-        size={modalSize}
-        scrollBehavior="inside"
-      >
+      {children(onOpen)}
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={modalSize} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>
@@ -175,33 +158,32 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                   >
                     {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
                   </Button>
-                  {(resource?.documentationType === DocumentationType.URL || 
-                   resource?.documentationType === DocumentationType.MARKDOWN) && (
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="flat"
-                      onPress={handleOpenInNewTab}
-                      aria-label={t('actions.openInNewTab')}
-                    >
-                      <ExternalLink size={16} />
-                    </Button>
-                  )}
+
                   <Button
                     isIconOnly
                     size="sm"
                     variant="flat"
-                    onPress={() => refetch()}
-                    isLoading={isFetching}
-                    aria-label={t('actions.refresh')}
+                    onPress={handleOpenInNewTab}
+                    aria-label={t('actions.openInNewTab')}
                   >
-                    <RefreshCw size={16} />
+                    <ExternalLink size={16} />
                   </Button>
+
+                  {resource?.documentationType === 'url' && (
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="flat"
+                      onPress={() => refetch()}
+                      isLoading={isFetching}
+                      aria-label={t('actions.refresh')}
+                    >
+                      <RefreshCw size={16} />
+                    </Button>
+                  )}
                 </div>
               </ModalHeader>
-              <ModalBody>
-                {renderDocumentationContent()}
-              </ModalBody>
+              <ModalBody>{renderDocumentationContent()}</ModalBody>
               <ModalFooter>
                 <Button color="primary" variant="light" onPress={onClose}>
                   {t('actions.close')}
