@@ -3,7 +3,6 @@ import { MailerOptions } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 
 // Define basic email configuration schema
 const basicEmailSchema = createConfigSchema((z) => ({

@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 import { createConfigSchema } from '@attraccess/env';
 
 // Register JWT configuration

@@ -7,9 +7,7 @@ import { rename, rm } from 'fs/promises';
 import decompress from 'decompress';
 import { nanoid } from 'nanoid';
 import { spawn } from 'child_process';
-import { ConfigService } from '@nestjs/config';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 import { createConfigSchema } from '@attraccess/env';
 
 // Register plugin configuration

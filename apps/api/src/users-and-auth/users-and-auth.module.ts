@@ -29,7 +29,6 @@ import { ModuleRef } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { SSOController } from './auth/sso/sso.controller';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 import { createConfigSchema } from '@attraccess/env';
 
 // Register frontend URL configuration

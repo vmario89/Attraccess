@@ -6,8 +6,6 @@ import { join, resolve } from 'path';
 import { readdir, readFile, stat } from 'fs/promises';
 import * as Handlebars from 'handlebars';
 import { ConfigService } from '@nestjs/config';
-import { createConfigSchema, validateConfig } from '@attraccess/env';
-import { z } from 'zod';
 
 interface EmailConfig {
   FRONTEND_URL: string;

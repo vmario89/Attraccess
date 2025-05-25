@@ -7,7 +7,6 @@ import { entities } from '@attraccess/database-entities';
 import * as migrations from './migrations';
 import { storageConfig } from '../config/storage.config';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 
 // Define database type schema
 const dbTypeSchema = createConfigSchema((z) => ({

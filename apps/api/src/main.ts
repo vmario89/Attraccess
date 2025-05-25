@@ -1,7 +1,6 @@
 import { bootstrap } from './main.bootstrap';
 import { Logger } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
-import { z } from 'zod';
 import { createConfigSchema } from '@attraccess/env';
 
 // Register server configuration

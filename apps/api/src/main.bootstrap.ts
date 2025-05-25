@@ -7,9 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { registerAs } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
-import { createConfigSchema, validateConfig } from '@attraccess/env';
+import { createConfigSchema } from '@attraccess/env';
 import { DataSource } from 'typeorm';
-import { z } from 'zod';
 
 // Register auth configuration
 export const authConfig = registerAs('auth', () => {
