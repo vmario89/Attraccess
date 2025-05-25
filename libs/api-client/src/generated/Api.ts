@@ -460,7 +460,7 @@ export interface Resource {
    * The type of documentation (markdown or url)
    * @example "markdown"
    */
-  documentationType?: "markdown" | "url";
+  DocumentationType?: "markdown" | "url";
   /**
    * Markdown content for resource documentation
    * @example "# Resource Documentation
