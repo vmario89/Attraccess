@@ -82,6 +82,7 @@ describe('ResourcesService', () => {
           documentationType: DocumentationType.MARKDOWN,
           documentationMarkdown: '# Documentation 1',
           documentationUrl: null,
+          allowOvertake: false,
           createdAt: new Date(),
           updatedAt: new Date(),
           introductions: [],
@@ -99,6 +100,7 @@ describe('ResourcesService', () => {
           documentationType: DocumentationType.URL,
           documentationMarkdown: null,
           documentationUrl: 'https://example.com',
+          allowOvertake: false,
           createdAt: new Date(),
           updatedAt: new Date(),
           introductions: [],
@@ -132,6 +134,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Documentation 1',
         documentationUrl: null,
+          allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -170,6 +173,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# New Documentation',
         documentationUrl: null,
+          allowOvertake: false,
       };
 
       const newResource = {
@@ -180,6 +184,7 @@ describe('ResourcesService', () => {
         documentationType: createDto.documentationType,
         documentationMarkdown: createDto.documentationMarkdown,
         documentationUrl: createDto.documentationUrl,
+        allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -201,7 +206,8 @@ describe('ResourcesService', () => {
         description: createDto.description,
         documentationType: createDto.documentationType || null,
         documentationMarkdown: createDto.documentationMarkdown || null,
-        documentationUrl: createDto.documentationUrl || null
+        documentationUrl: createDto.documentationUrl || null,
+        allowOvertake: createDto.allowOvertake || false
       });
       expect(resourceRepository.save).toHaveBeenCalled();
     });
@@ -225,6 +231,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Old Documentation',
         documentationUrl: null,
+          allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -281,6 +288,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Documentation',
         documentationUrl: null,
+          allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -325,6 +333,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Documentation',
         documentationUrl: null,
+          allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -357,6 +366,7 @@ describe('ResourcesService', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Documentation',
         documentationUrl: null,
+          allowOvertake: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],

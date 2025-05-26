@@ -53,10 +53,32 @@ export class ResourceUsageService {
       throw new BadRequestException('You must complete the resource introduction before using it');
     }
 
-    // Check if user has an active session
+    // Check if there's an active session
     const existingActiveSession = await this.getActiveSession(resourceId);
     if (existingActiveSession) {
-      throw new BadRequestException('User already has an active session');
+      // If there's an active session, check if overtake is allowed
+      if (dto.forceOvertake && resource.allowOvertake) {
+        // End the existing session with a note about overtake
+        await this.resourceUsageRepository
+          .createQueryBuilder()
+          .update(ResourceUsage)
+          .set({
+            endTime: new Date(),
+            endNotes: `Session ended due to overtake by user ${user.id}`,
+          })
+          .where('id = :id', { id: existingActiveSession.id })
+          .execute();
+
+        // Emit event for the ended session
+        this.eventEmitter.emit(
+          'resource.usage.ended',
+          new ResourceUsageEndedEvent(resourceId, existingActiveSession.startTime, new Date())
+        );
+      } else if (dto.forceOvertake && !resource.allowOvertake) {
+        throw new BadRequestException('This resource does not allow overtaking');
+      } else {
+        throw new BadRequestException('Resource is currently in use by another user');
+      }
     }
 
     // Create new usage session

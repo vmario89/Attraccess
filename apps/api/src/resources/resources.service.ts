@@ -25,7 +25,8 @@ export class ResourcesService {
       description: dto.description,
       documentationType: dto.documentationType || null,
       documentationMarkdown: dto.documentationMarkdown || null,
-      documentationUrl: dto.documentationUrl || null
+      documentationUrl: dto.documentationUrl || null,
+      allowOvertake: dto.allowOvertake || false
     });
 
     // Save the resource first to get an ID
@@ -79,6 +80,9 @@ export class ResourcesService {
     if (dto.documentationType !== undefined) resource.documentationType = dto.documentationType;
     if (dto.documentationMarkdown !== undefined) resource.documentationMarkdown = dto.documentationMarkdown;
     if (dto.documentationUrl !== undefined) resource.documentationUrl = dto.documentationUrl;
+    
+    // Handle allowOvertake field
+    if (dto.allowOvertake !== undefined) resource.allowOvertake = dto.allowOvertake;
 
     if (image) {
       // Delete old image if it exists

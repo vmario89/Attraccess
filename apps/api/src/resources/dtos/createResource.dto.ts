@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, MinLength, IsEnum, IsUrl, ValidateIf } from 'class-validator';
+import { IsString, IsOptional, MinLength, IsEnum, IsUrl, ValidateIf, IsBoolean } from 'class-validator';
 import { FileUpload } from '../../common/types/file-upload.types';
 import { DocumentationType } from '@attraccess/database-entities';
 
@@ -58,4 +58,14 @@ export class CreateResourceDto {
   @ValidateIf(o => o.documentationType === DocumentationType.URL)
   @IsOptional()
   documentationUrl?: string;
+
+  @ApiProperty({
+    description: 'Whether this resource allows overtaking by the next user without the prior user ending their session',
+    required: false,
+    example: false,
+    default: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  allowOvertake?: boolean;
 }

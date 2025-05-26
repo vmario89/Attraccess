@@ -389,6 +389,10 @@ export type CreateResourceDto = {
      * URL to external documentation
      */
     documentationUrl?: string;
+    /**
+     * Whether this resource allows overtaking by the next user without the prior user ending their session
+     */
+    allowOvertake?: boolean;
 };
 
 /**
@@ -428,6 +432,10 @@ export type Resource = {
      * URL to external documentation
      */
     documentationUrl?: string;
+    /**
+     * Whether this resource allows overtaking by the next user without the prior user ending their session
+     */
+    allowOvertake: boolean;
     /**
      * When the resource was created
      */
@@ -487,6 +495,10 @@ export type UpdateResourceDto = {
      * URL to external documentation
      */
     documentationUrl?: string;
+    /**
+     * Whether this resource allows overtaking by the next user without the prior user ending their session
+     */
+    allowOvertake?: boolean;
 };
 
 export type StartUsageSessionDto = {
@@ -494,6 +506,10 @@ export type StartUsageSessionDto = {
      * Optional notes about the usage session
      */
     notes?: string;
+    /**
+     * Whether to force overtake of an existing session (only works if resource allows overtake)
+     */
+    forceOvertake?: boolean;
 };
 
 export type ResourceUsage = {

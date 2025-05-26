@@ -600,6 +600,12 @@ This is a markdown documentation for the resource.`
             type: 'string',
             description: 'URL to external documentation',
             example: 'https://example.com/documentation'
+        },
+        allowOvertake: {
+            type: 'boolean',
+            description: 'Whether this resource allows overtaking by the next user without the prior user ending their session',
+            example: false,
+            default: false
         }
     },
     required: ['name']
@@ -646,6 +652,12 @@ This is a markdown documentation for the resource.`
             description: 'URL to external documentation',
             example: 'https://example.com/documentation'
         },
+        allowOvertake: {
+            type: 'boolean',
+            description: 'Whether this resource allows overtaking by the next user without the prior user ending their session',
+            example: false,
+            default: false
+        },
         createdAt: {
             format: 'date-time',
             type: 'string',
@@ -664,7 +676,7 @@ This is a markdown documentation for the resource.`
             }
         }
     },
-    required: ['id', 'name', 'createdAt', 'updatedAt', 'groups']
+    required: ['id', 'name', 'allowOvertake', 'createdAt', 'updatedAt', 'groups']
 } as const;
 
 export const $PaginatedResourceResponseDto = {
@@ -732,6 +744,11 @@ This is a markdown documentation for the resource.`
             type: 'string',
             description: 'URL to external documentation',
             example: 'https://example.com/documentation'
+        },
+        allowOvertake: {
+            type: 'boolean',
+            description: 'Whether this resource allows overtaking by the next user without the prior user ending their session',
+            example: false
         }
     }
 } as const;
@@ -743,6 +760,12 @@ export const $StartUsageSessionDto = {
             type: 'string',
             description: 'Optional notes about the usage session',
             example: 'Printing a prototype case'
+        },
+        forceOvertake: {
+            type: 'boolean',
+            description: 'Whether to force overtake of an existing session (only works if resource allows overtake)',
+            example: false,
+            default: false
         }
     }
 } as const;
