@@ -433,6 +433,12 @@ export interface CreateResourceDto {
    * @example "https://example.com/documentation"
    */
   documentationUrl?: string;
+  /**
+   * Whether this resource allows overtaking by the next user without the prior user ending their session
+   * @default false
+   * @example false
+   */
+  allowOvertake?: boolean;
 }
 
 export interface Resource {
@@ -473,6 +479,12 @@ export interface Resource {
    * @example "https://example.com/documentation"
    */
   documentationUrl?: string;
+  /**
+   * Whether this resource allows overtaking by the next user without the prior user ending their session
+   * @default false
+   * @example false
+   */
+  allowOvertake: boolean;
   /**
    * When the resource was created
    * @format date-time
@@ -530,6 +542,11 @@ export interface UpdateResourceDto {
    * @example "https://example.com/documentation"
    */
   documentationUrl?: string;
+  /**
+   * Whether this resource allows overtaking by the next user without the prior user ending their session
+   * @example false
+   */
+  allowOvertake?: boolean;
 }
 
 export interface StartUsageSessionDto {
@@ -538,6 +555,12 @@ export interface StartUsageSessionDto {
    * @example "Printing a prototype case"
    */
   notes?: string;
+  /**
+   * Whether to force overtake of an existing session (only works if resource allows overtake)
+   * @default false
+   * @example false
+   */
+  forceOvertake?: boolean;
 }
 
 export interface ResourceUsage {

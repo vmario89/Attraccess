@@ -1,0 +1,7 @@
+{
+  "title": "Sitzungsübernahme bestätigen",
+  "message": "Diese Ressource wird derzeit von einem anderen Benutzer verwendet. Möchten Sie dessen Sitzung beenden und Ihre eigene starten?",
+  "messageWithUser": "Diese Ressource wird derzeit von {{userName}} verwendet. Möchten Sie dessen Sitzung beenden und Ihre eigene starten?",
+  "confirmButton": "Sitzung übernehmen",
+  "cancelButton": "Abbrechen"
+}

@@ -31,12 +31,16 @@ import {
   UseResourceUsageServiceGetHistoryOfResourceUsageKeyFn,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
+import { OvertakeConfirmationModal } from './components/OvertakeConfirmationModal';
+
+import { Resource } from '@attraccess/react-query-client';
 
 interface ResourceUsageSessionProps {
   resourceId: number;
+  resource: Resource;
 }
 
-export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) {
+export function ResourceUsageSession({ resourceId, resource }: ResourceUsageSessionProps) {
   const { t } = useTranslations('resourceUsageSession', { en, de });
   const { success, error: showError } = useToastMessage();
   const { hasPermission } = useAuth();
@@ -141,23 +145,52 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
     setIsNotesModalOpen(true);
   };
 
-  const handleStartSession = async (notes: string) => {
+  const [isOvertakeModalOpen, setIsOvertakeModalOpen] = useState(false);
+  const [notesForOvertake, setNotesForOvertake] = useState('');
+
+  const handleConfirmOvertake = async () => {
     try {
       await startSession.mutateAsync({
         resourceId,
-        requestBody: { notes },
+        requestBody: { notes: notesForOvertake, forceOvertake: true },
       });
       success({
         title: t('sessionStarted'),
-        description: t('sessionStartedDescription'),
+        description: t('sessionOvertakenDescription'), // New translation
       });
-      setIsNotesModalOpen(false);
+      setIsOvertakeModalOpen(false);
+      setIsNotesModalOpen(false); // Close notes modal if it was open
     } catch (err) {
       showError({
         title: t('sessionStartError'),
-        description: t('sessionStartErrorDescription'),
+        description: t('sessionOvertakeErrorDescription'), // New translation
       });
-      console.error('Failed to start session:', err);
+      console.error('Failed to overtake session:', err);
+    }
+  };
+
+  const handleStartSession = async (notes: string) => {
+    if (activeSession && activeSession.userId !== user?.id && resource.allowOvertake) {
+      setNotesForOvertake(notes);
+      setIsOvertakeModalOpen(true);
+    } else {
+      try {
+        await startSession.mutateAsync({
+          resourceId,
+          requestBody: { notes, forceOvertake: false }, // Ensure forceOvertake is false
+        });
+        success({
+          title: t('sessionStarted'),
+          description: t('sessionStartedDescription'),
+        });
+        setIsNotesModalOpen(false);
+      } catch (err) {
+        showError({
+          title: t('sessionStartError'),
+          description: t('sessionStartErrorDescription'),
+        });
+        console.error('Failed to start session:', err);
+      }
     }
   };
 
@@ -207,11 +240,19 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
   }, [endSession, resourceId]);
 
   const immediatelyStartSession = useCallback(() => {
-    startSession.mutate({
-      resourceId,
-      requestBody: {},
-    });
-  }, [startSession, resourceId]);
+    if (activeSession && activeSession.userId !== user?.id && resource.allowOvertake) {
+      // If session is active by another user and overtake is allowed, open modal
+      // We pass empty notes for now, user can add notes if they choose "start with notes" later
+      setNotesForOvertake(''); 
+      setIsOvertakeModalOpen(true);
+    } else {
+      // Otherwise, start session immediately (forceOvertake will be false by default in API if not provided)
+      startSession.mutate({
+        resourceId,
+        requestBody: {},
+      });
+    }
+  }, [startSession, resourceId, activeSession, user, resource.allowOvertake]);
 
   return (
     <>
@@ -351,6 +392,15 @@ export function ResourceUsageSession({ resourceId }: ResourceUsageSessionProps) 
         onConfirm={handleNotesSubmit}
         mode={notesModalMode}
         isSubmitting={notesModalMode === SessionModalMode.START ? startSession.isPending : endSession.isPending}
+      />
+
+      {/* Overtake Confirmation Modal */}
+      <OvertakeConfirmationModal
+        isOpen={isOvertakeModalOpen}
+        onClose={() => setIsOvertakeModalOpen(false)}
+        onConfirm={handleConfirmOvertake}
+        userName={activeSession?.user?.username} // Display user name if available
+        isLoading={startSession.isPending}
       />
     </>
   );
