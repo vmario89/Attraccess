@@ -102,7 +102,7 @@ describe('MQTT Template Rendering', () => {
           "name": "{{name}}"
         },
         "timestamp": "{{timestamp}}",
-        "user": {{#if user}}{ "id": {{user.id}}, "name": "{{user.name}}" }{{else}}null{{/if}},
+        "user": {{#if user}}{ "id": {{user.id}}, "username": "{{user.username}}" }{{else}}null{{/if}},
         "status": "active"
       }`;
 
@@ -118,7 +118,7 @@ describe('MQTT Template Rendering', () => {
         timestamp: '2023-05-01T12:34:56.789Z',
         user: {
           id: 123,
-          name: 'John Doe',
+          username: 'johndoe',
         },
         status: 'active',
       });
