@@ -114,7 +114,7 @@ describe('MqttPublisherService', () => {
 
   describe('handleResourceUsageStarted', () => {
     it('should publish messages to all configured servers when resource usage starts', async () => {
-      const event = new ResourceUsageStartedEvent(1, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 
@@ -148,7 +148,7 @@ describe('MqttPublisherService', () => {
     it('should not publish any messages if no configs are found', async () => {
       mockMqttResourceConfigRepository.find = jest.fn().mockResolvedValue([]);
 
-      const event = new ResourceUsageStartedEvent(999, new Date());
+      const event = new ResourceUsageStartedEvent(999, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 
@@ -158,7 +158,7 @@ describe('MqttPublisherService', () => {
     it('should not publish messages if resource is not found', async () => {
       mockResourceRepository.findOne = jest.fn().mockResolvedValue(null);
 
-      const event = new ResourceUsageStartedEvent(1, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 
@@ -172,7 +172,7 @@ describe('MqttPublisherService', () => {
         .mockImplementationOnce(() => Promise.reject(new Error('Publish error')))
         .mockImplementationOnce(() => Promise.resolve());
 
-      const event = new ResourceUsageStartedEvent(1, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date(), { id: 123, username: 'testuser' });
 
       // The method should not throw an exception even if one publish fails
       await expect(service.handleResourceUsageStarted(event)).resolves.not.toThrow();
@@ -185,7 +185,7 @@ describe('MqttPublisherService', () => {
       const customResource = { id: 42, name: 'Custom Resource Name' };
       mockResourceRepository.findOne = jest.fn().mockResolvedValue(customResource);
 
-      const event = new ResourceUsageStartedEvent(42, new Date());
+      const event = new ResourceUsageStartedEvent(42, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 
@@ -209,7 +209,7 @@ describe('MqttPublisherService', () => {
       mockMqttClientService.getStatusOfOne = jest.fn().mockResolvedValue({ connected: false });
       mockMqttClientService.publish = jest.fn().mockRejectedValue(new Error('Server disconnected'));
 
-      const event = new ResourceUsageStartedEvent(1, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 
@@ -225,7 +225,7 @@ describe('MqttPublisherService', () => {
     it('should publish messages to all configured servers when resource usage ends', async () => {
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + 3600000); // 1 hour later
-      const event = new ResourceUsageEndedEvent(1, startTime, endTime);
+      const event = new ResourceUsageEndedEvent(1, startTime, endTime, { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageEnded(event);
 
@@ -261,7 +261,7 @@ describe('MqttPublisherService', () => {
 
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + 3600000);
-      const event = new ResourceUsageEndedEvent(999, startTime, endTime);
+      const event = new ResourceUsageEndedEvent(999, startTime, endTime, { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageEnded(event);
 
@@ -274,7 +274,7 @@ describe('MqttPublisherService', () => {
 
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + 3600000);
-      const event = new ResourceUsageEndedEvent(42, startTime, endTime);
+      const event = new ResourceUsageEndedEvent(42, startTime, endTime, { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageEnded(event);
 
@@ -304,7 +304,7 @@ describe('MqttPublisherService', () => {
         // Second attempt: server connected
         .mockResolvedValueOnce(undefined);
 
-      const event = new ResourceUsageStartedEvent(1, new Date());
+      const event = new ResourceUsageStartedEvent(1, new Date(), { id: 123, username: 'testuser' });
 
       await service.handleResourceUsageStarted(event);
 

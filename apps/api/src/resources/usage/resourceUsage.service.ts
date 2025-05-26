@@ -84,7 +84,10 @@ export class ResourceUsageService {
     });
 
     // Emit event after successful save
-    this.eventEmitter.emit('resource.usage.started', new ResourceUsageStartedEvent(resourceId, usageData.startTime));
+    this.eventEmitter.emit('resource.usage.started', new ResourceUsageStartedEvent(resourceId, usageData.startTime, {
+      id: user.id,
+      username: user.username
+    }));
     if (!newSession) {
       // Should not happen if insert succeeded, but good practice to check
       throw new Error('Failed to retrieve the newly created session.');
@@ -124,7 +127,10 @@ export class ResourceUsageService {
     // Emit event after successful save
     this.eventEmitter.emit(
       'resource.usage.ended',
-      new ResourceUsageEndedEvent(resourceId, activeSession.startTime, endTime)
+      new ResourceUsageEndedEvent(resourceId, activeSession.startTime, endTime, {
+        id: activeSession.user.id,
+        username: activeSession.user.username
+      })
     );
 
     // Fetch the updated record

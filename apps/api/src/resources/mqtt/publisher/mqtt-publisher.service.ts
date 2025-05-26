@@ -199,6 +199,7 @@ export class MqttPublisherService {
             id: resource.id,
             name: resource.name,
             timestamp: new Date().toISOString(),
+            user: event.user,
           };
 
           // Process templates
@@ -241,6 +242,7 @@ export class MqttPublisherService {
             id: resource.id,
             name: resource.name,
             timestamp: new Date().toISOString(),
+            user: event.user,
           };
 
           // Process templates

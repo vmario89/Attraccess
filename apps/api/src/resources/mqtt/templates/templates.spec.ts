@@ -8,7 +8,7 @@ describe('MQTT Template Rendering', () => {
     timestamp: '2023-05-01T12:34:56.789Z',
     user: {
       id: 123,
-      name: 'John Doe',
+      username: 'johndoe',
     },
   };
 
@@ -70,7 +70,7 @@ describe('MQTT Template Rendering', () => {
 
     it('should include user information when available', () => {
       const template =
-        '{"resourceId":{{id}},"resourceName":"{{name}}","user":"{{user.name}}"}';
+        '{"resourceId":{{id}},"resourceName":"{{name}}","user":"{{user.username}}"}';
       const compiled = Handlebars.compile(template);
       const result = compiled(context);
 
@@ -78,7 +78,7 @@ describe('MQTT Template Rendering', () => {
       expect(parsed).toEqual({
         resourceId: 42,
         resourceName: 'Test Resource',
-        user: 'John Doe',
+        user: 'johndoe',
       });
     });
 
