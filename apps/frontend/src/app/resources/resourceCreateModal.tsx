@@ -42,7 +42,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
   const [formData, setFormData] = useState<CreateResourceDto>({
     name: '',
     description: '',
-    allowOvertake: false,
+    allowTakeOver: false,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { success, error } = useToastMessage();
@@ -58,7 +58,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
     setFormData({
       name: '',
       description: '',
-      allowOvertake: false,
+      allowTakeOver: false,
     });
     setSelectedImage(null);
   }, []);
@@ -153,7 +153,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
         formData: {
           name: formData.name,
           description: formData.description,
-          allowOvertake: formData.allowOvertake,
+          allowTakeOver: formData.allowTakeOver,
           image: selectedImage ?? undefined,
         },
       });
@@ -192,13 +192,13 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                 />
 
                 <Switch
-                  isSelected={formData.allowOvertake}
-                  onValueChange={(value) => setFormData({ ...formData, allowOvertake: value })}
+                  isSelected={formData.allowTakeOver}
+                  onValueChange={(value) => setFormData({ ...formData, allowTakeOver: value })}
                   isDisabled={isSubmitting}
                 >
                   <div className="flex flex-col">
-                    <span className="text-small">{t('allowOvertakeLabel')}</span>
-                    <span className="text-tiny text-default-400">{t('allowOvertakeDescription')}</span>
+                    <span className="text-small">{t('allowTakeOverLabel')}</span>
+                    <span className="text-tiny text-default-400">{t('allowTakeOverDescription')}</span>
                   </div>
                 </Switch>
 

@@ -12,12 +12,12 @@ export class StartUsageSessionDto {
   notes?: string;
 
   @ApiProperty({
-    description: 'Whether to force overtake of an existing session (only works if resource allows overtake)',
+    description: 'Whether to force takeover of an existing session (only works if resource allows takeover)',
     required: false,
     example: false,
     default: false,
   })
   @IsBoolean()
   @IsOptional()
-  forceOvertake?: boolean;
+  forceTakeOver?: boolean;
 }

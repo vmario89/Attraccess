@@ -56,15 +56,15 @@ export class ResourceUsageService {
     // Check if there's an active session
     const existingActiveSession = await this.getActiveSession(resourceId);
     if (existingActiveSession) {
-      // If there's an active session, check if overtake is allowed
-      if (dto.forceOvertake && resource.allowOvertake) {
-        // End the existing session with a note about overtake
+      // If there's an active session, check if takeover is allowed
+      if (dto.forceTakeOver && resource.allowTakeOver) {
+        // End the existing session with a note about takeover
         await this.resourceUsageRepository
           .createQueryBuilder()
           .update(ResourceUsage)
           .set({
             endTime: new Date(),
-            endNotes: `Session ended due to overtake by user ${user.id}`,
+            endNotes: `Session ended due to takeover by user ${user.id}`,
           })
           .where('id = :id', { id: existingActiveSession.id })
           .execute();
@@ -72,9 +72,9 @@ export class ResourceUsageService {
         // Emit event for the ended session
         this.eventEmitter.emit(
           'resource.usage.ended',
-          new ResourceUsageEndedEvent(resourceId, existingActiveSession.startTime, new Date())
+          new ResourceUsageEndedEvent(resourceId, existingActiveSession.startTime, new Date(), user)
         );
-      } else if (dto.forceOvertake && !resource.allowOvertake) {
+      } else if (dto.forceTakeOver && !resource.allowTakeOver) {
         throw new BadRequestException('This resource does not allow overtaking');
       } else {
         throw new BadRequestException('Resource is currently in use by another user');

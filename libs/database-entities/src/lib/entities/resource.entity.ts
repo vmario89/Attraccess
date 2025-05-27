@@ -85,7 +85,7 @@ export class Resource {
     example: false,
     default: false,
   })
-  allowOvertake!: boolean;
+  allowTakeOver!: boolean;
 
   @CreateDateColumn()
   @ApiProperty({

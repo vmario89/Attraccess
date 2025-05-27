@@ -438,7 +438,7 @@ export interface CreateResourceDto {
    * @default false
    * @example false
    */
-  allowOvertake?: boolean;
+  allowTakeOver?: boolean;
 }
 
 export interface Resource {
@@ -484,7 +484,7 @@ export interface Resource {
    * @default false
    * @example false
    */
-  allowOvertake: boolean;
+  allowTakeOver: boolean;
   /**
    * When the resource was created
    * @format date-time
@@ -546,7 +546,7 @@ export interface UpdateResourceDto {
    * Whether this resource allows overtaking by the next user without the prior user ending their session
    * @example false
    */
-  allowOvertake?: boolean;
+  allowTakeOver?: boolean;
 }
 
 export interface StartUsageSessionDto {
@@ -556,11 +556,11 @@ export interface StartUsageSessionDto {
    */
   notes?: string;
   /**
-   * Whether to force overtake of an existing session (only works if resource allows overtake)
+   * Whether to force takeover of an existing session (only works if resource allows takeover)
    * @default false
    * @example false
    */
-  forceOvertake?: boolean;
+  forceTakeOver?: boolean;
 }
 
 export interface ResourceUsage {
@@ -780,138 +780,6 @@ export interface CanManageIntroducersResponseDto {
    * @example true
    */
   canManageIntroducers: boolean;
-}
-
-export interface MqttResourceConfig {
-  /**
-   * The unique identifier of the MQTT resource configuration
-   * @example 1
-   */
-  id: number;
-  /**
-   * The ID of the resource this configuration is for
-   * @example 1
-   */
-  resourceId: number;
-  /**
-   * Name of this MQTT configuration
-   * @example "Primary Status Feed"
-   */
-  name: string;
-  /**
-   * The ID of the MQTT server to publish to
-   * @example 1
-   */
-  serverId: number;
-  /**
-   * Topic template using Handlebars for in-use status
-   * @example "resources/{{id}}/status"
-   */
-  inUseTopic: string;
-  /**
-   * Message template using Handlebars for in-use status
-   * @example "{"status": "in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
-   */
-  inUseMessage: string;
-  /**
-   * Topic template using Handlebars for not-in-use status
-   * @example "resources/{{id}}/status"
-   */
-  notInUseTopic: string;
-  /**
-   * Message template using Handlebars for not-in-use status
-   * @example "{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
-   */
-  notInUseMessage: string;
-  /**
-   * When the MQTT resource configuration was created
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * When the MQTT resource configuration was last updated
-   * @format date-time
-   */
-  updatedAt: string;
-}
-
-export interface CreateMqttResourceConfigDto {
-  /**
-   * ID of the MQTT server to use
-   * @example 1
-   */
-  serverId: number;
-  /**
-   * Name of this MQTT configuration
-   * @example "Primary Status Feed"
-   */
-  name: string;
-  /**
-   * Topic template for when resource is in use
-   * @example "resources/{{id}}/status"
-   */
-  inUseTopic: string;
-  /**
-   * Message template for when resource is in use
-   * @example "{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
-   */
-  inUseMessage: string;
-  /**
-   * Topic template for when resource is not in use
-   * @example "resources/{{id}}/status"
-   */
-  notInUseTopic: string;
-  /**
-   * Message template for when resource is not in use
-   * @example "{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
-   */
-  notInUseMessage: string;
-}
-
-export interface UpdateMqttResourceConfigDto {
-  /**
-   * ID of the MQTT server to use
-   * @example 1
-   */
-  serverId?: number;
-  /**
-   * Name of this MQTT configuration
-   * @example "Primary Status Feed"
-   */
-  name?: string;
-  /**
-   * Topic template for when resource is in use
-   * @example "resources/{{id}}/status"
-   */
-  inUseTopic?: string;
-  /**
-   * Message template for when resource is in use
-   * @example "{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
-   */
-  inUseMessage?: string;
-  /**
-   * Topic template for when resource is not in use
-   * @example "resources/{{id}}/status"
-   */
-  notInUseTopic?: string;
-  /**
-   * Message template for when resource is not in use
-   * @example "{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
-   */
-  notInUseMessage?: string;
-}
-
-export interface TestMqttConfigResponseDto {
-  /**
-   * Whether the test was successful
-   * @example true
-   */
-  success: boolean;
-  /**
-   * Message describing the test result
-   * @example "MQTT configuration is valid and connection to server was successful"
-   */
-  message: string;
 }
 
 export interface MqttServer {
@@ -1329,6 +1197,138 @@ export interface WebhookTestResponseDto {
   /**
    * Message describing the test result
    * @example "Webhook test request sent successfully"
+   */
+  message: string;
+}
+
+export interface MqttResourceConfig {
+  /**
+   * The unique identifier of the MQTT resource configuration
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the resource this configuration is for
+   * @example 1
+   */
+  resourceId: number;
+  /**
+   * Name of this MQTT configuration
+   * @example "Primary Status Feed"
+   */
+  name: string;
+  /**
+   * The ID of the MQTT server to publish to
+   * @example 1
+   */
+  serverId: number;
+  /**
+   * Topic template using Handlebars for in-use status
+   * @example "resources/{{id}}/status"
+   */
+  inUseTopic: string;
+  /**
+   * Message template using Handlebars for in-use status
+   * @example "{"status": "in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
+   */
+  inUseMessage: string;
+  /**
+   * Topic template using Handlebars for not-in-use status
+   * @example "resources/{{id}}/status"
+   */
+  notInUseTopic: string;
+  /**
+   * Message template using Handlebars for not-in-use status
+   * @example "{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}"
+   */
+  notInUseMessage: string;
+  /**
+   * When the MQTT resource configuration was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * When the MQTT resource configuration was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface CreateMqttResourceConfigDto {
+  /**
+   * ID of the MQTT server to use
+   * @example 1
+   */
+  serverId: number;
+  /**
+   * Name of this MQTT configuration
+   * @example "Primary Status Feed"
+   */
+  name: string;
+  /**
+   * Topic template for when resource is in use
+   * @example "resources/{{id}}/status"
+   */
+  inUseTopic: string;
+  /**
+   * Message template for when resource is in use
+   * @example "{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  inUseMessage: string;
+  /**
+   * Topic template for when resource is not in use
+   * @example "resources/{{id}}/status"
+   */
+  notInUseTopic: string;
+  /**
+   * Message template for when resource is not in use
+   * @example "{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  notInUseMessage: string;
+}
+
+export interface UpdateMqttResourceConfigDto {
+  /**
+   * ID of the MQTT server to use
+   * @example 1
+   */
+  serverId?: number;
+  /**
+   * Name of this MQTT configuration
+   * @example "Primary Status Feed"
+   */
+  name?: string;
+  /**
+   * Topic template for when resource is in use
+   * @example "resources/{{id}}/status"
+   */
+  inUseTopic?: string;
+  /**
+   * Message template for when resource is in use
+   * @example "{"status":"in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  inUseMessage?: string;
+  /**
+   * Topic template for when resource is not in use
+   * @example "resources/{{id}}/status"
+   */
+  notInUseTopic?: string;
+  /**
+   * Message template for when resource is not in use
+   * @example "{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}"
+   */
+  notInUseMessage?: string;
+}
+
+export interface TestMqttConfigResponseDto {
+  /**
+   * Whether the test was successful
+   * @example true
+   */
+  success: boolean;
+  /**
+   * Message describing the test result
+   * @example "MQTT configuration is valid and connection to server was successful"
    */
   message: string;
 }
@@ -1778,18 +1778,6 @@ export type RemoveOneData = any;
 
 export type CheckCanManagePermissionResult = CanManageIntroducersResponseDto;
 
-export type GetAllMqttConfigurationsData = MqttResourceConfig[];
-
-export type CreateMqttConfigurationData = MqttResourceConfig;
-
-export type GetOneMqttConfigurationData = MqttResourceConfig;
-
-export type UpdateMqttConfigurationData = MqttResourceConfig;
-
-export type DeleteOneMqttConfigurationData = any;
-
-export type TestOneData = TestMqttConfigResponseDto;
-
 export type GetAllMqttServersData = MqttServer[];
 
 export type CreateOneMqttServerData = MqttServer;
@@ -1823,6 +1811,18 @@ export type UpdateStatusData = WebhookConfigResponseDto;
 export type TestData = WebhookTestResponseDto;
 
 export type RegenerateSecretData = WebhookConfigResponseDto;
+
+export type GetAllMqttConfigurationsData = MqttResourceConfig[];
+
+export type CreateMqttConfigurationData = MqttResourceConfig;
+
+export type GetOneMqttConfigurationData = MqttResourceConfig;
+
+export type UpdateMqttConfigurationData = MqttResourceConfig;
+
+export type DeleteOneMqttConfigurationData = any;
+
+export type TestOneData = TestMqttConfigResponseDto;
 
 export type GetPluginsData = LoadedPluginManifest[];
 
@@ -2847,120 +2847,6 @@ export namespace ResourceIntroducers {
   }
 }
 
-export namespace MqttResourceConfiguration {
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name GetAllMqttConfigurations
-   * @summary Get all MQTT configurations for a resource
-   * @request GET:/api/resources/{resourceId}/mqtt/config
-   * @secure
-   */
-  export namespace GetAllMqttConfigurations {
-    export type RequestParams = {
-      resourceId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetAllMqttConfigurationsData;
-  }
-
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name CreateMqttConfiguration
-   * @summary Create a new MQTT configuration for a resource
-   * @request POST:/api/resources/{resourceId}/mqtt/config
-   * @secure
-   */
-  export namespace CreateMqttConfiguration {
-    export type RequestParams = {
-      resourceId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = CreateMqttResourceConfigDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = CreateMqttConfigurationData;
-  }
-
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name GetOneMqttConfiguration
-   * @summary Get a specific MQTT configuration for a resource
-   * @request GET:/api/resources/{resourceId}/mqtt/config/{configId}
-   * @secure
-   */
-  export namespace GetOneMqttConfiguration {
-    export type RequestParams = {
-      resourceId: number;
-      configId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetOneMqttConfigurationData;
-  }
-
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name UpdateMqttConfiguration
-   * @summary Update a specific MQTT configuration
-   * @request PUT:/api/resources/{resourceId}/mqtt/config/{configId}
-   * @secure
-   */
-  export namespace UpdateMqttConfiguration {
-    export type RequestParams = {
-      resourceId: number;
-      configId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = UpdateMqttResourceConfigDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = UpdateMqttConfigurationData;
-  }
-
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name DeleteOneMqttConfiguration
-   * @summary Delete a specific MQTT configuration
-   * @request DELETE:/api/resources/{resourceId}/mqtt/config/{configId}
-   * @secure
-   */
-  export namespace DeleteOneMqttConfiguration {
-    export type RequestParams = {
-      resourceId: number;
-      configId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = DeleteOneMqttConfigurationData;
-  }
-
-  /**
-   * No description
-   * @tags MQTT Resource Configuration
-   * @name TestOne
-   * @summary Test a specific MQTT configuration
-   * @request POST:/api/resources/{resourceId}/mqtt/config/{configId}/test
-   * @secure
-   */
-  export namespace TestOne {
-    export type RequestParams = {
-      resourceId: number;
-      configId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = TestOneData;
-  }
-}
-
 export namespace MqttServers {
   /**
    * No description
@@ -3282,6 +3168,120 @@ export namespace Webhooks {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = RegenerateSecretData;
+  }
+}
+
+export namespace MqttResourceConfiguration {
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name GetAllMqttConfigurations
+   * @summary Get all MQTT configurations for a resource
+   * @request GET:/api/resources/{resourceId}/mqtt/config
+   * @secure
+   */
+  export namespace GetAllMqttConfigurations {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetAllMqttConfigurationsData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name CreateMqttConfiguration
+   * @summary Create a new MQTT configuration for a resource
+   * @request POST:/api/resources/{resourceId}/mqtt/config
+   * @secure
+   */
+  export namespace CreateMqttConfiguration {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateMqttResourceConfigDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateMqttConfigurationData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name GetOneMqttConfiguration
+   * @summary Get a specific MQTT configuration for a resource
+   * @request GET:/api/resources/{resourceId}/mqtt/config/{configId}
+   * @secure
+   */
+  export namespace GetOneMqttConfiguration {
+    export type RequestParams = {
+      resourceId: number;
+      configId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOneMqttConfigurationData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name UpdateMqttConfiguration
+   * @summary Update a specific MQTT configuration
+   * @request PUT:/api/resources/{resourceId}/mqtt/config/{configId}
+   * @secure
+   */
+  export namespace UpdateMqttConfiguration {
+    export type RequestParams = {
+      resourceId: number;
+      configId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateMqttResourceConfigDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateMqttConfigurationData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name DeleteOneMqttConfiguration
+   * @summary Delete a specific MQTT configuration
+   * @request DELETE:/api/resources/{resourceId}/mqtt/config/{configId}
+   * @secure
+   */
+  export namespace DeleteOneMqttConfiguration {
+    export type RequestParams = {
+      resourceId: number;
+      configId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteOneMqttConfigurationData;
+  }
+
+  /**
+   * No description
+   * @tags MQTT Resource Configuration
+   * @name TestOne
+   * @summary Test a specific MQTT configuration
+   * @request POST:/api/resources/{resourceId}/mqtt/config/{configId}/test
+   * @secure
+   */
+  export namespace TestOne {
+    export type RequestParams = {
+      resourceId: number;
+      configId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TestOneData;
   }
 }
 
@@ -4802,142 +4802,6 @@ export class Api<
         ...params,
       }),
   };
-  mqttResourceConfiguration = {
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name GetAllMqttConfigurations
-     * @summary Get all MQTT configurations for a resource
-     * @request GET:/api/resources/{resourceId}/mqtt/config
-     * @secure
-     */
-    getAllMqttConfigurations: (
-      resourceId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<GetAllMqttConfigurationsData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name CreateMqttConfiguration
-     * @summary Create a new MQTT configuration for a resource
-     * @request POST:/api/resources/{resourceId}/mqtt/config
-     * @secure
-     */
-    createMqttConfiguration: (
-      resourceId: number,
-      data: CreateMqttResourceConfigDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<CreateMqttConfigurationData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name GetOneMqttConfiguration
-     * @summary Get a specific MQTT configuration for a resource
-     * @request GET:/api/resources/{resourceId}/mqtt/config/{configId}
-     * @secure
-     */
-    getOneMqttConfiguration: (
-      resourceId: number,
-      configId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<GetOneMqttConfigurationData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name UpdateMqttConfiguration
-     * @summary Update a specific MQTT configuration
-     * @request PUT:/api/resources/{resourceId}/mqtt/config/{configId}
-     * @secure
-     */
-    updateMqttConfiguration: (
-      resourceId: number,
-      configId: number,
-      data: UpdateMqttResourceConfigDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<UpdateMqttConfigurationData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name DeleteOneMqttConfiguration
-     * @summary Delete a specific MQTT configuration
-     * @request DELETE:/api/resources/{resourceId}/mqtt/config/{configId}
-     * @secure
-     */
-    deleteOneMqttConfiguration: (
-      resourceId: number,
-      configId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<DeleteOneMqttConfigurationData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags MQTT Resource Configuration
-     * @name TestOne
-     * @summary Test a specific MQTT configuration
-     * @request POST:/api/resources/{resourceId}/mqtt/config/{configId}/test
-     * @secure
-     */
-    testOne: (
-      resourceId: number,
-      configId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<TestOneData, void>({
-        path: `/api/resources/${resourceId}/mqtt/config/${configId}/test`,
-        method: "POST",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
   mqttServers = {
     /**
      * No description
@@ -5284,6 +5148,142 @@ export class Api<
     ) =>
       this.request<RegenerateSecretData, void>({
         path: `/api/resources/${resourceId}/webhooks/${id}/regenerate-secret`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  mqttResourceConfiguration = {
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name GetAllMqttConfigurations
+     * @summary Get all MQTT configurations for a resource
+     * @request GET:/api/resources/{resourceId}/mqtt/config
+     * @secure
+     */
+    getAllMqttConfigurations: (
+      resourceId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetAllMqttConfigurationsData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name CreateMqttConfiguration
+     * @summary Create a new MQTT configuration for a resource
+     * @request POST:/api/resources/{resourceId}/mqtt/config
+     * @secure
+     */
+    createMqttConfiguration: (
+      resourceId: number,
+      data: CreateMqttResourceConfigDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<CreateMqttConfigurationData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name GetOneMqttConfiguration
+     * @summary Get a specific MQTT configuration for a resource
+     * @request GET:/api/resources/{resourceId}/mqtt/config/{configId}
+     * @secure
+     */
+    getOneMqttConfiguration: (
+      resourceId: number,
+      configId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetOneMqttConfigurationData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name UpdateMqttConfiguration
+     * @summary Update a specific MQTT configuration
+     * @request PUT:/api/resources/{resourceId}/mqtt/config/{configId}
+     * @secure
+     */
+    updateMqttConfiguration: (
+      resourceId: number,
+      configId: number,
+      data: UpdateMqttResourceConfigDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<UpdateMqttConfigurationData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name DeleteOneMqttConfiguration
+     * @summary Delete a specific MQTT configuration
+     * @request DELETE:/api/resources/{resourceId}/mqtt/config/{configId}
+     * @secure
+     */
+    deleteOneMqttConfiguration: (
+      resourceId: number,
+      configId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<DeleteOneMqttConfigurationData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config/${configId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MQTT Resource Configuration
+     * @name TestOne
+     * @summary Test a specific MQTT configuration
+     * @request POST:/api/resources/{resourceId}/mqtt/config/{configId}/test
+     * @secure
+     */
+    testOne: (
+      resourceId: number,
+      configId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<TestOneData, void>({
+        path: `/api/resources/${resourceId}/mqtt/config/${configId}/test`,
         method: "POST",
         secure: true,
         format: "json",

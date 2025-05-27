@@ -29,7 +29,7 @@ export class UpdateResourceDto {
     format: 'binary',
   })
   image?: FileUpload;
-  
+
   @ApiProperty({
     description: 'The type of documentation (markdown or url)',
     enum: DocumentationType,
@@ -39,24 +39,24 @@ export class UpdateResourceDto {
   @IsEnum(DocumentationType)
   @IsOptional()
   documentationType?: DocumentationType;
-  
+
   @ApiProperty({
     description: 'Markdown content for resource documentation',
     required: false,
     example: '# Resource Documentation\n\nThis is a markdown documentation for the resource.',
   })
   @IsString()
-  @ValidateIf(o => o.documentationType === DocumentationType.MARKDOWN)
+  @ValidateIf((o) => o.documentationType === DocumentationType.MARKDOWN)
   @IsOptional()
   documentationMarkdown?: string;
-  
+
   @ApiProperty({
     description: 'URL to external documentation',
     required: false,
     example: 'https://example.com/documentation',
   })
   @IsUrl()
-  @ValidateIf(o => o.documentationType === DocumentationType.URL)
+  @ValidateIf((o) => o.documentationType === DocumentationType.URL)
   @IsOptional()
   documentationUrl?: string;
 
@@ -67,5 +67,5 @@ export class UpdateResourceDto {
   })
   @IsBoolean()
   @IsOptional()
-  allowOvertake?: boolean;
+  allowTakeOver?: boolean;
 }

@@ -108,30 +108,32 @@ describe('ResourceUsageService', () => {
 
   describe('startSession', () => {
     const mockUser: User = { id: 1 } as User;
-    const mockResource: Resource = { 
-      id: 1, 
+    const mockResource: Resource = {
+      id: 1,
       name: 'Test Resource',
-      allowOvertake: false 
+      allowTakeOver: false,
     } as Resource;
-    const mockResourceWithOvertake: Resource = { 
-      id: 1, 
+    const mockResourceWithTakeOver: Resource = {
+      id: 1,
       name: 'Test Resource',
-      allowOvertake: true 
+      allowTakeOver: true,
     } as Resource;
 
     it('should start a session successfully when no active session exists', async () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
-      
+
       resourcesService.getResourceById.mockResolvedValue(mockResource);
       resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
-      
+
       // Mock getActiveSession to return null (no active session)
       resourceUsageRepository.findOne
         .mockResolvedValueOnce(null) // For getActiveSession
         .mockResolvedValueOnce({ id: 1, resourceId: 1, userId: 1 } as ResourceUsage); // For finding new session
-      
+
       const mockQueryBuilder = createMockQueryBuilder(null);
-      resourceUsageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>);
+      resourceUsageRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>
+      );
 
       const result = await service.startSession(1, mockUser, dto);
 
@@ -152,7 +154,7 @@ describe('ResourceUsageService', () => {
 
     it('should throw error when resource does not exist', async () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
-      
+
       resourcesService.getResourceById.mockResolvedValue(null);
 
       await expect(service.startSession(1, mockUser, dto)).rejects.toThrow(ResourceNotFoundException);
@@ -160,7 +162,7 @@ describe('ResourceUsageService', () => {
 
     it('should throw error when user has not completed introduction', async () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
-      
+
       resourcesService.getResourceById.mockResolvedValue(mockResource);
       resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(false);
 
@@ -168,12 +170,12 @@ describe('ResourceUsageService', () => {
       expect(resourceIntroductionService.hasCompletedIntroduction).toHaveBeenCalledWith(1, 1);
     });
 
-    it('should throw error when active session exists and no overtake requested', async () => {
+    it('should throw error when active session exists and no takeover requested', async () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
-      
+
       resourcesService.getResourceById.mockResolvedValue(mockResource);
       resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
-      
+
       const mockActiveSession = { id: 1, userId: 2 } as ResourceUsage;
       // Mock getActiveSession to return an active session
       resourceUsageRepository.findOne.mockResolvedValue(mockActiveSession);
@@ -183,12 +185,12 @@ describe('ResourceUsageService', () => {
       );
     });
 
-    it('should throw error when overtake requested but resource does not allow it', async () => {
-      const dto: StartUsageSessionDto = { notes: 'Test session', forceOvertake: true };
-      
-      resourcesService.getResourceById.mockResolvedValue(mockResource); // allowOvertake: false
+    it('should throw error when takeover requested but resource does not allow it', async () => {
+      const dto: StartUsageSessionDto = { notes: 'Test session', forceTakeOver: true };
+
+      resourcesService.getResourceById.mockResolvedValue(mockResource); // allowTakeOver: false
       resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
-      
+
       const mockActiveSession = { id: 1, userId: 2 } as ResourceUsage;
       // Mock getActiveSession to return an active session
       resourceUsageRepository.findOne.mockResolvedValue(mockActiveSession);
@@ -198,26 +200,26 @@ describe('ResourceUsageService', () => {
       );
     });
 
-    it('should successfully overtake when resource allows it', async () => {
-      const dto: StartUsageSessionDto = { notes: 'Test session', forceOvertake: true };
-      
-      resourcesService.getResourceById.mockResolvedValue(mockResourceWithOvertake); // allowOvertake: true
+    it('should successfully takeover when resource allows it', async () => {
+      const dto: StartUsageSessionDto = { notes: 'Test session', forceTakeOver: true };
+
+      resourcesService.getResourceById.mockResolvedValue(mockResourceWithTakeOver); // allowTakeOver: true
       resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
-      
+
       const mockActiveSession = { id: 1, userId: 2, startTime: new Date() } as ResourceUsage;
       const mockNewUsage = { id: 2, resourceId: 1, userId: 1 } as ResourceUsage;
-      
+
       // Mock getActiveSession to return an active session, then mock findOne for new session
       resourceUsageRepository.findOne
         .mockResolvedValueOnce(mockActiveSession) // For getActiveSession
         .mockResolvedValueOnce(mockNewUsage); // For finding new session
-      
+
       const mockUpdateQueryBuilder = createMockQueryBuilder(null);
       const mockInsertQueryBuilder = createMockQueryBuilder(null);
-      
+
       resourceUsageRepository.createQueryBuilder
-        .mockReturnValueOnce(mockUpdateQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>)  // For ending session
-        .mockReturnValueOnce(mockInsertQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>);  // For creating new session
+        .mockReturnValueOnce(mockUpdateQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>) // For ending session
+        .mockReturnValueOnce(mockInsertQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>); // For creating new session
 
       const result = await service.startSession(1, mockUser, dto);
 
@@ -225,7 +227,7 @@ describe('ResourceUsageService', () => {
       expect(mockUpdateQueryBuilder.update).toHaveBeenCalledWith(ResourceUsage);
       expect(mockUpdateQueryBuilder.set).toHaveBeenCalledWith({
         endTime: expect.any(Date),
-        endNotes: 'Session ended due to overtake by user 1',
+        endNotes: 'Session ended due to takeover by user 1',
       });
       expect(mockUpdateQueryBuilder.where).toHaveBeenCalledWith('id = :id', { id: 1 });
       expect(mockInsertQueryBuilder.insert).toHaveBeenCalled();
@@ -265,22 +267,24 @@ describe('ResourceUsageService', () => {
 
     it('should end session successfully', async () => {
       const dto: EndUsageSessionDto = { notes: 'Session completed' };
-      const mockActiveSession = { 
-        id: 1, 
-        resourceId: 1, 
-        userId: 1, 
+      const mockActiveSession = {
+        id: 1,
+        resourceId: 1,
+        userId: 1,
         startTime: new Date(),
-        user: { id: 1 } as User
+        user: { id: 1 } as User,
       } as ResourceUsage;
       const mockUpdatedSession = { ...mockActiveSession, endTime: new Date(), endNotes: 'Session completed' };
-      
+
       // Mock getActiveSession to return an active session
       resourceUsageRepository.findOne
         .mockResolvedValueOnce(mockActiveSession) // For getActiveSession
         .mockResolvedValueOnce(mockUpdatedSession); // For finding updated session
-      
+
       const mockUpdateQueryBuilder = createMockQueryBuilder(null);
-      resourceUsageRepository.createQueryBuilder.mockReturnValue(mockUpdateQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>);
+      resourceUsageRepository.createQueryBuilder.mockReturnValue(
+        mockUpdateQueryBuilder as unknown as SelectQueryBuilder<ResourceUsage>
+      );
 
       const result = await service.endSession(1, mockUser, dto);
 
@@ -295,7 +299,7 @@ describe('ResourceUsageService', () => {
 
     it('should throw error when no active session exists', async () => {
       const dto: EndUsageSessionDto = { notes: 'Session completed' };
-      
+
       // Mock getActiveSession to return null (no active session)
       resourceUsageRepository.findOne.mockResolvedValue(null);
 

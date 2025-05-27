@@ -12,7 +12,7 @@ describe('ResourcesController', () => {
   let controller: ResourcesController;
   let service: ResourcesService;
   // ResourceImageService is injected but not directly used in tests
-  
+
   beforeEach(async () => {
     const mockResourcesService = {
       listResources: jest.fn(),
@@ -25,7 +25,7 @@ describe('ResourcesController', () => {
     };
 
     const mockResourceImageService = {
-      getPublicPath: jest.fn((id, filename) => filename ? `public/path/${id}/${filename}` : null),
+      getPublicPath: jest.fn((id, filename) => (filename ? `public/path/${id}/${filename}` : null)),
       saveImage: jest.fn(),
       deleteImage: jest.fn(),
     };
@@ -63,7 +63,7 @@ describe('ResourcesController', () => {
           documentationType: DocumentationType.MARKDOWN,
           documentationMarkdown: '# Test Documentation\n\nThis is a test documentation.',
           documentationUrl: null,
-          allowOvertake: false,
+          allowTakeOver: false,
           createdAt: new Date(),
           updatedAt: new Date(),
           introductions: [],
@@ -71,7 +71,7 @@ describe('ResourcesController', () => {
           introducers: [],
           mqttConfigs: [],
           webhookConfigs: [],
-          groups: []
+          groups: [],
         },
       ];
 
@@ -104,7 +104,7 @@ describe('ResourcesController', () => {
         documentationType: DocumentationType.MARKDOWN,
         documentationMarkdown: '# Test Documentation\n\nThis is a test documentation.',
         documentationUrl: null,
-        allowOvertake: false,
+        allowTakeOver: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -112,7 +112,7 @@ describe('ResourcesController', () => {
         introducers: [],
         mqttConfigs: [],
         webhookConfigs: [],
-        groups: []
+        groups: [],
       };
 
       jest.spyOn(service, 'getResourceById').mockResolvedValue(resource);
@@ -127,13 +127,9 @@ describe('ResourcesController', () => {
     });
 
     it('should throw NotFoundException if resource not found', async () => {
-      jest
-        .spyOn(service, 'getResourceById')
-        .mockRejectedValue(new NotFoundException());
+      jest.spyOn(service, 'getResourceById').mockRejectedValue(new NotFoundException());
 
-      await expect(controller.getOneById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(controller.getOneById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -155,7 +151,7 @@ describe('ResourcesController', () => {
         documentationType: createDto.documentationType,
         documentationMarkdown: createDto.documentationMarkdown,
         documentationUrl: createDto.documentationUrl,
-        allowOvertake: false,
+        allowTakeOver: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -163,7 +159,7 @@ describe('ResourcesController', () => {
         introducers: [],
         mqttConfigs: [],
         webhookConfigs: [],
-        groups: []
+        groups: [],
       };
 
       jest.spyOn(service, 'createResource').mockResolvedValue(newResource);
@@ -193,7 +189,7 @@ describe('ResourcesController', () => {
         documentationType: updateDto.documentationType as DocumentationType,
         documentationMarkdown: updateDto.documentationMarkdown,
         documentationUrl: updateDto.documentationUrl,
-        allowOvertake: false,
+        allowTakeOver: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         introductions: [],
@@ -201,7 +197,7 @@ describe('ResourcesController', () => {
         introducers: [],
         mqttConfigs: [],
         webhookConfigs: [],
-        groups: []
+        groups: [],
       };
 
       jest.spyOn(service, 'updateResource').mockResolvedValue(updatedResource);
@@ -217,13 +213,9 @@ describe('ResourcesController', () => {
         name: 'Updated Resource',
       };
 
-      jest
-        .spyOn(service, 'updateResource')
-        .mockRejectedValue(new NotFoundException());
+      jest.spyOn(service, 'updateResource').mockRejectedValue(new NotFoundException());
 
-      await expect(
-        controller.updateOne(999, updateDto)
-      ).rejects.toThrow(NotFoundException);
+      await expect(controller.updateOne(999, updateDto)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -237,13 +229,9 @@ describe('ResourcesController', () => {
     });
 
     it('should throw NotFoundException if resource not found', async () => {
-      jest
-        .spyOn(service, 'deleteResource')
-        .mockRejectedValue(new NotFoundException());
+      jest.spyOn(service, 'deleteResource').mockRejectedValue(new NotFoundException());
 
-      await expect(controller.deleteOne(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(controller.deleteOne(999)).rejects.toThrow(NotFoundException);
     });
   });
 

@@ -1,7 +1,0 @@
-{
-  "title": "Confirm Session Overtake",
-  "message": "This resource is currently in use by another user. Do you want to end their session and start your own?",
-  "messageWithUser": "This resource is currently in use by {{userName}}. Do you want to end their session and start your own?",
-  "confirmButton": "Overtake Session",
-  "cancelButton": "Cancel"
-}
