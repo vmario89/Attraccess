@@ -41,6 +41,7 @@ export class EmailService {
       resolve(join('assets', 'email-templates')),
       resolve(join('src', 'assets', 'email-templates')),
       resolve(join('apps', 'api', 'src', 'assets', 'email-templates')),
+      resolve(join('dist', 'apps', 'api', 'assets', 'email-templates')),
     ];
 
     let templatesPath = null;
