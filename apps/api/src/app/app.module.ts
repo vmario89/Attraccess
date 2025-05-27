@@ -4,8 +4,7 @@ import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceConfig } from '../database/datasource';
 import { ResourcesModule } from '../resources/resources.module';
-import { ConfigModule as AppConfigModule } from '../config/config.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '../config/config.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -13,47 +12,28 @@ import { Module } from '@nestjs/common';
 import { PluginModule } from '../plugin-system/plugin.module';
 import { FabReaderModule } from '../fabreader/fabreader.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
-import { registerAs } from '@nestjs/config';
 
-import { createConfigSchema } from '@attraccess/env';
+const frontendPath = resolve(process.env.STATIC_FRONTEND_FILE_PATH || join(__dirname, 'public'));
+console.log('Serving frontend from ', frontendPath);
 
-// Register static file paths configuration
-export const staticPathsConfig = registerAs('staticPaths', () => {
-  const schema = createConfigSchema((z) => ({
-    STATIC_FRONTEND_FILE_PATH: z.string().optional(),
-    STATIC_DOCS_FILE_PATH: z.string().optional(),
-  }));
 
-  const config = schema.parse(process.env);
-
-  const frontendPath = resolve(config.STATIC_FRONTEND_FILE_PATH || join(__dirname, 'public'));
-  const docsPath = resolve(config.STATIC_DOCS_FILE_PATH || join(__dirname, 'docs'));
-
-  console.log('Serving frontend from ', frontendPath);
-  console.log('Serving docs from: ', docsPath);
-
-  return {
-    frontendPath,
-    docsPath,
-  };
-});
+const docsPath = resolve(process.env.STATIC_DOCS_FILE_PATH || join(__dirname, 'docs'));
+console.log('Serving docs from: ', docsPath);
 
 @Module({
   imports: [
-    AppConfigModule,
-    ConfigModule.forRoot({
-      load: [staticPathsConfig],
-    }), // Import the global ConfigModule with static paths config
+    ConfigModule, // Import the global ConfigModule
+
     EventEmitterModule.forRoot(),
     UsersAndAuthModule,
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
     ServeStaticModule.forRoot({
-      rootPath: staticPathsConfig().docsPath,
+      rootPath: docsPath,
       serveRoot: '/docs',
     }),
     ServeStaticModule.forRoot({
-      rootPath: staticPathsConfig().frontendPath,
+      rootPath: frontendPath,
     }),
     PluginModule.forRoot(),
     FabReaderModule,

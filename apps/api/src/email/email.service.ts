@@ -25,19 +25,19 @@ export class EmailService {
     // Load and compile templates
     this.loadTemplates();
     
-    // Get frontend URL from config service
-    this.config = {
-      FRONTEND_URL: this.configService.get<string>('frontend.FRONTEND_URL')
-    };
+    // Validate frontend URL at startup
+    const emailSchema = createConfigSchema((z) => ({
+      FRONTEND_URL: z.string().url().default(process.env.VITE_ATTRACCESS_URL),
+    }));
+    
+    this.config = validateConfig(emailSchema);
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.config.FRONTEND_URL}`);
   }
 
   private async loadTemplates() {
     this.logger.debug('Loading email templates');
-    const emailTemplatesPath = this.configService.get<string>('email.EMAIL_TEMPLATES_PATH');
-    
     const possiblePaths = [
-      emailTemplatesPath,
+      process.env.EMAIL_TEMPLATES_PATH,
       resolve(join('assets', 'email-templates')),
       resolve(join('src', 'assets', 'email-templates')),
       resolve(join('apps', 'api', 'src', 'assets', 'email-templates')),

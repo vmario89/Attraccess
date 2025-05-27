@@ -31,7 +31,7 @@ export class EnvCompatService {
    * @param key The configuration key
    * @returns The configuration value
    */
-  get<T>(key: string): T | undefined {
+  get<T = any>(key: string): T {
     return this.configService.get<T>(key);
   }
 
@@ -41,7 +41,7 @@ export class EnvCompatService {
    * @returns The configuration value
    * @throws If the configuration value is not defined
    */
-  getRequired<T>(key: string): T {
+  getRequired<T = any>(key: string): T {
     const value = this.configService.get<T>(key);
     if (value === undefined) {
       throw new Error(`Required configuration key "${key}" is not defined`);
