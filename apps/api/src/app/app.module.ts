@@ -24,7 +24,10 @@ console.log('Serving docs from: ', docsPath);
 @Module({
   imports: [
 
-    ConfigModule, // Import the global ConfigModule
+    ConfigModule.forRoot({
+      load: [storageConfig],
+      isGlobal: true,
+    }),
 
     EventEmitterModule.forRoot(),
     UsersAndAuthModule,

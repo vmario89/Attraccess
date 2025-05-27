@@ -3,7 +3,6 @@ import { AppModule } from './app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe, ClassSerializerInterceptor, Logger, LogLevel } from '@nestjs/common';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
 
