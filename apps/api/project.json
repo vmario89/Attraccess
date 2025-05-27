@@ -33,7 +33,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["start-services"],
+      "dependsOn": [],
       "options": {
         "buildTarget": "api:build",
         "watch": true
@@ -94,9 +94,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
-        "commands": [
-          "typeorm -d dist/apps/migrations/main.js migration:generate"
-        ]
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:generate"]
       },
       "dependsOn": ["build-migration-datasource"]
     },
@@ -105,9 +103,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
-        "commands": [
-          "typeorm -d dist/apps/migrations/main.js migration:run"
-        ]
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:run"]
       },
       "dependsOn": ["build-migration-datasource"]
     }

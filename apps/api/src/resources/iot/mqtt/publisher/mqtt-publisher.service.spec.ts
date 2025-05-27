@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MqttPublisherService } from './mqtt-publisher.service';
-import { MqttClientService } from '../../../mqtt/mqtt-client.service';
 import { MqttResourceConfig, Resource, User } from '@attraccess/database-entities';
 import { Repository } from 'typeorm';
-import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../usage/events/resource-usage.events';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MqttClientService } from '../../../../mqtt/mqtt-client.service';
+import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../../usage/events/resource-usage.events';
+import { IotService } from '../../iot.service';
 
 describe('MqttPublisherService', () => {
   let service: MqttPublisherService;
@@ -14,6 +15,7 @@ describe('MqttPublisherService', () => {
   let mockMqttResourceConfigRepository: Partial<Repository<MqttResourceConfig>>;
   let mockResourceRepository: Partial<Repository<Resource>>;
   let mockConfigService: Partial<ConfigService>;
+  let mockIotService: Partial<IotService>;
 
   const mockConfig = {
     resourceId: 1,
@@ -64,6 +66,13 @@ describe('MqttPublisherService', () => {
       }),
     };
 
+    mockIotService = {
+      processTemplate: jest.fn().mockImplementation((template, context) => {
+        // Simple template processing for tests - replace {{id}} and {{name}}
+        return template.replace(/\{\{id\}\}/g, context.id.toString()).replace(/\{\{name\}\}/g, context.name);
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MqttPublisherService,
@@ -82,6 +91,10 @@ describe('MqttPublisherService', () => {
         {
           provide: getRepositoryToken(Resource),
           useValue: mockResourceRepository,
+        },
+        {
+          provide: IotService,
+          useValue: mockIotService,
         },
       ],
     }).compile();

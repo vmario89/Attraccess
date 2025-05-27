@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  ParseIntPipe,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { WebhookConfigService } from './webhook-config.service';
 import {
@@ -20,7 +9,7 @@ import {
   WebhookConfigResponseDto,
 } from './dtos/webhook-config.dto';
 import { WebhookConfig } from '@attraccess/database-entities';
-import { CanManageResources } from '../../resources/guards/can-manage-resources.decorator';
+import { CanManageResources } from '../../../../resources/guards/can-manage-resources.decorator';
 
 @ApiTags('Webhooks')
 @Controller('resources/:resourceId/webhooks')
@@ -29,16 +18,17 @@ export class WebhookConfigController {
   constructor(private readonly webhookConfigService: WebhookConfigService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all webhook configurations for a resource', operationId: 'getAllWebhookConfigurations' })
+  @ApiOperation({
+    summary: 'Get all webhook configurations for a resource',
+    operationId: 'getAllWebhookConfigurations',
+  })
   @ApiParam({ name: 'resourceId', type: 'number', description: 'Resource ID' })
   @ApiResponse({
     status: 200,
     description: 'List of webhook configurations for the resource',
     type: [WebhookConfigResponseDto],
   })
-  async getAll(
-    @Param('resourceId', ParseIntPipe) resourceId: number
-  ): Promise<WebhookConfig[]> {
+  async getAll(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<WebhookConfig[]> {
     return this.webhookConfigService.findAllByResourceId(resourceId);
   }
 
@@ -128,11 +118,7 @@ export class WebhookConfigController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWebhookConfigDto: UpdateWebhookConfigDto
   ): Promise<WebhookConfig> {
-    return this.webhookConfigService.update(
-      id,
-      resourceId,
-      updateWebhookConfigDto
-    );
+    return this.webhookConfigService.update(id, resourceId, updateWebhookConfigDto);
   }
 
   @Delete(':id')
@@ -176,11 +162,7 @@ export class WebhookConfigController {
     @Param('id', ParseIntPipe) id: number,
     @Body() statusDto: WebhookStatusDto
   ): Promise<WebhookConfig> {
-    return this.webhookConfigService.updateStatus(
-      id,
-      resourceId,
-      statusDto.active
-    );
+    return this.webhookConfigService.updateStatus(id, resourceId, statusDto.active);
   }
 
   @Post(':id/test')
