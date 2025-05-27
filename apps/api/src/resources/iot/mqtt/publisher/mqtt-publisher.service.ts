@@ -3,14 +3,16 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Resource, MqttResourceConfig } from '@attraccess/database-entities';
-import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../usage/events/resource-usage.events';
-import { MqttClientService } from '../../../mqtt/mqtt-client.service';
-import * as Handlebars from 'handlebars';
 import { ConfigService } from '@nestjs/config';
+import { MqttClientService } from '../../../../mqtt/mqtt-client.service';
+import {
+  ResourceUsageStartedEvent,
+  ResourceUsageEndedEvent,
+} from '../../../../resources/usage/events/resource-usage.events';
+import { IotService, TemplateContext } from '../../iot.service';
 
 @Injectable()
 export class MqttPublisherService {
-  private templates: Record<string, HandlebarsTemplateDelegate> = {};
   private readonly logger = new Logger(MqttPublisherService.name);
   private readonly maxRetries: number;
   private readonly retryDelay: number;
@@ -33,7 +35,8 @@ export class MqttPublisherService {
     @InjectRepository(MqttResourceConfig)
     private readonly mqttResourceConfigRepository: Repository<MqttResourceConfig>,
     @InjectRepository(Resource)
-    private readonly resourceRepository: Repository<Resource>
+    private readonly resourceRepository: Repository<Resource>,
+    private readonly iotService: IotService
   ) {
     this.maxRetries = this.configService.get<number>('MQTT_MAX_RETRIES', 3);
     this.retryDelay = this.configService.get<number>('MQTT_RETRY_DELAY_MS', 5000);
@@ -42,31 +45,12 @@ export class MqttPublisherService {
     this.startQueueProcessor();
   }
 
-  private compileTemplate(template: string): HandlebarsTemplateDelegate {
-    if (!this.templates[template]) {
-      this.templates[template] = Handlebars.compile(template);
-    }
-    return this.templates[template];
-  }
-
-  private processTemplate(template: string, context: Record<string, unknown>): string {
-    const compiledTemplate = this.compileTemplate(template);
-    return compiledTemplate(context);
-  }
-
   private startQueueProcessor(): void {
     if (this.queueProcessor) {
       clearInterval(this.queueProcessor);
     }
 
     this.queueProcessor = setInterval(() => this.processMessageQueue(), this.retryDelay);
-  }
-
-  private stopQueueProcessor(): void {
-    if (this.queueProcessor) {
-      clearInterval(this.queueProcessor);
-      this.queueProcessor = null;
-    }
   }
 
   private getQueueKey(resourceId: number): string {
@@ -195,15 +179,19 @@ export class MqttPublisherService {
           }
 
           // Create template context
-          const context = {
+          const context: TemplateContext = {
             id: resource.id,
             name: resource.name,
             timestamp: new Date().toISOString(),
+            user: {
+              id: event.user.id,
+              username: event.user.username,
+            },
           };
 
           // Process templates
-          const topic = this.processTemplate(config.inUseTopic, context);
-          const message = this.processTemplate(config.inUseMessage, context);
+          const topic = this.iotService.processTemplate(config.inUseTopic, context);
+          const message = this.iotService.processTemplate(config.inUseMessage, context);
 
           this.logger.debug(`Publishing resource in-use event to ${topic}`);
 
@@ -241,11 +229,12 @@ export class MqttPublisherService {
             id: resource.id,
             name: resource.name,
             timestamp: new Date().toISOString(),
+            user: event.user,
           };
 
           // Process templates
-          const topic = this.processTemplate(config.notInUseTopic, context);
-          const message = this.processTemplate(config.notInUseMessage, context);
+          const topic = this.iotService.processTemplate(config.notInUseTopic, context);
+          const message = this.iotService.processTemplate(config.notInUseMessage, context);
 
           this.logger.debug(`Publishing resource not-in-use event to ${topic}`);
 

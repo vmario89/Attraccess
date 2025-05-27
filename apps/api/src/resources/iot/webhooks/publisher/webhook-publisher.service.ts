@@ -3,11 +3,14 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WebhookConfig, Resource } from '@attraccess/database-entities';
-import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from '../../resources/usage/events/resource-usage.events';
-import * as Handlebars from 'handlebars';
+import {
+  ResourceUsageStartedEvent,
+  ResourceUsageEndedEvent,
+} from '../../../../resources/usage/events/resource-usage.events';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { createHmac } from 'crypto';
+import { IotService, TemplateContext } from '../../iot.service';
 
 interface QueueItem {
   webhookId: number;
@@ -26,42 +29,37 @@ interface QueueItem {
 
 @Injectable()
 export class WebhookPublisherService {
-  private templates: Record<string, HandlebarsTemplateDelegate> = {};
   private readonly logger = new Logger(WebhookPublisherService.name);
   private readonly messageQueue: Map<string, QueueItem[]> = new Map();
-  private queueProcessor: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly configService: ConfigService,
     @InjectRepository(WebhookConfig)
     private readonly webhookConfigRepository: Repository<WebhookConfig>,
     @InjectRepository(Resource)
-    private readonly resourceRepository: Repository<Resource>
+    private readonly resourceRepository: Repository<Resource>,
+    private readonly iotService: IotService
   ) {
     // Start queue processor
     this.startQueueProcessor();
   }
 
-  private compileTemplate(template: string): HandlebarsTemplateDelegate {
-    if (!this.templates[template]) {
-      this.templates[template] = Handlebars.compile(template);
-    }
-    return this.templates[template];
-  }
-
-  private processTemplate(template: string, context: Record<string, unknown>): string {
-    const compiled = this.compileTemplate(template);
-    return compiled(context);
+  private startQueueProcessor(): void {
+    // Process queue every 5 seconds
+    const interval = this.configService.get<number>('WEBHOOK_QUEUE_INTERVAL_MS', 5000);
+    setInterval(() => {
+      this.processMessageQueue();
+    }, interval);
   }
 
   /**
    * Process a URL with Handlebars templates
    * This allows dynamic URL parameters based on resource attributes
    */
-  private processUrlTemplate(url: string, context: Record<string, unknown>): string {
+  private processUrlTemplate(url: string, context: TemplateContext): string {
     // Check if URL contains any handlebars templates
     if (url.includes('{{') && url.includes('}}')) {
-      return this.processTemplate(url, context);
+      return this.iotService.processTemplate(url, context);
     }
     return url;
   }
@@ -70,37 +68,19 @@ export class WebhookPublisherService {
    * Process headers with Handlebars templates
    * This allows dynamic header values based on resource attributes
    */
-  private processHeaderTemplates(
-    headers: Record<string, string>,
-    context: Record<string, unknown>
-  ): Record<string, string> {
+  private processHeaderTemplates(headers: Record<string, string>, context: TemplateContext): Record<string, string> {
     const processedHeaders: Record<string, string> = {};
 
     // Process each header value
     for (const [key, value] of Object.entries(headers)) {
       if (value && value.includes('{{') && value.includes('}}')) {
-        processedHeaders[key] = this.processTemplate(value, context);
+        processedHeaders[key] = this.iotService.processTemplate(value, context);
       } else {
         processedHeaders[key] = value;
       }
     }
 
     return processedHeaders;
-  }
-
-  private startQueueProcessor(): void {
-    // Process queue every 5 seconds
-    const interval = this.configService.get<number>('WEBHOOK_QUEUE_INTERVAL_MS', 5000);
-    this.queueProcessor = setInterval(() => {
-      this.processMessageQueue();
-    }, interval);
-  }
-
-  private stopQueueProcessor(): void {
-    if (this.queueProcessor) {
-      clearInterval(this.queueProcessor);
-      this.queueProcessor = null;
-    }
   }
 
   private getQueueKey(resourceId: number): string {
@@ -277,19 +257,21 @@ export class WebhookPublisherService {
       }
 
       // Prepare context for template
-      const context = {
+      const context: TemplateContext = {
         id: resource.id,
         name: resource.name,
-        description: resource.description,
         timestamp: startTime.toISOString(),
-        event: 'started',
+        user: {
+          id: event.user.id,
+          username: event.user.username,
+        },
       };
 
       // Process webhooks
       for (const webhook of webhooks) {
         try {
           // Process template
-          const payload = this.processTemplate(webhook.inUseTemplate, context);
+          const payload = this.iotService.processTemplate(webhook.inUseTemplate, context);
 
           // Process URL template
           const processedUrl = this.processUrlTemplate(webhook.url, context);
@@ -358,19 +340,21 @@ export class WebhookPublisherService {
       }
 
       // Prepare context for template
-      const context = {
+      const context: TemplateContext = {
         id: resource.id,
         name: resource.name,
-        description: resource.description,
         timestamp: endTime.toISOString(),
-        event: 'ended',
+        user: {
+          id: event.user.id,
+          username: event.user.username,
+        },
       };
 
       // Process webhooks
       for (const webhook of webhooks) {
         try {
           // Process template
-          const payload = this.processTemplate(webhook.notInUseTemplate, context);
+          const payload = this.iotService.processTemplate(webhook.notInUseTemplate, context);
 
           // Process URL template
           const processedUrl = this.processUrlTemplate(webhook.url, context);
@@ -442,17 +426,15 @@ export class WebhookPublisherService {
       }
 
       // Prepare test context
-      const context = {
+      const context: TemplateContext = {
         id: resource.id,
         name: resource.name,
-        description: resource.description,
         timestamp: new Date().toISOString(),
-        user: { id: 0, name: 'Test User' },
-        event: 'test',
+        user: { id: 0, username: 'webhook-test' },
       };
 
       // Process template
-      const payload = this.processTemplate(webhook.inUseTemplate, context);
+      const payload = this.iotService.processTemplate(webhook.inUseTemplate, context);
 
       // Process URL template
       const processedUrl = this.processUrlTemplate(webhook.url, context);
