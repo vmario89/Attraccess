@@ -7,9 +7,9 @@ import {
   UpdateMqttResourceConfigDto,
   TestMqttConfigResponseDto,
 } from './dtos/mqtt-resource-config.dto';
-import { MqttClientService } from '../../../mqtt/mqtt-client.service';
+import { MqttClientService } from '../../../../mqtt/mqtt-client.service';
 import * as Handlebars from 'handlebars';
-import { CanManageResources } from '../../guards/can-manage-resources.decorator';
+import { CanManageResources } from '../../../../resources/guards/can-manage-resources.decorator';
 
 @ApiTags('MQTT Resource Configuration')
 @CanManageResources()

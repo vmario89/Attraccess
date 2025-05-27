@@ -9,8 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MqttModule } from '../mqtt/mqtt.module';
-import { WebhooksModule } from '../webhooks/webhooks.module';
 import { Module } from '@nestjs/common';
 import { PluginModule } from '../plugin-system/plugin.module';
 import { FabReaderModule } from '../fabreader/fabreader.module';
@@ -25,18 +23,18 @@ export const staticPathsConfig = registerAs('staticPaths', () => {
     STATIC_FRONTEND_FILE_PATH: z.string().optional(),
     STATIC_DOCS_FILE_PATH: z.string().optional(),
   }));
-  
+
   const config = schema.parse(process.env);
-  
+
   const frontendPath = resolve(config.STATIC_FRONTEND_FILE_PATH || join(__dirname, 'public'));
   const docsPath = resolve(config.STATIC_DOCS_FILE_PATH || join(__dirname, 'docs'));
-  
+
   console.log('Serving frontend from ', frontendPath);
   console.log('Serving docs from: ', docsPath);
-  
+
   return {
     frontendPath,
-    docsPath
+    docsPath,
   };
 });
 
@@ -44,14 +42,12 @@ export const staticPathsConfig = registerAs('staticPaths', () => {
   imports: [
     AppConfigModule,
     ConfigModule.forRoot({
-      load: [staticPathsConfig]
+      load: [staticPathsConfig],
     }), // Import the global ConfigModule with static paths config
     EventEmitterModule.forRoot(),
     UsersAndAuthModule,
     TypeOrmModule.forRoot(dataSourceConfig),
     ResourcesModule,
-    MqttModule,
-    WebhooksModule,
     ServeStaticModule.forRoot({
       rootPath: staticPathsConfig().docsPath,
       serveRoot: '/docs',
