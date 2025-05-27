@@ -4,7 +4,8 @@ import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceConfig } from '../database/datasource';
 import { ResourcesModule } from '../resources/resources.module';
-import { ConfigModule } from '../config/config.module';
+import { ConfigModule } from '@nestjs/config';
+import { storageConfig } from '../config/storage.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve, join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -22,6 +23,7 @@ console.log('Serving docs from: ', docsPath);
 
 @Module({
   imports: [
+
     ConfigModule, // Import the global ConfigModule
 
     EventEmitterModule.forRoot(),

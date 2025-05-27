@@ -6,15 +6,15 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
-import { createConfigSchema } from '@attraccess/env';
-import { DataSource } from 'typeorm';
 
-// Validate auth session secret at startup
-const authSchema = createConfigSchema((z) => ({
+import { loadEnv } from '@attraccess/env';
+
+import { DataSource } from 'typeorm';
+import * as path from 'path';
+
+const env = loadEnv((z) => ({
   AUTH_SESSION_SECRET: z.string(),
 }));
-
-const env = validateConfig(authSchema);
 
 export async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -74,8 +74,7 @@ export async function bootstrap() {
   bootstrapLogger.log(`🚀 Application is running with global prefix: ${globalPrefix}`);
   bootstrapLogger.log(`📝 Enabled log levels: ${logLevels.join(', ')}`);
 
-  const configService = app.get(ConfigService);
-  const storageCfg = configService.get('storage');
+
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -89,7 +88,8 @@ export async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get('Reflector')));
 
-  app.useStaticAssets(storageCfg.root, {
+  const storageEnv = loadEnv((z) => ({ STORAGE_ROOT: z.string().default(path.join(process.cwd(), 'storage')) }));
+  app.useStaticAssets(storageEnv.STORAGE_ROOT, {
     prefix: '/storage',
     maxAge: 24 * 60 * 60 * 1000,
   });

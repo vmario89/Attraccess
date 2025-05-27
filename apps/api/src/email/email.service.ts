@@ -5,32 +5,27 @@ import mjml2html from 'mjml';
 import { join, resolve } from 'path';
 import { readdir, readFile, stat } from 'fs/promises';
 import * as Handlebars from 'handlebars';
-import { ConfigService } from '@nestjs/config';
 
-interface EmailConfig {
+import { loadEnv } from '@attraccess/env';
+
+
+interface EnvConfig {
   FRONTEND_URL: string;
 }
 
 @Injectable()
 export class EmailService {
   private templates: null | Record<string, HandlebarsTemplateDelegate> = null;
-  private config: EmailConfig;
+  private config: EnvConfig;
   private readonly logger = new Logger(EmailService.name);
 
-  constructor(
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly mailerService: MailerService) {
     this.logger.debug('Initializing EmailService');
     // Load and compile templates
     this.loadTemplates();
-    
-    // Validate frontend URL at startup
-    const emailSchema = createConfigSchema((z) => ({
+    this.config = loadEnv((z) => ({
       FRONTEND_URL: z.string().url().default(process.env.VITE_ATTRACCESS_URL),
-    }));
-    
-    this.config = validateConfig(emailSchema);
+    })) as EnvConfig;
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.config.FRONTEND_URL}`);
   }
 
