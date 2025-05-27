@@ -38,8 +38,7 @@ describe('MQTT Template Rendering', () => {
     });
 
     it('should handle conditionals', () => {
-      const template =
-        'resources/{{id}}/{{#if user}}user-present{{else}}no-user{{/if}}';
+      const template = 'resources/{{id}}/{{#if user}}user-present{{else}}no-user{{/if}}';
       const compiled = Handlebars.compile(template);
 
       // With user
@@ -54,8 +53,7 @@ describe('MQTT Template Rendering', () => {
 
   describe('Message Templates', () => {
     it('should render JSON message template correctly', () => {
-      const template =
-        '{"resourceId":{{id}},"resourceName":"{{name}}","status":"in_use"}';
+      const template = '{"resourceId":{{id}},"resourceName":"{{name}}","status":"in_use"}';
       const compiled = Handlebars.compile(template);
       const result = compiled(context);
 
@@ -68,23 +66,19 @@ describe('MQTT Template Rendering', () => {
       });
     });
 
-    it('should include user information when available', () => {
-      const template =
-        '{"resourceId":{{id}},"resourceName":"{{name}}","user":"{{user.username}}"}';
+    it('should include all possible variables', () => {
+      const possibleVariables = ['id', 'name', 'timestamp', 'user.id', 'user.username'];
+
+      const template = possibleVariables.map((variable) => `{{${variable}}}`).join(',');
+
       const compiled = Handlebars.compile(template);
       const result = compiled(context);
 
-      const parsed = JSON.parse(result);
-      expect(parsed).toEqual({
-        resourceId: 42,
-        resourceName: 'Test Resource',
-        user: 'johndoe',
-      });
+      expect(result).toEqual('42,Test Resource,2023-05-01T12:34:56.789Z,123,johndoe');
     });
 
     it('should handle escaped quotes in JSON', () => {
-      const template =
-        '{"name":"{{name}}","description":"Resource \\"{{name}}\\" status"}';
+      const template = '{"name":"{{name}}","description":"Resource \\"{{name}}\\" status"}';
       const compiled = Handlebars.compile(template);
       const result = compiled(context);
 

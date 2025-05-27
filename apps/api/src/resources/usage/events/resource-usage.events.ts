@@ -2,17 +2,10 @@
  * Events emitted when resource usage status changes
  */
 
-export interface UserInfo {
-  id: number;
-  username: string;
-}
+import { User } from '@attraccess/database-entities';
 
 export class ResourceUsageStartedEvent {
-  constructor(
-    public readonly resourceId: number,
-    public readonly startTime: Date,
-    public readonly user: UserInfo
-  ) {}
+  constructor(public readonly resourceId: number, public readonly startTime: Date, public readonly user: User) {}
 }
 
 export class ResourceUsageEndedEvent {
@@ -20,6 +13,6 @@ export class ResourceUsageEndedEvent {
     public readonly resourceId: number,
     public readonly startTime: Date,
     public readonly endTime: Date,
-    public readonly user: UserInfo
+    public readonly user: User
   ) {}
 }
