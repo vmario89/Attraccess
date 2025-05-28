@@ -22,7 +22,7 @@ const AppEnvSchema = z.object({
   FRONTEND_URL: z.string().url({ message: 'FRONTEND_URL must be a valid URL' }).default('http://localhost:5173'),
   GLOBAL_PREFIX: z.string().default('api'),
   VERSION: z.string().default(process.env.npm_package_version || '1.0.0'),
-  AUTH_JWT_SECRET: z.string().min(32, { message: 'AUTH_JWT_SECRET must be at least 32 characters long' }),
+  AUTH_JWT_SECRET: z.string(),
   AUTH_JWT_ORIGIN: z.string().optional(),
   STATIC_FRONTEND_FILE_PATH: z.string().optional(),
   STATIC_DOCS_FILE_PATH: z.string().optional(),
