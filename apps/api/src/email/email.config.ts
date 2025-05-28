@@ -29,12 +29,10 @@ const emailConfigFactory = () => {
         host: validatedEnv.SMTP_HOST,
         port: validatedEnv.SMTP_PORT,
         secure: validatedEnv.SMTP_SECURE,
-        ...(validatedEnv.SMTP_USER && validatedEnv.SMTP_PASS ? {
-          auth: {
-            user: validatedEnv.SMTP_USER,
-            pass: validatedEnv.SMTP_PASS,
-          }
-        } : {}),
+        auth: (validatedEnv.SMTP_USER && validatedEnv.SMTP_PASS) ? {
+          user: validatedEnv.SMTP_USER,
+          pass: validatedEnv.SMTP_PASS,
+        } : undefined,
         ...(validatedEnv.SMTP_SERVICE && { service: validatedEnv.SMTP_SERVICE }),
       },
       defaults: {
