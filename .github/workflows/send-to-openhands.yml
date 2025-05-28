@@ -15,7 +15,7 @@ jobs:
     # Required OpenHands & Action secrets:
     #   OPENHANDS_API_HOSTNAME (e.g., your OpenHands instance URL)
     #   ALLOWED_TRIGGER_USERS (Comma-separated GitHub usernames, e.g., jappyjan)
-    if: |
+    if: ${{
       secrets.AUTHENTIK_TOKEN_URL != '' &&
       secrets.AUTHENTIK_CLIENT_ID != '' &&
       secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME != '' &&
@@ -23,7 +23,7 @@ jobs:
       secrets.OPENHANDS_API_HOSTNAME != '' &&
       secrets.ALLOWED_TRIGGER_USERS != '' &&
       contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS), format(',{0},', github.event.comment.user.login)) &&
-      contains(github.event.comment.body, '@ai')
+      contains(github.event.comment.body, '@ai') }}
     runs-on: ubuntu-latest
     steps:
       - name: Get Authentik Access Token
