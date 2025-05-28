@@ -63,13 +63,12 @@ jobs:
         run: |
           echo "Attempting to retrieve Authentik access token..."
 
-          # Use curl with proper error handling
+          # Use proper Authentik M2M authentication format
           if ! ACCESS_TOKEN_RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "grant_type=client_credentials" \
             -d "client_id=${AUTHENTIK_CLIENT_ID}" \
-            -d "username=${AUTHENTIK_SERVICE_ACCOUNT_USERNAME}" \
-            -d "password=${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}"); then
+            -d "client_secret=${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}"); then
             echo "::error::Failed to make request to Authentik token endpoint."
             exit 1
           fi
