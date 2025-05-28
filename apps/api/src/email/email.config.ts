@@ -19,6 +19,8 @@ const EmailEnvSchema = z.object({
 // This type can be imported by EmailModule if needed for ConfigService typing
 export type EmailConfiguration = ReturnType<typeof emailConfigFactory>;
 
+const handlebarsAdapter = new HandlebarsAdapter(); // Create a single shared instance
+
 const emailConfigFactory = () => {
   const validatedEnv = EmailEnvSchema.parse(process.env);
   return {
@@ -27,10 +29,12 @@ const emailConfigFactory = () => {
         host: validatedEnv.SMTP_HOST,
         port: validatedEnv.SMTP_PORT,
         secure: validatedEnv.SMTP_SECURE,
-        auth: {
-          user: validatedEnv.SMTP_USER,
-          pass: validatedEnv.SMTP_PASS,
-        },
+        ...(validatedEnv.SMTP_USER && validatedEnv.SMTP_PASS ? {
+          auth: {
+            user: validatedEnv.SMTP_USER,
+            pass: validatedEnv.SMTP_PASS,
+          }
+        } : {}),
         ...(validatedEnv.SMTP_SERVICE && { service: validatedEnv.SMTP_SERVICE }),
       },
       defaults: {
@@ -38,7 +42,7 @@ const emailConfigFactory = () => {
       },
       template: {
         dir: validatedEnv.EMAIL_TEMPLATES_PATH,
-        adapter: new HandlebarsAdapter(),
+        adapter: handlebarsAdapter, // Use the shared instance
         options: {
           strict: true,
         },
