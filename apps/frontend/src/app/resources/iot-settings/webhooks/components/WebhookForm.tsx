@@ -13,7 +13,7 @@ import {
   useWebhooksServiceCreateOneWebhookConfiguration,
   useWebhooksServiceGetOneWebhookConfigurationById,
   useWebhooksServiceUpdateOneWebhookConfiguration,
-  useWebhooksServiceGetAllWebhookConfigurationsKeyFn,
+  UseWebhooksServiceGetAllWebhookConfigurationsKeyFn,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToastMessage } from '../../../../../components/toastProvider';
@@ -104,7 +104,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initia
           requestBody: values,
         });
         queryClient.invalidateQueries({
-          queryKey: useWebhooksServiceGetAllWebhookConfigurationsKeyFn({ resourceId }),
+          queryKey: UseWebhooksServiceGetAllWebhookConfigurationsKeyFn({ resourceId }),
         });
         success({
           title: t('webhookUpdated'),
@@ -117,7 +117,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initia
           requestBody: values,
         });
         queryClient.invalidateQueries({
-          queryKey: useWebhooksServiceGetAllWebhookConfigurationsKeyFn({ resourceId }),
+          queryKey: UseWebhooksServiceGetAllWebhookConfigurationsKeyFn({ resourceId }),
         });
         success({
           title: t('webhookCreated'),
