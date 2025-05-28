@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { FileStorageService } from './file-storage.service';
 import { FileUpload } from '../types/file-upload.types';
-import { ConfigService } from '@nestjs/config';
-import { StorageConfig } from '../../config/storage.config';
+
+
 import * as path from 'path';
 
 @Injectable()
 export class ResourceImageService {
-  private readonly config: StorageConfig;
-
   constructor(
-    private readonly fileStorageService: FileStorageService,
-    private readonly configService: ConfigService
-  ) {
-    this.config = this.configService.get<StorageConfig>('storage');
-  }
+    private readonly fileStorageService: FileStorageService
+  ) {}
 
   private getResourceSubDirectory(resourceId: number): string {
     return path.join('resources', resourceId.toString(), 'original');
