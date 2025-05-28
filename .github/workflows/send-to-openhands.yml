@@ -62,6 +62,9 @@ jobs:
           AUTHENTIK_SERVICE_ACCOUNT_TOKEN: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}
         run: |
           echo "Attempting to retrieve Authentik access token..."
+          echo "Token URL: ${AUTHENTIK_TOKEN_URL}"
+          echo "Client ID: ${AUTHENTIK_CLIENT_ID}"
+          echo "Client Secret length: ${#AUTHENTIK_SERVICE_ACCOUNT_TOKEN}"
 
           # Use proper Authentik M2M authentication format
           if ! ACCESS_TOKEN_RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
@@ -77,8 +80,50 @@ jobs:
           HTTP_CODE="${ACCESS_TOKEN_RESPONSE: -3}"
           RESPONSE_BODY="${ACCESS_TOKEN_RESPONSE%???}"
 
+          echo "HTTP Status Code: ${HTTP_CODE}"
+          echo "Response Body: ${RESPONSE_BODY}"
+
           if [[ "${HTTP_CODE}" != "200" ]]; then
-            echo "::error::Authentik token request failed with HTTP ${HTTP_CODE}"
+            echo "::warning::First attempt failed with HTTP ${HTTP_CODE}. Trying alternative authentication methods..."
+            
+            # Try HTTP Basic Auth approach
+            echo "Trying HTTP Basic Auth method..."
+            if ! ACCESS_TOKEN_RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
+              -u "${AUTHENTIK_CLIENT_ID}:${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              -d "grant_type=client_credentials"); then
+              echo "::error::Failed to make request to Authentik token endpoint (Basic Auth attempt)."
+              exit 1
+            fi
+            
+            HTTP_CODE="${ACCESS_TOKEN_RESPONSE: -3}"
+            RESPONSE_BODY="${ACCESS_TOKEN_RESPONSE%???}"
+            echo "Basic Auth - HTTP Status Code: ${HTTP_CODE}"
+            echo "Basic Auth - Response Body: ${RESPONSE_BODY}"
+            
+            # If Basic Auth also fails, try with username/password format
+            if [[ "${HTTP_CODE}" != "200" ]]; then
+              echo "Trying username/password format..."
+              if ! ACCESS_TOKEN_RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
+                -H "Content-Type: application/x-www-form-urlencoded" \
+                -d "grant_type=client_credentials" \
+                -d "client_id=${AUTHENTIK_CLIENT_ID}" \
+                -d "username=${AUTHENTIK_SERVICE_ACCOUNT_USERNAME}" \
+                -d "password=${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}"); then
+                echo "::error::Failed to make request to Authentik token endpoint (username/password attempt)."
+                exit 1
+              fi
+              
+              HTTP_CODE="${ACCESS_TOKEN_RESPONSE: -3}"
+              RESPONSE_BODY="${ACCESS_TOKEN_RESPONSE%???}"
+              echo "Username/Password - HTTP Status Code: ${HTTP_CODE}"
+              echo "Username/Password - Response Body: ${RESPONSE_BODY}"
+            fi
+          fi
+
+          if [[ "${HTTP_CODE}" != "200" ]]; then
+            echo "::error::All authentication methods failed with HTTP ${HTTP_CODE}"
+            echo "::error::Final response: ${RESPONSE_BODY}"
             exit 1
           fi
 
