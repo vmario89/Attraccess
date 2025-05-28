@@ -6,7 +6,6 @@ import { dataSourceConfig } from '../database/datasource';
 import { ResourcesModule } from '../resources/resources.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import storageConfigObject from '../config/storage.config';
-import emailConfiguration from '../email/email.config';
 import appConfiguration from '../config/app.config';
 import { AppConfigType } from '../config/app.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -19,9 +18,8 @@ import { AnalyticsModule } from '../analytics/analytics.module';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
-      load: [appConfiguration, storageConfigObject, emailConfiguration],
+      load: [appConfiguration, storageConfigObject],
       isGlobal: true,
     }),
 
@@ -40,10 +38,12 @@ import { AnalyticsModule } from '../analytics/analytics.module';
         }
         const resolvedDocsPath = resolve(appConfig.STATIC_DOCS_FILE_PATH);
         console.log('Serving docs from (via config): ', resolvedDocsPath);
-        return [{
-          rootPath: resolvedDocsPath,
-          serveRoot: '/docs',
-        }];
+        return [
+          {
+            rootPath: resolvedDocsPath,
+            serveRoot: '/docs',
+          },
+        ];
       },
     }),
     ServeStaticModule.forRootAsync({
@@ -57,10 +57,12 @@ import { AnalyticsModule } from '../analytics/analytics.module';
         }
         const resolvedFrontendPath = resolve(appConfig.STATIC_FRONTEND_FILE_PATH);
         console.log('Serving frontend from (via config): ', resolvedFrontendPath);
-        return [{
-          rootPath: resolvedFrontendPath,
-          // serveRoot: '/' // Default serveRoot is '/'
-        }];
+        return [
+          {
+            rootPath: resolvedFrontendPath,
+            // serveRoot: '/' // Default serveRoot is '/'
+          },
+        ];
       },
     }),
     PluginModule.forRoot(),
