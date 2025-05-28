@@ -1,27 +1,29 @@
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { createRequire } from 'module';
 import { PluginManifest } from './plugin.manifest';
-import { PluginService, pluginConfig } from './plugin.service';
+import { PluginService } from './plugin.service';
 import { PluginController } from './plugin.controller';
 import { join } from 'path';
-import { ConfigModule } from '@nestjs/config';
 
 @Global()
 @Module({})
 export class PluginModule {
   private static pluginManifests: PluginManifest[];
   private static logger = new Logger(PluginModule.name);
+  private static DISABLE_PLUGINS_FLAG = false; // Default to false
+
+  public static configure(config: { DISABLE_PLUGINS: boolean }): void {
+    PluginModule.DISABLE_PLUGINS_FLAG = config.DISABLE_PLUGINS;
+    PluginModule.logger.log(`PluginModule configured. DisablePlugins: ${PluginModule.DISABLE_PLUGINS_FLAG}`);
+  }
+
 
   public static forRoot(): DynamicModule {
-    // Load plugin configuration
-    const config = pluginConfig();
-    
-    if (config.DISABLE_PLUGINS) {
+    if (PluginModule.DISABLE_PLUGINS_FLAG) {
       PluginModule.logger.log('Plugins are disabled');
 
       return {
         module: PluginModule,
-        imports: [ConfigModule.forFeature(pluginConfig)],
         providers: [PluginService],
         controllers: [PluginController],
       };
@@ -46,10 +48,7 @@ export class PluginModule {
     return {
       module: PluginModule,
       providers: [PluginService],
-      imports: [
-        ConfigModule.forFeature(pluginConfig),
-        ...pluginModules
-      ],
+      imports: [...pluginModules],
       controllers: [PluginController],
     };
   }

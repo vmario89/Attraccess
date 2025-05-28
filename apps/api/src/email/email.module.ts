@@ -2,17 +2,19 @@ import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EmailService } from './email.service';
-import { mailerConfig } from './email.config';
+import emailConfiguration, { EmailConfiguration } from './email.config';
 
 @Module({
   imports: [
-    ConfigModule, // Import ConfigModule to use ConfigService
+    ConfigModule.forFeature(emailConfiguration),
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => {
-        // Use the configuration from the ConfigService if available,
-        // otherwise fall back to the static configuration
-        return configService.get('email') || mailerConfig;
+      // imports: [ConfigModule], // Not needed if ConfigModule.forFeature is used or ConfigModule is global
+      useFactory: (configService: ConfigService< { email: EmailConfiguration } >) => {
+        const emailConf = configService.get('email', { infer: true });
+        if (!emailConf) {
+          throw new Error('Email configuration not found or invalid. Please ensure SMTP_HOST, SMTP_PORT, and other required email environment variables are correctly set.');
+        }
+        return emailConf.mailerOptions;
       },
       inject: [ConfigService],
     }),

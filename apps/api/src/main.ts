@@ -1,28 +1,16 @@
-import { bootstrap } from './main.bootstrap';
-import { Logger } from '@nestjs/common';
-import { registerAs } from '@nestjs/config';
-import { createConfigSchema } from '@attraccess/env';
+import { bootstrap, startListening } from './main.bootstrap';
 
-// Register server configuration
-export const serverConfig = registerAs('server', () => {
-  const schema = createConfigSchema((z) => ({
-    PORT: z.coerce.number().default(3000),
-  }));
-  return schema.parse(process.env);
-});
+import { Logger } from '@nestjs/common';
 
 async function main() {
-  const { app, globalPrefix } = await bootstrap();
-  
-  // Get port from config
-  const config = serverConfig();
-  const port = config.PORT;
-  
-  await app.listen(port, '0.0.0.0');
-
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  const logger = new Logger('Bootstrap');
+  try {
+    const { app, port, globalPrefix, nodeEnv } = await bootstrap();
+    await startListening(app, port, globalPrefix, nodeEnv);
+  } catch (error) {
+    logger.error('Failed to bootstrap application', error.stack);
+    process.exit(1);
+  }
 }
 
 main();
