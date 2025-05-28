@@ -6,20 +6,60 @@ on:
 
 jobs:
   send_to_openhands:
-    # Secrets OPENHANDS_API_TOKEN, OPENHANDS_API_HOSTNAME, and ALLOWED_TRIGGER_USERS (comma-separated) must be set.
+    # Secrets for Authentik and OpenHands configuration must be set in repository settings.
+    # Required Authentik secrets:
+    #   AUTHENTIK_TOKEN_URL (e.g., https://authentik.apps.janjaap.de/application/o/token/)
+    #   AUTHENTIK_CLIENT_ID (Client ID of the OAuth2 Provider in Authentik for OpenHands)
+    #   AUTHENTIK_SERVICE_ACCOUNT_USERNAME (e.g., github-openhands-issue-action-service-account)
+    #   AUTHENTIK_SERVICE_ACCOUNT_TOKEN (Token for the service account)
+    # Required OpenHands & Action secrets:
+    #   OPENHANDS_API_HOSTNAME (e.g., your OpenHands instance URL)
+    #   ALLOWED_TRIGGER_USERS (Comma-separated GitHub usernames, e.g., jappyjan)
     if: |
-      secrets.OPENHANDS_API_TOKEN != '' && 
-      secrets.OPENHANDS_API_HOSTNAME != '' && 
-      secrets.ALLOWED_TRIGGER_USERS != '' && 
-      contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS), format(',{0},', github.event.comment.user.login)) && 
+      secrets.AUTHENTIK_TOKEN_URL != '' &&
+      secrets.AUTHENTIK_CLIENT_ID != '' &&
+      secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME != '' &&
+      secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN != '' &&
+      secrets.OPENHANDS_API_HOSTNAME != '' &&
+      secrets.ALLOWED_TRIGGER_USERS != '' &&
+      contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS), format(',{0},', github.event.comment.user.login)) &&
       contains(github.event.comment.body, '@ai')
     runs-on: ubuntu-latest
     steps:
-      - name: Send Issue to OpenHands
+      - name: Get Authentik Access Token
+        id: get_token
         env:
-          OPENHANDS_API_TOKEN: ${{ secrets.OPENHANDS_API_TOKEN }}
+          AUTHENTIK_TOKEN_URL: ${{ secrets.AUTHENTIK_TOKEN_URL }}
+          AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
+          AUTHENTIK_SERVICE_ACCOUNT_USERNAME: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}
+          AUTHENTIK_SERVICE_ACCOUNT_TOKEN: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}
+        run: |
+          echo "Attempting to retrieve Authentik access token..."
+          ACCESS_TOKEN_RESPONSE=$(curl -s -X POST "${AUTHENTIK_TOKEN_URL}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=client_credentials" \
+            -d "client_id=${AUTHENTIK_CLIENT_ID}" \
+            -d "username=${AUTHENTIK_SERVICE_ACCOUNT_USERNAME}" \
+            -d "password=${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}")
+
+          echo "Authentik response: $ACCESS_TOKEN_RESPONSE" # Be cautious with logging full response in public repos if it's too verbose or contains sensitive info beyond the token itself
+          
+          ACCESS_TOKEN=$(echo "${ACCESS_TOKEN_RESPONSE}" | jq -r .access_token)
+
+          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
+            echo "::error::Failed to retrieve access token from Authentik."
+            exit 1
+          fi
+          
+          echo "::set-output name=access_token::${ACCESS_TOKEN}"
+          echo "Successfully retrieved Authentik access token."
+
+      - name: Send Issue to OpenHands
+        needs: get_token
+        env:
+          AUTHENTIK_ACCESS_TOKEN: ${{ steps.get_token.outputs.access_token }}
           OPENHANDS_API_HOSTNAME: ${{ secrets.OPENHANDS_API_HOSTNAME }}
-          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS }} # Stored here for logging/debug if needed, primary use in 'if' condition
+          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS }} # For logging
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
@@ -27,27 +67,23 @@ jobs:
         run: |
           echo "Attempting to send issue to OpenHands."
           echo "Triggered by: ${COMMENTER_LOGIN}"
-          echo "Allowed users: ${ALLOWED_TRIGGER_USERS}" # For debugging, ensure this is not overly verbose in public repos if usernames are sensitive
+          echo "Allowed users: ${ALLOWED_TRIGGER_USERS}"
           echo "OpenHands API Hostname: ${OPENHANDS_API_HOSTNAME}"
 
-          # Prepare the initial message for OpenHands AI
           INITIAL_USER_MSG=$(printf "Please analyze the following GitHub issue and provide a solution or implement the requested feature/task.\n\nIssue Title: %s\n\nIssue Body:\n%s\n\nLink to issue: %s\nTriggered by GitHub user: %s" \
           "${ISSUE_TITLE}" \
           "${ISSUE_BODY}" \
           "${ISSUE_URL}" \
           "${COMMENTER_LOGIN}")
 
-          # Construct the JSON payload
-          # Ensure no sensitive parts of INITIAL_USER_MSG are directly from user input without sanitization if that were a concern.
-          # Here, we are using GitHub issue content which is presumed to be safe for this context.
           JSON_PAYLOAD=$(jq -n --arg msg "$INITIAL_USER_MSG" --arg repo "${{ github.event.repository.full_name }}" \
             '{initial_user_msg: $msg, repository: $repo, git_provider: "github"}')
           
           echo "Payload to send: $JSON_PAYLOAD"
 
-          # Make the API call
           curl --fail -s -X POST "${OPENHANDS_API_HOSTNAME}/api/conversations" \
-            -H "Authorization: Bearer ${OPENHANDS_API_TOKEN}" \
+            -H "Authorization: Bearer ${AUTHENTIK_ACCESS_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "${JSON_PAYLOAD}"
-          echo "API call completed."
+          
+          echo "API call to OpenHands completed."
