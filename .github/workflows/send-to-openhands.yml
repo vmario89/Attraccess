@@ -73,14 +73,18 @@ jobs:
             exit 1
           fi
 
-          # Extract HTTP status code and response body
-          HTTP_CODE=$(echo "${TOKEN_RESPONSE}" | grep -o '%%HTTP_CODE%%:[0-9]*' | cut -d: -f2)
+          # Extract HTTP status code - look for the last occurrence to avoid issues with masked tokens
+          HTTP_CODE=$(echo "${TOKEN_RESPONSE}" | grep -o '%%HTTP_CODE%%:[0-9]*' | tail -1 | cut -d: -f2)
+          # Remove the HTTP code marker from the response to get the body
           RESPONSE_BODY=$(echo "${TOKEN_RESPONSE}" | sed 's/%%HTTP_CODE%%:[0-9]*$//')
 
           echo "HTTP Status Code: ${HTTP_CODE}"
 
+          # Debug: Show response without sensitive data
+          echo "::debug::Response received (keys only): $(echo "${RESPONSE_BODY}" | jq -r 'keys[]' 2>/dev/null || echo 'Not valid JSON')"
+
           # Log response for debugging (without sensitive data)
-          if [[ "${HTTP_CODE}" != "200" ]]; then
+          if [[ -z "${HTTP_CODE}" || "${HTTP_CODE}" != "200" ]]; then
             echo "::error::Token request failed with HTTP ${HTTP_CODE}"
             echo "::error::Response: ${RESPONSE_BODY}"
             exit 1
@@ -93,13 +97,17 @@ jobs:
             exit 1
           fi
 
-          if [[ -z "${ACCESS_TOKEN}" ]]; then
+          if [[ -z "${ACCESS_TOKEN}" || "${ACCESS_TOKEN}" == "null" ]]; then
             echo "::error::Failed to retrieve access token from Authentik response."
+            echo "::error::Response body: ${RESPONSE_BODY}"
             exit 1
           fi
 
-          # Optionally validate the token (get token info)
-          echo "Successfully retrieved access token. Validating..."
+          # Show success message
+          echo "✅ Successfully retrieved access token from Authentik!"
+          echo "Token type: $(echo "${RESPONSE_BODY}" | jq -r '.token_type // "unknown"')"
+          echo "Scope: $(echo "${RESPONSE_BODY}" | jq -r '.scope // "unknown"')"
+          echo "Expires in: $(echo "${RESPONSE_BODY}" | jq -r '.expires_in // "unknown"') seconds"
 
           # Set output
           echo "access_token=${ACCESS_TOKEN}" >> "$GITHUB_OUTPUT"
