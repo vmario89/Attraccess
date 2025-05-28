@@ -14,6 +14,7 @@ import {
   useWebhooksServiceGetOneWebhookConfigurationById,
   useWebhooksServiceUpdateOneWebhookConfiguration,
 } from '@attraccess/react-query-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToastMessage } from '../../../../../components/toastProvider';
 
 export interface WebhookFormProps {
@@ -32,6 +33,7 @@ export interface WebhookFormProps {
 const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initialValues, onCancel, onComplete }) => {
   const { t } = useTranslations('webhookForm', { en, de });
   const { success, error: showError } = useToastMessage();
+  const queryClient = useQueryClient();
 
   // State
   const [values, setValues] = useState<WebhookFormValues>(initialValues || defaultFormValues);
@@ -100,6 +102,9 @@ const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initia
           id: webhookId,
           requestBody: values,
         });
+        queryClient.invalidateQueries({
+          queryKey: ['WebhooksService', 'getAllWebhookConfigurations', { resourceId }],
+        });
         success({
           title: t('webhookUpdated'),
           description: t('webhookUpdatedDesc'),
@@ -109,6 +114,9 @@ const WebhookForm: React.FC<WebhookFormProps> = ({ webhookId, resourceId, initia
         const result = await createWebhook.mutateAsync({
           resourceId,
           requestBody: values,
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['WebhooksService', 'getAllWebhookConfigurations', { resourceId }],
         });
         success({
           title: t('webhookCreated'),
