@@ -64,7 +64,7 @@ jobs:
           echo "Attempting to retrieve Authentik access token..."
 
           # Use curl with proper error handling
-          if ! ACCESS_TOKEN_RESPONSE=$(curl -s -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
+          if ! ACCESS_TOKEN_RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${AUTHENTIK_TOKEN_URL}" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "grant_type=client_credentials" \
             -d "client_id=${AUTHENTIK_CLIENT_ID}" \
@@ -150,7 +150,7 @@ jobs:
           echo "Sending request to OpenHands API..."
 
           # Make API call with proper error handling
-          if ! RESPONSE=$(curl -s -w "%{http_code}" -X POST "${OPENHANDS_API_HOSTNAME}/api/conversations" \
+          if ! RESPONSE=$(curl -s -L -w "%{http_code}" -X POST "${OPENHANDS_API_HOSTNAME}/api/conversations" \
             -H "Authorization: Bearer ${AUTHENTIK_ACCESS_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "${JSON_PAYLOAD}"); then
