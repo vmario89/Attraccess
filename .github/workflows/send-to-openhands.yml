@@ -6,38 +6,44 @@ on:
 
 jobs:
   send_to_openhands:
-    if: github.event.comment.user.login == 'jappyjan' && contains(github.event.comment.body, '@ai')
+    # Default allowed user is 'jappyjan'. Override with secret ALLOWED_TRIGGER_USERS (comma-separated).
+    # Default API hostname is 'https://app.all-hands.dev'. Override with secret OPENHANDS_API_HOSTNAME.
+    if: contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS || 'jappyjan'), format(',{0},', github.event.comment.user.login)) && contains(github.event.comment.body, '@ai')
     runs-on: ubuntu-latest
     steps:
       - name: Send Issue to OpenHands
         env:
           OPENHANDS_API_TOKEN: ${{ secrets.OPENHANDS_API_TOKEN }}
+          OPENHANDS_API_HOSTNAME: ${{ secrets.OPENHANDS_API_HOSTNAME || 'https://app.all-hands.dev' }}
+          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS || 'jappyjan' }} # Stored here for logging/debug if needed, primary use in 'if' condition
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
-          REPO_URL: ${{ github.event.repository.html_url }}
           COMMENTER_LOGIN: ${{ github.event.comment.user.login }}
         run: |
-          # Prepare the initial message
-          INITIAL_USER_MSG=$(printf "GitHub Issue: %s\n\n%s\n\nLink to issue: %s\nTriggered by: %s" \
+          echo "Attempting to send issue to OpenHands."
+          echo "Triggered by: ${COMMENTER_LOGIN}"
+          echo "Allowed users: ${ALLOWED_TRIGGER_USERS}" # For debugging, ensure this is not overly verbose in public repos if usernames are sensitive
+          echo "OpenHands API Hostname: ${OPENHANDS_API_HOSTNAME}"
+
+          # Prepare the initial message for OpenHands AI
+          INITIAL_USER_MSG=$(printf "Please analyze the following GitHub issue and provide a solution or implement the requested feature/task.\n\nIssue Title: %s\n\nIssue Body:\n%s\n\nLink to issue: %s\nTriggered by GitHub user: %s" \
           "${ISSUE_TITLE}" \
           "${ISSUE_BODY}" \
           "${ISSUE_URL}" \
           "${COMMENTER_LOGIN}")
 
           # Construct the JSON payload
-          JSON_PAYLOAD=$(printf '{
-            "initial_user_msg": "%s",
-            "repository": "%s",
-            "git_provider": "github"
-          }' \
-          "${INITIAL_USER_MSG}" \
-          "${{ github.event.repository.full_name }}")
+          # Ensure no sensitive parts of INITIAL_USER_MSG are directly from user input without sanitization if that were a concern.
+          # Here, we are using GitHub issue content which is presumed to be safe for this context.
+          JSON_PAYLOAD=$(jq -n --arg msg "$INITIAL_USER_MSG" --arg repo "${{ github.event.repository.full_name }}" \
+            '{initial_user_msg: $msg, repository: $repo, git_provider: "github"}')
+          
+          echo "Payload to send: $JSON_PAYLOAD"
 
           # Make the API call
-          # Defaulting to production server: https://app.all-hands.dev
-          # Change if you use a local or self-hosted OpenHands instance.
-          curl -X POST https://app.all-hands.dev/api/conversations \
+          curl --fail -s -X POST "${OPENHANDS_API_HOSTNAME}/api/conversations" \
             -H "Authorization: Bearer ${OPENHANDS_API_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "${JSON_PAYLOAD}"
+          echo "API call completed."
