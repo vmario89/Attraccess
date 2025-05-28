@@ -23,7 +23,7 @@ The workflow uses Authentik's OAuth2 client credentials flow with service accoun
    - **Name**: `openhands-github-action` (or any descriptive name)
    - **Authorization flow**: Select your default authorization flow
    - **Client type**: `Confidential`
-   - **Client ID**: Note this value - you'll need it for `AUTHENTIK_CLIENT_ID`
+   - **Client ID**: Note this value - you'll need it for `OPENHANDS_AUTHENTIK_CLIENT_ID`
    - **Client Secret**: Leave this empty (we'll use service account authentication)
    - **Redirect URIs**: Not needed for client_credentials flow
    - **Scopes**: Select `openid` and `profile`
@@ -74,7 +74,7 @@ The workflow uses Authentik's OAuth2 client credentials flow with service accoun
 
 4. Click **Save**
 5. **Important**: Copy the token value immediately - you won't be able to see it again!
-   - This is your `AUTHENTIK_SERVICE_ACCOUNT_TOKEN`
+   - This is your `OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_TOKEN`
 
 ## Step 5: Grant Application Access
 
@@ -94,14 +94,14 @@ In your GitHub repository:
 1. Go to **Settings** → **Secrets and variables** → **Actions**
 2. Add the following repository secrets:
 
-| Secret Name                          | Description                         | Example Value                      |
-| ------------------------------------ | ----------------------------------- | ---------------------------------- |
-| `AUTHENTIK_BASE_URL`                 | Base URL of your Authentik instance | `https://auth.yourdomain.com`      |
-| `AUTHENTIK_CLIENT_ID`                | Client ID from the OAuth2 provider  | `openhands-github-action`          |
-| `AUTHENTIK_SERVICE_ACCOUNT_USERNAME` | Username of the service account     | `github-openhands-service-account` |
-| `AUTHENTIK_SERVICE_ACCOUNT_TOKEN`    | App password token you copied       | `ak_pat_xxxxxxxxxxxxx`             |
-| `OPENHANDS_API_HOSTNAME`             | URL of your OpenHands instance      | `https://openhands.yourdomain.com` |
-| `ALLOWED_TRIGGER_USERS`              | Comma-separated GitHub usernames    | `jappyjan,otheruser`               |
+| Secret Name                                    | Description                         | Example Value                      |
+| ---------------------------------------------- | ----------------------------------- | ---------------------------------- |
+| `OPENHANDS_AUTHENTIK_BASE_URL`                 | Base URL of your Authentik instance | `https://auth.yourdomain.com`      |
+| `OPENHANDS_AUTHENTIK_CLIENT_ID`                | Client ID from the OAuth2 provider  | `openhands-github-action`          |
+| `OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_USERNAME` | Username of the service account     | `github-openhands-service-account` |
+| `OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_TOKEN`    | App password token you copied       | `ak_pat_xxxxxxxxxxxxx`             |
+| `OPENHANDS_API_HOSTNAME`                       | URL of your OpenHands instance      | `https://openhands.yourdomain.com` |
+| `OPENHANDS_ALLOWED_TRIGGER_USERS`              | Comma-separated GitHub usernames    | `jappyjan,otheruser`               |
 
 ## Step 7: Deploy the Workflow
 

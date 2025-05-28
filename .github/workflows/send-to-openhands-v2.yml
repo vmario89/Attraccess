@@ -11,15 +11,15 @@ jobs:
       - name: Check if user is authorized and comment contains trigger
         id: check_authorization
         env:
-          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS }}
+          ALLOWED_TRIGGER_USERS: ${{ secrets.OPENHANDS_ALLOWED_TRIGGER_USERS }}
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENTER_LOGIN: ${{ github.event.comment.user.login }}
         run: |
           # Check if required secrets are available
-          if [[ -z "${{ secrets.AUTHENTIK_BASE_URL }}" || \
-                -z "${{ secrets.AUTHENTIK_CLIENT_ID }}" || \
-                -z "${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}" || \
-                -z "${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}" || \
+          if [[ -z "${{ secrets.OPENHANDS_AUTHENTIK_BASE_URL }}" || \
+                -z "${{ secrets.OPENHANDS_AUTHENTIK_CLIENT_ID }}" || \
+                -z "${{ secrets.OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}" || \
+                -z "${{ secrets.OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}" || \
                 -z "${{ secrets.OPENHANDS_API_HOSTNAME }}" || \
                 -z "${ALLOWED_TRIGGER_USERS}" ]]; then
             echo "Required secrets are not configured. Skipping workflow."
@@ -47,10 +47,10 @@ jobs:
         if: steps.check_authorization.outputs.authorized == 'true'
         id: get_token
         env:
-          AUTHENTIK_BASE_URL: ${{ secrets.AUTHENTIK_BASE_URL }}
-          AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
-          AUTHENTIK_SERVICE_ACCOUNT_USERNAME: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}
-          AUTHENTIK_SERVICE_ACCOUNT_TOKEN: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}
+          AUTHENTIK_BASE_URL: ${{ secrets.OPENHANDS_AUTHENTIK_BASE_URL }}
+          AUTHENTIK_CLIENT_ID: ${{ secrets.OPENHANDS_AUTHENTIK_CLIENT_ID }}
+          AUTHENTIK_SERVICE_ACCOUNT_USERNAME: ${{ secrets.OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}
+          AUTHENTIK_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OPENHANDS_AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}
         run: |
           echo "Attempting to retrieve Authentik access token..."
           echo "Base URL: ${AUTHENTIK_BASE_URL}"
