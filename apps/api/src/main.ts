@@ -1,14 +1,8 @@
-import { bootstrap } from './main.bootstrap';
-import { Logger } from '@nestjs/common';
-
-
+import { bootstrap, startListening } from './main.bootstrap';
 
 async function main() {
-  const { globalPrefix, port } = await bootstrap();
-
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  const { app, port, globalPrefix, nodeEnv } = await bootstrap();
+  await startListening(app, port, globalPrefix, nodeEnv);
 }
 
 main();

@@ -126,10 +126,16 @@ export async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   const port = appConfig.PORT;
-  await app.listen(port);
-  
-  bootstrapLogger.log(`🚀 Application listening on port ${port} in ${appConfig.NODE_ENV} mode`);
-  bootstrapLogger.log(`Swagger UI available at http://localhost:${port}/${globalPrefix}`);
+  // Listening and related logging will be handled by startListening function
   bootstrapLogger.log('Bootstrap process completed.');
-  return { app, globalPrefix, swaggerDocumentFactory: documentFactory, port };
+  return { app, globalPrefix, swaggerDocumentFactory: documentFactory, port, nodeEnv: appConfig.NODE_ENV };
 }
+
+export async function startListening(app: NestExpressApplication, port: number, globalPrefix: string, nodeEnv: string) {
+  const listenLogger = new Logger('Application');
+  await app.listen(port, '0.0.0.0');
+  listenLogger.log(`🚀 Application listening on port ${port} in ${nodeEnv} mode`);
+  const swaggerPath = globalPrefix ? `/${globalPrefix}/api` : '/api';
+  listenLogger.log(`Swagger UI available at http://localhost:${port}${swaggerPath}`);
+}
+
