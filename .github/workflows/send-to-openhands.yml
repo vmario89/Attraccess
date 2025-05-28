@@ -77,16 +77,7 @@ jobs:
 
           # Define the common issue details part
           # Using a HEREDOC for readability of the multi-line string
-          ISSUE_DETAILS_FORMAT=$(cat <<EOF
-
---- Issue Details ---
-Issue Title: %s
-Issue Body:
-%s
-Link to issue: %s
-Triggered by GitHub user: %s
-EOF
-)
+          ISSUE_DETAILS_FORMAT="\n\n--- Issue Details ---\nIssue Title: %s\nIssue Body:\n%s\nLink to issue: %s\nTriggered by GitHub user: %s"
 
           if [ "${COMMENT_BODY_LOWER}" = "@ai" ]; then
             TASK_INSTRUCTION="Please analyze the following GitHub issue and provide a solution or implement the requested feature/task."
