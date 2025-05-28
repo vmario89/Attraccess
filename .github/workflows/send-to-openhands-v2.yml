@@ -1,0 +1,176 @@
+name: Send Issue to OpenHands AI v2
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  send_to_openhands:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user is authorized and comment contains trigger
+        id: check_authorization
+        env:
+          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENTER_LOGIN: ${{ github.event.comment.user.login }}
+        run: |
+          # Check if required secrets are available
+          if [[ -z "${{ secrets.AUTHENTIK_BASE_URL }}" || \
+                -z "${{ secrets.AUTHENTIK_CLIENT_ID }}" || \
+                -z "${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}" || \
+                -z "${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}" || \
+                -z "${{ secrets.OPENHANDS_API_HOSTNAME }}" || \
+                -z "${ALLOWED_TRIGGER_USERS}" ]]; then
+            echo "Required secrets are not configured. Skipping workflow."
+            echo "authorized=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Check if comment contains @ai trigger
+          if [[ ! "${COMMENT_BODY}" == *"@ai"* ]]; then
+            echo "Comment does not contain @ai trigger. Skipping workflow."
+            echo "authorized=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Check if user is in allowed list
+          if [[ ",${ALLOWED_TRIGGER_USERS}," == *",${COMMENTER_LOGIN},"* ]]; then
+            echo "User ${COMMENTER_LOGIN} is authorized to trigger this workflow."
+            echo "authorized=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "User ${COMMENTER_LOGIN} is not authorized to trigger this workflow."
+            echo "authorized=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Get Authentik Access Token
+        if: steps.check_authorization.outputs.authorized == 'true'
+        id: get_token
+        env:
+          AUTHENTIK_BASE_URL: ${{ secrets.AUTHENTIK_BASE_URL }}
+          AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
+          AUTHENTIK_SERVICE_ACCOUNT_USERNAME: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_USERNAME }}
+          AUTHENTIK_SERVICE_ACCOUNT_TOKEN: ${{ secrets.AUTHENTIK_SERVICE_ACCOUNT_TOKEN }}
+        run: |
+          echo "Attempting to retrieve Authentik access token..."
+          echo "Base URL: ${AUTHENTIK_BASE_URL}"
+          echo "Client ID: ${AUTHENTIK_CLIENT_ID}"
+          echo "Service Account: ${AUTHENTIK_SERVICE_ACCOUNT_USERNAME}"
+
+          # Authentik uses client_credentials grant with username/password for service accounts
+          # The service account token is created as an "App Password" type token in Authentik
+          TOKEN_ENDPOINT="${AUTHENTIK_BASE_URL}/application/o/token/"
+
+          # Make the token request
+          if ! TOKEN_RESPONSE=$(curl -s -L -w "\n%%HTTP_CODE%%:%{http_code}" -X POST "${TOKEN_ENDPOINT}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=client_credentials" \
+            -d "client_id=${AUTHENTIK_CLIENT_ID}" \
+            -d "username=${AUTHENTIK_SERVICE_ACCOUNT_USERNAME}" \
+            -d "password=${AUTHENTIK_SERVICE_ACCOUNT_TOKEN}" \
+            -d "scope=openid profile"); then
+            echo "::error::Failed to make request to Authentik token endpoint."
+            exit 1
+          fi
+
+          # Extract HTTP status code and response body
+          HTTP_CODE=$(echo "${TOKEN_RESPONSE}" | grep -o '%%HTTP_CODE%%:[0-9]*' | cut -d: -f2)
+          RESPONSE_BODY=$(echo "${TOKEN_RESPONSE}" | sed 's/%%HTTP_CODE%%:[0-9]*$//')
+
+          echo "HTTP Status Code: ${HTTP_CODE}"
+
+          # Log response for debugging (without sensitive data)
+          if [[ "${HTTP_CODE}" != "200" ]]; then
+            echo "::error::Token request failed with HTTP ${HTTP_CODE}"
+            echo "::error::Response: ${RESPONSE_BODY}"
+            exit 1
+          fi
+
+          # Extract access token
+          if ! ACCESS_TOKEN=$(echo "${RESPONSE_BODY}" | jq -r '.access_token // empty'); then
+            echo "::error::Failed to parse JSON response from Authentik."
+            echo "::error::Response was: ${RESPONSE_BODY}"
+            exit 1
+          fi
+
+          if [[ -z "${ACCESS_TOKEN}" ]]; then
+            echo "::error::Failed to retrieve access token from Authentik response."
+            exit 1
+          fi
+
+          # Optionally validate the token (get token info)
+          echo "Successfully retrieved access token. Validating..."
+
+          # Set output
+          echo "access_token=${ACCESS_TOKEN}" >> "$GITHUB_OUTPUT"
+          echo "Successfully authenticated with Authentik!"
+
+      - name: Send Issue to OpenHands
+        if: steps.check_authorization.outputs.authorized == 'true'
+        env:
+          AUTHENTIK_ACCESS_TOKEN: ${{ steps.get_token.outputs.access_token }}
+          OPENHANDS_API_HOSTNAME: ${{ secrets.OPENHANDS_API_HOSTNAME }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          COMMENTER_LOGIN: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          REPOSITORY_FULL_NAME: ${{ github.event.repository.full_name }}
+        run: |
+          echo "Sending issue to OpenHands..."
+          echo "Repository: ${REPOSITORY_FULL_NAME}"
+          echo "Triggered by: ${COMMENTER_LOGIN}"
+
+          # Extract custom instruction from comment
+          COMMENT_BODY_TRIMMED=$(echo "${COMMENT_BODY}" | xargs)
+          COMMENT_BODY_LOWER=$(echo "${COMMENT_BODY_TRIMMED}" | tr '[:upper:]' '[:lower:]')
+
+          if [[ "${COMMENT_BODY_LOWER}" == "@ai" ]]; then
+            TASK_INSTRUCTION="Please analyze the following GitHub issue and provide a solution or implement the requested feature/task."
+          else
+            # Remove @ai prefix and extract custom instruction
+            CUSTOM_INSTRUCTION=$(echo "${COMMENT_BODY_TRIMMED}" | sed -E 's/^[[:space:]]*@[Aa][Ii][[:space:]]+//')
+            
+            if [[ -z "${CUSTOM_INSTRUCTION}" || "${CUSTOM_INSTRUCTION}" == "${COMMENT_BODY_TRIMMED}" ]]; then
+                TASK_INSTRUCTION="Please analyze the following GitHub issue and provide a solution or implement the requested feature/task."
+            else
+                TASK_INSTRUCTION="${CUSTOM_INSTRUCTION}"
+            fi
+          fi
+
+          # Create the complete message
+          INITIAL_USER_MSG=$(jq -n \
+            --arg task "${TASK_INSTRUCTION}" \
+            --arg title "${ISSUE_TITLE}" \
+            --arg body "${ISSUE_BODY}" \
+            --arg url "${ISSUE_URL}" \
+            --arg user "${COMMENTER_LOGIN}" \
+            '$task + "\n\n--- Issue Details ---\nIssue Title: " + $title + "\nIssue Body:\n" + $body + "\nLink to issue: " + $url + "\nTriggered by GitHub user: " + $user')
+
+          # Create JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --argjson msg "${INITIAL_USER_MSG}" \
+            --arg repo "${REPOSITORY_FULL_NAME}" \
+            '{initial_user_msg: $msg, repository: $repo, git_provider: "github"}')
+
+          # Send to OpenHands API
+          if ! RESPONSE=$(curl -s -L -w "\n%%HTTP_CODE%%:%{http_code}" -X POST "${OPENHANDS_API_HOSTNAME}/api/conversations" \
+            -H "Authorization: Bearer ${AUTHENTIK_ACCESS_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "${JSON_PAYLOAD}"); then
+            echo "::error::Failed to make request to OpenHands API."
+            exit 1
+          fi
+
+          # Extract HTTP status code
+          HTTP_CODE=$(echo "${RESPONSE}" | grep -o '%%HTTP_CODE%%:[0-9]*' | cut -d: -f2)
+          RESPONSE_BODY=$(echo "${RESPONSE}" | sed 's/%%HTTP_CODE%%:[0-9]*$//')
+
+          if [[ "${HTTP_CODE}" =~ ^2[0-9][0-9]$ ]]; then
+            echo "Successfully sent issue to OpenHands (HTTP ${HTTP_CODE})"
+            echo "Response: ${RESPONSE_BODY}"
+          else
+            echo "::error::OpenHands API request failed with HTTP ${HTTP_CODE}"
+            echo "::error::Response: ${RESPONSE_BODY}"
+            exit 1
+          fi
