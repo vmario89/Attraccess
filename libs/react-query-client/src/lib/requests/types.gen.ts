@@ -423,7 +423,7 @@ export type Resource = {
     /**
      * The type of documentation (markdown or url)
      */
-    DocumentationType?: 'markdown' | 'url';
+    documentationType?: 'markdown' | 'url';
     /**
      * Markdown content for resource documentation
      */
@@ -449,14 +449,6 @@ export type Resource = {
      */
     groups: Array<ResourceGroup>;
 };
-
-/**
- * The type of documentation (markdown or url)
- */
-export enum DocumentationType {
-    MARKDOWN = 'markdown',
-    URL = 'url'
-}
 
 export type PaginatedResourceResponseDto = {
     total: number;

@@ -634,7 +634,7 @@ export const $Resource = {
             description: 'The filename of the resource image',
             example: '1234567890_abcdef.jpg'
         },
-        DocumentationType: {
+        documentationType: {
             type: 'string',
             description: 'The type of documentation (markdown or url)',
             enum: ['markdown', 'url'],
