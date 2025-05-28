@@ -15,7 +15,7 @@ export function loadEnv<TSchema extends SchemaDefinition>(
     if (cachedSchemaObject) {
       // We cast to z.ZodObject<any> then to the inferred type to satisfy generics.
       // This assumes TSchema is compatible enough with SchemaDefinition for parsing.
-      return (cachedSchemaObject as z.ZodObject<any>).parse(env) as z.infer<z.ZodObject<TSchema>>;
+      return (cachedSchemaObject as z.ZodObject<SchemaDefinition>).parse(env) as z.infer<z.ZodObject<TSchema>>;
     }
   }
 
