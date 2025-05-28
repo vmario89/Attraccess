@@ -132,10 +132,10 @@ export async function bootstrap() {
 }
 
 export async function startListening(app: NestExpressApplication, port: number, globalPrefix: string, nodeEnv: string) {
-  const listenLogger = new Logger('Application');
+  const applicationLogger = new Logger('Application');
   await app.listen(port, '0.0.0.0');
-  listenLogger.log(`🚀 Application listening on port ${port} in ${nodeEnv} mode`);
+  applicationLogger.log(`🚀 Application listening on port ${port} in ${nodeEnv} mode`);
   const swaggerPath = globalPrefix ? `/${globalPrefix}/api` : '/api';
-  listenLogger.log(`Swagger UI available at http://localhost:${port}${swaggerPath}`);
+  applicationLogger.log(`Swagger UI available at http://localhost:${port}${swaggerPath}`);
 }
 
