@@ -6,16 +6,20 @@ on:
 
 jobs:
   send_to_openhands:
-    # Default allowed user is 'jappyjan'. Override with secret ALLOWED_TRIGGER_USERS (comma-separated).
-    # Default API hostname is 'https://app.all-hands.dev'. Override with secret OPENHANDS_API_HOSTNAME.
-    if: contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS || 'jappyjan'), format(',{0},', github.event.comment.user.login)) && contains(github.event.comment.body, '@ai')
+    # Secrets OPENHANDS_API_TOKEN, OPENHANDS_API_HOSTNAME, and ALLOWED_TRIGGER_USERS (comma-separated) must be set.
+    if: |
+      secrets.OPENHANDS_API_TOKEN != '' && 
+      secrets.OPENHANDS_API_HOSTNAME != '' && 
+      secrets.ALLOWED_TRIGGER_USERS != '' && 
+      contains(format(',{0},', secrets.ALLOWED_TRIGGER_USERS), format(',{0},', github.event.comment.user.login)) && 
+      contains(github.event.comment.body, '@ai')
     runs-on: ubuntu-latest
     steps:
       - name: Send Issue to OpenHands
         env:
           OPENHANDS_API_TOKEN: ${{ secrets.OPENHANDS_API_TOKEN }}
-          OPENHANDS_API_HOSTNAME: ${{ secrets.OPENHANDS_API_HOSTNAME || 'https://app.all-hands.dev' }}
-          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS || 'jappyjan' }} # Stored here for logging/debug if needed, primary use in 'if' condition
+          OPENHANDS_API_HOSTNAME: ${{ secrets.OPENHANDS_API_HOSTNAME }}
+          ALLOWED_TRIGGER_USERS: ${{ secrets.ALLOWED_TRIGGER_USERS }} # Stored here for logging/debug if needed, primary use in 'if' condition
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
