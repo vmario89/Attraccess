@@ -146,6 +146,12 @@ jobs:
             fi
           fi
 
+          PROGRESS_UPDATE_INSTRUCTION=" Periodically post/comment updates about your progress to the GitHub issue."
+          TASK_INSTRUCTION="${TASK_INSTRUCTION}${PROGRESS_UPDATE_INSTRUCTION}"
+
+          PUSH_TO_GITHUB_INSTRUCTION=" After implementing the solution, please push your changes to a new branch on GitHub and create a pull request."
+          TASK_INSTRUCTION="${TASK_INSTRUCTION}${PUSH_TO_GITHUB_INSTRUCTION}"
+
           # Create the complete message
           INITIAL_USER_MSG=$(jq -n \
             --arg task "${TASK_INSTRUCTION}" \
