@@ -19,7 +19,7 @@ const EmailEnvSchema = z.object({
 // This type can be imported by EmailModule if needed for ConfigService typing
 export type EmailConfiguration = ReturnType<typeof emailConfigFactory>;
 
-const handlebarsAdapter = new HandlebarsAdapter(); // Create a single shared instance
+const handlebarsAdapter = new HandlebarsAdapter();
 
 const emailConfigFactory = () => {
   const validatedEnv = EmailEnvSchema.parse(process.env);
@@ -42,7 +42,7 @@ const emailConfigFactory = () => {
       },
       template: {
         dir: validatedEnv.EMAIL_TEMPLATES_PATH,
-        adapter: handlebarsAdapter, // Use the shared instance
+        adapter: handlebarsAdapter,
         options: {
           strict: true,
         },
