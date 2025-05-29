@@ -11,6 +11,92 @@ import { EmailConfiguration as EmailConfigMapType } from './email.config'; // Ad
 
 @Injectable()
 export class EmailService {
+  private static readonly VERIFY_EMAIL_MJML = `
+<mjml>
+  <mj-head>
+    <mj-title>Verify your email address</mj-title>
+    <mj-font
+      name="Roboto"
+      href="https://fonts.googleapis.com/css?family=Roboto"
+    />
+    <mj-attributes>
+      <mj-all font-family="Roboto, Arial" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f4f4">
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column>
+        <mj-image width="200px" src="{{logoUrl}}" alt="Logo" />
+
+        <mj-text font-size="24px" color="#333333" align="center">
+          Welcome to Attraccess!
+        </mj-text>
+
+        <mj-text font-size="16px" color="#555555"> Hi {{username}}, </mj-text>
+
+        <mj-text font-size="16px" color="#555555">
+          Thanks for signing up! Please verify your email address to complete
+          your registration.
+        </mj-text>
+
+        <mj-button background-color="#4CAF50" href="{{verificationUrl}}">
+          Verify Email Address
+        </mj-button>
+
+        <mj-text font-size="14px" color="#888888">
+          If you didn\'t create an account, you can safely ignore this email.
+        </mj-text>
+
+        <mj-divider border-color="#eeeeee" />
+
+        <mj-text font-size="12px" color="#888888" align="center">
+          &copy; {{year}} Attraccess. All rights reserved.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+`;
+
+  private static readonly RESET_PASSWORD_MJML = `
+<mjml>
+  <mj-head>
+    <mj-title>Reset your password</mj-title>
+    <mj-font name="Roboto" href="https://fonts.googleapis.com/css?family=Roboto" />
+    <mj-attributes>
+      <mj-all font-family="Roboto, Arial" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f4f4">
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column>
+        <mj-image width="200px" src="{{logoUrl}}" alt="Logo" />
+
+        <mj-text font-size="24px" color="#333333" align="center"> Password Reset Request </mj-text>
+
+        <mj-text font-size="16px" color="#555555"> Hi {{username}}, </mj-text>
+
+        <mj-text font-size="16px" color="#555555">
+          We received a request to reset your password. Click the button below to create a new password.
+        </mj-text>
+
+        <mj-button background-color="#4CAF50" href="{{resetUrl}}"> Reset Password </mj-button>
+
+        <mj-text font-size="14px" color="#888888">
+          If you didn\'t request a password reset, you can safely ignore this email.
+        </mj-text>
+
+        <mj-divider border-color="#eeeeee" />
+
+        <mj-text font-size="12px" color="#888888" align="center">
+          &copy; {{year}} Attraccess. All rights reserved.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+`;
+
   private templates: null | Record<string, HandlebarsTemplateDelegate> = null;
   private readonly logger = new Logger(EmailService.name);
   private frontendUrl: string;
@@ -57,34 +143,57 @@ export class EmailService {
   }
 
   private async loadTemplates(templatesPath: string) {
-    this.logger.debug(`Loading email templates from path: ${templatesPath}`);
+    this.logger.debug(`Loading email templates. Filesystem path: ${templatesPath}`);
+    this.templates = {}; // Initialize templates object
 
+    // Attempt to load from filesystem (for custom templates)
     try {
       const templatesPathExists = await stat(templatesPath)
         .then((stats) => stats.isDirectory())
         .catch(() => false);
-      if (!templatesPathExists) {
-        this.logger.error(`Configured email templates path does not exist or is not a directory: ${templatesPath}`);
-        throw new Error(`Email templates path not found at ${templatesPath}`);
-      }
 
-      const files = await readdir(templatesPath);
-      this.logger.debug(`Found ${files.length} files in templates directory: ${templatesPath}`);
-      this.templates = {};
-
-      for (const file of files) {
-        if (file.endsWith('.mjml')) {
-          const templateName = file.replace('.mjml', '');
-          this.logger.debug(`Loading template: ${templateName}`);
-          const templateContent = await readFile(join(templatesPath, file), 'utf-8');
-          this.templates[templateName] = Handlebars.compile(mjml2html(templateContent).html);
-          this.logger.debug(`Compiled template: ${templateName}`);
+      if (templatesPathExists) {
+        const files = await readdir(templatesPath);
+        this.logger.debug(`Found ${files.length} files in custom templates directory: ${templatesPath}`);
+        for (const file of files) {
+          if (file.endsWith('.mjml')) {
+            const templateName = file.replace('.mjml', '');
+            this.logger.debug(`Loading custom template: ${templateName} from filesystem`);
+            const templateContent = await readFile(join(templatesPath, file), 'utf-8');
+            this.templates[templateName] = Handlebars.compile(mjml2html(templateContent).html);
+            this.logger.debug(`Compiled custom template: ${templateName}`);
+          }
         }
+      } else {
+        this.logger.warn(`Custom email templates path does not exist or is not a directory: ${templatesPath}. Skipping filesystem load.`);
       }
-      this.logger.debug(`Loaded ${Object.keys(this.templates || {}).length} email templates`);
     } catch (error) {
       this.logger.error(`Failed to load email templates from ${templatesPath}:`, error.stack);
-      this.templates = null;
+      // Not setting templates to null here, as static ones might still load
+    }
+
+    // Load static/default templates (will overwrite if names conflict, which is intended)
+    try {
+      this.logger.debug('Loading static template: verify-email');
+      this.templates['verify-email'] = Handlebars.compile(mjml2html(EmailService.VERIFY_EMAIL_MJML).html);
+      this.logger.debug('Compiled static template: verify-email');
+
+      this.logger.debug('Loading static template: reset-password');
+      this.templates['reset-password'] = Handlebars.compile(mjml2html(EmailService.RESET_PASSWORD_MJML).html);
+      this.logger.debug('Compiled static template: reset-password');
+    } catch (error) {
+      this.logger.error('Failed to load static email templates:', error.stack);
+      // If static templates fail, this is a more critical issue.
+      // Depending on policy, could throw error or ensure templates object reflects this failure.
+      // For now, if this.templates was {}, it remains so, or partially filled.
+    }
+    
+    const loadedCount = Object.keys(this.templates || {}).length;
+    if (loadedCount === 0 && !this.templates) { // Check if templates is null (critical failure) or just empty
+        this.logger.error('No email templates loaded (neither custom nor static). Email functionality will be impaired.');
+        this.templates = null; // Explicitly set to null to indicate critical failure if nothing loaded
+    } else {
+        this.logger.debug(`Loaded ${loadedCount} email templates in total (custom and static).`);
     }
   }
 
@@ -137,7 +246,12 @@ export class EmailService {
       throw new Error('Email template not found: verify-email');
     }
 
-    const html = template({ username: user.username, verificationUrl });
+    const html = template({
+      username: user.username,
+      verificationUrl,
+      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'), // Using a default from a quick search, replace if a better one is configured
+      year: new Date().getFullYear(),
+    });
 
     this.logger.debug(`Sending email to: ${user.email}`);
     try {
@@ -164,7 +278,12 @@ export class EmailService {
       throw new Error('Email template not found: reset-password');
     }
 
-    const html = template({ username: user.username, resetUrl });
+    const html = template({
+      username: user.username,
+      resetUrl,
+      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'),
+      year: new Date().getFullYear(),
+    });
 
     this.logger.debug(`Sending reset email to: ${user.email}`);
     try {
