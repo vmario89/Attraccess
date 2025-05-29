@@ -28,19 +28,12 @@ const handlebarsAdapter = new HandlebarsAdapter();
 
 export interface EmailConfiguration {
   mailerOptions: MailerOptions;
-  template: {
-    dir: string;
-    adapter: HandlebarsAdapter;
-    options: {
-      strict: boolean;
-    };
-  };
 }
 
 const emailConfigFactory = (): EmailConfiguration => {
   const baseEnv = EmailEnvSchema.parse(process.env);
 
-  const defaults = {
+  const defaultMailerOptions = {
     template: {
       dir: baseEnv.EMAIL_TEMPLATES_PATH,
       adapter: handlebarsAdapter,
@@ -48,14 +41,14 @@ const emailConfigFactory = (): EmailConfiguration => {
         strict: true,
       },
     },
-  } as Partial<MailerOptions>;
+  } as EmailConfiguration['mailerOptions'];
 
   if (baseEnv.SMTP_SERVICE === 'SMTP') {
     const smtpEnv = SMTP_ENV_SCHEMA.parse(process.env);
 
     return {
-      ...defaults,
       mailerOptions: {
+        ...defaultMailerOptions,
         defaults: {
           from: smtpEnv.SMTP_FROM,
         },
@@ -76,8 +69,8 @@ const emailConfigFactory = (): EmailConfiguration => {
     const outlookEnv = OUTLOOK_ENV_SCHEMA.parse(process.env);
 
     return {
-      ...defaults,
       mailerOptions: {
+        ...defaultMailerOptions,
         defaults: {
           from: outlookEnv.SMTP_FROM,
         },
