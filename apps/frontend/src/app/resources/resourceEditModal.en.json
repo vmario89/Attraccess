@@ -1,0 +1,21 @@
+{
+  "modalTitle": "Edit Resource",
+  "nameLabel": "Name",
+  "nameRequiredError": "Name is required.",
+  "descriptionLabel": "Description",
+  "allowTakeOverLabel": "Allow Takeover",
+  "allowTakeOverDescription": "If enabled, another user can take over this resource if it is currently in use by someone else.",
+  "imageLabel": "Image",
+  "updateSuccessTitle": "Resource Updated",
+  "updateSuccessDescription": "Resource '{name}' has been updated successfully.",
+  "updateErrorTitle": "Error Updating Resource",
+  "updateErrorDescription": "Could not update the resource. Please try again.",
+  "validationErrorTitle": "Validation Error",
+  "saveButton": "Save Changes",
+  "saveAndContinueButton": "Save and Continue Editing",
+  "cancelButton": "Cancel",
+  "documentation": {
+    "title": "Documentation",
+    "note": "Documentation can be managed here."
+  }
+}

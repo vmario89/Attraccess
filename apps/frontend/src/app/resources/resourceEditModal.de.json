@@ -1,0 +1,21 @@
+{
+  "modalTitle": "Ressource bearbeiten",
+  "nameLabel": "Name",
+  "nameRequiredError": "Name ist erforderlich.",
+  "descriptionLabel": "Beschreibung",
+  "allowTakeOverLabel": "Übernahme erlauben",
+  "allowTakeOverDescription": "Wenn aktiviert, kann ein anderer Benutzer diese Ressource übernehmen, falls sie gerade von jemand anderem verwendet wird.",
+  "imageLabel": "Bild",
+  "updateSuccessTitle": "Ressource aktualisiert",
+  "updateSuccessDescription": "Ressource '{name}' wurde erfolgreich aktualisiert.",
+  "updateErrorTitle": "Fehler beim Aktualisieren der Ressource",
+  "updateErrorDescription": "Die Ressource konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
+  "validationErrorTitle": "Validierungsfehler",
+  "saveButton": "Änderungen speichern",
+  "saveAndContinueButton": "Speichern und weiter bearbeiten",
+  "cancelButton": "Abbrechen",
+  "documentation": {
+    "title": "Dokumentation",
+    "note": "Dokumentation kann hier verwaltet werden."
+  }
+}
