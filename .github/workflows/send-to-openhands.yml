@@ -27,9 +27,9 @@ jobs:
             exit 0
           fi
 
-          # Check if comment contains @ai trigger
-          if [[ ! "${COMMENT_BODY}" == *"@ai"* ]]; then
-            echo "Comment does not contain @ai trigger. Skipping workflow."
+          # Check if comment contains #ai trigger
+          if [[ ! "${COMMENT_BODY}" == *"#ai"* ]]; then
+            echo "Comment does not contain #ai trigger. Skipping workflow."
             echo "authorized=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -133,11 +133,11 @@ jobs:
           COMMENT_BODY_TRIMMED=$(echo "${COMMENT_BODY}" | xargs)
           COMMENT_BODY_LOWER=$(echo "${COMMENT_BODY_TRIMMED}" | tr '[:upper:]' '[:lower:]')
 
-          if [[ "${COMMENT_BODY_LOWER}" == "@ai" ]]; then
+          if [[ "${COMMENT_BODY_LOWER}" == "#ai" ]]; then
             TASK_INSTRUCTION="Please analyze the following GitHub issue and provide a solution or implement the requested feature/task."
           else
-            # Remove @ai prefix and extract custom instruction
-            CUSTOM_INSTRUCTION=$(echo "${COMMENT_BODY_TRIMMED}" | sed -E 's/^[[:space:]]*@[Aa][Ii][[:space:]]+//')
+            # Remove #ai prefix and extract custom instruction
+            CUSTOM_INSTRUCTION=$(echo "${COMMENT_BODY_TRIMMED}" | sed -E 's/^[[:space:]]*#[Aa][Ii][[:space:]]+//')
             
             if [[ -z "${CUSTOM_INSTRUCTION}" || "${CUSTOM_INSTRUCTION}" == "${COMMENT_BODY_TRIMMED}" ]]; then
                 TASK_INSTRUCTION="Please analyze the following GitHub issue and provide a solution or implement the requested feature/task."
