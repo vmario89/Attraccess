@@ -44,7 +44,7 @@ export class EmailService {
         </mj-button>
 
         <mj-text font-size="14px" color="#888888">
-          If you didn\'t create an account, you can safely ignore this email.
+          If you didn't create an account, you can safely ignore this email.
         </mj-text>
 
         <mj-divider border-color="#eeeeee" />
@@ -83,7 +83,7 @@ export class EmailService {
         <mj-button background-color="#4CAF50" href="{{resetUrl}}"> Reset Password </mj-button>
 
         <mj-text font-size="14px" color="#888888">
-          If you didn\'t request a password reset, you can safely ignore this email.
+          If you didn't request a password reset, you can safely ignore this email.
         </mj-text>
 
         <mj-divider border-color="#eeeeee" />
@@ -107,26 +107,22 @@ export class EmailService {
   ) {
     this.logger.debug('Initializing EmailService');
 
-    const emailConf = this.configService.get<EmailConfigMapType>('email');
-    let templateDirFromConfig: string | undefined;
+    const emailConf = this.configService.get<EmailConfigMapType>('email'); // Keep this for other mailer options
 
-    if (
-      emailConf &&
-      emailConf.mailerOptions &&
-      emailConf.mailerOptions.template &&
-      emailConf.mailerOptions.template.dir
-    ) {
-      templateDirFromConfig = emailConf.mailerOptions.template.dir;
+    // We still need to check if basic email configuration (for sending, not templates) is available
+    if (!emailConf || !emailConf.mailerOptions) { // Simplified check
+      this.logger.error('Core email configuration (e.g., transport) not found. Ensure email module is correctly configured. Email sending may fail.');
+      // Depending on how critical this is, could exit. For now, log error and continue,
+      // as static templates can load, but sending will fail later if mailerService isn't set up.
+      // process.exit(1); // Re-evaluate if this exit is essential
     }
 
-    if (!templateDirFromConfig) {
-      this.logger.error(
-        'Email template path not configured correctly via ConfigService(email.mailerOptions.template.dir). Cannot load templates.'
-      );
-      process.exit(1);
-    } else {
-      this.loadTemplates(templateDirFromConfig);
-    }
+    // Load static templates unconditionally.
+    // The templatesPath from config (templateDirFromConfig) is no longer used by loadTemplates for default templates.
+    this.loadTemplates(); 
+    // Note: The original code had process.exit(1) if templateDirFromConfig was missing.
+    // We've removed that specific exit condition as static templates don't need the path.
+    // If emailConf itself is missing, that's a more general problem for the mailerService.
 
     this.frontendUrl =
       this.configService.get<string>('app.frontendUrl') ||
@@ -142,37 +138,11 @@ export class EmailService {
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.frontendUrl}`);
   }
 
-  private async loadTemplates(templatesPath: string) {
-    this.logger.debug(`Loading email templates. Filesystem path: ${templatesPath}`);
+  private async loadTemplates() {
+    this.logger.debug('Loading static email templates.');
     this.templates = {}; // Initialize templates object
 
-    // Attempt to load from filesystem (for custom templates)
-    try {
-      const templatesPathExists = await stat(templatesPath)
-        .then((stats) => stats.isDirectory())
-        .catch(() => false);
-
-      if (templatesPathExists) {
-        const files = await readdir(templatesPath);
-        this.logger.debug(`Found ${files.length} files in custom templates directory: ${templatesPath}`);
-        for (const file of files) {
-          if (file.endsWith('.mjml')) {
-            const templateName = file.replace('.mjml', '');
-            this.logger.debug(`Loading custom template: ${templateName} from filesystem`);
-            const templateContent = await readFile(join(templatesPath, file), 'utf-8');
-            this.templates[templateName] = Handlebars.compile(mjml2html(templateContent).html);
-            this.logger.debug(`Compiled custom template: ${templateName}`);
-          }
-        }
-      } else {
-        this.logger.warn(`Custom email templates path does not exist or is not a directory: ${templatesPath}. Skipping filesystem load.`);
-      }
-    } catch (error) {
-      this.logger.error(`Failed to load email templates from ${templatesPath}:`, error.stack);
-      // Not setting templates to null here, as static ones might still load
-    }
-
-    // Load static/default templates (will overwrite if names conflict, which is intended)
+    // Load static/default templates
     try {
       this.logger.debug('Loading static template: verify-email');
       this.templates['verify-email'] = Handlebars.compile(mjml2html(EmailService.VERIFY_EMAIL_MJML).html);
@@ -181,46 +151,22 @@ export class EmailService {
       this.logger.debug('Loading static template: reset-password');
       this.templates['reset-password'] = Handlebars.compile(mjml2html(EmailService.RESET_PASSWORD_MJML).html);
       this.logger.debug('Compiled static template: reset-password');
+      
+      this.logger.debug(`Loaded ${Object.keys(this.templates).length} static email templates.`);
     } catch (error) {
       this.logger.error('Failed to load static email templates:', error.stack);
-      // If static templates fail, this is a more critical issue.
-      // Depending on policy, could throw error or ensure templates object reflects this failure.
-      // For now, if this.templates was {}, it remains so, or partially filled.
-    }
-    
-    const loadedCount = Object.keys(this.templates || {}).length;
-    if (loadedCount === 0 && !this.templates) { // Check if templates is null (critical failure) or just empty
-        this.logger.error('No email templates loaded (neither custom nor static). Email functionality will be impaired.');
-        this.templates = null; // Explicitly set to null to indicate critical failure if nothing loaded
-    } else {
-        this.logger.debug(`Loaded ${loadedCount} email templates in total (custom and static).`);
+      this.templates = null; // Critical failure if static templates cannot be loaded
     }
   }
 
   private async getTemplate(name: string): Promise<HandlebarsTemplateDelegate | null> {
     this.logger.debug(`Getting template: ${name}`);
     if (!this.templates) {
-      this.logger.warn('Templates object is null, possibly due to loading error. Cannot get template.');
-      const emailConf = this.configService.get<EmailConfigMapType>('email');
-      let templateDirFromConfig: string | undefined;
-      if (
-        emailConf &&
-        emailConf.mailerOptions &&
-        emailConf.mailerOptions.template &&
-        emailConf.mailerOptions.template.dir
-      ) {
-        templateDirFromConfig = emailConf.mailerOptions.template.dir;
-      }
-      if (templateDirFromConfig) {
-        this.logger.debug('Attempting to reload templates in getTemplate.');
-        await this.loadTemplates(templateDirFromConfig);
-      } else {
-        this.logger.error('Cannot reload templates: path not configured.');
-        return null;
-      }
+      this.logger.warn('Templates object is null, possibly due to a loading error during initialization. Attempting to reload static templates.');
+      await this.loadTemplates(); // Reload static templates
     }
 
-    if (!this.templates) {
+    if (!this.templates) { // Check again after attempting reload
       this.logger.error('Templates are still null after attempting reload. Cannot provide template.');
       return null;
     }
@@ -228,6 +174,9 @@ export class EmailService {
     const template = this.templates[name];
     if (!template) {
       this.logger.warn(`Template not found: ${name}`);
+      // Optionally, could attempt a reload here too if a specific template is missing,
+      // but if initial load failed, this is unlikely to help unless the error was transient.
+      // For now, assume if this.templates exists, it contains all successfully loaded static templates.
       return null;
     }
     return template;
