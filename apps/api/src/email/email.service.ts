@@ -4,98 +4,17 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config'; // Added
 import { User } from '@attraccess/database-entities';
 import mjml2html from 'mjml';
-import { join } from 'path'; // resolve might not be needed anymore
-import { readdir, readFile, stat } from 'fs/promises';
+
 import * as Handlebars from 'handlebars';
 import { EmailConfiguration as EmailConfigMapType } from './email.config'; // Added for typing
+import { VERIFY_EMAIL_MJML_TEMPLATE } from './templates/verify-email.template';
+import { RESET_PASSWORD_MJML_TEMPLATE } from './templates/reset-password.template';
 
 @Injectable()
 export class EmailService {
-  private static readonly VERIFY_EMAIL_MJML = `
-<mjml>
-  <mj-head>
-    <mj-title>Verify your email address</mj-title>
-    <mj-font
-      name="Roboto"
-      href="https://fonts.googleapis.com/css?family=Roboto"
-    />
-    <mj-attributes>
-      <mj-all font-family="Roboto, Arial" />
-    </mj-attributes>
-  </mj-head>
-  <mj-body background-color="#f4f4f4">
-    <mj-section background-color="#ffffff" padding="20px">
-      <mj-column>
-        <mj-image width="200px" src="{{logoUrl}}" alt="Logo" />
 
-        <mj-text font-size="24px" color="#333333" align="center">
-          Welcome to Attraccess!
-        </mj-text>
 
-        <mj-text font-size="16px" color="#555555"> Hi {{username}}, </mj-text>
 
-        <mj-text font-size="16px" color="#555555">
-          Thanks for signing up! Please verify your email address to complete
-          your registration.
-        </mj-text>
-
-        <mj-button background-color="#4CAF50" href="{{verificationUrl}}">
-          Verify Email Address
-        </mj-button>
-
-        <mj-text font-size="14px" color="#888888">
-          If you didn't create an account, you can safely ignore this email.
-        </mj-text>
-
-        <mj-divider border-color="#eeeeee" />
-
-        <mj-text font-size="12px" color="#888888" align="center">
-          &copy; {{year}} Attraccess. All rights reserved.
-        </mj-text>
-      </mj-column>
-    </mj-section>
-  </mj-body>
-</mjml>
-`;
-
-  private static readonly RESET_PASSWORD_MJML = `
-<mjml>
-  <mj-head>
-    <mj-title>Reset your password</mj-title>
-    <mj-font name="Roboto" href="https://fonts.googleapis.com/css?family=Roboto" />
-    <mj-attributes>
-      <mj-all font-family="Roboto, Arial" />
-    </mj-attributes>
-  </mj-head>
-  <mj-body background-color="#f4f4f4">
-    <mj-section background-color="#ffffff" padding="20px">
-      <mj-column>
-        <mj-image width="200px" src="{{logoUrl}}" alt="Logo" />
-
-        <mj-text font-size="24px" color="#333333" align="center"> Password Reset Request </mj-text>
-
-        <mj-text font-size="16px" color="#555555"> Hi {{username}}, </mj-text>
-
-        <mj-text font-size="16px" color="#555555">
-          We received a request to reset your password. Click the button below to create a new password.
-        </mj-text>
-
-        <mj-button background-color="#4CAF50" href="{{resetUrl}}"> Reset Password </mj-button>
-
-        <mj-text font-size="14px" color="#888888">
-          If you didn't request a password reset, you can safely ignore this email.
-        </mj-text>
-
-        <mj-divider border-color="#eeeeee" />
-
-        <mj-text font-size="12px" color="#888888" align="center">
-          &copy; {{year}} Attraccess. All rights reserved.
-        </mj-text>
-      </mj-column>
-    </mj-section>
-  </mj-body>
-</mjml>
-`;
 
   private templates: null | Record<string, HandlebarsTemplateDelegate> = null;
   private readonly logger = new Logger(EmailService.name);
@@ -145,11 +64,11 @@ export class EmailService {
     // Load static/default templates
     try {
       this.logger.debug('Loading static template: verify-email');
-      this.templates['verify-email'] = Handlebars.compile(mjml2html(EmailService.VERIFY_EMAIL_MJML).html);
+      this.templates['verify-email'] = Handlebars.compile(mjml2html(VERIFY_EMAIL_MJML_TEMPLATE).html);
       this.logger.debug('Compiled static template: verify-email');
 
       this.logger.debug('Loading static template: reset-password');
-      this.templates['reset-password'] = Handlebars.compile(mjml2html(EmailService.RESET_PASSWORD_MJML).html);
+      this.templates['reset-password'] = Handlebars.compile(mjml2html(RESET_PASSWORD_MJML_TEMPLATE).html);
       this.logger.debug('Compiled static template: reset-password');
       
       this.logger.debug(`Loaded ${Object.keys(this.templates).length} static email templates.`);
