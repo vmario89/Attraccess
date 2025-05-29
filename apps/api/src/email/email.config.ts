@@ -1,12 +1,10 @@
 import { registerAs } from '@nestjs/config';
 import { MailerOptions } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import * as path from 'path';
 import { z } from 'zod';
 
 const EmailEnvSchema = z.object({
   SMTP_SERVICE: z.enum(['SMTP', 'Outlook365']).optional(),
-  EMAIL_TEMPLATES_PATH: z.string().default(path.resolve(process.cwd(), 'apps/api/src/assets/email-templates')),
 });
 
 const SMTP_ENV_SCHEMA = z.object({
@@ -35,7 +33,6 @@ const emailConfigFactory = (): EmailConfiguration => {
 
   const defaultMailerOptions = {
     template: {
-      dir: baseEnv.EMAIL_TEMPLATES_PATH,
       adapter: handlebarsAdapter,
       options: {
         strict: true,

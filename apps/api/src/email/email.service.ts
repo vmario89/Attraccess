@@ -4,13 +4,18 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config'; // Added
 import { User } from '@attraccess/database-entities';
 import mjml2html from 'mjml';
-import { join } from 'path'; // resolve might not be needed anymore
-import { readdir, readFile, stat } from 'fs/promises';
+
 import * as Handlebars from 'handlebars';
 import { EmailConfiguration as EmailConfigMapType } from './email.config'; // Added for typing
+import { VERIFY_EMAIL_MJML_TEMPLATE } from './templates/verify-email.template';
+import { RESET_PASSWORD_MJML_TEMPLATE } from './templates/reset-password.template';
 
 @Injectable()
 export class EmailService {
+
+
+
+
   private templates: null | Record<string, HandlebarsTemplateDelegate> = null;
   private readonly logger = new Logger(EmailService.name);
   private frontendUrl: string;
@@ -21,26 +26,22 @@ export class EmailService {
   ) {
     this.logger.debug('Initializing EmailService');
 
-    const emailConf = this.configService.get<EmailConfigMapType>('email');
-    let templateDirFromConfig: string | undefined;
+    const emailConf = this.configService.get<EmailConfigMapType>('email'); // Keep this for other mailer options
 
-    if (
-      emailConf &&
-      emailConf.mailerOptions &&
-      emailConf.mailerOptions.template &&
-      emailConf.mailerOptions.template.dir
-    ) {
-      templateDirFromConfig = emailConf.mailerOptions.template.dir;
+    // We still need to check if basic email configuration (for sending, not templates) is available
+    if (!emailConf || !emailConf.mailerOptions) { // Simplified check
+      this.logger.error('Core email configuration (e.g., transport) not found. Ensure email module is correctly configured. Email sending may fail.');
+      // Depending on how critical this is, could exit. For now, log error and continue,
+      // as static templates can load, but sending will fail later if mailerService isn't set up.
+      // process.exit(1); // Re-evaluate if this exit is essential
     }
 
-    if (!templateDirFromConfig) {
-      this.logger.error(
-        'Email template path not configured correctly via ConfigService(email.mailerOptions.template.dir). Cannot load templates.'
-      );
-      process.exit(1);
-    } else {
-      this.loadTemplates(templateDirFromConfig);
-    }
+    // Load static templates unconditionally.
+    // The templatesPath from config (templateDirFromConfig) is no longer used by loadTemplates for default templates.
+    this.loadTemplates(); 
+    // Note: The original code had process.exit(1) if templateDirFromConfig was missing.
+    // We've removed that specific exit condition as static templates don't need the path.
+    // If emailConf itself is missing, that's a more general problem for the mailerService.
 
     this.frontendUrl =
       this.configService.get<string>('app.frontendUrl') ||
@@ -56,62 +57,35 @@ export class EmailService {
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.frontendUrl}`);
   }
 
-  private async loadTemplates(templatesPath: string) {
-    this.logger.debug(`Loading email templates from path: ${templatesPath}`);
+  private async loadTemplates() {
+    this.logger.debug('Loading static email templates.');
+    this.templates = {}; // Initialize templates object
 
+    // Load static/default templates
     try {
-      const templatesPathExists = await stat(templatesPath)
-        .then((stats) => stats.isDirectory())
-        .catch(() => false);
-      if (!templatesPathExists) {
-        this.logger.error(`Configured email templates path does not exist or is not a directory: ${templatesPath}`);
-        throw new Error(`Email templates path not found at ${templatesPath}`);
-      }
+      this.logger.debug('Loading static template: verify-email');
+      this.templates['verify-email'] = Handlebars.compile(mjml2html(VERIFY_EMAIL_MJML_TEMPLATE).html);
+      this.logger.debug('Compiled static template: verify-email');
 
-      const files = await readdir(templatesPath);
-      this.logger.debug(`Found ${files.length} files in templates directory: ${templatesPath}`);
-      this.templates = {};
-
-      for (const file of files) {
-        if (file.endsWith('.mjml')) {
-          const templateName = file.replace('.mjml', '');
-          this.logger.debug(`Loading template: ${templateName}`);
-          const templateContent = await readFile(join(templatesPath, file), 'utf-8');
-          this.templates[templateName] = Handlebars.compile(mjml2html(templateContent).html);
-          this.logger.debug(`Compiled template: ${templateName}`);
-        }
-      }
-      this.logger.debug(`Loaded ${Object.keys(this.templates || {}).length} email templates`);
+      this.logger.debug('Loading static template: reset-password');
+      this.templates['reset-password'] = Handlebars.compile(mjml2html(RESET_PASSWORD_MJML_TEMPLATE).html);
+      this.logger.debug('Compiled static template: reset-password');
+      
+      this.logger.debug(`Loaded ${Object.keys(this.templates).length} static email templates.`);
     } catch (error) {
-      this.logger.error(`Failed to load email templates from ${templatesPath}:`, error.stack);
-      this.templates = null;
+      this.logger.error('Failed to load static email templates:', error.stack);
+      this.templates = null; // Critical failure if static templates cannot be loaded
     }
   }
 
   private async getTemplate(name: string): Promise<HandlebarsTemplateDelegate | null> {
     this.logger.debug(`Getting template: ${name}`);
     if (!this.templates) {
-      this.logger.warn('Templates object is null, possibly due to loading error. Cannot get template.');
-      const emailConf = this.configService.get<EmailConfigMapType>('email');
-      let templateDirFromConfig: string | undefined;
-      if (
-        emailConf &&
-        emailConf.mailerOptions &&
-        emailConf.mailerOptions.template &&
-        emailConf.mailerOptions.template.dir
-      ) {
-        templateDirFromConfig = emailConf.mailerOptions.template.dir;
-      }
-      if (templateDirFromConfig) {
-        this.logger.debug('Attempting to reload templates in getTemplate.');
-        await this.loadTemplates(templateDirFromConfig);
-      } else {
-        this.logger.error('Cannot reload templates: path not configured.');
-        return null;
-      }
+      this.logger.warn('Templates object is null, possibly due to a loading error during initialization. Attempting to reload static templates.');
+      await this.loadTemplates(); // Reload static templates
     }
 
-    if (!this.templates) {
+    if (!this.templates) { // Check again after attempting reload
       this.logger.error('Templates are still null after attempting reload. Cannot provide template.');
       return null;
     }
@@ -119,6 +93,9 @@ export class EmailService {
     const template = this.templates[name];
     if (!template) {
       this.logger.warn(`Template not found: ${name}`);
+      // Optionally, could attempt a reload here too if a specific template is missing,
+      // but if initial load failed, this is unlikely to help unless the error was transient.
+      // For now, assume if this.templates exists, it contains all successfully loaded static templates.
       return null;
     }
     return template;
@@ -137,7 +114,12 @@ export class EmailService {
       throw new Error('Email template not found: verify-email');
     }
 
-    const html = template({ username: user.username, verificationUrl });
+    const html = template({
+      username: user.username,
+      verificationUrl,
+      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'), // Using a default from a quick search, replace if a better one is configured
+      year: new Date().getFullYear(),
+    });
 
     this.logger.debug(`Sending email to: ${user.email}`);
     try {
@@ -164,7 +146,12 @@ export class EmailService {
       throw new Error('Email template not found: reset-password');
     }
 
-    const html = template({ username: user.username, resetUrl });
+    const html = template({
+      username: user.username,
+      resetUrl,
+      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'),
+      year: new Date().getFullYear(),
+    });
 
     this.logger.debug(`Sending reset email to: ${user.email}`);
     try {
