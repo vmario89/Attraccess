@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, MinLength, IsEnum, IsUrl, ValidateIf, IsBoolean } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { FileUpload } from '../../common/types/file-upload.types';
 import { DocumentationType } from '@attraccess/database-entities';
 
@@ -64,8 +65,10 @@ export class CreateResourceDto {
     required: false,
     example: false,
     default: false,
+    type: Boolean,
   })
   @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   @IsOptional()
   allowTakeOver?: boolean;
 }
