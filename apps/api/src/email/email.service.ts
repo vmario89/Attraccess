@@ -17,29 +17,40 @@ export class EmailService {
 
   constructor(
     private readonly mailerService: MailerService,
-    private readonly configService: ConfigService, // Injected
+    private readonly configService: ConfigService // Injected
   ) {
     this.logger.debug('Initializing EmailService');
-    
+
     const emailConf = this.configService.get<EmailConfigMapType>('email');
     let templateDirFromConfig: string | undefined;
 
-    if (emailConf && emailConf.mailerOptions && emailConf.mailerOptions.template && emailConf.mailerOptions.template.dir) {
-        templateDirFromConfig = emailConf.mailerOptions.template.dir;
+    if (
+      emailConf &&
+      emailConf.mailerOptions &&
+      emailConf.mailerOptions.template &&
+      emailConf.mailerOptions.template.dir
+    ) {
+      templateDirFromConfig = emailConf.mailerOptions.template.dir;
     }
 
     if (!templateDirFromConfig) {
-        this.logger.error('Email template path not configured correctly via ConfigService(email.mailerOptions.template.dir). Cannot load templates.');
+      this.logger.error(
+        'Email template path not configured correctly via ConfigService(email.mailerOptions.template.dir). Cannot load templates.'
+      );
+      process.exit(1);
     } else {
-        this.loadTemplates(templateDirFromConfig);
+      this.loadTemplates(templateDirFromConfig);
     }
 
-    this.frontendUrl = this.configService.get<string>('app.frontendUrl') || 
-                       this.configService.get<string>('FRONTEND_URL') || 
-                       this.configService.get<string>('VITE_ATTRACCESS_URL'); 
+    this.frontendUrl =
+      this.configService.get<string>('app.frontendUrl') ||
+      this.configService.get<string>('FRONTEND_URL') ||
+      this.configService.get<string>('VITE_ATTRACCESS_URL');
 
     if (!this.frontendUrl) {
-      this.logger.warn('FRONTEND_URL not found in configuration. Using default fallback: http://localhost:3000. Email links may be incorrect.');
+      this.logger.warn(
+        'FRONTEND_URL not found in configuration. Using default fallback: http://localhost:3000. Email links may be incorrect.'
+      );
       this.frontendUrl = 'http://localhost:3000'; // Fallback
     }
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.frontendUrl}`);
@@ -47,9 +58,11 @@ export class EmailService {
 
   private async loadTemplates(templatesPath: string) {
     this.logger.debug(`Loading email templates from path: ${templatesPath}`);
-    
+
     try {
-      const templatesPathExists = await stat(templatesPath).then(stats => stats.isDirectory()).catch(() => false);
+      const templatesPathExists = await stat(templatesPath)
+        .then((stats) => stats.isDirectory())
+        .catch(() => false);
       if (!templatesPathExists) {
         this.logger.error(`Configured email templates path does not exist or is not a directory: ${templatesPath}`);
         throw new Error(`Email templates path not found at ${templatesPath}`);
@@ -71,7 +84,7 @@ export class EmailService {
       this.logger.debug(`Loaded ${Object.keys(this.templates || {}).length} email templates`);
     } catch (error) {
       this.logger.error(`Failed to load email templates from ${templatesPath}:`, error.stack);
-      this.templates = null; 
+      this.templates = null;
     }
   }
 
@@ -81,34 +94,41 @@ export class EmailService {
       this.logger.warn('Templates object is null, possibly due to loading error. Cannot get template.');
       const emailConf = this.configService.get<EmailConfigMapType>('email');
       let templateDirFromConfig: string | undefined;
-      if (emailConf && emailConf.mailerOptions && emailConf.mailerOptions.template && emailConf.mailerOptions.template.dir) {
+      if (
+        emailConf &&
+        emailConf.mailerOptions &&
+        emailConf.mailerOptions.template &&
+        emailConf.mailerOptions.template.dir
+      ) {
         templateDirFromConfig = emailConf.mailerOptions.template.dir;
       }
       if (templateDirFromConfig) {
         this.logger.debug('Attempting to reload templates in getTemplate.');
-        await this.loadTemplates(templateDirFromConfig); 
+        await this.loadTemplates(templateDirFromConfig);
       } else {
         this.logger.error('Cannot reload templates: path not configured.');
         return null;
       }
     }
-    
+
     if (!this.templates) {
-        this.logger.error('Templates are still null after attempting reload. Cannot provide template.');
-        return null;
+      this.logger.error('Templates are still null after attempting reload. Cannot provide template.');
+      return null;
     }
 
     const template = this.templates[name];
     if (!template) {
       this.logger.warn(`Template not found: ${name}`);
-      return null; 
+      return null;
     }
     return template;
   }
 
   async sendVerificationEmail(user: User, verificationToken: string) {
     this.logger.debug(`Sending verification email to user ID: ${user.id}, email: ${user.email}`);
-    const verificationUrl = `${this.frontendUrl}/verify-email?email=${encodeURIComponent(user.email)}&token=${verificationToken}`;
+    const verificationUrl = `${this.frontendUrl}/verify-email?email=${encodeURIComponent(
+      user.email
+    )}&token=${verificationToken}`;
     this.logger.debug(`Verification URL: ${verificationUrl}`);
 
     const template = await this.getTemplate('verify-email');
