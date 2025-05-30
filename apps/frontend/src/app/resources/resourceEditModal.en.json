@@ -1,21 +1,51 @@
 {
   "modalTitle": "Edit Resource",
-  "nameLabel": "Name",
-  "nameRequiredError": "Name is required.",
-  "descriptionLabel": "Description",
-  "allowTakeOverLabel": "Allow Takeover",
-  "allowTakeOverDescription": "If enabled, another user can take over this resource if it is currently in use by someone else.",
-  "imageLabel": "Image",
-  "updateSuccessTitle": "Resource Updated",
-  "updateSuccessDescription": "Resource '{name}' has been updated successfully.",
-  "updateErrorTitle": "Error Updating Resource",
-  "updateErrorDescription": "Could not update the resource. Please try again.",
-  "validationErrorTitle": "Validation Error",
-  "saveButton": "Save Changes",
-  "saveAndContinueButton": "Save and Continue Editing",
-  "cancelButton": "Cancel",
-  "documentation": {
-    "title": "Documentation",
-    "note": "Documentation can be managed here."
+  "inputs": {
+    "name": {
+      "label": "Name"
+    },
+    "description": {
+      "label": "Description"
+    },
+    "allowTakeOver": {
+      "label": "Allow Takeover",
+      "description": "If enabled, the resource can be taken over by other users without the current user having to release the resource."
+    },
+    "image": {
+      "label": "Image"
+    }
+  },
+  "create": {
+    "success": {
+      "toast": {
+        "title": "Resource Created",
+        "description": "Resource '{{name}}' has been created successfully."
+      }
+    },
+    "error": {
+      "toast": {
+        "title": "Error Creating Resource",
+        "description": "Could not create the resource. Please try again."
+      }
+    }
+  },
+  "update": {
+    "success": {
+      "toast": {
+        "title": "Resource Updated",
+        "description": "Resource '{{name}}' has been updated successfully."
+      }
+    },
+    "error": {
+      "toast": {
+        "title": "Error Updating Resource",
+        "description": "Could not update the resource. Please try again."
+      }
+    }
+  },
+  "buttons": {
+    "create": "Create Resource",
+    "update": "Update Resource",
+    "cancel": "Cancel"
   }
 }

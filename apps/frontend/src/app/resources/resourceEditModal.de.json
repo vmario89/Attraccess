@@ -1,21 +1,54 @@
 {
-  "modalTitle": "Ressource bearbeiten",
-  "nameLabel": "Name",
-  "nameRequiredError": "Name ist erforderlich.",
-  "descriptionLabel": "Beschreibung",
-  "allowTakeOverLabel": "Übernahme erlauben",
-  "allowTakeOverDescription": "Wenn aktiviert, kann ein anderer Benutzer diese Ressource übernehmen, falls sie gerade von jemand anderem verwendet wird.",
-  "imageLabel": "Bild",
-  "updateSuccessTitle": "Ressource aktualisiert",
-  "updateSuccessDescription": "Ressource '{name}' wurde erfolgreich aktualisiert.",
-  "updateErrorTitle": "Fehler beim Aktualisieren der Ressource",
-  "updateErrorDescription": "Die Ressource konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
-  "validationErrorTitle": "Validierungsfehler",
-  "saveButton": "Änderungen speichern",
-  "saveAndContinueButton": "Speichern und weiter bearbeiten",
-  "cancelButton": "Abbrechen",
-  "documentation": {
-    "title": "Dokumentation",
-    "note": "Dokumentation kann hier verwaltet werden."
+  "modalTitle": {
+    "create": "Ressource erstellen",
+    "update": "Ressource bearbeiten"
+  },
+  "inputs": {
+    "name": {
+      "label": "Name"
+    },
+    "description": {
+      "label": "Beschreibung"
+    },
+    "allowTakeOver": {
+      "label": "Übernahme erlauben",
+      "description": "Wenn aktiviert, kann die Ressource von anderen Benutzern übernommen werden ohne dass der aktuelle Nutzer die Ressource freigeben muss."
+    },
+    "image": {
+      "label": "Bild"
+    }
+  },
+  "create": {
+    "success": {
+      "toast": {
+        "title": "Ressource erstellt",
+        "description": "Ressource '{{name}}' wurde erfolgreich erstellt."
+      }
+    },
+    "error": {
+      "toast": {
+        "title": "Fehler beim Erstellen der Ressource",
+        "description": "Die Ressource konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+      }
+    }
+  },
+  "update": {
+    "success": {
+      "toast": {
+        "title": "Ressource aktualisiert",
+        "description": "Ressource '{{name}}' wurde erfolgreich aktualisiert."
+      }
+    },
+    "error": {
+      "toast": {
+        "title": "Fehler beim Aktualisieren der Ressource",
+        "description": "Die Ressource konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."
+      }
+    }
+  },
+  "buttons": {
+    "create": "Ressource erstellen",
+    "update": "Ressource aktualisieren",
+    "cancel": "Abbrechen"
   }
 }

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useToastMessage } from '../../components/toastProvider';
-import { ArrowLeft, BookOpen, Trash, Wifi } from 'lucide-react';
+import { ArrowLeft, BookOpen, PenSquareIcon, ShapesIcon, Trash, Wifi } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Spinner, Link } from '@heroui/react';
 import { useDisclosure } from '@heroui/modal';
@@ -25,6 +25,7 @@ import { ManageResourceGroups } from './groups/ManageResourceGroups';
 import { DocumentationModal } from './documentation';
 import de from './resourceDetails.de.json';
 import en from './resourceDetails.en.json';
+import { ResourceEditModal } from './resourceEditModal';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -119,10 +120,11 @@ function ResourceDetailsComponent() {
     <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
       <PageHeader
         title={resource.name}
+        icon={<ShapesIcon className="w-6 h-6" />}
         subtitle={resource.description || undefined}
         backTo="/resources"
         actions={
-          <div className="flex space-x-2 flex-wrap justify-end">
+          <>
             <DocumentationModal resourceId={resourceId}>
               {(onOpenDocumentation) => (
                 <Button
@@ -147,6 +149,20 @@ function ResourceDetailsComponent() {
                 >
                   {t('navItems.iotSettings')}
                 </Button>
+
+                <ResourceEditModal resourceId={resourceId} closeOnSuccess>
+                  {(onOpen) => (
+                    <Button
+                      onPress={onOpen}
+                      variant="light"
+                      startContent={<PenSquareIcon className="w-4 h-4" />}
+                      data-cy="edit-resource-button"
+                    >
+                      {t('actions.edit')}
+                    </Button>
+                  )}
+                </ResourceEditModal>
+
                 <Button
                   onPress={onOpen}
                   color="danger"
@@ -158,7 +174,7 @@ function ResourceDetailsComponent() {
                 </Button>
               </>
             )}
-          </div>
+          </>
         }
       />
 

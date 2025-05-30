@@ -8,72 +8,137 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
   Switch,
+  useDisclosure,
 } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './resourceEditModal.en.json';
 import * as de from './resourceEditModal.de.json';
 import {
-  useResourcesServiceUpdateOneResource, // Changed
-  UpdateResourceDto, // Changed
+  useResourcesServiceUpdateOneResource,
+  UpdateResourceDto,
   UseResourcesServiceGetAllResourcesKeyFn,
   Resource,
+  useResourcesServiceGetOneResourceById,
+  UseResourcesServiceGetOneResourceByIdKeyFn,
+  useResourcesServiceCreateOneResource,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { FileUpload } from '../../components/fileUpload';
+import { ImageUpload } from '../../components/imageUpload';
 import { useToastMessage } from '../../components/toastProvider';
+import { filenameToUrl } from '../../api';
 
 interface ResourceEditModalProps {
-  resource: Resource; // Add resource prop
-  isOpen?: boolean; // Added for external control
-  onOpenChange?: (isOpen: boolean) => void; // Added for external control
+  resourceId?: Resource['id'];
+  onUpdated?: (resource: Resource) => void;
   children?: (onOpen: () => void) => React.ReactNode;
-  onUpdated?: (resource: Resource) => void; // Rename onCreated to onUpdated
+  closeOnSuccess?: boolean;
 }
 
-type PostUpdateAction = 'close' | 'clear'; // Renamed and removed 'open'
-
 export function ResourceEditModal(props: ResourceEditModalProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
   const { t } = useTranslations('resourceEditModal', {
     en,
     de,
   });
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [formData, setFormData] = useState<UpdateResourceDto>(() => ({ // Changed to UpdateResourceDto
-    name: props.resource.name,
-    description: props.resource.description || '',
-    allowTakeOver: props.resource.allowTakeOver || false,
-    // Note: image is handled separately by selectedImage state
-  }));
+  const formRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    if (props.resource && isOpen) {
-      setFormData({
-        name: props.resource.name,
-        description: props.resource.description || '',
-        allowTakeOver: props.resource.allowTakeOver || false,
+  const [selectedImage, setSelectedImage] = useState<File | null | undefined>(undefined);
+  const [formData, setFormData] = useState<UpdateResourceDto>({
+    name: '',
+    description: '',
+    allowTakeOver: false,
+  });
+
+  const setField = useCallback(
+    <T extends keyof UpdateResourceDto>(field: T, value: UpdateResourceDto[T]) => {
+      console.log('setField', field, value);
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    [setFormData]
+  );
+
+  const onUpsertSuccess = useCallback(
+    (upsertedResource: Resource) => {
+      if (typeof props.onUpdated === 'function') {
+        props.onUpdated(upsertedResource);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: [UseResourcesServiceGetAllResourcesKeyFn()[0]],
       });
-      // If you want to show the existing image, you would set it here.
-      // For now, we clear any newly selected image if the resource changes or modal reopens.
-      setSelectedImage(null); 
-    }
-  }, [props.resource, isOpen, setFormData, setSelectedImage]);
-  const { success, error } = useToastMessage();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [postUpdateAction, setPostUpdateAction] = useState<PostUpdateAction>('close');
-  const modalCloseFn = useRef<(() => void) | null>(null);
 
-  const updateResource = useResourcesServiceUpdateOneResource();
-  const queryClient = useQueryClient();
+      if (props.resourceId) {
+        queryClient.invalidateQueries({
+          queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: props.resourceId }),
+        });
+      }
+
+      if (props.closeOnSuccess) {
+        onClose();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.onUpdated, props.resourceId, queryClient]
+  );
+
+  const { data: resource } = useResourcesServiceGetOneResourceById({ id: props.resourceId as number }, undefined, {
+    enabled: !!props.resourceId,
+  });
+  const updateResource = useResourcesServiceUpdateOneResource({
+    onSuccess: (updatedResource) => {
+      toast.success({
+        title: t('update.success.toast.title'),
+        description: t('update.success.toast.description', { name: updatedResource.name }),
+      });
+
+      onUpsertSuccess(updatedResource);
+    },
+    onError: (error) => {
+      toast.error({
+        title: t('update.error.toast.title'),
+        description: t('update.error.toast.description'),
+      });
+
+      console.error('Failed to update resource:', error, {
+        resourceId: props.resourceId,
+        error: updateResource.error,
+        requestData: formData,
+      });
+    },
+  });
+  const createResource = useResourcesServiceCreateOneResource({
+    onSuccess: (createdResource) => {
+      toast.success({
+        title: t('create.success.toast.title'),
+        description: t('create.success.toast.description', { name: createdResource.name }),
+      });
+
+      onUpsertSuccess(createdResource);
+    },
+    onError: (error) => {
+      toast.error({
+        title: t('create.error.toast.title'),
+        description: t('create.error.toast.description'),
+      });
+
+      console.error('Failed to create resource:', error, {
+        resourceId: props.resourceId,
+        error: updateResource.error,
+        requestData: formData,
+      });
+    },
+  });
+
   const clearForm = useCallback(() => {
-    if (props.resource) {
+    if (resource) {
       setFormData({
-        name: props.resource.name,
-        description: props.resource.description || '',
-        allowTakeOver: props.resource.allowTakeOver || false,
+        name: resource.name,
+        description: resource.description || '',
+        allowTakeOver: resource.allowTakeOver || false,
       });
     } else {
       // Fallback if resource is somehow not available, though it's a required prop
@@ -84,208 +149,107 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
       });
     }
     setSelectedImage(null);
-  }, [props.resource, setFormData, setSelectedImage]);
+  }, [resource, setFormData, setSelectedImage]);
 
+  // Update form data when resource changes
   useEffect(() => {
-    if (updateResource.isSuccess && isSubmitting) {
-      const updatedResource = updateResource.data;
-      success({
-        title: t('updateSuccessTitle', 'Resource Updated'), // Changed translation key
-        description: t('updateSuccessDescription', { name: formData.name }), // Changed translation key
-      });
-
-      if (typeof props.onUpdated === 'function') { // Changed prop name
-        if (updatedResource) {
-          props.onUpdated(updatedResource); // Changed prop name
-        } else {
-          console.error('Resource data is missing after successful update.'); // Changed message
-        }
-      }
-
-      if (postUpdateAction === 'close') { // Changed variable name
-        if (modalCloseFn.current) {
-          modalCloseFn.current();
-        }
-        clearForm(); // For 'close' action, reset the form based on original props.resource.
-      } else if (postUpdateAction === 'clear') { // Changed variable name
-        // Form remains open. If data was returned, update the form with it.
-        if (updatedResource) {
-          setFormData({
-            name: updatedResource.name,
-            description: updatedResource.description || '',
-            allowTakeOver: updatedResource.allowTakeOver || false,
-          });
-          setSelectedImage(null); // Clear any newly selected image, as it's now part of the updatedResource
-        }
-        // If no updatedResource data, the form keeps the current (edited) values.
-      }
-
-      setIsSubmitting(false);
-      // setPostUpdateAction('close'); // No need to reset, it's set per action button click
-
-      queryClient.invalidateQueries({
-        queryKey: [UseResourcesServiceGetAllResourcesKeyFn()[0]],
-      });
-      // Optionally, invalidate specific resource query
-      if (updatedResource?.id) {
-        queryClient.invalidateQueries({ queryKey: ['ResourcesServiceGetOneResourceById', updatedResource.id] });
-      }
+    if (!isOpen) {
+      return;
     }
-  }, [
-    isSubmitting,
-    updateResource.isSuccess,
-    updateResource.data,
-    formData.name, // Keep for messages
-    props,
-    success,
-    t,
-    queryClient,
-    postUpdateAction, // Changed variable name
-    clearForm,
-    setFormData, // Added setFormData
-    setSelectedImage // Added setSelectedImage
-  ]);
+    clearForm();
+  }, [clearForm, isOpen]);
 
-  useEffect(() => {
-    if (isSubmitting && updateResource.isError) { // Changed to updateResource
-      error({
-        title: t('updateErrorTitle', 'Error Updating Resource'), // Changed translation key
-        description: t('updateErrorDescription', 'Could not update the resource.'), // Changed translation key
-      });
-      console.error('Failed to update resource:', {
-        resourceId: props.resource.id,
-        error: updateResource.error,
-        requestData: formData
-      }); // Changed to updateResource
-
-      setIsSubmitting(false);
+  const onSubmit = useCallback(() => {
+    if (!formRef.current?.checkValidity()) {
+      return;
     }
-  }, [updateResource.isError, updateResource.error, error, isSubmitting, t, formData, props.resource.id]); // Changed to updateResource
 
-  const handleUpdate = useCallback( // Renamed from handleCreate
-    async (action: PostUpdateAction, closeFn: () => void) => { // Renamed PostCreateAction
-      if (!formData.name) {
-        error({
-          title: t('validationErrorTitle', 'Validation Error'),
-          description: t('nameRequiredError', 'Name is required.'),
-        });
-        return;
-      }
-
-      modalCloseFn.current = closeFn;
-      setPostUpdateAction(action); // Renamed setPostCreateAction
-      setIsSubmitting(true);
-
-      const dtoPart: UpdateResourceDto = {
-        name: formData.name,
-        description: formData.description,
-        allowTakeOver: formData.allowTakeOver,
-      };
-
-      // The mutation expects an object with 'id' and 'formData'
-      // 'formData' itself will contain the DTO fields and the optional image
-      const mutationPayload = { // Let type inference work here or be more specific if needed
-        id: props.resource.id,
+    if (props.resourceId) {
+      updateResource.mutate({
+        id: props.resourceId,
         formData: {
-          ...dtoPart,
-          ...(selectedImage && { image: selectedImage }),
+          name: formData.name,
+          description: formData.description,
+          allowTakeOver: formData.allowTakeOver,
+          image: selectedImage ?? undefined,
+          deleteImage: selectedImage === null,
         },
-      };
+      });
+      return;
+    }
 
-      updateResource.mutate(mutationPayload);
-    },
-    [
-      updateResource, 
-      formData, 
-      selectedImage, 
-      setIsSubmitting, 
-      setPostUpdateAction, 
-      error, 
-      t, 
-      props.resource.id
-    ] // Added props.resource.id, Renamed dependencies
-  );
+    createResource.mutate({
+      formData: {
+        name: formData.name as string,
+        description: formData.description as string,
+        allowTakeOver: formData.allowTakeOver,
+        image: selectedImage ?? undefined,
+      },
+    });
+  }, [formData, selectedImage, props.resourceId, updateResource, createResource]);
 
   return (
     <>
-      {props.children && props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside">
+      {props.children?.(onOpen)}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <ModalHeader>{t('modalTitle', 'Edit Resource')}</ModalHeader>
+            <>
+              <ModalHeader>{t(`modalTitle.${props.resourceId ? 'update' : 'create'}`)}</ModalHeader>
 
               <ModalBody className="w-full space-y-4">
-                <Input
-                  isRequired
-                  label={t('nameLabel')}
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  isDisabled={isSubmitting}
-                  isInvalid={!formData.name}
-                  errorMessage={!formData.name ? t('nameRequiredError', 'Name is required.') : ''}
-                />
-                <Input
-                  label={t('descriptionLabel')}
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  isDisabled={isSubmitting}
-                />
-
-                <Switch
-                  isSelected={formData.allowTakeOver}
-                  onValueChange={(value) => setFormData({ ...formData, allowTakeOver: value })}
-                  isDisabled={isSubmitting}
+                <Form
+                  ref={formRef}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    onSubmit();
+                  }}
                 >
-                  <div className="flex flex-col">
-                    <span className="text-small">{t('allowTakeOverLabel')}</span>
-                    <span className="text-tiny text-default-400">{t('allowTakeOverDescription')}</span>
-                  </div>
-                </Switch>
+                  <Input
+                    isRequired
+                    label={t('inputs.name.label')}
+                    value={formData.name}
+                    onChange={(e) => setField('name', e.target.value)}
+                    isInvalid={!formData.name}
+                    required
+                  />
+                  <Input
+                    label={t('inputs.description.label')}
+                    value={formData.description}
+                    onChange={(e) => setField('description', e.target.value)}
+                  />
 
-                <FileUpload
-                  label={t('imageLabel')}
-                  id="image"
-                  onChange={setSelectedImage}
-                  className="w-full"
-                  disabled={isSubmitting}
-                />
+                  <Switch
+                    isSelected={formData.allowTakeOver}
+                    onValueChange={(value) => setField('allowTakeOver', value)}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-small">{t('inputs.allowTakeOver.label')}</span>
+                      <span className="text-tiny text-default-400">{t('inputs.allowTakeOver.description')}</span>
+                    </div>
+                  </Switch>
+
+                  <ImageUpload
+                    label={t('inputs.image.label')}
+                    id="image"
+                    onChange={setSelectedImage}
+                    className="w-full"
+                    currentImageUrl={resource?.imageFilename ? filenameToUrl(resource?.imageFilename) : undefined}
+                  />
+
+                  <button hidden type="submit" />
+                </Form>
               </ModalBody>
 
               <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">
-                <Button
-                  variant="bordered"
-                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
-                  onPress={onClose} // Standard cancel button
-                  isDisabled={isSubmitting}
-                >
-                  {t('cancelButton', 'Cancel')}
+                <Button variant="bordered" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onClose}>
+                  {t('buttons.cancel')}
                 </Button>
-                <Button
-                  color="primary"
-                  variant="ghost"
-                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
-                  onPress={() => handleUpdate('clear', onClose)} 
-                  isLoading={isSubmitting && postUpdateAction === 'clear'} 
-                  isDisabled={isSubmitting || !formData.name}
-                >
-                  {t('saveAndContinueButton', 'Save and Continue Editing')}
-                </Button>
-                <Button
-                  color="primary"
-                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
-                  onPress={() => handleUpdate('close', onClose)} 
-                  isLoading={isSubmitting && postUpdateAction === 'close'} 
-                  isDisabled={isSubmitting || !formData.name}
-                >
-                  {t('saveButton', 'Save Changes')}
+                <Button color="primary" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onSubmit}>
+                  {props.resourceId ? t('buttons.update') : t('buttons.create')}
                 </Button>
               </ModalFooter>
-            </Form>
+            </>
           )}
         </ModalContent>
       </Modal>
