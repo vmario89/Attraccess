@@ -34,40 +34,117 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Download artifacts
+      - name: Try to download artifacts
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: fabreader-firmware
           path: firmware
-        continue-on-error: true
 
       - name: Check if artifacts exist
         id: check_artifacts
         run: |
-          if [ ! -f ./firmware/merged-firmware.bin ] || [ ! -f ./firmware/manifest.json ]; then
+          if [ ! -f "./firmware/merged-firmware.bin" ] || [ ! -f "./firmware/manifest.json" ]; then
             echo "Firmware artifacts not found, using the latest ones from the repository"
             echo "artifacts_found=false" >> $GITHUB_OUTPUT
           else
             echo "artifacts_found=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout repository with latest artifacts if needed
+      # If we can't find the artifacts, we'll try to build the firmware directly in this workflow
+      - name: Set up Python if needed
         if: steps.check_artifacts.outputs.artifacts_found != 'true'
-        uses: actions/checkout@v4
+        uses: actions/setup-python@v5
         with:
-          ref: 'main'
-          path: 'repo-checkout'
+          python-version: '3.11'
+
+      - name: Install PlatformIO if needed
+        if: steps.check_artifacts.outputs.artifacts_found != 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio esptool
+          pio upgrade
+
+      - name: Try to build firmware if needed
+        if: steps.check_artifacts.outputs.artifacts_found != 'true'
+        working-directory: apps/fabreader-firmware
+        run: |
+          # Try to build the firmware, but don't fail if it doesn't work
+          pio run -e fabreader || true
+
+          # Check if we have the necessary files
+          if [ -f ".pio/build/fabreader/bootloader.bin" ] && [ -f ".pio/build/fabreader/partitions.bin" ] && [ -f ".pio/build/fabreader/firmware.bin" ]; then
+            # For ESP32-C3, we merge bootloader, partition table and application
+            esptool.py --chip esp32c3 merge_bin \
+              -o .pio/build/fabreader/merged-firmware.bin \
+              --flash_mode dio \
+              --flash_freq 40m \
+              --flash_size 4MB \
+              0x0 .pio/build/fabreader/bootloader.bin \
+              0x8000 .pio/build/fabreader/partitions.bin \
+              0x10000 .pio/build/fabreader/firmware.bin
+              
+            # Copy to the firmware directory
+            mkdir -p ../firmware
+            cp .pio/build/fabreader/merged-firmware.bin ../firmware/
+          fi
+        continue-on-error: true
+
+      - name: Create placeholder files if needed
+        if: steps.check_artifacts.outputs.artifacts_found != 'true'
+        run: |
+          # Create directory for firmware files
+          mkdir -p ./firmware
+
+          # If no firmware binary exists, create a placeholder
+          if [ ! -f "./firmware/merged-firmware.bin" ] && [ ! -f "./apps/firmware/merged-firmware.bin" ]; then
+            echo "Creating placeholder firmware binary"
+            # Create a small binary file as placeholder (1KB of zeros)
+            dd if=/dev/zero of=./firmware/merged-firmware.bin bs=1024 count=1
+          elif [ -f "./apps/firmware/merged-firmware.bin" ]; then
+            # Copy the firmware if it was built but in a different location
+            cp ./apps/firmware/merged-firmware.bin ./firmware/
+          fi
+
+          # If no manifest exists, create one
+          if [ ! -f "./firmware/manifest.json" ]; then
+            echo "Creating placeholder manifest file"
+            
+            # Get repository information for URL construction
+            REPO_NAME="${GITHUB_REPOSITORY#*/}"
+            OWNER_NAME="${GITHUB_REPOSITORY%/*}"
+            VERSION=$(date +"%Y.%m.%d")
+            FIRMWARE_URL="https://${OWNER_NAME}.github.io/${REPO_NAME}/firmware/merged-firmware.bin"
+            
+            # Create a basic manifest file
+            cat > ./firmware/manifest.json << EOF
+            {
+              "name": "Fabreader Firmware",
+              "version": "$VERSION-placeholder",
+              "new_install_prompt_erase": true,
+              "builds": [
+                {
+                  "chipFamily": "ESP32-C3",
+                  "parts": [
+                    { "path": "$FIRMWARE_URL", "offset": 0 }
+                  ]
+                }
+              ]
+            }
+            EOF
+          fi
 
       - name: Set up site
         run: |
           mkdir -p ./_site/firmware
 
-          # Copy firmware files if they exist
-          if [ -f "./firmware/merged-firmware.bin" ] && [ -f "./firmware/manifest.json" ]; then
-            cp -R ./firmware/* ./_site/firmware/
-          elif [ -d "./repo-checkout/firmware" ]; then
-            # Try to use firmware from the repo checkout if available
-            cp -R ./repo-checkout/firmware/* ./_site/firmware/ || true
+          # Copy firmware files
+          if [ -f "./firmware/merged-firmware.bin" ]; then
+            cp ./firmware/merged-firmware.bin ./_site/firmware/
+          fi
+
+          if [ -f "./firmware/manifest.json" ]; then
+            cp ./firmware/manifest.json ./_site/firmware/
           fi
 
           # Create _headers file with CORS configuration
@@ -98,6 +175,7 @@ jobs:
               .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; background: white; }
               .requirements { background-color: #f8f9fa; }
               .browser-icon { height: 1.5em; vertical-align: middle; margin-right: 0.5em; }
+              .warning { background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
             </style>
           </head>
           <body>
@@ -160,6 +238,15 @@ jobs:
                 })
                 .then(data => {
                   document.getElementById('firmware-version').textContent = data.version;
+                  
+                  // Show warning if this is a placeholder version
+                  if (data.version.includes('placeholder')) {
+                    const container = document.querySelector('.install-container');
+                    const warning = document.createElement('div');
+                    warning.className = 'warning';
+                    warning.innerHTML = '<strong>Note:</strong> This is a placeholder firmware. Please run the build workflow first to generate the actual firmware.';
+                    container.appendChild(warning);
+                  }
                 })
                 .catch(error => {
                   document.getElementById('firmware-version').textContent = 'Not available';
