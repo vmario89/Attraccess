@@ -1,0 +1,182 @@
+name: Deploy Firmware to GitHub Pages
+
+on:
+  workflow_run:
+    workflows: ['Firmware Build']
+    types:
+      - completed
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: fabreader-firmware
+          path: firmware
+        continue-on-error: true
+
+      - name: Check if artifacts exist
+        id: check_artifacts
+        run: |
+          if [ ! -f ./firmware/merged-firmware.bin ] || [ ! -f ./firmware/manifest.json ]; then
+            echo "Firmware artifacts not found, using the latest ones from the repository"
+            echo "artifacts_found=false" >> $GITHUB_OUTPUT
+          else
+            echo "artifacts_found=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout repository with latest artifacts if needed
+        if: steps.check_artifacts.outputs.artifacts_found != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: 'main'
+          path: 'repo-checkout'
+
+      - name: Set up site
+        run: |
+          mkdir -p ./_site/firmware
+
+          # Copy firmware files if they exist
+          if [ -f "./firmware/merged-firmware.bin" ] && [ -f "./firmware/manifest.json" ]; then
+            cp -R ./firmware/* ./_site/firmware/
+          elif [ -d "./repo-checkout/firmware" ]; then
+            # Try to use firmware from the repo checkout if available
+            cp -R ./repo-checkout/firmware/* ./_site/firmware/ || true
+          fi
+
+          # Create _headers file with CORS configuration
+          cat > ./_site/_headers << EOL
+          /*
+            Access-Control-Allow-Origin: *
+            Access-Control-Allow-Methods: GET, OPTIONS
+            Access-Control-Allow-Headers: Content-Type
+          EOL
+
+          # Create an index.html page to list and demonstrate firmware use
+          cat > ./_site/index.html << EOL
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Fabreader Firmware</title>
+            <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+            <style>
+              body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.5; padding: 2rem; max-width: 800px; margin: 0 auto; }
+              h1 { color: #333; }
+              .install-container { margin: 2rem 0; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+              .version { font-size: 0.9rem; color: #666; margin-bottom: 1rem; }
+              pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+              .error-message { color: #e53935; padding: 1rem; border: 1px solid #f8d7da; background-color: #fff5f5; border-radius: 4px; display: none; }
+              .not-supported { display: none; }
+              .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; background: white; }
+              .requirements { background-color: #f8f9fa; }
+              .browser-icon { height: 1.5em; vertical-align: middle; margin-right: 0.5em; }
+            </style>
+          </head>
+          <body>
+            <h1>Fabreader Firmware Installer</h1>
+            <p>Use this page to install or update your Fabreader device firmware using ESP Web Tools.</p>
+            
+            <div class="card requirements">
+              <h3>⚠️ Requirements</h3>
+              <ul>
+                <li>Chrome or Edge browser on desktop (Web Serial is not supported on mobile or Firefox)</li>
+                <li>ESP32-C3 based Fabreader device</li>
+                <li>USB connection to your computer</li>
+              </ul>
+            </div>
+            
+            <div class="error-message" id="error-message">
+              <p><strong>Error:</strong> <span id="error-text"></span></p>
+              <p>Please check your connection and try again. If the problem persists, try the manual installation method described below.</p>
+            </div>
+            
+            <div class="install-container">
+              <div class="version">Latest version: <span id="firmware-version">Loading...</span></div>
+              <esp-web-install-button manifest="./firmware/manifest.json"></esp-web-install-button>
+              <p class="not-supported" id="browser-not-supported">Your browser doesn't support Web Serial. Please use Chrome or Edge browser.</p>
+            </div>
+            
+            <div class="card">
+              <h2>Installation Instructions</h2>
+              <ol>
+                <li>Connect your Fabreader device to your computer using a USB cable</li>
+                <li>Click the "Install" button above</li>
+                <li>Select your device from the list when prompted</li>
+                <li>Wait for the installation to complete</li>
+              </ol>
+            </div>
+            
+            <div class="card">
+              <h2>Manual Installation</h2>
+              <p>If the web installer doesn't work, you can download the firmware file and flash it manually:</p>
+              <ol>
+                <li>Download the <a href="./firmware/merged-firmware.bin" download>firmware binary</a></li>
+                <li>Install <a href="https://github.com/espressif/esptool" target="_blank">esptool</a></li>
+                <li>Flash using: <code>esptool.py --chip esp32c3 --port [PORT] --baud 921600 write_flash 0x0 merged-firmware.bin</code></li>
+              </ol>
+            </div>
+            
+            <script>
+              // Check if browser supports Web Serial
+              if (!('serial' in navigator)) {
+                document.getElementById('browser-not-supported').style.display = 'block';
+              }
+              
+              // Fetch the manifest to display the current version
+              fetch('./firmware/manifest.json')
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Could not load firmware manifest. Status: ' + response.status);
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  document.getElementById('firmware-version').textContent = data.version;
+                })
+                .catch(error => {
+                  document.getElementById('firmware-version').textContent = 'Not available';
+                  document.getElementById('error-message').style.display = 'block';
+                  document.getElementById('error-text').textContent = error.message;
+                  console.error('Error:', error);
+                });
+            </script>
+          </body>
+          </html>
+          EOL
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
