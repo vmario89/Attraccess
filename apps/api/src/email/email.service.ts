@@ -5,7 +5,6 @@ import { User } from '@attraccess/database-entities';
 import mjml2html from 'mjml';
 
 import * as Handlebars from 'handlebars';
-import { EmailConfiguration as EmailConfigMapType } from './email.config';
 import { VERIFY_EMAIL_MJML_TEMPLATE } from './templates/verify-email.template';
 import { RESET_PASSWORD_MJML_TEMPLATE } from './templates/reset-password.template';
 
@@ -15,15 +14,10 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private frontendUrl: string;
 
-  constructor(
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService
-  ) {
+  constructor(private readonly mailerService: MailerService, private readonly configService: ConfigService) {
     this.logger.debug('Initializing EmailService');
 
-    const emailConf = this.configService.get<EmailConfigMapType>('email');
-
-    this.loadTemplates(); 
+    this.loadTemplates();
 
     this.frontendUrl =
       this.configService.get<string>('app.frontendUrl') ||
@@ -51,7 +45,7 @@ export class EmailService {
       this.logger.debug('Loading static template: reset-password');
       this.templates['reset-password'] = Handlebars.compile(mjml2html(RESET_PASSWORD_MJML_TEMPLATE).html);
       this.logger.debug('Compiled static template: reset-password');
-      
+
       this.logger.debug(`Loaded ${Object.keys(this.templates).length} static email templates.`);
     } catch (error) {
       this.logger.error('Failed to load static email templates:', error.stack);
@@ -80,7 +74,10 @@ export class EmailService {
     const html = template({
       username: user.username,
       verificationUrl,
-      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'), // Using a default from a quick search, replace if a better one is configured
+      logoUrl: this.configService.get<string>(
+        'app.logoUrl',
+        'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'
+      ), // Using a default from a quick search, replace if a better one is configured
       year: new Date().getFullYear(),
     });
 
@@ -108,7 +105,10 @@ export class EmailService {
     const html = template({
       username: user.username,
       resetUrl,
-      logoUrl: this.configService.get<string>('app.logoUrl', 'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'),
+      logoUrl: this.configService.get<string>(
+        'app.logoUrl',
+        'https://attraccess.fabinfra.dev/assets/logo_navbar-BhJ4pnsY.png'
+      ),
       year: new Date().getFullYear(),
     });
 
