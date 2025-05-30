@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}/firmware
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -83,7 +83,7 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
           OWNER_NAME="${GITHUB_REPOSITORY%/*}"
 
-          # Construct the firmware URL based on GitHub Pages
+          # Construct the firmware URL based on GitHub Pages - now in /firmware subdirectory
           FIRMWARE_URL="https://${OWNER_NAME}.github.io/${REPO_NAME}/firmware/merged-firmware.bin"
 
           cat > .pio/build/fabreader/manifest.json << EOF
@@ -102,10 +102,20 @@ jobs:
           }
           EOF
 
+      - name: Download existing site if available
+        run: |
+          echo "Downloading existing site if available..."
+          mkdir -p ./_site
+          # Try to download the current site, but don't fail if it doesn't exist
+          curl -s -o site.tar.gz "https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/site.tar.gz" || true
+          if [ -f "site.tar.gz" ]; then
+            tar -xzf site.tar.gz -C ./_site
+          fi
+
       - name: Prepare site for deployment
         run: |
           echo "Preparing site for deployment..."
-          # Create directory structure
+          # Create directory structure for firmware
           mkdir -p ./_site/firmware
 
           # Copy firmware files
@@ -120,8 +130,8 @@ jobs:
             Access-Control-Allow-Headers: Content-Type
           EOL
 
-          # Create an index.html page
-          cat > ./_site/index.html << EOL
+          # Create an index.html page for the firmware path
+          cat > ./_site/firmware/index.html << EOL
           <!DOCTYPE html>
           <html>
           <head>
@@ -140,9 +150,12 @@ jobs:
               .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; background: white; }
               .requirements { background-color: #f8f9fa; }
               .build-info { font-size: 0.8rem; color: #666; margin-top: 2rem; }
+              .back-link { margin-bottom: 1rem; }
             </style>
           </head>
           <body>
+            <div class="back-link"><a href="/">← Back to Documentation</a></div>
+            
             <h1>Fabreader Firmware Installer</h1>
             <p>Use this page to install or update your Fabreader device firmware using ESP Web Tools.</p>
             
@@ -161,7 +174,7 @@ jobs:
             
             <div class="install-container">
               <div class="version">Latest version: <span id="firmware-version">Loading...</span></div>
-              <esp-web-install-button manifest="./firmware/manifest.json"></esp-web-install-button>
+              <esp-web-install-button manifest="./manifest.json"></esp-web-install-button>
               <p class="not-supported" id="browser-not-supported">Your browser doesn't support Web Serial. Please use Chrome or Edge browser.</p>
             </div>
             
@@ -179,7 +192,7 @@ jobs:
               <h2>Manual Installation</h2>
               <p>If the web installer doesn't work, you can download the firmware file and flash it manually:</p>
               <ol>
-                <li>Download the <a href="./firmware/merged-firmware.bin" download>firmware binary</a></li>
+                <li>Download the <a href="./merged-firmware.bin" download>firmware binary</a></li>
                 <li>Install <a href="https://github.com/espressif/esptool" target="_blank">esptool</a></li>
                 <li>Flash using: <code>esptool.py --chip esp32c3 --port [PORT] --baud 921600 write_flash 0x0 merged-firmware.bin</code></li>
               </ol>
@@ -198,7 +211,7 @@ jobs:
               }
               
               // Fetch the manifest to display the current version
-              fetch('./firmware/manifest.json')
+              fetch('./manifest.json')
                 .then(response => {
                   if (!response.ok) {
                     throw new Error('Could not load firmware manifest. Status: ' + response.status);
@@ -218,6 +231,9 @@ jobs:
           </body>
           </html>
           EOL
+
+          # Create a tarball of the site for future workflows to reference
+          tar -czf ./_site/site.tar.gz -C ./_site .
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
