@@ -1,22 +1,21 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, HTMLAttributes } from 'react';
 import { useToastMessage } from './toastProvider';
 import { ImageIcon, X } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './fileUpload.en.json';
 import * as de from './fileUpload.de.json';
 
-interface FileUploadProps {
+interface FileUploadProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   id: string;
   label: string;
   onChange: (file: File | null) => void;
   disabled?: boolean;
-  className?: string;
 }
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export function FileUpload({ id, label, onChange, disabled = false, className = '' }: FileUploadProps) {
+export function FileUpload({ id, label, onChange, disabled = false, className = '', ...rest }: FileUploadProps) {
   const { t } = useTranslations('fileUpload', {
     en,
     de,
@@ -130,7 +129,7 @@ export function FileUpload({ id, label, onChange, disabled = false, className = 
   }, [onChange]);
 
   return (
-    <div className={className}>
+    <div {...rest}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         {label}
       </label>
