@@ -154,7 +154,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 ### Environment / Umgebung
 
 - **Browser:** ${navigator.userAgent}
-- **Screen Size / Bildschirmgröße:** ${window.screen.width}x${window.screen.height}
+- **Screen Size / Bildschirmgröße:** ${window.innerWidth}x${window.innerHeight}
 - **Time / Zeit:** ${new Date().toISOString()}
 - **User ID / Benutzer-ID:** ${user?.id || 'Not logged in / Nicht angemeldet'}
 - **URL:** ${window.location.href}
@@ -180,7 +180,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 ### Environment / Umgebung
 
 - **Browser:** ${navigator.userAgent}
-- **Screen Size / Bildschirmgröße:** ${window.screen.width}x${window.screen.height}
+- **Screen Size / Bildschirmgröße:** ${window.innerWidth}x${window.innerHeight}
 - **Time / Zeit:** ${new Date().toISOString()}
 - **User ID / Benutzer-ID:** ${user?.id || 'Not logged in / Nicht angemeldet'}
 - **URL:** ${window.location.href}
