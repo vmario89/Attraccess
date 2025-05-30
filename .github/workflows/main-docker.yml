@@ -93,6 +93,11 @@ jobs:
         id: node-version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
+      # Add step to get short SHA
+      - name: Get short SHA
+        id: vars
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
       # Build and push Docker image
       - name: Build and push Docker image
         id: build-and-push
@@ -100,10 +105,11 @@ jobs:
         with:
           context: .
           push: true
-          # Tag image as 'latest' for main branch pushes
           tags: |
-            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:latest
-            ${{ env.DOCKERHUB_IMAGE_NAME }}:latest
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:nightly-latest
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:nightly-${{ steps.vars.outputs.SHORT_SHA }}
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:nightly-latest
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:nightly-${{ steps.vars.outputs.SHORT_SHA }}
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
           labels: |
