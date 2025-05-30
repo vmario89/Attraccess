@@ -176,6 +176,9 @@ importers:
       nanoid:
         specifier: ^3.3.11
         version: 3.3.11
+      new-github-issue-url:
+        specifier: ^1.0.0
+        version: 1.1.0
       nodemailer:
         specifier: ^6.10.1
         version: 6.10.1
@@ -10967,6 +10970,10 @@ packages:
 
   nested-error-stacks@2.1.1:
     resolution: {integrity: sha512-9iN1ka/9zmX1ZvLV9ewJYEk9h7RyRRtqdK0woXcqohu8EWIerfPUjYJPg0ULy0UqP7cslmdGc8xKDJcojlKiaw==}
+
+  new-github-issue-url@1.1.0:
+    resolution: {integrity: sha512-R4r7f3Q/SzlI4Q/J/0KPRf+bwxYk7BiaYEy0zTVqpikA5F1CwCHgwVReKhpYRlG1besvLdtABQGQRhFy8CyT3g==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   nice-try@1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
@@ -28674,6 +28681,8 @@ snapshots:
   neo-async@2.6.2: {}
 
   nested-error-stacks@2.1.1: {}
+
+  new-github-issue-url@1.1.0: {}
 
   nice-try@1.0.5:
     optional: true
