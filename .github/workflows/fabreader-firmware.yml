@@ -106,10 +106,21 @@ jobs:
         run: |
           echo "Downloading existing site if available..."
           mkdir -p ./_site
+
           # Try to download the current site, but don't fail if it doesn't exist
-          curl -s -o site.tar.gz "https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/site.tar.gz" || true
-          if [ -f "site.tar.gz" ]; then
-            tar -xzf site.tar.gz -C ./_site
+          curl -s -f -o site.tar.gz "https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/site.tar.gz" || echo "No existing site archive found, starting fresh"
+
+          # Only try to extract if the file exists and has content
+          if [ -f "site.tar.gz" ] && [ -s "site.tar.gz" ]; then
+            # Check if it's a valid gzip file before extracting
+            if file site.tar.gz | grep -q "gzip compressed data"; then
+              echo "Valid archive found, extracting..."
+              tar -xzf site.tar.gz -C ./_site || echo "Extraction failed, continuing with empty site"
+            else
+              echo "Downloaded file is not a valid gzip archive, starting fresh"
+            fi
+          else
+            echo "No valid archive found, starting with a fresh site"
           fi
 
       - name: Prepare site for deployment
