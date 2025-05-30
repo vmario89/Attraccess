@@ -55,7 +55,6 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
 
   const setField = useCallback(
     <T extends keyof UpdateResourceDto>(field: T, value: UpdateResourceDto[T]) => {
-      console.log('setField', field, value);
       setFormData((prev) => ({ ...prev, [field]: value }));
     },
     [setFormData]
@@ -127,7 +126,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
 
       console.error('Failed to create resource:', error, {
         resourceId: props.resourceId,
-        error: updateResource.error,
+        error: createResource.error,
         requestData: formData,
       });
     },
