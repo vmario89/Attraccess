@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { X, Settings, LogOut, User, Book, ExternalLink } from 'lucide-react';
+import newGithubIssueUrl from 'new-github-issue-url';
+import { X, Settings, LogOut, User, Book, ExternalLink, Github } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link, PropsOf } from '@heroui/react';
@@ -143,6 +144,31 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         <div className="py-4">
           <nav className="px-2">
             <NavLink href="/docs" target="_blank" icon={<Book />} label={t('docs')} isExternal />
+            <NavLink
+              href={newGithubIssueUrl({
+                user: 'FabInfra',
+                repo: 'Attraccess',
+                body: `
+### Environment
+
+- **Browser:** ${navigator.userAgent}
+- **Screen Size:** ${window.screen.width}x${window.screen.height}
+- **Time:** ${new Date().toISOString()}
+- **User ID:** ${user?.id || 'Not logged in'}
+- **URL:** ${window.location.href}
+
+### Description
+
+<!-- Please describe the issue or feature request in detail. -->
+<!-- For bug reports, please include steps to reproduce. -->
+<!-- For feature requests, please explain the use case. -->
+                  `,
+              })}
+              target="_blank"
+              icon={<Github />}
+              label={t('reportIssue')}
+              isExternal
+            />
           </nav>
         </div>
 
