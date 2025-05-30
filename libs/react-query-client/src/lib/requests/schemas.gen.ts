@@ -727,6 +727,11 @@ export const $UpdateResourceDto = {
             description: 'New resource image file',
             format: 'binary'
         },
+        deleteImage: {
+            type: 'boolean',
+            description: 'Whether the resource image should be deleted',
+            default: false
+        },
         documentationType: {
             type: 'string',
             description: 'The type of documentation (markdown or url)',

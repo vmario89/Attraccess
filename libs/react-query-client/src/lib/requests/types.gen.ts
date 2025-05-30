@@ -476,6 +476,10 @@ export type UpdateResourceDto = {
      */
     image?: (Blob | File);
     /**
+     * Whether the resource image should be deleted
+     */
+    deleteImage?: boolean;
+    /**
      * The type of documentation (markdown or url)
      */
     documentationType?: 'markdown' | 'url';
