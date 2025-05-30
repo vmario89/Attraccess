@@ -183,18 +183,21 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   isDisabled={isSubmitting}
                   isInvalid={!formData.name}
                   errorMessage={!formData.name ? t('nameRequiredError', 'Name is required.') : ''}
+                  data-cy="resource-name-input"
                 />
                 <Input
                   label={t('descriptionLabel')}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   isDisabled={isSubmitting}
+                  data-cy="resource-description-input"
                 />
 
                 <Switch
                   isSelected={formData.allowTakeOver}
                   onValueChange={(value) => setFormData({ ...formData, allowTakeOver: value })}
                   isDisabled={isSubmitting}
+                  data-cy="resource-allow-takeover-switch"
                 >
                   <div className="flex flex-col">
                     <span className="text-small">{t('allowTakeOverLabel')}</span>
@@ -208,6 +211,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   onChange={setSelectedImage}
                   className="w-full"
                   disabled={isSubmitting}
+                  data-cy="resource-image-upload"
                 />
               </ModalBody>
 
@@ -219,6 +223,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   onPress={() => handleCreate('close', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'close'}
                   isDisabled={isSubmitting || !formData.name}
+                  data-cy="create-resource-button"
                 >
                   {t('createCloseButton', 'Create')}
                 </Button>
@@ -229,6 +234,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   onPress={() => handleCreate('clear', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'clear'}
                   isDisabled={isSubmitting || !formData.name}
+                  data-cy="create-resource-and-new-button"
                 >
                   {t('createClearButton', 'Create and New')}
                 </Button>
@@ -238,6 +244,7 @@ export function ResourceCreateModal(props: ResourceCreateModalProps) {
                   onPress={() => handleCreate('open', onClose)}
                   isLoading={isSubmitting && postCreateAction === 'open'}
                   isDisabled={isSubmitting || !formData.name}
+                  data-cy="create-resource-and-open-button"
                 >
                   {t('createOpenButton', 'Create and Open')}
                 </Button>

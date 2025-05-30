@@ -43,20 +43,35 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
               inputWrapper: 'bg-transparent border-none shadow-none focus-within:ring-0 pl-2',
               input: 'text-sm',
             }}
+            data-cy="resource-search-input"
           />
         </div>
         {canManageResources && (
           <div className="flex items-center gap-2 mr-1 hidden md:flex">
             <ResourceGroupUpsertModal>
               {(onOpen: () => void) => (
-                <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="secondary" size="sm">
+                <Button
+                  radius="full"
+                  onPress={onOpen}
+                  startContent={<Plus size={18} />}
+                  color="secondary"
+                  size="sm"
+                  data-cy="add-resource-group-button"
+                >
                   {t('addGroup')}
                 </Button>
               )}
             </ResourceGroupUpsertModal>
             <ResourceCreateModal>
               {(onOpen: () => void) => (
-                <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="primary" size="sm">
+                <Button
+                  radius="full"
+                  onPress={onOpen}
+                  startContent={<Plus size={18} />}
+                  color="primary"
+                  size="sm"
+                  data-cy="add-resource-button"
+                >
                   {t('addResource')}
                 </Button>
               )}
@@ -69,14 +84,28 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
         <div className="flex items-center gap-2 mr-1 md:hidden flex">
           <ResourceGroupUpsertModal>
             {(onOpen: () => void) => (
-              <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="secondary" size="sm">
+              <Button
+                radius="full"
+                onPress={onOpen}
+                startContent={<Plus size={18} />}
+                color="secondary"
+                size="sm"
+                data-cy="add-resource-group-button-mobile"
+              >
                 {t('addGroup')}
               </Button>
             )}
           </ResourceGroupUpsertModal>
           <ResourceCreateModal>
             {(onOpen: () => void) => (
-              <Button radius="full" onPress={onOpen} startContent={<Plus size={18} />} color="primary" size="sm">
+              <Button
+                radius="full"
+                onPress={onOpen}
+                startContent={<Plus size={18} />}
+                color="primary"
+                size="sm"
+                data-cy="add-resource-button-mobile"
+              >
                 {t('addResource')}
               </Button>
             )}
