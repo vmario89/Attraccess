@@ -70,6 +70,27 @@ services:
       - ./plugins:/app/plugins
 ```
 
+
+### Choosing an Image Tag
+
+Attraccess provides several Docker image tags to suit different needs. You can specify the desired tag in the `image` field of your `docker-compose.yml` file (e.g., `image: ghcr.io/fabinfra/attraccess:latest`).
+
+Here are the available tags:
+
+*   **`latest`**: This tag always points to the most recent stable release of Attraccess. This is the recommended tag for most users as it provides a balance of new features and stability.
+    *   Example: `ghcr.io/fabinfra/attraccess:latest`
+*   **`nightly-latest`**: This tag points to the latest successful build from the `main` development branch. It includes the newest features and bug fixes but may be less stable than a release version. Use this if you want to try out cutting-edge changes or help with testing.
+    *   Example: `ghcr.io/fabinfra/attraccess:nightly-latest`
+*   **`nightly-<commit_sha>`**: This tag points to a specific build from the `main` branch, identified by its short commit SHA (e.g., `nightly-abcdef1`). This is useful if you need to pin your deployment to a particular nightly version for testing or to avoid a regression introduced in a later nightly build.
+    *   Example: `ghcr.io/fabinfra/attraccess:nightly-a1b2c3d`
+*   **`<version>`** (e.g., `v1.2.3`): This tag points to a specific official release version of Attraccess. Use this if you need to run a specific version of the application.
+    *   Example: `ghcr.io/fabinfra/attraccess:v1.0.0`
+*   **`<version>-<commit_sha>`** (e.g., `v1.2.3-abcdef1`): This tag points to a specific official release version tied to its exact commit SHA. This offers the most precise version pinning.
+    *   Example: `ghcr.io/fabinfra/attraccess:v1.0.0-e4f5g6h`
+
+When updating, you can change the tag in your `docker-compose.yml` and then run `docker-compose pull && docker-compose up -d` to fetch and deploy the new version.
+
+
 > ⚠️ **Security Note**: Replace the placeholder values for `AUTH_JWT_SECRET` and `AUTH_SESSION_SECRET` with strong, random strings. You can generate secure random strings with: `openssl rand -base64 32`
 
 ### Step 3: Create Storage Directories
