@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "unsupported": "Flashen nicht möglich",
+    "notAllowed": "Flasher benötigt HTTPS"
+  }
+}
