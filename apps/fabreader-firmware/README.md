@@ -22,7 +22,7 @@ You can install the firmware directly from your web browser using [ESP Web Tools
 
 ### Manual Installation
 
-If the web installer doesn't work for you, you can download the firmware binary from the [Releases](https://github.com/OWNER_NAME/Attraccess/releases) page and flash it using esptool:
+If the web installer doesn't work for you, you can download the firmware binary from the GitHub Pages site and flash it manually:
 
 ```bash
 # Install esptool
@@ -74,11 +74,10 @@ pio run -e fabreader -t upload
 
 This project uses GitHub Actions for continuous integration:
 
-1. Every push to the main branch or pull request that changes files in the `apps/fabreader-firmware` directory triggers a build
-2. The firmware is built using PlatformIO
-3. A merged binary and manifest file for ESP Web Tools are created
-4. These files are uploaded as artifacts and also deployed to GitHub Pages
-5. When a release is created, the firmware is attached to the release
+1. When changes are pushed to the `main` branch that affect files in the `apps/fabreader-firmware` directory, a build is triggered
+2. The firmware is built using PlatformIO, creating a merged binary for ESP Web Tools
+3. The files are automatically deployed to GitHub Pages with a web installer interface
+4. The firmware can be installed using any browser that supports Web Serial API
 
 ### How ESP Web Tools Integration Works
 
