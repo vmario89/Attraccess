@@ -40,9 +40,22 @@ jobs:
         working-directory: apps/fabreader-firmware
         run: pio run -e fabreader
 
+      - name: List build directory
+        working-directory: apps/fabreader-firmware
+        run: |
+          ls -la .pio/build/fabreader/
+          echo "Checking for bootloader and partition files:"
+          find .pio -name "bootloader.bin"
+          find .pio -name "partitions.bin"
+
+      # We're going to simplify the merge process for ESP32-C3
+      # For ESP32-C3, we can just use the bootloader, partition table, and firmware
+      # The boot_app0.bin is typically only needed for ESP32, not ESP32-C3
+
       - name: Create merged firmware for ESP Web Tools
         working-directory: apps/fabreader-firmware
         run: |
+          # For ESP32-C3, we merge bootloader, partition table and application
           esptool.py --chip esp32c3 merge_bin \
             -o .pio/build/fabreader/merged-firmware.bin \
             --flash_mode dio \
@@ -50,7 +63,6 @@ jobs:
             --flash_size 4MB \
             0x0 .pio/build/fabreader/bootloader.bin \
             0x8000 .pio/build/fabreader/partitions.bin \
-            0xe000 .pio/build/fabreader/boot_app0.bin \
             0x10000 .pio/build/fabreader/firmware.bin
 
       - name: Create manifest file
