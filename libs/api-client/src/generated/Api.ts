@@ -526,6 +526,11 @@ export interface UpdateResourceDto {
    */
   image?: File;
   /**
+   * Whether the resource image should be deleted
+   * @default false
+   */
+  deleteImage?: boolean;
+  /**
    * The type of documentation (markdown or url)
    * @example "markdown"
    */

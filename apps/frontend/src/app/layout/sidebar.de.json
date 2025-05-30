@@ -1,5 +1,6 @@
 {
     "logout": "Abmelden",
     "docs": "Dokumentation",
-    "reportIssue": "Problem melden"
+    "reportBug": "Fehler melden",
+    "requestFeature": "Funktion vorschlagen"
 }

@@ -142,31 +142,58 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
         {/* Helpful Links */}
         <div className="py-4">
-          <nav className="px-2">
+          <nav className="px-2 space-y-1">
             <NavLink href="/docs" target="_blank" icon={<Book />} label={t('docs')} isExternal />
             <NavLink
               href={newGithubIssueUrl({
                 user: 'FabInfra',
                 repo: 'Attraccess',
+                title: '[Bug] ',
+                labels: ['bug'],
                 body: `
-### Environment
+### Environment / Umgebung
 
 - **Browser:** ${navigator.userAgent}
-- **Screen Size:** ${window.screen.width}x${window.screen.height}
-- **Time:** ${new Date().toISOString()}
-- **User ID:** ${user?.id || 'Not logged in'}
+- **Screen Size / Bildschirmgröße:** ${window.screen.width}x${window.screen.height}
+- **Time / Zeit:** ${new Date().toISOString()}
+- **User ID / Benutzer-ID:** ${user?.id || 'Not logged in / Nicht angemeldet'}
 - **URL:** ${window.location.href}
 
-### Description
+### Description / Beschreibung
 
-<!-- Please describe the issue or feature request in detail. -->
-<!-- For bug reports, please include steps to reproduce. -->
-<!-- For feature requests, please explain the use case. -->
+<!-- Please describe the bug in detail. Include steps to reproduce. -->
+<!-- Bitte beschreibe den Fehler im Detail. Füge Schritte zur Reproduktion hinzu. -->
                   `,
               })}
               target="_blank"
-              icon={<Github />}
-              label={t('reportIssue')}
+              icon={<Github />} // Consider a more specific bug icon if available
+              label={t('reportBug')}
+              isExternal
+            />
+            <NavLink
+              href={newGithubIssueUrl({
+                user: 'FabInfra',
+                repo: 'Attraccess',
+                title: '[Feature Request] ',
+                labels: ['enhancement'],
+                body: `
+### Environment / Umgebung
+
+- **Browser:** ${navigator.userAgent}
+- **Screen Size / Bildschirmgröße:** ${window.screen.width}x${window.screen.height}
+- **Time / Zeit:** ${new Date().toISOString()}
+- **User ID / Benutzer-ID:** ${user?.id || 'Not logged in / Nicht angemeldet'}
+- **URL:** ${window.location.href}
+
+### Description / Beschreibung
+
+<!-- Please describe the feature request in detail. Explain the use case. -->
+<!-- Bitte beschreibe die Funktionsanfrage im Detail. Erkläre den Anwendungsfall. -->
+                  `,
+              })}
+              target="_blank"
+              icon={<Github />} // Consider a lightbulb or similar icon for features
+              label={t('requestFeature')}
               isExternal
             />
           </nav>
