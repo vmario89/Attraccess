@@ -53,88 +53,114 @@ jobs:
 
       - name: Prepare site for deployment
         run: |
+          # Add debugging info
+          echo "Current directory: $(pwd)"
+          echo "Directory listing:"
+          ls -la
+          echo "Docs directory listing:"
+          ls -la docs/ || echo "Cannot list docs directory"
+          echo "Site directory listing before copy:"
+          ls -la ./_site/ || echo "Cannot list _site directory"
+
           # Ensure firmware directory exists
           mkdir -p ./_site/firmware
+          echo "Created firmware directory"
 
-          # Copy docs to site root
-          cp -R docs/* ./_site/
+          # Copy docs to site root if docs directory exists and has content
+          if [ -d "docs" ] && [ "$(ls -A docs 2>/dev/null)" ]; then
+            echo "Copying docs content to site root..."
+            cp -Rv docs/* ./_site/ || echo "Copy failed with exit code $?"
+          else
+            echo "No docs content found, skipping copy"
+          fi
+
+          echo "Site directory listing after copy:"
+          ls -la ./_site/ || echo "Cannot list _site directory"
 
           # Keep existing _headers file or create if it doesn't exist
           if [ ! -f "./_site/_headers" ]; then
-            cat > ./_site/_headers << EOL
-          /*
+            echo "Creating _headers file..."
+            cat > ./_site/_headers << 'EOL'
+            /*
             Access-Control-Allow-Origin: *
             Access-Control-Allow-Methods: GET, OPTIONS
             Access-Control-Allow-Headers: Content-Type
-          EOL
+            EOL
+          else
+            echo "_headers file already exists"
           fi
 
           # Create or update the index.html file if not present in docs
           if [ ! -f "./_site/index.html" ]; then
-            cat > ./_site/index.html << EOL
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
+            echo "Creating index.html file..."
+            cat > ./_site/index.html << 'EOL'
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Attraccess Documentation</title>
             <style>
-              body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; }
-              header { margin-bottom: 2rem; }
-              h1 { color: #333; }
-              .card { border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-              .btn { display: inline-block; background-color: #0066cc; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; margin-top: 1rem; }
-              .btn:hover { background-color: #0052a3; }
-              .section { margin-bottom: 2rem; }
-              footer { margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1rem; color: #666; font-size: 0.9rem; }
+                body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; }
+                header { margin-bottom: 2rem; }
+                h1 { color: #333; }
+                .card { border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                .btn { display: inline-block; background-color: #0066cc; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; margin-top: 1rem; }
+                .btn:hover { background-color: #0052a3; }
+                .section { margin-bottom: 2rem; }
+                footer { margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1rem; color: #666; font-size: 0.9rem; }
             </style>
-          </head>
-          <body>
+            </head>
+            <body>
             <header>
-              <h1>Attraccess Documentation</h1>
-              <p>Welcome to the Attraccess project documentation.</p>
+                <h1>Attraccess Documentation</h1>
+                <p>Welcome to the Attraccess project documentation.</p>
             </header>
             
             <div class="section">
-              <h2>Documentation</h2>
-              <div class="card">
+                <h2>Documentation</h2>
+                <div class="card">
                 <h3>User Guides</h3>
                 <p>User guides and tutorials for using the Attraccess system.</p>
                 <a href="user/" class="btn">View User Docs</a>
-              </div>
-              
-              <div class="card">
+                </div>
+                
+                <div class="card">
                 <h3>Developer Documentation</h3>
                 <p>Technical documentation for developers working with the Attraccess codebase.</p>
                 <a href="developer/" class="btn">View Developer Docs</a>
-              </div>
-              
-              <div class="card">
+                </div>
+                
+                <div class="card">
                 <h3>Setup Instructions</h3>
                 <p>Instructions for setting up and configuring the Attraccess system.</p>
                 <a href="setup/" class="btn">View Setup Guides</a>
-              </div>
+                </div>
             </div>
             
             <div class="section">
-              <h2>Tools</h2>
-              <div class="card">
+                <h2>Tools</h2>
+                <div class="card">
                 <h3>Fabreader Firmware Installer</h3>
                 <p>Install or update the firmware on your Fabreader device directly from your web browser.</p>
                 <a href="firmware/" class="btn">Open Firmware Installer</a>
-              </div>
+                </div>
             </div>
             
             <footer>
-              <p>Attraccess Project - Generated on $(date)</p>
+                <p>Attraccess Project</p>
             </footer>
-          </body>
-          </html>
-          EOL
+            </body>
+            </html>
+            EOL
+          else
+            echo "index.html already exists"
           fi
 
           # Create a tarball of the site for future workflows to reference
-          tar -czf ./_site/site.tar.gz -C ./_site .
+          echo "Creating site archive..."
+          tar -czf ./_site/site.tar.gz -C ./_site . || echo "Tarball creation failed with exit code $?"
+          echo "Deployment preparation complete"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
