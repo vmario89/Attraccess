@@ -209,7 +209,8 @@ jobs:
           EOL
 
       - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v3
+        if: success()
+        uses: actions/upload-artifact@v4 # Upgraded from v3 to v4
         with:
           name: firmware-build
           path: |
@@ -233,8 +234,9 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Download firmware artifacts
-        if: always() && needs.build-firmware.result != 'skipped' && needs.build-firmware.outputs.build_success == 'true'
-        uses: actions/download-artifact@v3
+        # Only try to download if the build-firmware job ran and was successful
+        if: needs.build-firmware.result == 'success'
+        uses: actions/download-artifact@v4 # Upgraded from v3 to v4
         with:
           name: firmware-build
           path: ./firmware-build
@@ -253,9 +255,9 @@ jobs:
 
           # Copy firmware files if they exist
           if [ -d "./firmware-build" ]; then
-            cp ./firmware-build/merged-firmware.bin ./_site/firmware/
-            cp ./firmware-build/manifest.json ./_site/firmware/
-            cp ./firmware-build/index.html ./_site/firmware/
+            cp -f ./firmware-build/merged-firmware.bin ./_site/firmware/ || echo "No firmware binary found"
+            cp -f ./firmware-build/manifest.json ./_site/firmware/ || echo "No manifest found"
+            cp -f ./firmware-build/index.html ./_site/firmware/ || echo "No index found"
           fi
 
           # Create _headers file with CORS configuration
