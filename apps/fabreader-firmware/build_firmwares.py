@@ -197,7 +197,7 @@ def main():
             # For ESP32-C3, we need to adapt the command
             if "ESP32-C3" in board_family or "ESP32_C3" in board_family:
                 merge_cmd = [
-                    'esptool.py', '--chip', 'esp32c3', 'merge_bin',
+                    'python', '-m', 'esptool', '--chip', 'esp32c3', 'merge_bin',
                     '-o', merged_bin_path,
                     '--flash_mode', 'dio',  # Use dio for most compatibility
                     '--flash_freq', '80m',  # ESP32-C3 typically uses 80MHz
@@ -211,7 +211,7 @@ def main():
                 # Default command for ESP32
                 chip_type = board_family.lower().replace('_', '-')
                 merge_cmd = [
-                    'esptool.py', '--chip', chip_type, 'merge_bin',
+                    'python', '-m', 'esptool', '--chip', chip_type, 'merge_bin',
                     '-o', merged_bin_path,
                     '--flash_mode', 'dio',
                     '--flash_freq', '40m',
