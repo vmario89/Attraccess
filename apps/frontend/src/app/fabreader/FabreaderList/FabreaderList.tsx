@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Accordion, AccordionItem, Alert, Button, Card, CardBody, CardHeader, Chip } from '@heroui/react';
-import { Cloud, CloudOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Alert, Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react';
+import { Cloud, CloudOff, CpuIcon } from 'lucide-react';
 import { useDateTimeFormatter, useTranslations } from '@attraccess/plugins-frontend-ui';
 import { FabreaderEditor } from '../FabreaderEditor/FabreaderEditor';
 import de from './FabreaderList.de.json';
 import en from './FabreaderList.en.json';
 import { useFabReaderReadersServiceGetReaders } from '@attraccess/react-query-client';
 import { useToastMessage } from '../../../components/toastProvider';
-import { useAuth } from '../../../hooks/useAuth';
+import { PageHeader } from '../../../components/pageHeader';
+import { FabreaderFlasher } from '../FabreaderFlasher/FabreaderFlasher';
 
 export const FabreaderList = () => {
   const { t } = useTranslations('fabreader-list', {
@@ -15,11 +16,13 @@ export const FabreaderList = () => {
     en,
   });
 
-  const { data: readers, error: readersError } = useFabReaderReadersServiceGetReaders(undefined, {
+  const {
+    data: readers,
+    error: readersError,
+    isLoading,
+  } = useFabReaderReadersServiceGetReaders(undefined, {
     refetchInterval: 5000,
   });
-
-  const { user } = useAuth();
 
   const toast = useToastMessage();
 
@@ -28,58 +31,64 @@ export const FabreaderList = () => {
   useEffect(() => {
     if (readersError) {
       toast.error({
-        title: t('errorFetchReaders'),
+        title: t('error.fetchReaders'),
         description: (readersError as Error).message,
       });
     }
   }, [readersError, t, toast]);
 
-  const userCanManage = useMemo(() => {
-    return !!user?.systemPermissions.canManageSystemConfiguration;
-  }, [user]);
-
   const formatDateTime = useDateTimeFormatter();
 
   return (
     <>
-      <Alert color="danger">{t('workInProgress')}</Alert>
-      <Card>
-        <CardHeader>
-          <h1>{t('fabreaders')}</h1>
-        </CardHeader>
-        <CardBody>
-          <Accordion>
-            {(readers ?? []).map((reader) => (
-              <AccordionItem
-                key={reader.id}
-                aria-label={reader.name}
-                subtitle={t('lastConnection', { timestamp: formatDateTime(reader.lastConnection) })}
-                title={reader.name}
-                startContent={
-                  <Chip color={reader.connected ? 'success' : 'danger'}>
-                    {reader.connected ? <Cloud /> : <CloudOff />}
-                  </Chip>
-                }
-              >
-                <div className="flex gap-2">
-                  {userCanManage ? (
-                    <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('editReader')}</Button>
-                  ) : null}
-                </div>
+      <PageHeader
+        title={t('page.title')}
+        actions={
+          <FabreaderFlasher>
+            {(onOpen) => (
+              <Button variant="light" startContent={<CpuIcon className="w-4 h-4" />} onPress={onOpen}>
+                {t('page.actions.openFlasher')}
+              </Button>
+            )}
+          </FabreaderFlasher>
+        }
+      />
 
-                {userCanManage ? (
-                  <FabreaderEditor
-                    readerId={reader.id}
-                    isOpen={openedReaderEditor === reader.id}
-                    onCancel={() => setOpenedReaderEditor(null)}
-                    onSave={() => setOpenedReaderEditor(null)}
-                  />
-                ) : null}
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </CardBody>
-      </Card>
+      <Alert color="danger" className="mb-4">
+        {t('workInProgress')}
+      </Alert>
+
+      <FabreaderEditor
+        readerId={openedReaderEditor ?? undefined}
+        isOpen={openedReaderEditor !== null}
+        onCancel={() => setOpenedReaderEditor(null)}
+        onSave={() => setOpenedReaderEditor(null)}
+      />
+
+      <Table aria-label="Fabreaders">
+        <TableHeader>
+          <TableColumn>{t('table.columns.name')}</TableColumn>
+          <TableColumn>{t('table.columns.lastConnection')}</TableColumn>
+          <TableColumn>{t('table.columns.connected')}</TableColumn>
+          <TableColumn>{t('table.columns.actions')}</TableColumn>
+        </TableHeader>
+        <TableBody items={readers ?? []} isLoading={isLoading} emptyContent={t('table.noData')}>
+          {(reader) => (
+            <TableRow key={reader.id}>
+              <TableCell>{reader.name}</TableCell>
+              <TableCell>{formatDateTime(reader.lastConnection)}</TableCell>
+              <TableCell>
+                <Chip color={reader.connected ? 'success' : 'danger'}>
+                  {reader.connected ? <Cloud /> : <CloudOff />}
+                </Chip>
+              </TableCell>
+              <TableCell>
+                <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('table.actions.editReader')}</Button>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </>
   );
 };

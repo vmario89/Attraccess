@@ -3,7 +3,7 @@
 #include "network_interface.hpp"
 
 #include <WiFi.h>
-
+#include "persistence.hpp"
 #include "configuration.hpp"
 
 class NetworkWifi : public NetworkInterface
@@ -17,6 +17,10 @@ public:
 
     WiFiClient &getClient() override;
 
+    // Method to reconnect with new credentials
+    void reconnect();
+
 private:
     WiFiClient client;
+    bool useConfigCredentials = false;
 };

@@ -14,13 +14,13 @@ import {
 import { useToastMessage } from '../../../components/toastProvider';
 
 interface Props {
-  readerId: number;
+  readerId?: number;
   isOpen: boolean;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export function FabreaderEditor(props: Props) {
+export function FabreaderEditor(props: Readonly<Props>) {
   const { t } = useTranslations('fabreader-editor', {
     de,
     en,
@@ -28,7 +28,9 @@ export function FabreaderEditor(props: Props) {
 
   const queryClient = useQueryClient();
 
-  const { data: reader } = useFabReaderReadersServiceGetReaderById({ readerId: props.readerId });
+  const { data: reader } = useFabReaderReadersServiceGetReaderById({ readerId: props.readerId as number }, undefined, {
+    enabled: props.readerId !== undefined,
+  });
 
   const toast = useToastMessage();
 
@@ -54,11 +56,15 @@ export function FabreaderEditor(props: Props) {
 
   useEffect(() => {
     setName(reader?.name || '');
-    setConnectedResources(reader?.hasAccessToResourceIds || []);
+    setConnectedResources(reader?.hasAccessToResourceIds ?? []);
   }, [reader]);
 
   const save = useCallback(async () => {
-    await updateReaderMutation.mutateAsync({
+    if (props.readerId === undefined) {
+      return;
+    }
+
+    updateReaderMutation.mutate({
       readerId: props.readerId,
       requestBody: {
         name,

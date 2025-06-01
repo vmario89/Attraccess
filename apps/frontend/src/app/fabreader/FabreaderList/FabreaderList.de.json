@@ -1,9 +1,26 @@
 {
+  "page": {
+    "title": "FABReader",
+    "actions": {
+      "openFlasher": "Fabreader flasher"
+    }
+  },
   "workInProgress": "Dieses Feature ist noch in Arbeit, benutzung auf eigene Gefahr!",
-  "editReader": "Bearbeiten",
-  "fabreaders": "FABReader",
-  "lastConnection": "Letzte Verbindung am {{timestamp}}",
-  "errorFetchReaders": "FABReader konnten nicht abgerufen werden",
+  "error": {
+    "fetchReaders": "FABReader konnten nicht abgerufen werden"
+  },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "lastConnection": "Letzte Verbindung",
+      "connected": "Status",
+      "actions": "Aktionen"
+    },
+    "noData": "Keine FABReader gefunden",
+    "actions": {
+      "editReader": "Bearbeiten"
+    }
+  },
   "connected": "Verbunden",
   "disconnected": "Nicht verbunden"
 }

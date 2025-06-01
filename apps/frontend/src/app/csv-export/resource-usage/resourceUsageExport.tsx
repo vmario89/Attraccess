@@ -260,13 +260,7 @@ export function ResourceUsageExport(props: ExportProps) {
           </Checkbox>
         </div>
 
-        <Table
-          isCompact
-          isVirtualized
-          aria-label="Example of virtualized table with a large dataset"
-          maxTableHeight={500}
-          rowHeight={40}
-        >
+        <Table isCompact isVirtualized maxTableHeight={500} rowHeight={40}>
           <TableHeader columns={selectedColumns}>
             {(column) => <TableColumn key={column.csvHeader}>{column.csvHeader}</TableColumn>}
           </TableHeader>

@@ -2,8 +2,7 @@
 
 void NetworkWifi::setup()
 {
-    WiFi.disconnect();
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    this->reconnect();
 }
 
 bool NetworkWifi::isHealthy()
@@ -28,4 +27,19 @@ void NetworkWifi::end()
 WiFiClient &NetworkWifi::getClient()
 {
     return this->client;
+}
+
+void NetworkWifi::reconnect()
+{
+    WiFi.disconnect();
+
+    if (Persistence::isWiFiConfigured())
+    {
+        const char *ssid = Persistence::getWiFiSSID();
+        const char *password = Persistence::getWiFiPassword();
+
+        Serial.printf("[WiFi] Connecting with stored credentials: %s\n", ssid);
+        WiFi.begin(ssid, password);
+        useConfigCredentials = true;
+    }
 }
