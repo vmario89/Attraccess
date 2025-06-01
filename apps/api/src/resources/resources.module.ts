@@ -19,12 +19,14 @@ import { ResourceIntroductionController } from './introduction/resourceIntroduct
 import { ResourceIntroductionService } from './introduction/resourceIntroduction.service';
 import { UsersAndAuthModule } from '../users-and-auth/users-and-auth.module';
 import { ResourceIntroducersController } from './introduction/resourceIntroducers.controller';
+import { ResourceIntroductionUserService } from './introduction/resourceIntroductionUser.service';
 import { ConfigModule } from '@nestjs/config';
 import { MqttModule } from '../mqtt/mqtt.module';
 import { ResourcesCoreModule } from './resources-core.module';
 import { SSEModule } from './sse/sse.module';
 import { ResourceGroupsController } from './groups/resourceGroups.controller';
 import { ResourceGroupsService } from './groups/resourceGroups.service';
+import { ResourceGroupIntroductionsController } from './groups/controllers/resource-group-introductions.controller';
 import { IotModule } from './iot/iot.module';
 
 @Module({
@@ -49,12 +51,13 @@ import { IotModule } from './iot/iot.module';
   ],
   controllers: [
     ResourceGroupsController,
+    ResourceGroupIntroductionsController, // Added
     ResourcesController,
     ResourceUsageController,
     ResourceIntroductionController,
     ResourceIntroducersController,
   ],
-  providers: [ResourcePermissionsGuard, ResourceUsageService, ResourceIntroductionService, ResourceGroupsService],
-  exports: [ResourceUsageService, ResourceIntroductionService, ResourcesCoreModule, ResourceGroupsService],
+  providers: [ResourcePermissionsGuard, ResourceUsageService, ResourceIntroductionService, ResourceIntroductionUserService, ResourceGroupsService],
+  exports: [ResourceUsageService, ResourceIntroductionService, ResourceIntroductionUserService, ResourcesCoreModule, ResourceGroupsService],
 })
 export class ResourcesModule {}

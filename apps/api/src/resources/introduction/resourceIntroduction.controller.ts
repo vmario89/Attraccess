@@ -58,7 +58,7 @@ export class ResourceIntroductionController {
     @Body() dto: CompleteIntroductionDto,
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroduction> {
-    return this.resourceIntroductionService.createIntroduction(resourceId, req.user.id, dto.userId);
+    return this.resourceIntroductionService.createResourceSpecificIntroduction(resourceId, req.user.id, dto.userId);
   }
 
   @Get()
@@ -77,7 +77,7 @@ export class ResourceIntroductionController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Query() query: GetResourceIntroductionsQueryDto
   ): Promise<PaginatedResponse<ResourceIntroduction>> {
-    const { data, total } = await this.resourceIntroductionService.getResourceIntroductions(
+    const { data, total } = await this.resourceIntroductionService.getResourceSpecificIntroductions(
       resourceId,
       query.page,
       query.limit
@@ -139,7 +139,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem> {
     // First check if the user can give introductions (same permission check as for completing)
-    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -169,7 +169,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem> {
     // First check if the user can give introductions (same permission check as for completing)
-    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -198,7 +198,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroductionHistoryItem[]> {
     // Check permissions
-    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -234,7 +234,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<{ isRevoked: boolean }> {
     // Check permissions
-    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -277,7 +277,7 @@ export class ResourceIntroductionController {
     @Req() req: AuthenticatedRequest
   ): Promise<ResourceIntroduction> {
     // Check permissions
-    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, req.user.id);
+    const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, req.user.id);
 
     const canManageResources = req.user.systemPermissions.canManageResources;
 
@@ -285,7 +285,7 @@ export class ResourceIntroductionController {
       throw new MissingIntroductionPermissionException();
     }
 
-    return this.resourceIntroductionService.getResourceIntroductionById(resourceId, introductionId);
+    return this.resourceIntroductionService.getResourceSpecificIntroductionById(introductionId);
   }
 
   @Get('permissions/manage')
@@ -316,7 +316,7 @@ export class ResourceIntroductionController {
     }
 
     // Add any specific permission logic here
-    const canManage = await this.resourceIntroductionService.canManageIntroductions(resourceId, user.id);
+    const canManage = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, user.id);
 
     return { canManageIntroductions: canManage };
   }

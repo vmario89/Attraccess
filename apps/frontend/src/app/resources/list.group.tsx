@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Toolbar } from './toolbar';
-import { Accordion, AccordionItem, Selection, Spinner } from '@heroui/react';
+import { Accordion, AccordionItem, Selection, Spinner, Button } from '@heroui/react'; // Added Button
+import { Settings2 } from 'lucide-react'; // Added Settings2
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './resourceList.en.json';
 import * as de from './resourceList.de.json';
@@ -19,6 +21,7 @@ export function ResourceList() {
     en,
     de,
   });
+  const navigate = useNavigate();
 
   const [lastItemRef, lastItemInView] = useInView();
 
@@ -98,7 +101,22 @@ export function ResourceList() {
           <AccordionItem
             key={group.id}
             aria-label={group.name}
-            title={group.name}
+            title={
+              <div className="flex justify-between items-center w-full">
+                <span>{group.name}</span>
+                {group.id !== -1 && (
+                  <Button
+                    size="sm"
+                    variant="light"
+                    isIconOnly
+                    onPress={() => navigate(`/resource-groups/${group.id}/edit`)}
+                    aria-label={`Edit group ${group.name}`}
+                  >
+                    <Settings2 className="w-5 h-5" />
+                  </Button>
+                )}
+              </div>
+            }
             data-cy={`resource-group-item-${group.id}`}
           >
             <ResourcesInGroupList

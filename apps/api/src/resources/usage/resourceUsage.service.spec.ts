@@ -44,7 +44,7 @@ describe('ResourceUsageService', () => {
   };
 
   const mockResourceIntroductionService = {
-    hasCompletedIntroduction: jest.fn(),
+    hasValidIntroduction: jest.fn(),
     canGiveIntroductions: jest.fn(),
   };
 
@@ -123,7 +123,7 @@ describe('ResourceUsageService', () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
 
       resourcesService.getResourceById.mockResolvedValue(mockResource);
-      resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
+      resourceIntroductionService.hasValidIntroduction.mockResolvedValue(true); // CHANGED HERE
 
       // Mock getActiveSession to return null (no active session)
       resourceUsageRepository.findOne
@@ -164,17 +164,17 @@ describe('ResourceUsageService', () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
 
       resourcesService.getResourceById.mockResolvedValue(mockResource);
-      resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(false);
+      resourceIntroductionService.hasValidIntroduction.mockResolvedValue(false); // CHANGED HERE
 
       await expect(service.startSession(1, mockUser, dto)).rejects.toThrow(BadRequestException);
-      expect(resourceIntroductionService.hasCompletedIntroduction).toHaveBeenCalledWith(1, 1);
+      expect(resourceIntroductionService.hasValidIntroduction).toHaveBeenCalledWith(1, 1); // CHANGED HERE
     });
 
     it('should throw error when active session exists and no takeover requested', async () => {
       const dto: StartUsageSessionDto = { notes: 'Test session' };
 
       resourcesService.getResourceById.mockResolvedValue(mockResource);
-      resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
+      resourceIntroductionService.hasValidIntroduction.mockResolvedValue(true); // CHANGED HERE
 
       const mockActiveSession = { id: 1, userId: 2 } as ResourceUsage;
       // Mock getActiveSession to return an active session
@@ -189,7 +189,7 @@ describe('ResourceUsageService', () => {
       const dto: StartUsageSessionDto = { notes: 'Test session', forceTakeOver: true };
 
       resourcesService.getResourceById.mockResolvedValue(mockResource); // allowTakeOver: false
-      resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
+      resourceIntroductionService.hasValidIntroduction.mockResolvedValue(true); // CHANGED HERE
 
       const mockActiveSession = { id: 1, userId: 2 } as ResourceUsage;
       // Mock getActiveSession to return an active session
@@ -204,7 +204,7 @@ describe('ResourceUsageService', () => {
       const dto: StartUsageSessionDto = { notes: 'Test session', forceTakeOver: true };
 
       resourcesService.getResourceById.mockResolvedValue(mockResourceWithTakeOver); // allowTakeOver: true
-      resourceIntroductionService.hasCompletedIntroduction.mockResolvedValue(true);
+      resourceIntroductionService.hasValidIntroduction.mockResolvedValue(true); // CHANGED HERE
 
       const mockActiveSession = { id: 1, userId: 2, startTime: new Date() } as ResourceUsage;
       const mockNewUsage = { id: 2, resourceId: 1, userId: 1 } as ResourceUsage;

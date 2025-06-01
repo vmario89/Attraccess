@@ -35,7 +35,7 @@ export class ResourceUsageService {
     // Only check for introduction if user doesn't have resource management permission
     if (!canStartSession) {
       // Check if user has completed the introduction
-      const hasCompletedIntroduction = await this.resourceIntroductionService.hasCompletedIntroduction(
+      const hasCompletedIntroduction = await this.resourceIntroductionService.hasValidIntroduction(
         resourceId,
         user.id
       );
@@ -44,7 +44,7 @@ export class ResourceUsageService {
     }
 
     if (!canStartSession) {
-      const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductions(resourceId, user.id);
+      const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, user.id);
 
       canStartSession = canGiveIntroductions;
     }

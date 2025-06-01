@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { AnalyticsService, ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { AnalyticsService, ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupIntroductionsIntroducersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const useApplicationServiceInfoSuspense = <TData = Common.ApplicationServiceInfoDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseApplicationServiceInfoKeyFn(queryKey), queryFn: () => ApplicationService.info() as TData, ...options });
 export const useUsersServiceGetAllUsersSuspense = <TData = Common.UsersServiceGetAllUsersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ limit, page, search }: {
@@ -45,6 +45,22 @@ export const useResourceGroupsServiceGetAllResourceGroupsSuspense = <TData = Com
 export const useResourceGroupsServiceGetOneResourceGroupByIdSuspense = <TData = Common.ResourceGroupsServiceGetOneResourceGroupByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
   id: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn({ id }, queryKey), queryFn: () => ResourceGroupsService.getOneResourceGroupById({ id }) as TData, ...options });
+export const useResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroducersSuspense = <TData = Common.ResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroducersDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId }: {
+  groupId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroducersKeyFn({ groupId }, queryKey), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroducers({ groupId }) as TData, ...options });
+export const useResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsSuspense = <TData = Common.ResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, limit, page }: {
+  groupId: number;
+  limit: number;
+  page?: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsKeyFn({ groupId, limit, page }, queryKey), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductions({ groupId, limit, page }) as TData, ...options });
+export const useResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionByIdSuspense = <TData = Common.ResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, introductionId }: {
+  groupId: number;
+  introductionId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionByIdKeyFn({ groupId, introductionId }, queryKey), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductionById({ groupId, introductionId }) as TData, ...options });
+export const useResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionHistorySuspense = <TData = Common.ResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionHistoryDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, introductionId }: {
+  groupId: number;
+  introductionId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionHistoryKeyFn({ groupId, introductionId }, queryKey), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductionHistory({ groupId, introductionId }) as TData, ...options });
 export const useResourcesServiceGetAllResourcesSuspense = <TData = Common.ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, ids, limit, page, search }: {
   groupId?: number;
   ids?: number[];

@@ -3,36 +3,35 @@ import {
   BadRequestException,
   ForbiddenException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull, In, Not } from 'typeorm';
 import {
   ResourceIntroduction,
-  ResourceIntroductionUser,
   ResourceIntroductionHistoryItem,
   IntroductionHistoryAction,
 } from '@attraccess/database-entities';
 import { ResourcesService } from '../resources.service';
-import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
-import { ResourceIntroductionNotFoundException } from '../../exceptions/resource.introduction.notFound.exception';
-import { MissingIntroductionPermissionException } from '../../exceptions/resource.introduction.forbidden.exception';
+import { ResourceGroupsService } from '../groups/resourceGroups.service';
+import { ResourceIntroductionUserService } from './resourceIntroductionUser.service';
 import { UsersService } from '../../users-and-auth/users/users.service';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
-class IntroducionAlreadyCompletedException extends BadRequestException {
-  constructor() {
-    super('IntroducionAlreadyCompletedError');
+import { ResourceIntroductionNotFoundException } from '../../exceptions/resource.introduction.notFound.exception';
+
+// Custom Exceptions
+class IntroductionAlreadyCompletedException extends BadRequestException {
+  constructor(message = 'Introduction already completed for this entity (resource or group).') {
+    super(message);
   }
 }
 
-class MissingResourceIntroductionPermissionException extends ForbiddenException {
+class MissingPermissionToGiveIntroductionException extends ForbiddenException {
   constructor() {
-    super('MissingResourceIntroductionPermissionException');
-  }
-}
-
-class UserAlreadyHasIntroductionPermissionException extends ForbiddenException {
-  constructor() {
-    super('UserAlreadyHasIntroductionPermissionException');
+    super(
+      'User does not have permission to give introductions for this resource/group.'
+    );
   }
 }
 
@@ -43,221 +42,184 @@ export class ResourceIntroductionService {
   constructor(
     @InjectRepository(ResourceIntroduction)
     private resourceIntroductionRepository: Repository<ResourceIntroduction>,
-    @InjectRepository(ResourceIntroductionUser)
-    private resourceIntroductionUserRepository: Repository<ResourceIntroductionUser>,
     @InjectRepository(ResourceIntroductionHistoryItem)
     private resourceIntroductionHistoryRepository: Repository<ResourceIntroductionHistoryItem>,
     private resourcesService: ResourcesService,
-    private usersService: UsersService
+    private resourceGroupsService: ResourceGroupsService,
+    private resourceIntroductionUserService: ResourceIntroductionUserService, // Injected
+    private usersService: UsersService,
   ) {}
 
-  async createIntroduction(
+  // --- Resource-Specific Introductions --- 
+  async createResourceSpecificIntroduction(
     resourceId: number,
     tutorUserId: number,
-    introductionReceiverUserId: number
+    receiverUserId: number
   ): Promise<ResourceIntroduction> {
-    // Check if resource exists
     const resource = await this.resourcesService.getResourceById(resourceId);
     if (!resource) {
       throw new ResourceNotFoundException(resourceId);
     }
 
-    // Check if the completing user has permission to give introductions
-    const hasPermission = await this.canGiveIntroductions(
-      resourceId,
-      tutorUserId
-    );
-    if (!hasPermission) {
-      throw new MissingResourceIntroductionPermissionException();
+    const canGive = await this.canGiveIntroductionForResource(resourceId, tutorUserId);
+    if (!canGive) {
+      throw new MissingPermissionToGiveIntroductionException();
     }
 
-    // Check if introduction already completed
-    const existingIntroduction =
-      await this.resourceIntroductionRepository.findOne({
-        where: {
-          resourceId,
-          receiverUserId: introductionReceiverUserId,
-        },
-      });
-
-    if (existingIntroduction) {
-      throw new IntroducionAlreadyCompletedException();
-    }
-
-    // Create or update introduction record
-    const introduction = this.resourceIntroductionRepository.create({
-      resourceId,
-      receiverUserId: introductionReceiverUserId,
-      tutorUserId: tutorUserId,
+    const existingIntroduction = await this.resourceIntroductionRepository.findOne({
+      where: { resourceId, receiverUserId, resourceGroupId: IsNull() },
     });
 
+    if (existingIntroduction) {
+      throw new IntroductionAlreadyCompletedException();
+    }
+
+    const introduction = this.resourceIntroductionRepository.create({
+      resourceId,
+      receiverUserId,
+      tutorUserId,
+      resourceGroupId: null, // Explicitly null
+    });
     return this.resourceIntroductionRepository.save(introduction);
   }
 
-  async removeIntroduction(
-    resourceId: number,
-    introductionReceiverUserId: number
-  ) {
-    await this.resourceIntroductionRepository.delete({
-      resourceId,
-      receiverUserId: introductionReceiverUserId,
-    });
-  }
-
-  async hasCompletedIntroduction(
-    resourceId: number,
-    introductionReceiverUserId: number
-  ): Promise<boolean> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: {
-        resourceId,
-        receiverUserId: introductionReceiverUserId,
-      },
-    });
-
-    return !!introduction?.completedAt;
-  }
-
-  async canGiveIntroductions(
-    resourceId: number,
-    tutorUserId: number
-  ): Promise<boolean> {
-    const permission = await this.resourceIntroductionUserRepository.findOne({
-      where: {
-        resourceId,
-        userId: tutorUserId,
-      },
-    });
-
-    const hasPermission = !!permission;
-
-    const user = await this.usersService.findOne({ id: tutorUserId });
-    const canManageResources = user.systemPermissions.canManageResources;
-
-    return hasPermission || canManageResources;
-  }
-
-  async getResourceIntroductions(
+  async getResourceSpecificIntroductions(
     resourceId: number,
     page = 1,
     limit = 10
   ): Promise<{ data: ResourceIntroduction[]; total: number }> {
-    const [introductions, total] =
-      await this.resourceIntroductionRepository.findAndCount({
-        where: { resourceId },
-        relations: ['receiverUser', 'tutorUser'],
-        skip: (page - 1) * limit,
-        take: limit,
-        order: {
-          completedAt: 'DESC', // Sort by most recently completed
-        },
-      });
+    const [data, total] = await this.resourceIntroductionRepository.findAndCount({
+      where: { resourceId, resourceGroupId: IsNull() },
+      relations: ['receiverUser', 'tutorUser'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { completedAt: 'DESC' },
+    });
+    return { data, total };
+  }
+  
+  async getResourceSpecificIntroductionById(
+    introductionId: number,
+  ): Promise<ResourceIntroduction> {
+    const introduction = await this.resourceIntroductionRepository.findOne({
+      where: { id: introductionId, resourceGroupId: IsNull(), resourceId: Not(IsNull()) },
+      relations: ['receiverUser', 'tutorUser', 'resource'],
+    });
+    if (!introduction) {
+      throw new ResourceIntroductionNotFoundException(introductionId);
+    }
+    return introduction;
+  }
 
-    return {
-      data: introductions,
-      total,
-    };
+  // --- Resource Group-Specific Introductions --- 
+  async createResourceGroupIntroduction(
+    resourceGroupId: number,
+    tutorUserId: number,
+    receiverUserId: number
+  ): Promise<ResourceIntroduction> {
+    const group = await this.resourceGroupsService.getResourceGroupById(resourceGroupId);
+    if (!group) {
+      throw new NotFoundException(`Resource group with ID ${resourceGroupId} not found`);
+    }
+
+    const canGive = await this.canGiveIntroductionForResourceGroup(resourceGroupId, tutorUserId);
+    if (!canGive) {
+      throw new MissingPermissionToGiveIntroductionException();
+    }
+
+    const existingIntroduction = await this.resourceIntroductionRepository.findOne({
+      where: { resourceGroupId, receiverUserId, resourceId: IsNull() },
+    });
+
+    if (existingIntroduction) {
+      throw new IntroductionAlreadyCompletedException();
+    }
+
+    const introduction = this.resourceIntroductionRepository.create({
+      resourceGroupId,
+      receiverUserId,
+      tutorUserId,
+      resourceId: null, // Explicitly null
+    });
+    return this.resourceIntroductionRepository.save(introduction);
+  }
+
+  async getResourceGroupIntroductions(
+    resourceGroupId: number,
+    page = 1,
+    limit = 10
+  ): Promise<{ data: ResourceIntroduction[]; total: number }> {
+    const [data, total] = await this.resourceIntroductionRepository.findAndCount({
+      where: { resourceGroupId, resourceId: IsNull() },
+      relations: ['receiverUser', 'tutorUser'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { completedAt: 'DESC' },
+    });
+    return { data, total };
+  }
+
+  async getResourceGroupSpecificIntroductionById(
+    introductionId: number,
+  ): Promise<ResourceIntroduction> {
+    const introduction = await this.resourceIntroductionRepository.findOne({
+      where: { id: introductionId, resourceId: IsNull(), resourceGroupId: Not(IsNull()) },
+      relations: ['receiverUser', 'tutorUser', 'resourceGroup'],
+    });
+    if (!introduction) {
+      throw new ResourceIntroductionNotFoundException(introductionId);
+    }
+    return introduction;
+  }
+
+  // --- Generic Methods (Handling Both Resource and Group) ---
+
+  async getIntroductionById(introductionId: number): Promise<ResourceIntroduction> {
+     const introduction = await this.resourceIntroductionRepository.findOne({
+      where: { id: introductionId },
+      relations: ['receiverUser', 'tutorUser', 'resource', 'resourceGroup'],
+    });
+    if (!introduction) {
+      throw new ResourceIntroductionNotFoundException(introductionId);
+    }
+    return introduction;
   }
 
   async getUserIntroductions(userId: number): Promise<ResourceIntroduction[]> {
     return this.resourceIntroductionRepository.find({
       where: { receiverUserId: userId },
-      relations: ['resource', 'tutorUser'],
+      relations: ['resource', 'resourceGroup', 'tutorUser', 'receiverUser'],
     });
   }
 
-  async addIntroducer(
-    resourceId: number,
-    userId: number
-  ): Promise<ResourceIntroductionUser> {
-    // Check if resource exists
-    const resource = await this.resourcesService.getResourceById(resourceId);
-    if (!resource) {
-      throw new ResourceNotFoundException(resourceId);
-    }
-
-    // Check if user already has permission
-    const existingPermission =
-      await this.resourceIntroductionUserRepository.findOne({
-        where: {
-          resourceId,
-          userId,
-        },
-      });
-
-    if (existingPermission) {
-      throw new UserAlreadyHasIntroductionPermissionException();
-    }
-
-    // Create new permission
-    const permission = this.resourceIntroductionUserRepository.create({
-      resourceId,
-      userId,
-      grantedAt: new Date(),
-    });
-
-    return this.resourceIntroductionUserRepository.save(permission);
+  // --- Permission Checks --- 
+  async canGiveIntroductionForResource(resourceId: number, tutorUserId: number): Promise<boolean> {
+    const isIntroducer = await this.resourceIntroductionUserService.isIntroducer(tutorUserId, resourceId);
+    const user = await this.usersService.findOne({ id: tutorUserId });
+    const canManageSystem = user?.systemPermissions?.canManageResources || false;
+    return isIntroducer || canManageSystem;
   }
 
-  async removeIntroducer(resourceId: number, userId: number): Promise<void> {
-    const introductionPermission =
-      await this.resourceIntroductionUserRepository.findOne({
-        where: {
-          resourceId,
-          userId,
-        },
-      });
-
-    if (!introductionPermission) {
-      throw new MissingIntroductionPermissionException();
-    }
-
-    await this.resourceIntroductionUserRepository.delete(
-      introductionPermission.id
-    );
+  async canGiveIntroductionForResourceGroup(resourceGroupId: number, tutorUserId: number): Promise<boolean> {
+    const isIntroducer = await this.resourceIntroductionUserService.isIntroducer(tutorUserId, undefined, resourceGroupId);
+    const user = await this.usersService.findOne({ id: tutorUserId });
+    // Assuming canManageResources implies ability to manage group intros too, or a new permission is needed
+    const canManageSystem = user?.systemPermissions?.canManageResources || false; 
+    return isIntroducer || canManageSystem;
   }
 
-  async getResourceIntroducers(
-    resourceId: number
-  ): Promise<ResourceIntroductionUser[]> {
-    return this.resourceIntroductionUserRepository.find({
-      where: { resourceId },
-      relations: ['user'],
-    });
-  }
-
-  /**
-   * Determine if an introduction is revoked based on its history
-   */
+  // --- Revocation Logic (operates on introductionId, largely unchanged) ---
   async isIntroductionRevoked(introductionId: number): Promise<boolean> {
-    const latestHistory =
-      await this.resourceIntroductionHistoryRepository.findOne({
-        where: { introductionId },
-        order: { createdAt: 'DESC' },
-      });
-
-    // If there's no history, it's not revoked
-    if (!latestHistory) {
-      return false;
-    }
-
-    // If the latest action is REVOKE, then it's revoked
-    return latestHistory.action === IntroductionHistoryAction.REVOKE;
+    const latestHistory = await this.resourceIntroductionHistoryRepository.findOne({
+      where: { introductionId },
+      order: { createdAt: 'DESC' },
+    });
+    return latestHistory?.action === IntroductionHistoryAction.REVOKE;
   }
 
-  /**
-   * Get all history entries for an introduction
-   */
-  async getIntroductionHistory(
-    introductionId: number
-  ): Promise<ResourceIntroductionHistoryItem[]> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: { id: introductionId },
-    });
-
-    if (!introduction) {
-      throw new ResourceIntroductionNotFoundException(introductionId);
-    }
+  async getIntroductionHistory(introductionId: number): Promise<ResourceIntroductionHistoryItem[]> {
+    const introduction = await this.resourceIntroductionRepository.count({ where: { id: introductionId } });
+    if (!introduction) throw new ResourceIntroductionNotFoundException(introductionId);
 
     return this.resourceIntroductionHistoryRepository.find({
       where: { introductionId },
@@ -266,156 +228,117 @@ export class ResourceIntroductionService {
     });
   }
 
-  /**
-   * Revoke an introduction
-   */
   async revokeIntroduction(
     introductionId: number,
     performedByUserId: number,
     comment?: string
   ): Promise<ResourceIntroductionHistoryItem> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: { id: introductionId },
-    });
+    const introToRevoke = await this.getIntroductionById(introductionId); // Ensures it exists
 
-    if (!introduction) {
-      throw new ResourceIntroductionNotFoundException(introductionId);
+    // Permission check: User performing action must be able to give introductions for the specific resource/group OR be a system admin
+    let canRevoke = false;
+    if (introToRevoke.resourceId) {
+      canRevoke = await this.canGiveIntroductionForResource(introToRevoke.resourceId, performedByUserId);
+    } else if (introToRevoke.resourceGroupId) {
+      canRevoke = await this.canGiveIntroductionForResourceGroup(introToRevoke.resourceGroupId, performedByUserId);
+    }
+    const performingUser = await this.usersService.findOne({ id: performedByUserId });
+    if (!canRevoke && !performingUser?.systemPermissions?.canManageResources) {
+        throw new ForbiddenException('User does not have permission to revoke this introduction.');
     }
 
-    // Check if it's already revoked
-    const isRevoked = await this.isIntroductionRevoked(introductionId);
-    if (isRevoked) {
-      throw new BadRequestException('This introduction is already revoked');
+    if (await this.isIntroductionRevoked(introductionId)) {
+      throw new BadRequestException('This introduction is already revoked.');
     }
 
-    // Create history entry
     const historyEntry = this.resourceIntroductionHistoryRepository.create({
       introductionId,
       action: IntroductionHistoryAction.REVOKE,
       performedByUserId,
       comment: comment || null,
     });
-
     return this.resourceIntroductionHistoryRepository.save(historyEntry);
   }
 
-  /**
-   * Unrevoke an introduction
-   */
   async unrevokeIntroduction(
     introductionId: number,
     performedByUserId: number,
     comment?: string
   ): Promise<ResourceIntroductionHistoryItem> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: { id: introductionId },
-    });
+    const introToUnrevoke = await this.getIntroductionById(introductionId); // Ensures it exists
 
-    if (!introduction) {
-      throw new ResourceIntroductionNotFoundException(introductionId);
+    // Permission check (similar to revoke)
+    let canUnrevoke = false;
+    if (introToUnrevoke.resourceId) {
+      canUnrevoke = await this.canGiveIntroductionForResource(introToUnrevoke.resourceId, performedByUserId);
+    } else if (introToUnrevoke.resourceGroupId) {
+      canUnrevoke = await this.canGiveIntroductionForResourceGroup(introToUnrevoke.resourceGroupId, performedByUserId);
+    }
+     const performingUser = await this.usersService.findOne({ id: performedByUserId });
+    if (!canUnrevoke && !performingUser?.systemPermissions?.canManageResources) {
+        throw new ForbiddenException('User does not have permission to unrevoke this introduction.');
     }
 
-    // Check if it's already unrevoked (not revoked)
-    const isRevoked = await this.isIntroductionRevoked(introductionId);
-    if (!isRevoked) {
-      throw new BadRequestException('This introduction is not revoked');
+    if (!(await this.isIntroductionRevoked(introductionId))) {
+      throw new BadRequestException('This introduction is not currently revoked.');
     }
 
-    // Create history entry
     const historyEntry = this.resourceIntroductionHistoryRepository.create({
       introductionId,
       action: IntroductionHistoryAction.UNREVOKE,
       performedByUserId,
       comment: comment || null,
     });
-
     return this.resourceIntroductionHistoryRepository.save(historyEntry);
   }
 
-  /**
-   * Check if a user has a valid introduction for a resource
-   * A valid introduction is one that exists and is not revoked
-   */
+  // --- hasValidIntroduction (Complex Logic) ---
   async hasValidIntroduction(
-    resourceId: number,
-    introductionReceiverUserId: number
-  ): Promise<boolean> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: {
-        resourceId,
-        receiverUserId: introductionReceiverUserId,
-      },
-    });
-
-    // If no introduction exists, return false
-    if (!introduction?.completedAt) {
-      return false;
-    }
-
-    // Check if it's revoked
-    const isRevoked = await this.isIntroductionRevoked(introduction.id);
-
-    // Valid if it exists and is not revoked
-    return !isRevoked;
-  }
-
-  // Get a single resource introduction by ID
-  async getResourceIntroductionById(
-    resourceId: number,
-    introductionId: number
-  ): Promise<ResourceIntroduction> {
-    const introduction = await this.resourceIntroductionRepository.findOne({
-      where: {
-        id: introductionId,
-        resourceId,
-      },
-      relations: ['receiverUser', 'tutorUser'],
-    });
-
-    if (!introduction) {
-      throw new ResourceIntroductionNotFoundException(introductionId);
-    }
-
-    return introduction;
-  }
-
-  /**
-   * Check if a user can manage introductions for a specific resource
-   */
-  async canManageIntroductions(
-    resourceId: number,
+    resourceToCheckId: number,
     userId: number
   ): Promise<boolean> {
-    // By default, check if the user is an introducer for this resource
-    const isIntroducer = await this.resourceIntroductionUserRepository.findOne({
+    // 1. Check for direct, non-revoked resource-specific introduction
+    const directIntro = await this.resourceIntroductionRepository.findOne({
       where: {
-        resourceId,
-        userId,
+        receiverUserId: userId,
+        resourceId: resourceToCheckId,
+        resourceGroupId: IsNull(),
       },
     });
 
-    const user = await this.usersService.findOne({ id: userId });
-    const isResourceManager = user.systemPermissions.canManageResources;
+    if (directIntro && !(await this.isIntroductionRevoked(directIntro.id))) {
+      return true;
+    }
 
-    return !!isIntroducer || isResourceManager;
+    // 2. Check for group-based introductions
+    const resource = await this.resourcesService.getResourceById(resourceToCheckId);
+    if (!resource) {
+      throw new ResourceNotFoundException(resourceToCheckId);
+    }
+
+    if (resource.groups && resource.groups.length > 0) {
+      const groupIds = resource.groups.map((g) => g.id);
+      const groupIntros = await this.resourceIntroductionRepository.find({
+        where: {
+          receiverUserId: userId,
+          resourceGroupId: In(groupIds),
+          resourceId: IsNull(),
+        },
+      });
+
+      for (const groupIntro of groupIntros) {
+        if (!(await this.isIntroductionRevoked(groupIntro.id))) {
+          return true; // Found a valid group introduction
+        }
+      }
+    }
+    return false;
   }
 
-  /**
-   * Check if a user can manage introducers for a specific resource
-   */
-  async canManageIntroducers(
-    resourceId: number,
-    userId: number
-  ): Promise<boolean> {
-    // For now, the permission to manage introducers is a higher level of access
-    // We'll check if the user has introductions that they've given
-    const introductionsGiven = await this.resourceIntroductionRepository.count({
-      where: {
-        resourceId,
-        tutorUserId: userId,
-      },
-    });
-
-    return introductionsGiven > 0;
-  }
+  // Methods like `canManageIntroductions` and `canManageIntroducers` from the original file
+  // are removed as their logic is either too simplistic, duplicated, or better handled by
+  // `ResourceIntroductionUserService` or direct permission checks in controllers.
+  // The `ResourceIntroducersController` specifically used `canManageIntroducers`.
+  // That controller should now rely on system permissions (e.g. `CanManageResources` guard)
+  // or a more robust permission check, possibly from `ResourceIntroductionUserService` if refined.
 }

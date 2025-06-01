@@ -12,7 +12,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ResourceIntroductionService } from './resourceIntroduction.service';
+import { ResourceIntroductionUserService } from './resourceIntroductionUser.service';
 import { ResourceIntroductionUser } from '@attraccess/database-entities';
 import { Auth, AuthenticatedRequest } from '@attraccess/plugins-backend-sdk';
 import { UsersService } from '../../users-and-auth/users/users.service';
@@ -26,7 +26,7 @@ export class ResourceIntroducersController {
   private readonly logger = new Logger(ResourceIntroducersController.name);
 
   constructor(
-    private readonly resourceIntroductionService: ResourceIntroductionService,
+    private readonly resourceIntroductionUserService: ResourceIntroductionUserService,
     private readonly usersService: UsersService,
     private readonly resourcesService: ResourcesService
   ) {}
@@ -52,7 +52,7 @@ export class ResourceIntroducersController {
       // No additional permission checks needed for viewing
 
       // Get the introducers list
-      return this.resourceIntroductionService.getResourceIntroducers(resourceId);
+      return this.resourceIntroductionUserService.getResourceSpecificIntroducers(resourceId);
     } catch (error) {
       this.logger.error(`Error getting resource introducers: ${error.message}`, error.stack);
 
@@ -78,7 +78,7 @@ export class ResourceIntroducersController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
   ): Promise<ResourceIntroductionUser> {
-    return this.resourceIntroductionService.addIntroducer(resourceId, userId);
+    return this.resourceIntroductionUserService.addResourceSpecificIntroducer(resourceId, userId);
   }
 
   @Delete(':userId')
@@ -92,7 +92,7 @@ export class ResourceIntroducersController {
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
   ): Promise<void> {
-    return this.resourceIntroductionService.removeIntroducer(resourceId, userId);
+    return this.resourceIntroductionUserService.removeResourceSpecificIntroducer(resourceId, userId);
   }
 
   @Get('can-manage')
@@ -118,7 +118,7 @@ export class ResourceIntroducersController {
     }
 
     // Add any specific permission logic here
-    const canManage = await this.resourceIntroductionService.canManageIntroducers(resourceId, user.id);
+    const canManage = await this.resourceIntroductionUserService.canManageIntroducersForResource(resourceId, user.id);
 
     return { canManageIntroducers: canManage };
   }

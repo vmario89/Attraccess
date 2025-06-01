@@ -13,12 +13,13 @@ export class ResourceIntroductionUser {
   })
   id!: number;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', nullable: true })
   @ApiProperty({
-    description: 'The ID of the resource',
+    description: 'The ID of the resource (if permission is for a specific resource)',
     example: 1,
+    required: false,
   })
-  resourceId!: number;
+  resourceId!: number | null;
 
   @Column({ type: 'integer' })
   @ApiProperty({
@@ -26,6 +27,14 @@ export class ResourceIntroductionUser {
     example: 1,
   })
   userId!: number;
+
+  @Column({ type: 'integer', nullable: true })
+  @ApiProperty({
+    description: 'The ID of the resource group (if permission is for a group)',
+    example: 1,
+    required: false,
+  })
+  resourceGroupId!: number | null;
 
   @CreateDateColumn()
   @ApiProperty({
@@ -35,7 +44,7 @@ export class ResourceIntroductionUser {
 
   @ManyToOne(() => Resource, undefined, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'resourceId' })
-  resource!: Resource;
+  resource!: Resource | null;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -47,5 +56,5 @@ export class ResourceIntroductionUser {
 
   @ManyToOne(() => ResourceGroup, undefined, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'resourceGroupId' })
-  resourceGroup!: ResourceGroup;
+  resourceGroup!: ResourceGroup | null;
 }

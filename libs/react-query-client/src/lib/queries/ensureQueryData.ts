@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { AnalyticsService, ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
+import { AnalyticsService, ApplicationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupIntroductionsIntroducersService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
 import * as Common from "./common";
 export const ensureUseApplicationServiceInfoData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseApplicationServiceInfoKeyFn(), queryFn: () => ApplicationService.info() });
 export const ensureUseUsersServiceGetAllUsersData = (queryClient: QueryClient, { limit, page, search }: {
@@ -45,6 +45,22 @@ export const ensureUseResourceGroupsServiceGetAllResourceGroupsData = (queryClie
 export const ensureUseResourceGroupsServiceGetOneResourceGroupByIdData = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupsServiceGetOneResourceGroupByIdKeyFn({ id }), queryFn: () => ResourceGroupsService.getOneResourceGroupById({ id }) });
+export const ensureUseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroducersData = (queryClient: QueryClient, { groupId }: {
+  groupId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroducersKeyFn({ groupId }), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroducers({ groupId }) });
+export const ensureUseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsData = (queryClient: QueryClient, { groupId, limit, page }: {
+  groupId: number;
+  limit: number;
+  page?: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsKeyFn({ groupId, limit, page }), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductions({ groupId, limit, page }) });
+export const ensureUseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionByIdData = (queryClient: QueryClient, { groupId, introductionId }: {
+  groupId: number;
+  introductionId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionByIdKeyFn({ groupId, introductionId }), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductionById({ groupId, introductionId }) });
+export const ensureUseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionHistoryData = (queryClient: QueryClient, { groupId, introductionId }: {
+  groupId: number;
+  introductionId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionHistoryKeyFn({ groupId, introductionId }), queryFn: () => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductionHistory({ groupId, introductionId }) });
 export const ensureUseResourcesServiceGetAllResourcesData = (queryClient: QueryClient, { groupId, ids, limit, page, search }: {
   groupId?: number;
   ids?: number[];

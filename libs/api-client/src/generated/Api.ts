@@ -400,6 +400,165 @@ export interface UpdateResourceGroupDto {
   description?: string;
 }
 
+export interface AddResourceGroupIntroducerDto {
+  /**
+   * The ID of the user to be added as an introducer
+   * @example 1
+   */
+  userId: number;
+}
+
+export interface ResourceIntroductionUser {
+  /**
+   * The unique identifier of the introduction permission
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the resource (if permission is for a specific resource)
+   * @example 1
+   */
+  resourceId?: number;
+  /**
+   * The ID of the user who can give introductions
+   * @example 1
+   */
+  userId: number;
+  /**
+   * The ID of the resource group (if permission is for a group)
+   * @example 1
+   */
+  resourceGroupId?: number;
+  /**
+   * When the permission was granted
+   * @format date-time
+   */
+  grantedAt: string;
+  /** The user who can give introductions */
+  user: User;
+}
+
+export interface CreateResourceGroupIntroductionDto {
+  /**
+   * The ID of the user receiving the introduction
+   * @example 1
+   */
+  receiverUserId: number;
+  /**
+   * The ID of the user who tutored the receiver (optional)
+   * @example 2
+   */
+  tutorUserId?: number;
+}
+
+export interface ResourceIntroductionHistoryItem {
+  /**
+   * The unique identifier of the introduction history entry
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the related introduction
+   * @example 1
+   */
+  introductionId: number;
+  /**
+   * The action performed (revoke or unrevoke)
+   * @example "revoke"
+   */
+  action: "revoke" | "unrevoke";
+  /**
+   * The ID of the user who performed the action
+   * @example 1
+   */
+  performedByUserId: number;
+  /**
+   * Optional comment explaining the reason for the action
+   * @example "User no longer requires access to this resource"
+   */
+  comment?: string;
+  /**
+   * When the action was performed
+   * @format date-time
+   * @example "2021-01-01T00:00:00.000Z"
+   */
+  createdAt: string;
+  /** The user who performed the action */
+  performedByUser: User;
+}
+
+export interface ResourceIntroduction {
+  /**
+   * The unique identifier of the introduction
+   * @example 1
+   */
+  id: number;
+  /**
+   * The ID of the resource (if this is a resource-specific introduction)
+   * @example 1
+   */
+  resourceId?: number;
+  /**
+   * The ID of the user who received the introduction
+   * @example 1
+   */
+  receiverUserId: number;
+  /**
+   * The ID of the user who tutored the receiver
+   * @example 2
+   */
+  tutorUserId: number;
+  /**
+   * The ID of the resource group (if this is a group-level introduction)
+   * @example 1
+   */
+  resourceGroupId?: number;
+  /**
+   * When the introduction was completed
+   * @format date-time
+   * @example "2021-01-01T00:00:00.000Z"
+   */
+  completedAt: string;
+  /**
+   * When the introduction record was created
+   * @format date-time
+   * @example "2021-01-01T00:00:00.000Z"
+   */
+  createdAt: string;
+  /** The user who received the introduction */
+  receiverUser: User;
+  /** The user who tutored the receiver */
+  tutorUser: User;
+  /** History of revoke/unrevoke actions for this introduction */
+  history: ResourceIntroductionHistoryItem[];
+}
+
+export interface PaginatedResourceIntroductionResponseDto {
+  total: number;
+  page: number;
+  limit: number;
+  /** The next page number, or null if it is the last page. */
+  nextPage: number | null;
+  totalPages: number;
+  data: ResourceIntroduction[];
+}
+
+export interface RevokeIntroductionDto {
+  /**
+   * Optional comment explaining the reason for revoking access
+   * @example "User no longer works on this project"
+   */
+  comment?: string;
+}
+
+export interface UnrevokeIntroductionDto {
+  /**
+   * Optional comment explaining the reason for unrevoking access
+   * @example "User rejoined the project"
+   */
+  comment?: string;
+}
+
 export interface CreateResourceDto {
   /**
    * The name of the resource
@@ -649,134 +808,6 @@ export interface CompleteIntroductionDto {
    * @example 1
    */
   userId?: number;
-}
-
-export interface ResourceIntroductionHistoryItem {
-  /**
-   * The unique identifier of the introduction history entry
-   * @example 1
-   */
-  id: number;
-  /**
-   * The ID of the related introduction
-   * @example 1
-   */
-  introductionId: number;
-  /**
-   * The action performed (revoke or unrevoke)
-   * @example "revoke"
-   */
-  action: "revoke" | "unrevoke";
-  /**
-   * The ID of the user who performed the action
-   * @example 1
-   */
-  performedByUserId: number;
-  /**
-   * Optional comment explaining the reason for the action
-   * @example "User no longer requires access to this resource"
-   */
-  comment?: string;
-  /**
-   * When the action was performed
-   * @format date-time
-   * @example "2021-01-01T00:00:00.000Z"
-   */
-  createdAt: string;
-  /** The user who performed the action */
-  performedByUser: User;
-}
-
-export interface ResourceIntroduction {
-  /**
-   * The unique identifier of the introduction
-   * @example 1
-   */
-  id: number;
-  /**
-   * The ID of the resource
-   * @example 1
-   */
-  resourceId: number;
-  /**
-   * The ID of the user who received the introduction
-   * @example 1
-   */
-  receiverUserId: number;
-  /**
-   * The ID of the user who tutored the receiver
-   * @example 2
-   */
-  tutorUserId: number;
-  /**
-   * When the introduction was completed
-   * @format date-time
-   * @example "2021-01-01T00:00:00.000Z"
-   */
-  completedAt: string;
-  /**
-   * When the introduction record was created
-   * @format date-time
-   * @example "2021-01-01T00:00:00.000Z"
-   */
-  createdAt: string;
-  /** The user who received the introduction */
-  receiverUser: User;
-  /** The user who tutored the receiver */
-  tutorUser: User;
-  /** History of revoke/unrevoke actions for this introduction */
-  history: ResourceIntroductionHistoryItem[];
-}
-
-export interface PaginatedResourceIntroductionResponseDto {
-  total: number;
-  page: number;
-  limit: number;
-  /** The next page number, or null if it is the last page. */
-  nextPage: number | null;
-  totalPages: number;
-  data: ResourceIntroduction[];
-}
-
-export interface RevokeIntroductionDto {
-  /**
-   * Optional comment explaining the reason for revoking access
-   * @example "User no longer works on this project"
-   */
-  comment?: string;
-}
-
-export interface UnrevokeIntroductionDto {
-  /**
-   * Optional comment explaining the reason for unrevoking access
-   * @example "User rejoined the project"
-   */
-  comment?: string;
-}
-
-export interface ResourceIntroductionUser {
-  /**
-   * The unique identifier of the introduction permission
-   * @example 1
-   */
-  id: number;
-  /**
-   * The ID of the resource
-   * @example 1
-   */
-  resourceId: number;
-  /**
-   * The ID of the user who can give introductions
-   * @example 1
-   */
-  userId: number;
-  /**
-   * When the permission was granted
-   * @format date-time
-   */
-  grantedAt: string;
-  /** The user who can give introductions */
-  user: User;
 }
 
 export interface CanManageIntroducersResponseDto {
@@ -1673,6 +1704,46 @@ export type UpdateOneResourceGroupData = ResourceGroup;
 
 export type DeleteOneResourceGroupData = any;
 
+export type AddResourceGroupIntroducerData = ResourceIntroductionUser;
+
+export type GetResourceGroupIntroducersData = ResourceIntroductionUser[];
+
+export type RemoveResourceGroupIntroducerData = any;
+
+export type CreateResourceGroupIntroductionData = ResourceIntroduction;
+
+export interface GetResourceGroupIntroductionsParams {
+  /**
+   * Page number (1-based)
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * Number of items per page
+   * @min 1
+   * @max 100
+   * @default 10
+   */
+  limit: number;
+  /** ID of the resource group */
+  groupId: number;
+}
+
+export type GetResourceGroupIntroductionsData =
+  PaginatedResourceIntroductionResponseDto;
+
+export type GetResourceGroupIntroductionByIdData = ResourceIntroduction;
+
+export type RevokeResourceGroupIntroductionData =
+  ResourceIntroductionHistoryItem;
+
+export type UnrevokeResourceGroupIntroductionData =
+  ResourceIntroductionHistoryItem;
+
+export type GetResourceGroupIntroductionHistoryData =
+  ResourceIntroductionHistoryItem[];
+
 export type CreateOneResourceData = Resource;
 
 export interface GetAllResourcesParams {
@@ -2357,6 +2428,203 @@ export namespace ResourceGroups {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = DeleteOneResourceGroupData;
+  }
+}
+
+export namespace ResourceGroupIntroductionsIntroducers {
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name AddResourceGroupIntroducer
+   * @summary Add a user as an introducer for a resource group
+   * @request POST:/api/resource-groups/{groupId}/introducers
+   * @secure
+   */
+  export namespace AddResourceGroupIntroducer {
+    export type RequestParams = {
+      /** ID of the resource group */
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AddResourceGroupIntroducerDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AddResourceGroupIntroducerData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name GetResourceGroupIntroducers
+   * @summary Get all introducers for a resource group
+   * @request GET:/api/resource-groups/{groupId}/introducers
+   * @secure
+   */
+  export namespace GetResourceGroupIntroducers {
+    export type RequestParams = {
+      /** ID of the resource group */
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetResourceGroupIntroducersData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name RemoveResourceGroupIntroducer
+   * @summary Remove a user as an introducer for a resource group
+   * @request DELETE:/api/resource-groups/{groupId}/introducers/{userId}
+   * @secure
+   */
+  export namespace RemoveResourceGroupIntroducer {
+    export type RequestParams = {
+      /** ID of the resource group */
+      groupId: number;
+      /** ID of the user to remove as introducer */
+      userId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RemoveResourceGroupIntroducerData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name CreateResourceGroupIntroduction
+   * @summary Grant a group introduction to a user
+   * @request POST:/api/resource-groups/{groupId}/introductions
+   * @secure
+   */
+  export namespace CreateResourceGroupIntroduction {
+    export type RequestParams = {
+      /** ID of the resource group */
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateResourceGroupIntroductionDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateResourceGroupIntroductionData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name GetResourceGroupIntroductions
+   * @summary Get all introductions for a resource group
+   * @request GET:/api/resource-groups/{groupId}/introductions
+   * @secure
+   */
+  export namespace GetResourceGroupIntroductions {
+    export type RequestParams = {
+      /** ID of the resource group */
+      groupId: number;
+    };
+    export type RequestQuery = {
+      /**
+       * Page number (1-based)
+       * @min 1
+       * @default 1
+       */
+      page?: number;
+      /**
+       * Number of items per page
+       * @min 1
+       * @max 100
+       * @default 10
+       */
+      limit: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetResourceGroupIntroductionsData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name GetResourceGroupIntroductionById
+   * @summary Get a specific group introduction by its ID
+   * @request GET:/api/resource-groups/{groupId}/introductions/{introductionId}
+   * @secure
+   */
+  export namespace GetResourceGroupIntroductionById {
+    export type RequestParams = {
+      /** ID of the resource group (context) */
+      groupId: number;
+      /** ID of the introduction */
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetResourceGroupIntroductionByIdData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name RevokeResourceGroupIntroduction
+   * @summary Revoke a group introduction
+   * @request POST:/api/resource-groups/{groupId}/introductions/{introductionId}/revoke
+   * @secure
+   */
+  export namespace RevokeResourceGroupIntroduction {
+    export type RequestParams = {
+      /** ID of the resource group (context) */
+      groupId: number;
+      /** ID of the introduction to revoke */
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RevokeIntroductionDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RevokeResourceGroupIntroductionData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name UnrevokeResourceGroupIntroduction
+   * @summary Unrevoke a group introduction
+   * @request POST:/api/resource-groups/{groupId}/introductions/{introductionId}/unrevoke
+   * @secure
+   */
+  export namespace UnrevokeResourceGroupIntroduction {
+    export type RequestParams = {
+      /** ID of the resource group (context) */
+      groupId: number;
+      /** ID of the introduction to unrevoke */
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UnrevokeIntroductionDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UnrevokeResourceGroupIntroductionData;
+  }
+
+  /**
+   * No description
+   * @tags Resource Group Introductions & Introducers
+   * @name GetResourceGroupIntroductionHistory
+   * @summary Get history for a group introduction
+   * @request GET:/api/resource-groups/{groupId}/introductions/{introductionId}/history
+   * @secure
+   */
+  export namespace GetResourceGroupIntroductionHistory {
+    export type RequestParams = {
+      /** ID of the resource group (context) */
+      groupId: number;
+      /** ID of the introduction */
+      introductionId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetResourceGroupIntroductionHistoryData;
   }
 }
 
@@ -4288,6 +4556,213 @@ export class Api<
         path: `/api/resources/groups/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+  };
+  resourceGroupIntroductionsIntroducers = {
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name AddResourceGroupIntroducer
+     * @summary Add a user as an introducer for a resource group
+     * @request POST:/api/resource-groups/{groupId}/introducers
+     * @secure
+     */
+    addResourceGroupIntroducer: (
+      groupId: number,
+      data: AddResourceGroupIntroducerDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<AddResourceGroupIntroducerData, void>({
+        path: `/api/resource-groups/${groupId}/introducers`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name GetResourceGroupIntroducers
+     * @summary Get all introducers for a resource group
+     * @request GET:/api/resource-groups/{groupId}/introducers
+     * @secure
+     */
+    getResourceGroupIntroducers: (
+      groupId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetResourceGroupIntroducersData, void>({
+        path: `/api/resource-groups/${groupId}/introducers`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name RemoveResourceGroupIntroducer
+     * @summary Remove a user as an introducer for a resource group
+     * @request DELETE:/api/resource-groups/{groupId}/introducers/{userId}
+     * @secure
+     */
+    removeResourceGroupIntroducer: (
+      groupId: number,
+      userId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<RemoveResourceGroupIntroducerData, void>({
+        path: `/api/resource-groups/${groupId}/introducers/${userId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name CreateResourceGroupIntroduction
+     * @summary Grant a group introduction to a user
+     * @request POST:/api/resource-groups/{groupId}/introductions
+     * @secure
+     */
+    createResourceGroupIntroduction: (
+      groupId: number,
+      data: CreateResourceGroupIntroductionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<CreateResourceGroupIntroductionData, void>({
+        path: `/api/resource-groups/${groupId}/introductions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name GetResourceGroupIntroductions
+     * @summary Get all introductions for a resource group
+     * @request GET:/api/resource-groups/{groupId}/introductions
+     * @secure
+     */
+    getResourceGroupIntroductions: (
+      { groupId, ...query }: GetResourceGroupIntroductionsParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetResourceGroupIntroductionsData, void>({
+        path: `/api/resource-groups/${groupId}/introductions`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name GetResourceGroupIntroductionById
+     * @summary Get a specific group introduction by its ID
+     * @request GET:/api/resource-groups/{groupId}/introductions/{introductionId}
+     * @secure
+     */
+    getResourceGroupIntroductionById: (
+      groupId: number,
+      introductionId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetResourceGroupIntroductionByIdData, void>({
+        path: `/api/resource-groups/${groupId}/introductions/${introductionId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name RevokeResourceGroupIntroduction
+     * @summary Revoke a group introduction
+     * @request POST:/api/resource-groups/{groupId}/introductions/{introductionId}/revoke
+     * @secure
+     */
+    revokeResourceGroupIntroduction: (
+      groupId: number,
+      introductionId: number,
+      data: RevokeIntroductionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<RevokeResourceGroupIntroductionData, void>({
+        path: `/api/resource-groups/${groupId}/introductions/${introductionId}/revoke`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name UnrevokeResourceGroupIntroduction
+     * @summary Unrevoke a group introduction
+     * @request POST:/api/resource-groups/{groupId}/introductions/{introductionId}/unrevoke
+     * @secure
+     */
+    unrevokeResourceGroupIntroduction: (
+      groupId: number,
+      introductionId: number,
+      data: UnrevokeIntroductionDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<UnrevokeResourceGroupIntroductionData, void>({
+        path: `/api/resource-groups/${groupId}/introductions/${introductionId}/unrevoke`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resource Group Introductions & Introducers
+     * @name GetResourceGroupIntroductionHistory
+     * @summary Get history for a group introduction
+     * @request GET:/api/resource-groups/{groupId}/introductions/{introductionId}/history
+     * @secure
+     */
+    getResourceGroupIntroductionHistory: (
+      groupId: number,
+      introductionId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<GetResourceGroupIntroductionHistoryData, void>({
+        path: `/api/resource-groups/${groupId}/introductions/${introductionId}/history`,
+        method: "GET",
+        secure: true,
+        format: "json",
         ...params,
       }),
   };

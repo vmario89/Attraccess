@@ -26,6 +26,7 @@ import { NfcCardList } from '../fabreader/NfcCardList/NfcCardList';
 import { CsvExport } from '../csv-export/csv-export';
 import { CreateMqttConfig, EditMqttConfig, TestMqttConfig } from '../resources/iot-settings/mqtt';
 import { DocumentationEditor, DocumentationView } from '../resources/documentation';
+import { ResourceGroupEditPage } from '../resources/groups/ResourceGroupEditPage';
 
 const coreRoutes: RouteConfig[] = [
   {
@@ -76,6 +77,11 @@ const coreRoutes: RouteConfig[] = [
   {
     path: '/resources/:id/documentation/edit',
     element: <DocumentationEditor />,
+    authRequired: 'canManageResources',
+  },
+  {
+    path: '/resource-groups/:groupId/edit',
+    element: <ResourceGroupEditPage />,
     authRequired: 'canManageResources',
   },
   {

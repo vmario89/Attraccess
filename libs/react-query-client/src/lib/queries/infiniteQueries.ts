@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { InfiniteData, UseInfiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { ResourceGroupsService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, UsersService } from "../requests/services.gen";
+import { ResourceGroupIntroductionsIntroducersService, ResourceGroupsService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, UsersService } from "../requests/services.gen";
 import * as Common from "./common";
 export const useUsersServiceGetAllUsersInfinite = <TData = InfiniteData<Common.UsersServiceGetAllUsersDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ limit, search }: {
   limit?: number;
@@ -24,6 +24,14 @@ export const useResourceGroupsServiceGetAllResourceGroupsInfinite = <TData = Inf
   search?: string;
 } = {}, queryKey?: TQueryKey, options?: Omit<UseInfiniteQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useInfiniteQuery({
   queryKey: Common.UseResourceGroupsServiceGetAllResourceGroupsKeyFn({ limit, search }, queryKey), queryFn: ({ pageParam }) => ResourceGroupsService.getAllResourceGroups({ limit, page: pageParam as number, search }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
+    nextPage: number;
+  }).nextPage, ...options
+});
+export const useResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsInfinite = <TData = InfiniteData<Common.ResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ groupId, limit }: {
+  groupId: number;
+  limit: number;
+}, queryKey?: TQueryKey, options?: Omit<UseInfiniteQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useInfiniteQuery({
+  queryKey: Common.UseResourceGroupIntroductionsIntroducersServiceGetResourceGroupIntroductionsKeyFn({ groupId, limit }, queryKey), queryFn: ({ pageParam }) => ResourceGroupIntroductionsIntroducersService.getResourceGroupIntroductions({ groupId, limit, page: pageParam as number }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
     nextPage: number;
   }).nextPage, ...options
 });

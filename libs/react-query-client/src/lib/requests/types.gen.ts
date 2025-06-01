@@ -364,6 +364,159 @@ export type UpdateResourceGroupDto = {
     description?: string;
 };
 
+export type AddResourceGroupIntroducerDto = {
+    /**
+     * The ID of the user to be added as an introducer
+     */
+    userId: number;
+};
+
+export type ResourceIntroductionUser = {
+    /**
+     * The unique identifier of the introduction permission
+     */
+    id: number;
+    /**
+     * The ID of the resource (if permission is for a specific resource)
+     */
+    resourceId?: number;
+    /**
+     * The ID of the user who can give introductions
+     */
+    userId: number;
+    /**
+     * The ID of the resource group (if permission is for a group)
+     */
+    resourceGroupId?: number;
+    /**
+     * When the permission was granted
+     */
+    grantedAt: string;
+    /**
+     * The user who can give introductions
+     */
+    user: User;
+};
+
+export type CreateResourceGroupIntroductionDto = {
+    /**
+     * The ID of the user receiving the introduction
+     */
+    receiverUserId: number;
+    /**
+     * The ID of the user who tutored the receiver (optional)
+     */
+    tutorUserId?: number;
+};
+
+export type ResourceIntroductionHistoryItem = {
+    /**
+     * The unique identifier of the introduction history entry
+     */
+    id: number;
+    /**
+     * The ID of the related introduction
+     */
+    introductionId: number;
+    /**
+     * The action performed (revoke or unrevoke)
+     */
+    action: 'revoke' | 'unrevoke';
+    /**
+     * The ID of the user who performed the action
+     */
+    performedByUserId: number;
+    /**
+     * Optional comment explaining the reason for the action
+     */
+    comment?: string;
+    /**
+     * When the action was performed
+     */
+    createdAt: string;
+    /**
+     * The user who performed the action
+     */
+    performedByUser: User;
+};
+
+/**
+ * The action performed (revoke or unrevoke)
+ */
+export enum action {
+    REVOKE = 'revoke',
+    UNREVOKE = 'unrevoke'
+}
+
+export type ResourceIntroduction = {
+    /**
+     * The unique identifier of the introduction
+     */
+    id: number;
+    /**
+     * The ID of the resource (if this is a resource-specific introduction)
+     */
+    resourceId?: number;
+    /**
+     * The ID of the user who received the introduction
+     */
+    receiverUserId: number;
+    /**
+     * The ID of the user who tutored the receiver
+     */
+    tutorUserId: number;
+    /**
+     * The ID of the resource group (if this is a group-level introduction)
+     */
+    resourceGroupId?: number;
+    /**
+     * When the introduction was completed
+     */
+    completedAt: string;
+    /**
+     * When the introduction record was created
+     */
+    createdAt: string;
+    /**
+     * The user who received the introduction
+     */
+    receiverUser: User;
+    /**
+     * The user who tutored the receiver
+     */
+    tutorUser: User;
+    /**
+     * History of revoke/unrevoke actions for this introduction
+     */
+    history: Array<ResourceIntroductionHistoryItem>;
+};
+
+export type PaginatedResourceIntroductionResponseDto = {
+    total: number;
+    page: number;
+    limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
+    totalPages: number;
+    data: Array<ResourceIntroduction>;
+};
+
+export type RevokeIntroductionDto = {
+    /**
+     * Optional comment explaining the reason for revoking access
+     */
+    comment?: string;
+};
+
+export type UnrevokeIntroductionDto = {
+    /**
+     * Optional comment explaining the reason for unrevoking access
+     */
+    comment?: string;
+};
+
 export type CreateResourceDto = {
     /**
      * The name of the resource
@@ -586,133 +739,6 @@ export type CompleteIntroductionDto = {
      * User ID
      */
     userId?: number;
-};
-
-export type ResourceIntroductionHistoryItem = {
-    /**
-     * The unique identifier of the introduction history entry
-     */
-    id: number;
-    /**
-     * The ID of the related introduction
-     */
-    introductionId: number;
-    /**
-     * The action performed (revoke or unrevoke)
-     */
-    action: 'revoke' | 'unrevoke';
-    /**
-     * The ID of the user who performed the action
-     */
-    performedByUserId: number;
-    /**
-     * Optional comment explaining the reason for the action
-     */
-    comment?: string;
-    /**
-     * When the action was performed
-     */
-    createdAt: string;
-    /**
-     * The user who performed the action
-     */
-    performedByUser: User;
-};
-
-/**
- * The action performed (revoke or unrevoke)
- */
-export enum action {
-    REVOKE = 'revoke',
-    UNREVOKE = 'unrevoke'
-}
-
-export type ResourceIntroduction = {
-    /**
-     * The unique identifier of the introduction
-     */
-    id: number;
-    /**
-     * The ID of the resource
-     */
-    resourceId: number;
-    /**
-     * The ID of the user who received the introduction
-     */
-    receiverUserId: number;
-    /**
-     * The ID of the user who tutored the receiver
-     */
-    tutorUserId: number;
-    /**
-     * When the introduction was completed
-     */
-    completedAt: string;
-    /**
-     * When the introduction record was created
-     */
-    createdAt: string;
-    /**
-     * The user who received the introduction
-     */
-    receiverUser: User;
-    /**
-     * The user who tutored the receiver
-     */
-    tutorUser: User;
-    /**
-     * History of revoke/unrevoke actions for this introduction
-     */
-    history: Array<ResourceIntroductionHistoryItem>;
-};
-
-export type PaginatedResourceIntroductionResponseDto = {
-    total: number;
-    page: number;
-    limit: number;
-    /**
-     * The next page number, or null if it is the last page.
-     */
-    nextPage: number | null;
-    totalPages: number;
-    data: Array<ResourceIntroduction>;
-};
-
-export type RevokeIntroductionDto = {
-    /**
-     * Optional comment explaining the reason for revoking access
-     */
-    comment?: string;
-};
-
-export type UnrevokeIntroductionDto = {
-    /**
-     * Optional comment explaining the reason for unrevoking access
-     */
-    comment?: string;
-};
-
-export type ResourceIntroductionUser = {
-    /**
-     * The unique identifier of the introduction permission
-     */
-    id: number;
-    /**
-     * The ID of the resource
-     */
-    resourceId: number;
-    /**
-     * The ID of the user who can give introductions
-     */
-    userId: number;
-    /**
-     * When the permission was granted
-     */
-    grantedAt: string;
-    /**
-     * The user who can give introductions
-     */
-    user: User;
 };
 
 export type CanManageIntroducersResponseDto = {
@@ -1638,6 +1664,119 @@ export type DeleteOneResourceGroupData = {
 
 export type DeleteOneResourceGroupResponse = void;
 
+export type AddResourceGroupIntroducerData = {
+    /**
+     * ID of the resource group
+     */
+    groupId: number;
+    requestBody: AddResourceGroupIntroducerDto;
+};
+
+export type AddResourceGroupIntroducerResponse = ResourceIntroductionUser;
+
+export type GetResourceGroupIntroducersData = {
+    /**
+     * ID of the resource group
+     */
+    groupId: number;
+};
+
+export type GetResourceGroupIntroducersResponse = Array<ResourceIntroductionUser>;
+
+export type RemoveResourceGroupIntroducerData = {
+    /**
+     * ID of the resource group
+     */
+    groupId: number;
+    /**
+     * ID of the user to remove as introducer
+     */
+    userId: number;
+};
+
+export type RemoveResourceGroupIntroducerResponse = void;
+
+export type CreateResourceGroupIntroductionData = {
+    /**
+     * ID of the resource group
+     */
+    groupId: number;
+    requestBody: CreateResourceGroupIntroductionDto;
+};
+
+export type CreateResourceGroupIntroductionResponse = ResourceIntroduction;
+
+export type GetResourceGroupIntroductionsData = {
+    /**
+     * ID of the resource group
+     */
+    groupId: number;
+    /**
+     * Number of items per page
+     */
+    limit: number;
+    /**
+     * Page number (1-based)
+     */
+    page?: number;
+};
+
+export type GetResourceGroupIntroductionsResponse = PaginatedResourceIntroductionResponseDto;
+
+export type GetResourceGroupIntroductionByIdData = {
+    /**
+     * ID of the resource group (context)
+     */
+    groupId: number;
+    /**
+     * ID of the introduction
+     */
+    introductionId: number;
+};
+
+export type GetResourceGroupIntroductionByIdResponse = ResourceIntroduction;
+
+export type RevokeResourceGroupIntroductionData = {
+    /**
+     * ID of the resource group (context)
+     */
+    groupId: number;
+    /**
+     * ID of the introduction to revoke
+     */
+    introductionId: number;
+    requestBody: RevokeIntroductionDto;
+};
+
+export type RevokeResourceGroupIntroductionResponse = ResourceIntroductionHistoryItem;
+
+export type UnrevokeResourceGroupIntroductionData = {
+    /**
+     * ID of the resource group (context)
+     */
+    groupId: number;
+    /**
+     * ID of the introduction to unrevoke
+     */
+    introductionId: number;
+    requestBody: UnrevokeIntroductionDto;
+};
+
+export type UnrevokeResourceGroupIntroductionResponse = ResourceIntroductionHistoryItem;
+
+export type GetResourceGroupIntroductionHistoryData = {
+    /**
+     * ID of the resource group (context)
+     */
+    groupId: number;
+    /**
+     * ID of the introduction
+     */
+    introductionId: number;
+};
+
+export type GetResourceGroupIntroductionHistoryResponse = Array<ResourceIntroductionHistoryItem>;
+
 export type CreateOneResourceData = {
     formData: CreateResourceDto;
 };
@@ -2558,6 +2697,157 @@ export type $OpenApiTs = {
                  * Resource group not found.
                  */
                 404: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introducers': {
+        post: {
+            req: AddResourceGroupIntroducerData;
+            res: {
+                /**
+                 * User added as a group introducer
+                 */
+                201: ResourceIntroductionUser;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+            };
+        };
+        get: {
+            req: GetResourceGroupIntroducersData;
+            res: {
+                /**
+                 * List of group introducers
+                 */
+                200: Array<ResourceIntroductionUser>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introducers/{userId}': {
+        delete: {
+            req: RemoveResourceGroupIntroducerData;
+            res: {
+                /**
+                 * User removed as a group introducer
+                 */
+                204: void;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions': {
+        post: {
+            req: CreateResourceGroupIntroductionData;
+            res: {
+                /**
+                 * Group introduction granted
+                 */
+                201: ResourceIntroduction;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+        get: {
+            req: GetResourceGroupIntroductionsData;
+            res: {
+                /**
+                 * List of group introductions
+                 */
+                200: PaginatedResourceIntroductionResponseDto;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{introductionId}': {
+        get: {
+            req: GetResourceGroupIntroductionByIdData;
+            res: {
+                /**
+                 * Group introduction details
+                 */
+                200: ResourceIntroduction;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{introductionId}/revoke': {
+        post: {
+            req: RevokeResourceGroupIntroductionData;
+            res: {
+                /**
+                 * Group introduction revoked
+                 */
+                201: ResourceIntroductionHistoryItem;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{introductionId}/unrevoke': {
+        post: {
+            req: UnrevokeResourceGroupIntroductionData;
+            res: {
+                /**
+                 * Group introduction unrevoked
+                 */
+                201: ResourceIntroductionHistoryItem;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{introductionId}/history': {
+        get: {
+            req: GetResourceGroupIntroductionHistoryData;
+            res: {
+                /**
+                 * Introduction history
+                 */
+                200: Array<ResourceIntroductionHistoryItem>;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to manage this resource
+                 */
+                403: unknown;
             };
         };
     };
