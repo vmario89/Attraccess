@@ -164,7 +164,7 @@ void Display::draw_network_connecting_ui()
 
 void Display::draw_api_connecting_ui()
 {
-    this->draw_two_line_message("API", "Connecting...");
+    this->draw_two_line_message("wait for API...", this->ip_address.toString());
 }
 
 void Display::draw_error_ui()

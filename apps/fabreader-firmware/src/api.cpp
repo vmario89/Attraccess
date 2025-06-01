@@ -10,55 +10,94 @@ void API::setup(NFC *nfc)
     Serial.println("[API] Setup complete.");
 }
 
+bool API::isConfigured()
+{
+    String hostname = Persistence::getSettings().Config.api.hostname;
+    int port = Persistence::getSettings().Config.api.port;
+
+    // Check if hostname is set and not empty
+    if (hostname.length() == 0 || port == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool API::checkTCPConnection()
 {
     String hostname = Persistence::getSettings().Config.api.hostname;
     int port = Persistence::getSettings().Config.api.port;
 
-    Serial.println("[API] Checking TCP connection to " + hostname + ":" + String(port));
+    // Only print once per connection attempt
+    if (!is_connecting)
+    {
+        Serial.println("[API] Checking TCP connection to " + hostname + ":" + String(port));
+        is_connecting = true;
+    }
+
     int connectStatus = this->client.connect(
         hostname.c_str(),
         port);
 
     if (connectStatus == 1)
     {
+        is_connecting = false;
         return true;
     }
 
-    Serial.print("[API] Failed to establish TCP connection. Status: ");
-    Serial.print(connectStatus);
-    Serial.print(" (");
-    switch (connectStatus)
+    // Only print detailed error if this is a new failure, not repeated failures
+    if (millis() - last_connection_attempt >= connection_retry_interval)
     {
-    case 0:
-        Serial.print("FAILED");
-        break;
-    case -1:
-        Serial.print("TIMED_OUT");
-        break;
-    case -2:
-        Serial.print("INVALID_SERVER");
-        break;
-    case -3:
-        Serial.print("TRUNCATED");
-        break;
-    case -4:
-        Serial.print("INVALID_RESPONSE");
-        break;
-    case -5:
-        Serial.print("DOMAIN_NOT_FOUND");
-        break;
-    default:
-        Serial.print("UNKNOWN_ERROR");
-        break;
+        Serial.print("[API] Failed to establish TCP connection. Status: ");
+        Serial.print(connectStatus);
+        Serial.print(" (");
+        switch (connectStatus)
+        {
+        case 0:
+            Serial.print("FAILED");
+            break;
+        case -1:
+            Serial.print("TIMED_OUT");
+            break;
+        case -2:
+            Serial.print("INVALID_SERVER");
+            break;
+        case -3:
+            Serial.print("TRUNCATED");
+            break;
+        case -4:
+            Serial.print("INVALID_RESPONSE");
+            break;
+        case -5:
+            Serial.print("DOMAIN_NOT_FOUND");
+            break;
+        default:
+            Serial.print("UNKNOWN_ERROR");
+            break;
+        }
+        Serial.println(")");
     }
-    Serial.println(")");
+
+    is_connecting = false;
     return false;
 }
 
 bool API::isConnected()
 {
     bool was_connected = this->is_connected;
+
+    // Check if API is configured before attempting connection
+    if (!isConfigured())
+    {
+        if (was_connected)
+        {
+            Serial.println("[API] Not configured, skipping connection attempts");
+            this->is_connected = false;
+            this->display->set_api_connected(false);
+        }
+        return false;
+    }
 
     this->is_connected = this->websocket.connected();
 
@@ -87,6 +126,15 @@ bool API::isConnected()
     this->is_authenticated = false;
     this->authentication_sent_at = 0;
     this->registration_sent_at = 0;
+
+    // Rate limit connection attempts
+    unsigned long current_time = millis();
+    if (current_time - last_connection_attempt < connection_retry_interval)
+    {
+        return false;
+    }
+
+    last_connection_attempt = current_time;
 
     bool tcp_connected = this->checkTCPConnection();
 
@@ -535,6 +583,14 @@ void API::sendHeartbeat()
 
 void API::loop()
 {
+    // First check if API is configured
+    if (!isConfigured())
+    {
+        // Skip all connection attempts if not configured
+        return;
+    }
+
+    // Then check if we're connected
     if (!isConnected())
     {
         return;

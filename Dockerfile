@@ -18,7 +18,6 @@ COPY ./docs ./docs
 
 COPY package.json package.json
 
-
 # Set environment variable to tell API about frontend location
 ENV STATIC_FRONTEND_FILE_PATH=/app/dist/apps/frontend
 

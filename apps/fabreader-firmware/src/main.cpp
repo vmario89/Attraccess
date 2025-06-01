@@ -7,19 +7,30 @@
 #include "display.hpp"
 #include "keypad.hpp"
 #include "leds.hpp"
+#include "web_server.hpp"
 
 #include <SPI.h>
 #include <Wire.h>
+
+#include "improv_manager.hpp"
 
 Leds leds;
 Display display(&leds);
 Network network(&display);
 Keypad keypad;
-API api(network.interface.getClient(), &display, &keypad);
+API api(network.getInterface().getClient(), &display, &keypad);
 NFC nfc(&api);
+ConfigWebServer webServer(&network.getInterface());
+
+// Create the Improv manager
+ImprovManager improvManager(&network.getInterface());
 
 // Task handle for the display task
 TaskHandle_t displayTaskHandle = NULL;
+// Task handle for the Improv task
+TaskHandle_t improvTaskHandle = NULL;
+// Task handle for the web server task
+TaskHandle_t webServerTaskHandle = NULL;
 
 // Display task function
 void userTask(void *parameter)
@@ -32,6 +43,45 @@ void userTask(void *parameter)
   {
     display.loop();
     vTaskDelay(LOOP_DELAY_MS);
+  }
+}
+
+// Improv task function
+void improvTask(void *parameter)
+{
+  // Initialize Improv manager
+  improvManager.setup();
+
+  const int IMPROV_DELAY_MS = 10 / portTICK_PERIOD_MS;
+
+  for (;;)
+  {
+    // Handle Improv commands
+    improvManager.loop();
+    vTaskDelay(IMPROV_DELAY_MS);
+  }
+}
+
+// Web server task function
+void webServerTask(void *parameter)
+{
+  // Wait for network to be available before starting web server
+  while (!network.isHealthy())
+  {
+    Serial.println("[WebServer] Waiting for network...");
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+  }
+
+  // Initialize web server
+  webServer.setup();
+
+  const int WEB_SERVER_DELAY_MS = 10 / portTICK_PERIOD_MS;
+
+  for (;;)
+  {
+    webServer.loop();
+
+    vTaskDelay(WEB_SERVER_DELAY_MS);
   }
 }
 
@@ -51,30 +101,50 @@ void setup()
   Persistence::setup();
   display.setup();
   leds.setup();
-  nfc.setup();
+
+  // Create the display task (core 1, priority 1)
+  xTaskCreate(
+      userTask,          // Task function
+      "DisplayTask",     // Task name
+      4096,              // Stack size (bytes)
+      NULL,              // Task parameters
+      3,                 // Priority (1 is low, configMAX_PRIORITIES-1 is highest)
+      &displayTaskHandle // Task handle
+  );
+
+  // Create the Improv task
+  xTaskCreate(
+      improvTask,       // Task function
+      "ImprovTask",     // Task name
+      4096,             // Stack size (bytes)
+      NULL,             // Task parameters
+      2,                // Priority (lower than display but higher than background)
+      &improvTaskHandle // Task handle
+  );
+
+  // Create the web server task
+  xTaskCreate(
+      webServerTask,       // Task function
+      "WebServerTask",     // Task name
+      16384,               // Stack size (bytes) - increased from 8192 to fix route registration issues
+      NULL,                // Task parameters
+      6,                   // Priority (lowest of the tasks)
+      &webServerTaskHandle // Task handle
+  );
+
   keypad.setup();
   network.setup();
   api.setup(&nfc);
-
-  // Create the display task (core 1, priority 1)
-  xTaskCreatePinnedToCore(
-      userTask,           // Task function
-      "DisplayTask",      // Task name
-      4096,               // Stack size (bytes)
-      NULL,               // Task parameters
-      3,                  // Priority (1 is low, configMAX_PRIORITIES-1 is highest)
-      &displayTaskHandle, // Task handle
-      NULL                // Run on core 1 (ESP32 has 2 cores: 0 and 1)
-  );
+  nfc.setup();
 }
 
 void loop()
 {
   network.loop();
+
   if (network.isHealthy())
   {
     api.loop();
-
     nfc.loop();
   }
 }

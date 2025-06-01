@@ -2,10 +2,10 @@
 
 import { UseQueryResult } from "@tanstack/react-query";
 import { AnalyticsService, ApplicationService, AuthenticationService, FabReaderNfcCardsService, FabReaderReadersService, MqttResourceConfigurationService, MqttServersService, PluginService, ResourceGroupsService, ResourceIntroducersService, ResourceIntroductionsService, ResourceUsageService, ResourcesService, SseService, SsoService, UsersService, WebhooksService } from "../requests/services.gen";
-export type ApplicationServicePing2DefaultResponse = Awaited<ReturnType<typeof ApplicationService.ping2>>;
-export type ApplicationServicePing2QueryResult<TData = ApplicationServicePing2DefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useApplicationServicePing2Key = "ApplicationServicePing2";
-export const UseApplicationServicePing2KeyFn = (queryKey?: Array<unknown>) => [useApplicationServicePing2Key, ...(queryKey ?? [])];
+export type ApplicationServiceInfoDefaultResponse = Awaited<ReturnType<typeof ApplicationService.info>>;
+export type ApplicationServiceInfoQueryResult<TData = ApplicationServiceInfoDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useApplicationServiceInfoKey = "ApplicationServiceInfo";
+export const UseApplicationServiceInfoKeyFn = (queryKey?: Array<unknown>) => [useApplicationServiceInfoKey, ...(queryKey ?? [])];
 export type UsersServiceGetAllUsersDefaultResponse = Awaited<ReturnType<typeof UsersService.getAllUsers>>;
 export type UsersServiceGetAllUsersQueryResult<TData = UsersServiceGetAllUsersDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useUsersServiceGetAllUsersKey = "UsersServiceGetAllUsers";
