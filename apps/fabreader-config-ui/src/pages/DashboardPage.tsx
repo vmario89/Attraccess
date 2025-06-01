@@ -2,27 +2,12 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
-import { ConfigData } from '../types';
 import { StatusCard } from '../components/StatusCard';
 import { ConfigForm } from '../components/ConfigForm';
-import { useConfig, useSaveConfig } from '../services/queries';
 
 export const DashboardPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
-  const { data: config, isLoading: isConfigLoading } = useConfig();
-
-  const { mutateAsync: saveConfigMutation, isPending: isConfigSaving } = useSaveConfig();
-
-  const handleSaveConfig = async (data: ConfigData) => {
-    try {
-      await saveConfigMutation(data);
-    } catch (error) {
-      console.error('Failed to save config:', error);
-    }
-  };
-
-  // If not authenticated, redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login\" replace />;
   }
@@ -46,7 +31,7 @@ export const DashboardPage: React.FC = () => {
       >
         <StatusCard />
 
-        <ConfigForm config={config || null} onSave={handleSaveConfig} isLoading={isConfigLoading || isConfigSaving} />
+        <ConfigForm />
       </motion.div>
     </div>
   );

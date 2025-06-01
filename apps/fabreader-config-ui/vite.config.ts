@@ -21,7 +21,7 @@ export default defineConfig(() => ({
   //  plugins: [ nxViteTsPaths() ],
   // },
   build: {
-    outDir: '../../apps/fabreader-firmware/data',
+    outDir: '../../dist/apps/fabreader-config-ui',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

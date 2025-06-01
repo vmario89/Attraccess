@@ -103,36 +103,33 @@ void setup()
   leds.setup();
 
   // Create the display task (core 1, priority 1)
-  xTaskCreatePinnedToCore(
-      userTask,           // Task function
-      "DisplayTask",      // Task name
-      4096,               // Stack size (bytes)
-      NULL,               // Task parameters
-      3,                  // Priority (1 is low, configMAX_PRIORITIES-1 is highest)
-      &displayTaskHandle, // Task handle
-      NULL                // Run on core 1 (ESP32 has 2 cores: 0 and 1)
+  xTaskCreate(
+      userTask,          // Task function
+      "DisplayTask",     // Task name
+      4096,              // Stack size (bytes)
+      NULL,              // Task parameters
+      3,                 // Priority (1 is low, configMAX_PRIORITIES-1 is highest)
+      &displayTaskHandle // Task handle
   );
 
   // Create the Improv task
-  xTaskCreatePinnedToCore(
-      improvTask,        // Task function
-      "ImprovTask",      // Task name
-      4096,              // Stack size (bytes)
-      NULL,              // Task parameters
-      2,                 // Priority (lower than display but higher than background)
-      &improvTaskHandle, // Task handle
-      NULL               // Let the scheduler decide which core to run on
+  xTaskCreate(
+      improvTask,       // Task function
+      "ImprovTask",     // Task name
+      4096,             // Stack size (bytes)
+      NULL,             // Task parameters
+      2,                // Priority (lower than display but higher than background)
+      &improvTaskHandle // Task handle
   );
 
   // Create the web server task
-  xTaskCreatePinnedToCore(
-      webServerTask,        // Task function
-      "WebServerTask",      // Task name
-      16384,                // Stack size (bytes) - increased from 8192 to fix route registration issues
-      NULL,                 // Task parameters
-      1,                    // Priority (lowest of the tasks)
-      &webServerTaskHandle, // Task handle
-      NULL                  // Let the scheduler decide which core to run on
+  xTaskCreate(
+      webServerTask,       // Task function
+      "WebServerTask",     // Task name
+      16384,               // Stack size (bytes) - increased from 8192 to fix route registration issues
+      NULL,                // Task parameters
+      6,                   // Priority (lowest of the tasks)
+      &webServerTaskHandle // Task handle
   );
 
   keypad.setup();

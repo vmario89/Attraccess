@@ -16,10 +16,20 @@
         "{projectRoot}/platformio.ini",
         "{projectRoot}/build_firmwares.py",
         "{projectRoot}/src/**/*",
-        "{projectRoot}/.pio/**/*"
+        "{projectRoot}/.pio/**/*",
+        "{projectRoot}/data/**/*",
+        "{workspaceRoot}/dist/apps/fabreader-config-ui/**/*"
       ],
       "cache": true,
-      "dependsOn": ["fabreader-config-ui:build"]
+      "dependsOn": ["copy-config-ui"]
+    },
+    "copy-config-ui": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["fabreader-config-ui:build"],
+      "options": {
+        "cwd": ".",
+        "command": "rm -rf apps/fabreader-firmware/data && mkdir -p apps/fabreader-firmware/data && cp -r dist/apps/fabreader-config-ui apps/fabreader-firmware/data"
+      }
     }
   }
 }

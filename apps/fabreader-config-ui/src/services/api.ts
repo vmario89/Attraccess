@@ -84,7 +84,6 @@ export async function getStatus(): Promise<StatusData> {
     };
   });
 
-  console.log('status', data);
   return data as StatusData;
 }
 

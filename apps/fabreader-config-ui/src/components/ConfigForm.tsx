@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Settings, Save, Eye, EyeOff, Shield } from 'lucide-react';
@@ -6,16 +6,15 @@ import { ConfigData } from '../types';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
+import { useConfig, useSaveConfig } from '../services/queries';
 
-interface ConfigFormProps {
-  config: ConfigData | null;
-  onSave: (data: ConfigData) => Promise<void>;
-  isLoading: boolean;
-}
-
-export const ConfigForm: React.FC<ConfigFormProps> = ({ config, onSave, isLoading }) => {
+export const ConfigForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const saveConfig = useSaveConfig();
+  const { data: config, isLoading, refetch, isSuccess } = useConfig();
+
+  console.log('in form 2', config);
 
   const {
     register,
@@ -23,27 +22,28 @@ export const ConfigForm: React.FC<ConfigFormProps> = ({ config, onSave, isLoadin
     formState: { errors },
     reset,
   } = useForm<ConfigData>({
-    defaultValues: config || {
+    defaultValues: {
       apiHostname: '',
       apiPort: '',
       configPagePassword: '',
     },
   });
 
-  React.useEffect(() => {
-    if (config) {
+  // Update form values when config data is loaded
+  useEffect(() => {
+    if (isSuccess && config) {
+      console.log('Setting form data with config:', config);
       reset(config);
     }
-  }, [config, reset]);
+  }, [isSuccess, config, reset]);
 
-  const onSubmit = async (data: ConfigData) => {
-    await onSave(data);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
-  };
+  useEffect(() => {
+    console.log('refetching config');
+    refetch();
+  }, [refetch]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit((data) => saveConfig.mutate(data))} className="space-y-6">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export const ConfigForm: React.FC<ConfigFormProps> = ({ config, onSave, isLoadin
       </Card>
 
       <div className="flex items-center justify-end gap-4 mt-6">
-        {saveSuccess && (
+        {saveConfig.isSuccess && (
           <motion.div
             className="text-green-600 dark:text-green-400 font-medium"
             initial={{ opacity: 0, y: 10 }}

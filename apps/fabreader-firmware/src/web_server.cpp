@@ -157,24 +157,35 @@ bool ConfigWebServer::handleFileRead(String path)
     // If path ends with "/" or is blank, serve index.html
     if (path.endsWith("/"))
     {
+        Serial.println("[WebServer] Serving index.html of directory");
         path += "index.html";
     }
 
     // Get content type based on file extension
     String contentType = getContentType(path);
 
+    Serial.println("[WebServer] Content type: " + contentType);
+
     // Try to open the file
     if (LittleFS.exists(path))
     {
+        Serial.println("[WebServer] File exists");
         File file = LittleFS.open(path, "r");
+
         if (file)
         {
+            Serial.println("[WebServer] Streaming file");
             server.streamFile(file, contentType);
             file.close();
             return true;
         }
+        else
+        {
+            Serial.println("[WebServer] File not found");
+        }
     }
 
+    Serial.println("[WebServer] Skipping request for file serving");
     return false;
 }
 
