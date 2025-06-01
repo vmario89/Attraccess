@@ -5,31 +5,6 @@
 # Define ARG before FROM so it can be used in FROM
 ARG NODE_VERSION=20.10.0
 
-# Build stage for FabReader firmware
-FROM python:3.9-slim AS firmware-builder
-
-# Install required dependencies for building firmware
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install PlatformIO
-RUN pip install platformio
-
-# Set working directory
-WORKDIR /firmware
-
-# Copy firmware source
-COPY ./apps/fabreader-firmware ./
-
-# Make build script executable
-RUN chmod +x build_firmwares.py
-
-# Build all firmware environments
-RUN ./build_firmwares.py
-
 # Single-stage Dockerfile that only copies pre-built artifacts
 FROM node:${NODE_VERSION}-alpine
 
@@ -40,9 +15,6 @@ WORKDIR /app
 COPY ./dist/apps/api ./dist/apps/api
 COPY ./dist/apps/frontend ./dist/apps/frontend
 COPY ./docs ./docs
-
-# Copy firmware files from builder stage
-COPY --from=firmware-builder /firmware/firmware_output/ ./dist/apps/frontend/_fabreader_assets/
 
 COPY package.json package.json
 

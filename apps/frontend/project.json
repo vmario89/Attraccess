@@ -1,18 +1,32 @@
-/* eslint-disable */
 {
   "name": "frontend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/frontend/src",
   "projectType": "application",
   "tags": [],
+  "targets": {
+    "serve": {
+      "dependsOn": ["copy-fabreader-assets"]
+    },
+    "build": {
+      "dependsOn": ["copy-fabreader-assets"]
+    },
+    "copy-fabreader-assets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf apps/frontend/public/_fabreader_assets && mkdir -p apps/frontend/public/_fabreader_assets && cp -r apps/fabreader-firmware/firmware_output/* apps/frontend/public/_fabreader_assets/"
+      },
+      "dependsOn": ["fabreader-firmware:build"]
+    },
+
+    "lint": {
+      "dependsOn": ["frontend:typecheck"]
+    }
+  },
   "targetDefaults": {
-    "build": {},
     "serve": {
       "port": 4200,
       "strictPort": true
-    },
-    "lint": {
-      "dependsOn": ["frontend:typecheck"]
     }
   }
 }

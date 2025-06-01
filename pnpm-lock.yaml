@@ -212,6 +212,9 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.56.4
+        version: 7.56.4(react@18.3.1)
       react-i18next:
         specifier: ^15.5.1
         version: 15.5.1(i18next@24.2.3(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
@@ -225,8 +228,8 @@ importers:
         specifier: ^0.4.3
         version: 0.4.3(react@18.3.1)
       react-router-dom:
-        specifier: 6.11.2
-        version: 6.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 6.29.0
+        version: 6.29.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-simple-pull-to-refresh:
         specifier: ^1.3.3
         version: 1.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5019,9 +5022,9 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@remix-run/router@1.6.2':
-    resolution: {integrity: sha512-LzqpSrMK/3JBAVBI9u3NWtOhWNw5AMQfrUFYB0+bDHTSw17z++WJLsPsxAuK+oSddsxk4d7F/JcdDPM1M5YAhA==}
-    engines: {node: '>=14'}
+  '@remix-run/router@1.22.0':
+    resolution: {integrity: sha512-MBOl8MeOzpK0HQQQshKB7pABXbmyHizdTpqnrIseTbsv0nAepwC2ENZa1aaBExNQcpLoXmWthhak8SABLzvGPw==}
+    engines: {node: '>=14.0.0'}
 
   '@rollup/plugin-babel@6.0.4':
     resolution: {integrity: sha512-YF7Y52kFdFT/xVSuVdjkV5ZdX/3YtmX0QulG+x0taQOtJdHYzVU61aSSkAgVJ7NOv6qPkIYiJSgSWWN/DM5sGw==}
@@ -12554,6 +12557,12 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
+  react-hook-form@7.56.4:
+    resolution: {integrity: sha512-Rob7Ftz2vyZ/ZGsQZPaRdIefkgOSrQSPXfqBdvOPwJfoGnjwRJUs7EM7Kc1mcoDv3NOtqBzPGbcMB8CGn9CKgw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-i18next@15.5.1:
     resolution: {integrity: sha512-C8RZ7N7H0L+flitiX6ASjq9p5puVJU1Z8VyL3OgM/QOMRf40BMZX+5TkpxzZVcTmOLPX5zlti4InEX5pFyiVeA==}
     peerDependencies:
@@ -12614,16 +12623,16 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-router-dom@6.11.2:
-    resolution: {integrity: sha512-JNbKtAeh1VSJQnH6RvBDNhxNwemRj7KxCzc5jb7zvDSKRnPWIFj9pO+eXqjM69gQJ0r46hSz1x4l9y0651DKWw==}
-    engines: {node: '>=14'}
+  react-router-dom@6.29.0:
+    resolution: {integrity: sha512-pkEbJPATRJ2iotK+wUwHfy0xs2T59YPEN8BQxVCPeBZvK7kfPESRc/nyxzdcxR17hXgUPYx2whMwl+eo9cUdnQ==}
+    engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
 
-  react-router@6.11.2:
-    resolution: {integrity: sha512-74z9xUSaSX07t3LM+pS6Un0T55ibUE/79CzfZpy5wsPDZaea1F8QkrsiyRnA2YQ7LwE/umaydzXZV80iDCPkMg==}
-    engines: {node: '>=14'}
+  react-router@6.29.0:
+    resolution: {integrity: sha512-DXZJoE0q+KyeVw75Ck6GkPxFak63C4fGqZGNijnWgzB/HzSP1ZfTlBj5COaGWwhrMQ/R8bXiq5Ooy4KG+ReyjQ==}
+    engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
 
@@ -21592,7 +21601,7 @@ snapshots:
       '@react-types/shared': 3.29.0(react@18.3.1)
       react: 18.3.1
 
-  '@remix-run/router@1.6.2': {}
+  '@remix-run/router@1.22.0': {}
 
   '@rollup/plugin-babel@6.0.4(@babel/core@7.27.1)(@types/babel__core@7.20.5)(rollup@4.40.2)':
     dependencies:
@@ -30845,6 +30854,10 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
+  react-hook-form@7.56.4(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   react-i18next@15.5.1(i18next@24.2.3(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3):
     dependencies:
       '@babel/runtime': 7.26.0
@@ -30901,16 +30914,16 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-router-dom@6.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-router-dom@6.29.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@remix-run/router': 1.6.2
+      '@remix-run/router': 1.22.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      react-router: 6.11.2(react@18.3.1)
+      react-router: 6.29.0(react@18.3.1)
 
-  react-router@6.11.2(react@18.3.1):
+  react-router@6.29.0(react@18.3.1):
     dependencies:
-      '@remix-run/router': 1.6.2
+      '@remix-run/router': 1.22.0
       react: 18.3.1
 
   react-scan@0.0.31:

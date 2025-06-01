@@ -3,7 +3,7 @@ import { ApiResponse, ConfigData, LoginFormData, StatusData } from '../types';
 const API_BASE_URL = localStorage.getItem('apiBaseUrl') ?? window.location.origin;
 
 // Helper function to handle fetch responses
-async function handleResponse<T>(response: Response, expectEmptyResponse: boolean = false): Promise<ApiResponse<T>> {
+async function handleResponse<T>(response: Response, expectEmptyResponse = false): Promise<ApiResponse<T>> {
   if (!response.ok) {
     // For network errors and non-2xx responses
     if (response.status === 401) {

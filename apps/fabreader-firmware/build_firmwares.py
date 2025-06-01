@@ -19,40 +19,7 @@ def extract_define_value(flags, define_name):
         return value
     return None
 
-def build_react_app():
-    """Build the React application in the config-ui directory"""
-    config_ui_dir = os.path.abspath("config-ui")
-    data_dir = os.path.abspath("data")
-    
-    if not os.path.exists(config_ui_dir):
-        print(f"Error: React application directory not found at {config_ui_dir}")
-        sys.exit(1)
-        
-    print(f"Building React application in {config_ui_dir}...")
-    
-    # Install dependencies
-    try:
-        print("Installing React application dependencies...")
-        subprocess.run(['pnpm', 'install', '--frozen-lockfile'], cwd=config_ui_dir, check=True)
-    except subprocess.CalledProcessError:
-        print("Error: Failed to install React application dependencies")
-        sys.exit(1)
-        
-    # Build the React application
-    try:
-        print("Building React application...")
-        subprocess.run(['npm', 'run', 'build'], cwd=config_ui_dir, check=True)
-    except subprocess.CalledProcessError:
-        print("Error: Failed to build React application")
-        sys.exit(1)
-        
-    print(f"React application built successfully. Output is in {data_dir}")
-    return data_dir
-
 def main():
-    # Build React application
-    data_dir = build_react_app()
-    
     # Load configuration
     config = configparser.ConfigParser()
     config.read('platformio.ini')
@@ -300,7 +267,6 @@ def main():
     
     print(f"Build completed. Output in {output_dir}")
     print(f"Total environments built: {len(firmware_info)}")
-    print(f"React application built to {data_dir}")
     print(f"Copy the contents of {output_dir} to your frontend public/_fabreader_assets directory")
 
 if __name__ == "__main__":
