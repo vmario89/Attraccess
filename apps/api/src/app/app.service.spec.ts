@@ -12,9 +12,9 @@ describe('AppService', () => {
     service = app.get<AppService>(AppService);
   });
 
-  describe('ping', () => {
-    it('should return "pong"', () => {
-      expect(service.ping()).toEqual({ message: 'pong' });
+  describe('getInfo', () => {
+    it('should return api information', () => {
+      expect(service.getInfo()).toEqual({ name: 'Attraccess API', status: 'ok' });
     });
   });
 });

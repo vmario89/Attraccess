@@ -9,13 +9,13 @@ Network::Network(Display *display)
 
 Network::~Network()
 {
-    this->interface.end();
+    this->interface->end();
 }
 
 void Network::setup()
 {
     Serial.println("Setting up server connection interface...");
-    this->interface.setup();
+    this->interface->setup();
 
     Serial.println("Server connection interface setup done.");
 
@@ -24,16 +24,16 @@ void Network::setup()
 
 void Network::loop()
 {
-    this->interface.loop();
+    this->interface->loop();
 
     // Perform periodic health checks using millis()
     unsigned long currentMillis = millis();
     if (currentMillis - this->lastHealthCheck >= HEALTH_CHECK_INTERVAL_MS)
     {
         this->lastHealthCheck = currentMillis;
-        bool is_currently_healthy = this->interface.isHealthy();
+        bool is_currently_healthy = this->interface->isHealthy();
 
-        IPAddress ip = this->interface.getCurrentIp();
+        IPAddress ip = this->interface->getCurrentIp();
         this->display->set_ip_address(ip);
 
         if (is_currently_healthy != this->was_healthy)
@@ -57,5 +57,5 @@ void Network::loop()
 
 bool Network::isHealthy()
 {
-    return this->interface.isHealthy();
+    return this->interface->isHealthy();
 }

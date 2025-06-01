@@ -24,32 +24,11 @@ WORKDIR /firmware
 # Copy firmware source
 COPY ./apps/fabreader-firmware ./
 
-# Build firmware
-RUN platformio run -e fabreader
+# Make build script executable
+RUN chmod +x build_firmwares.py
 
-# Create firmware directory for output files
-RUN mkdir -p /firmware_output
-
-# Copy firmware files to output directory
-RUN cp .pio/build/fabreader/firmware.bin /firmware_output/ && \
-    cp .pio/build/fabreader/bootloader.bin /firmware_output/ && \
-    cp .pio/build/fabreader/partitions.bin /firmware_output/
-
-# Create manifest.json
-RUN echo '{ \
-    "name": "FabReader", \
-    "version": "'$(grep -oP 'version\s*=\s*"\K[^"]*' platformio.ini || echo "1.0.0")'", \
-    "builds": [ \
-    { \
-    "chipFamily": "ESP32", \
-    "parts": [ \
-    { "path": "_fabreader_assets/bootloader.bin", "offset": 4096 }, \
-    { "path": "_fabreader_assets/partitions.bin", "offset": 32768 }, \
-    { "path": "_fabreader_assets/firmware.bin", "offset": 65536 } \
-    ] \
-    } \
-    ] \
-    }' > /firmware_output/manifest.json
+# Build all firmware environments
+RUN ./build_firmwares.py
 
 # Single-stage Dockerfile that only copies pre-built artifacts
 FROM node:${NODE_VERSION}-alpine
@@ -63,7 +42,7 @@ COPY ./dist/apps/frontend ./dist/apps/frontend
 COPY ./docs ./docs
 
 # Copy firmware files from builder stage
-COPY --from=firmware-builder /firmware_output/ ./dist/apps/frontend/_fabreader_assets/
+COPY --from=firmware-builder /firmware/firmware_output/ ./dist/apps/frontend/_fabreader_assets/
 
 COPY package.json package.json
 

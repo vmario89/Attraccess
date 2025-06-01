@@ -8,7 +8,7 @@ import en from './FabreaderList.en.json';
 import { useFabReaderReadersServiceGetReaders } from '@attraccess/react-query-client';
 import { useToastMessage } from '../../../components/toastProvider';
 import { PageHeader } from '../../../components/pageHeader';
-import { FabreaderFlashButton } from '../FabreaderFlashButton/FabreaderFlashButton';
+import { FabreaderFlasher } from '../FabreaderFlasher/FabreaderFlasher';
 
 export const FabreaderList = () => {
   const { t } = useTranslations('fabreader-list', {
@@ -44,15 +44,26 @@ export const FabreaderList = () => {
       <PageHeader
         title={t('page.title')}
         actions={
-          <FabreaderFlashButton variant="light" startContent={<CpuIcon className="w-4 h-4" />}>
-            {t('page.actions.openFlasher')}
-          </FabreaderFlashButton>
+          <FabreaderFlasher>
+            {(onOpen) => (
+              <Button variant="light" startContent={<CpuIcon className="w-4 h-4" />} onPress={onOpen}>
+                {t('page.actions.openFlasher')}
+              </Button>
+            )}
+          </FabreaderFlasher>
         }
       />
 
       <Alert color="danger" className="mb-4">
         {t('workInProgress')}
       </Alert>
+
+      <FabreaderEditor
+        readerId={openedReaderEditor ?? undefined}
+        isOpen={openedReaderEditor !== null}
+        onCancel={() => setOpenedReaderEditor(null)}
+        onSave={() => setOpenedReaderEditor(null)}
+      />
 
       <Table aria-label="Fabreaders">
         <TableHeader>
@@ -72,13 +83,6 @@ export const FabreaderList = () => {
                 </Chip>
               </TableCell>
               <TableCell>
-                <FabreaderEditor
-                  readerId={reader.id}
-                  isOpen={openedReaderEditor === reader.id}
-                  onCancel={() => setOpenedReaderEditor(null)}
-                  onSave={() => setOpenedReaderEditor(null)}
-                />
-
                 <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('table.actions.editReader')}</Button>
               </TableCell>
             </TableRow>

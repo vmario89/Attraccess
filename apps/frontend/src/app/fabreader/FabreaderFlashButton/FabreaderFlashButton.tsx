@@ -4,6 +4,7 @@ import 'esp-web-tools';
 import de from './FabreaderFlashButton.de.json';
 import en from './FabreaderFlashButton.en.json';
 import React from 'react';
+import { Firmware } from '../types';
 
 // Add declaration for the custom element
 declare global {
@@ -20,18 +21,21 @@ declare global {
   }
 }
 
-// Local manifest URL that points to the server-provided manifest
-const MANIFEST_URL = '/_fabreader_assets/manifest.json';
+interface Props extends Omit<ButtonProps, 'slot' | 'onPress' | 'children'> {
+  firmware: Firmware;
+}
 
-export function FabreaderFlashButton(props: Omit<ButtonProps, 'slot' | 'onPress'>) {
+export function FabreaderFlashButton(props: Props) {
   const { t } = useTranslations('fabreader-flash-button', {
     de,
     en,
   });
 
   return (
-    <esp-web-install-button manifest={MANIFEST_URL}>
-      <Button {...props} slot="activate" />
+    <esp-web-install-button manifest={props.firmware.manifest_path}>
+      <Button {...props} slot="activate">
+        {t('button.flash')}
+      </Button>
       <Button {...props} isDisabled color="danger" slot="unsupported">
         {t('errors.unsupported')}
       </Button>
