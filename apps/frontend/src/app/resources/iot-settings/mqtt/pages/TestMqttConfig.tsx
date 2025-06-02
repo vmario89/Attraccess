@@ -117,10 +117,10 @@ export function TestMqttConfig() {
             )}
 
             <div className="flex justify-end space-x-3 mt-6">
-              <Button color="secondary" onPress={handleBack}>
+              <Button color="secondary" onPress={handleBack} data-cy="mqtt-test-config-back-button">
                 {t('backButton')}
               </Button>
-              <Button color="primary" onPress={handleTest} disabled={testStatus === 'loading' || isLoadingConfig}>
+              <Button color="primary" onPress={handleTest} disabled={testStatus === 'loading' || isLoadingConfig} data-cy="mqtt-test-config-test-button">
                 {t('testButton')}
               </Button>
             </div>

@@ -31,12 +31,13 @@ export function WebhookConfigurationPanel(props: WebhookConfigurationPanelProps)
         <AccordionItem
           key="webhooks"
           aria-label="Webhook Configuration"
+          data-cy="webhook-config-accordion-item"
           title={
             <div className="flex justify-between items-center w-full px-4">
               <span>{t('title')}</span>
 
               {isOpen && (
-                <Button size="sm" color="primary" onPress={() => setShowCreateModal(true)} startContent={<Plus />}>
+                <Button size="sm" color="primary" onPress={() => setShowCreateModal(true)} startContent={<Plus />} data-cy="webhook-config-add-webhook-button">
                   {t('addWebhook')}
                 </Button>
               )}

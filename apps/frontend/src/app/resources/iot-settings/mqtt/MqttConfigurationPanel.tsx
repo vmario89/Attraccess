@@ -23,7 +23,7 @@ export function MqttConfigurationPanel(props: MqttConfigurationPanelProps) {
       <CardHeader>
         <div className="flex justify-between items-center w-full">
           <h2>{t('configurationTitle')}</h2>
-          <Button color="primary" onPress={handleCreateNew}>
+          <Button color="primary" onPress={handleCreateNew} data-cy="mqtt-config-panel-create-new-button">
             {t('createNewButton')}
           </Button>
         </div>

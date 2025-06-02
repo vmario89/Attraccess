@@ -161,7 +161,7 @@ export function ImageUpload({
         onDrop={handleDrop}
       >
         <input
-          data-cy="file-input"
+          data-cy="image-upload-file-input"
           type="file"
           id={id}
           accept={ALLOWED_MIME_TYPES.join(',')}
@@ -186,6 +186,7 @@ export function ImageUpload({
               onClick={handleRemoveFile}
               className="absolute z-10 -top-2 -right-2 p-1 bg-red-100 dark:bg-red-900 rounded-full text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               type="button"
+              data-cy="image-upload-remove-button"
             >
               <X className="h-4 w-4" />
             </button>

@@ -36,7 +36,7 @@ const WebhookTemplateEditor: React.FC = () => {
 
   return (
     <Accordion>
-      <AccordionItem key="in-use" title={t('inUseTab')}>
+      <AccordionItem key="in-use" title={t('inUseTab')} data-cy="webhook-form-in-use-template-accordion-item">
         <div className="space-y-2 p-2">
           <Textarea
             name="inUseTemplate"
@@ -46,10 +46,11 @@ const WebhookTemplateEditor: React.FC = () => {
             minRows={5}
             maxRows={12}
             className="font-mono text-sm"
+            data-cy="webhook-form-in-use-template-textarea"
           />
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
-            <Snippet hideSymbol>
+            <Snippet hideSymbol data-cy="webhook-form-in-use-template-preview-snippet">
               {previewTemplateJson(values.inUseTemplate)
                 .split('\n')
                 .map((line, index) => (
@@ -62,7 +63,7 @@ const WebhookTemplateEditor: React.FC = () => {
         </div>
       </AccordionItem>
 
-      <AccordionItem key="not-in-use" title={t('notInUseTab')}>
+      <AccordionItem key="not-in-use" title={t('notInUseTab')} data-cy="webhook-form-not-in-use-template-accordion-item">
         <div className="space-y-2 p-2">
           <Textarea
             name="notInUseTemplate"
@@ -72,10 +73,11 @@ const WebhookTemplateEditor: React.FC = () => {
             minRows={5}
             maxRows={12}
             className="font-mono text-sm"
+            data-cy="webhook-form-not-in-use-template-textarea"
           />
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
-            <Snippet hideSymbol>
+            <Snippet hideSymbol data-cy="webhook-form-not-in-use-template-preview-snippet">
               {previewTemplateJson(values.notInUseTemplate)
                 .split('\n')
                 .map((line, index) => (
@@ -88,7 +90,7 @@ const WebhookTemplateEditor: React.FC = () => {
         </div>
       </AccordionItem>
 
-      <AccordionItem key="variables" title={t('variablesTab')}>
+      <AccordionItem key="variables" title={t('variablesTab')} data-cy="webhook-form-variables-accordion-item">
         <div className="p-2">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('variablesHelp')}</p>
           <table className="w-full text-sm">
