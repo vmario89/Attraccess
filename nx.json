@@ -15,7 +15,10 @@
       "!{projectRoot}/**/*.cy.[jt]s?(x)",
       "!{projectRoot}/cypress.config.[jt]s"
     ],
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"],
+    "testing": ["default", "{workspaceRoot}/jest.preset.js"],
+    "swagger": ["default", "{projectRoot}/webpack.config.swagger.js"],
+    "typeorm": ["default", "{projectRoot}/src/database/**/*"]
   },
   "not_nxCloudId": "68232b3a5aa475a0500b5174",
   "neverConnectToCloud": true,
@@ -68,6 +71,17 @@
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
       }
+    },
+    {
+      "plugin": "@nx/react/router-plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "startTargetName": "start",
+        "watchDepsTargetName": "watch-deps",
+        "buildDepsTargetName": "build-deps",
+        "typecheckTargetName": "typecheck"
+      }
     }
   ],
   "targetDefaults": {
@@ -80,14 +94,83 @@
       "dependsOn": ["^build"]
     },
     "lint": {
+      "cache": true,
       "options": {
         "max-warnings": 0
-      }
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"]
     },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"]
+    },
+    "typecheck": {
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["typescript"]
+        }
+      ]
+    },
+    "swagger-build": {
+      "cache": true,
+      "inputs": ["swagger", "^production"],
+      "outputs": ["{workspaceRoot}/dist/apps/{projectName}-swagger"]
+    },
+    "export-swagger": {
+      "cache": true,
+      "dependsOn": ["swagger-build"],
+      "outputs": ["{workspaceRoot}/dist/apps/{projectName}-swagger/swagger.json"]
+    },
+    "e2e": {
+      "cache": true,
+      "inputs": ["testing", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"]
+    },
+    "build-migration-datasource": {
+      "cache": true,
+      "inputs": ["typeorm", "^production"],
+      "outputs": ["{options.outputPath}"]
+    },
+    "migration-generate": {
+      "cache": true,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"]
+    },
+    "migrations-run": {
+      "cache": true,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"]
     }
   },
   "generators": {

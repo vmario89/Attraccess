@@ -7,19 +7,20 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('/ping')
-  @ApiOperation({ summary: 'Check API availability', operationId: 'ping2' })
+  @Get('/info')
+  @ApiOperation({ summary: 'Return API information', operationId: 'info' })
   @ApiResponse({
     status: 200,
-    description: 'API is available',
+    description: 'API information',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'pong' },
+        name: { type: 'string', example: 'Attraccess API' },
+        status: { type: 'string', example: 'ok' },
       },
     },
   })
-  getPing() {
-    return this.appService.ping();
+  getInfo() {
+    return this.appService.getInfo();
   }
 }

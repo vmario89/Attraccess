@@ -17,9 +17,12 @@
 #endif
 #endif
 
+// Forward declarations
+class NetworkInterface;
+
 #ifdef NETWORK_ETHERNET
 #include "network_ethernet.hpp"
-#elif NETWORK_WIFI
+#elif defined(NETWORK_WIFI)
 #include "network_wifi.hpp"
 #endif
 
@@ -34,15 +37,18 @@ public:
     void setup();
     void loop();
     bool isHealthy();
-
-#ifdef NETWORK_ETHERNET
-    NetworkEthernet interface;
-#elif NETWORK_WIFI
-    NetworkWifi interface;
-#endif
+    NetworkInterface &getInterface() { return *interface; }
 
 private:
     unsigned long lastHealthCheck = 0;
     Display *display;
     bool was_healthy = false;
+
+#ifdef NETWORK_ETHERNET
+    NetworkEthernet eth_interface;
+    NetworkInterface *interface = &eth_interface;
+#elif defined(NETWORK_WIFI)
+    NetworkWifi wifi_interface;
+    NetworkInterface *interface = &wifi_interface;
+#endif
 };

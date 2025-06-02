@@ -34,9 +34,10 @@ export function FabreaderSelect(props: Props) {
       placeholder={readers?.find((r) => r.id === props.selection)?.name ?? props.placeholder}
       selectedKeys={value}
       onSelectionChange={(keys) => setValue(keys as Set<number>)}
+      data-cy="fabreader-select"
     >
       {(reader) => (
-        <SelectItem aria-disabled={!reader.connected} aria-label={reader.name} key={reader.id}>
+        <SelectItem aria-disabled={!reader.connected} aria-label={reader.name} key={reader.id} data-cy={`fabreader-select-item-${reader.id}`}>
           {reader.name} ({reader.id})
         </SelectItem>
       )}

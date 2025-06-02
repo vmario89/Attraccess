@@ -1522,8 +1522,9 @@ export type NFCCard = {
     updatedAt: string;
 };
 
-export type Ping2Response = {
-    message?: string;
+export type InfoResponse = {
+    name?: string;
+    status?: string;
 };
 
 export type CreateOneUserData = {
@@ -2203,14 +2204,15 @@ export type AnalyticsControllerGetResourceUsageHoursInDateRangeData = {
 export type AnalyticsControllerGetResourceUsageHoursInDateRangeResponse = Array<ResourceUsage>;
 
 export type $OpenApiTs = {
-    '/api/ping': {
+    '/api/info': {
         get: {
             res: {
                 /**
-                 * API is available
+                 * API information
                  */
                 200: {
-                    message?: string;
+                    name?: string;
+                    status?: string;
                 };
             };
         };

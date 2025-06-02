@@ -69,7 +69,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     if (isLoading || isFetching) {
       return (
         <div className="flex justify-center p-4">
-          <Spinner size="lg" label={t('loading')} color="primary" />
+          <Spinner size="lg" label={t('loading')} color="primary" data-cy="documentation-modal-loading-spinner" />
         </div>
       );
     }
@@ -78,7 +78,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
       return (
         <div className="flex flex-col items-center gap-4 p-4">
           <p className="text-danger">{error instanceof Error ? error.message : t('error.unknown')}</p>
-          <Button color="primary" variant="flat" onPress={() => refetch()} startContent={<RefreshCw size={16} />}>
+          <Button color="primary" variant="flat" onPress={() => refetch()} startContent={<RefreshCw size={16} />} data-cy="documentation-modal-error-retry-button">
             {t('actions.retry')}
           </Button>
         </div>
@@ -133,7 +133,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
     <>
       {children(onOpen)}
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={modalSize} scrollBehavior="inside">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={modalSize} scrollBehavior="inside" data-cy="documentation-modal">
         <ModalContent>
           {(onClose) => (
             <>
@@ -146,6 +146,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                     variant="flat"
                     onPress={handleEditDocumentation}
                     aria-label={t('actions.edit')}
+                    data-cy="documentation-modal-edit-button"
                   >
                     <Edit size={16} />
                   </Button>
@@ -155,6 +156,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                     variant="flat"
                     onPress={toggleFullscreen}
                     aria-label={isFullscreen ? t('actions.exitFullscreen') : t('actions.fullscreen')}
+                    data-cy="documentation-modal-fullscreen-button"
                   >
                     {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
                   </Button>
@@ -165,6 +167,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                     variant="flat"
                     onPress={handleOpenInNewTab}
                     aria-label={t('actions.openInNewTab')}
+                    data-cy="documentation-modal-open-in-new-tab-button"
                   >
                     <ExternalLink size={16} />
                   </Button>
@@ -177,6 +180,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
                       onPress={() => refetch()}
                       isLoading={isFetching}
                       aria-label={t('actions.refresh')}
+                      data-cy="documentation-modal-refresh-button"
                     >
                       <RefreshCw size={16} />
                     </Button>
@@ -185,7 +189,7 @@ function DocumentationModalComponent({ resourceId, children }: DocumentationModa
               </ModalHeader>
               <ModalBody>{renderDocumentationContent()}</ModalBody>
               <ModalFooter>
-                <Button color="primary" variant="light" onPress={onClose}>
+                <Button color="primary" variant="light" onPress={onClose} data-cy="documentation-modal-close-button">
                   {t('actions.close')}
                 </Button>
               </ModalFooter>

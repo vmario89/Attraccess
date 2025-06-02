@@ -14,13 +14,13 @@ import {
 import { useToastMessage } from '../../../components/toastProvider';
 
 interface Props {
-  readerId: number;
+  readerId?: number;
   isOpen: boolean;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export function FabreaderEditor(props: Props) {
+export function FabreaderEditor(props: Readonly<Props>) {
   const { t } = useTranslations('fabreader-editor', {
     de,
     en,
@@ -28,7 +28,9 @@ export function FabreaderEditor(props: Props) {
 
   const queryClient = useQueryClient();
 
-  const { data: reader } = useFabReaderReadersServiceGetReaderById({ readerId: props.readerId });
+  const { data: reader } = useFabReaderReadersServiceGetReaderById({ readerId: props.readerId as number }, undefined, {
+    enabled: props.readerId !== undefined,
+  });
 
   const toast = useToastMessage();
 
@@ -54,11 +56,15 @@ export function FabreaderEditor(props: Props) {
 
   useEffect(() => {
     setName(reader?.name || '');
-    setConnectedResources(reader?.hasAccessToResourceIds || []);
+    setConnectedResources(reader?.hasAccessToResourceIds ?? []);
   }, [reader]);
 
   const save = useCallback(async () => {
-    await updateReaderMutation.mutateAsync({
+    if (props.readerId === undefined) {
+      return;
+    }
+
+    updateReaderMutation.mutate({
       readerId: props.readerId,
       requestBody: {
         name,
@@ -76,8 +82,8 @@ export function FabreaderEditor(props: Props) {
   );
 
   return (
-    <Form onSubmit={onSubmit}>
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside">
+    <Form onSubmit={onSubmit} data-cy="fabreader-editor-form">
+      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside" data-cy="fabreader-editor-modal">
         <ModalContent>
           {() => (
             <>
@@ -89,10 +95,12 @@ export function FabreaderEditor(props: Props) {
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t('enterReaderName')}
                   className="w-full"
+                  data-cy="fabreader-editor-name-input"
                 />
                 <ResourceSelector
                   selection={connectedResources}
                   onSelectionChange={(selection) => setConnectedResources(selection)}
+                  data-cy="fabreader-editor-resource-selector"
                 />
               </ModalBody>
               <ModalFooter>
@@ -103,10 +111,11 @@ export function FabreaderEditor(props: Props) {
                     props.onCancel();
                   }}
                   disabled={updateReaderMutation.isPending}
+                  data-cy="fabreader-editor-cancel-button"
                 >
                   {t('cancel')}
                 </Button>
-                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save}>
+                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save} data-cy="fabreader-editor-save-button">
                   {t('save')}
                 </Button>
               </ModalFooter>

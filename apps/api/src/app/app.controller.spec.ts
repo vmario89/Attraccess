@@ -12,10 +12,10 @@ describe('AppController', () => {
     }).compile();
   });
 
-  describe('/ping', () => {
-    it('should return "pong"', () => {
+  describe('/info', () => {
+    it('should return api information', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getPing()).toEqual({ message: 'pong' });
+      expect(appController.getInfo()).toEqual({ name: 'Attraccess API', status: 'ok' });
     });
   });
 });

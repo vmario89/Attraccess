@@ -94,7 +94,7 @@ function ResourceDetailsComponent() {
   if (isLoadingResource) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" color="primary" />
+        <Spinner size="lg" color="primary" data-cy="resource-details-loading-spinner" />
       </div>
     );
   }

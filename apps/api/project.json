@@ -8,7 +8,18 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["webpack-cli"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/dist/apps/api"],
       "options": {
+        "cwd": "apps/api",
         "command": "webpack-cli build",
         "args": ["node-env=production"],
         "tsPlugins": ["@nestjs/swagger/plugin"]
@@ -22,12 +33,13 @@
     "swagger-build": {
       "executor": "nx:run-commands",
       "cache": true,
+      "inputs": ["swagger"],
       "outputs": ["{workspaceRoot}/dist/apps/{projectName}-swagger"],
       "options": {
         "command": "webpack-cli build",
         "config": "apps/api/webpack.config.swagger.js",
         "args": ["node-env=production"],
-        "output-path": "dist/apps/{projectName}-swagger"
+        "output-path": "dist/apps/api-swagger"
       }
     },
     "serve": {
@@ -58,6 +70,16 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/api"],
       "options": {
         "jestConfig": "apps/api/jest.config.ts",
         "testMatch": ["**/*.spec.ts", "!**/*.e2e.spec.ts"],
@@ -66,6 +88,9 @@
     },
     "e2e": {
       "executor": "@nx/jest:jest",
+      "cache": true,
+      "inputs": ["testing", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/apps/api-e2e"],
       "options": {
         "jestConfig": "apps/api/jest.config.ts",
         "testMatch": ["**/*.e2e.spec.ts"],
@@ -78,9 +103,10 @@
         "command": "docker compose -f docker-compose.dev.yml up -d --remove-orphans"
       }
     },
-
     "build-migration-datasource": {
       "executor": "@nx/webpack:webpack",
+      "cache": true,
+      "inputs": ["typeorm"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/migrations",
@@ -91,21 +117,43 @@
     },
     "migration-generate": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
         "commands": ["typeorm -d dist/apps/migrations/main.js migration:generate"]
-      },
-      "dependsOn": ["build-migration-datasource"]
+      }
     },
     "migrations-run": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
         "commands": ["typeorm -d dist/apps/migrations/main.js migration:run"]
-      },
-      "dependsOn": ["build-migration-datasource"]
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cwd": "apps/api",
+        "command": "eslint .",
+        "max-warnings": 0
+      }
     }
   }
 }

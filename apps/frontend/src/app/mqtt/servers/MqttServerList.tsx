@@ -43,10 +43,10 @@ function ServerListItem({ id, name, host, port, onEdit, onDelete, t }: ServerLis
         </p>
       </div>
       <div className="space-x-2">
-        <Button color="secondary" variant="flat" size="sm" onPress={() => onEdit(id)}>
+        <Button color="secondary" variant="flat" size="sm" onPress={() => onEdit(id)} data-cy={`mqtt-server-list-item-edit-button-${id}`}>
           {t('editServer')}
         </Button>
-        <Button color="danger" variant="flat" size="sm" onPress={() => onDelete(id)}>
+        <Button color="danger" variant="flat" size="sm" onPress={() => onDelete(id)} data-cy={`mqtt-server-list-item-delete-button-${id}`}>
           {t('deleteServer')}
         </Button>
       </div>
@@ -103,17 +103,17 @@ export function MqttServerList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-4">
-        <Spinner size="lg" color="primary" />
+        <Spinner size="lg" color="primary" data-cy="mqtt-server-list-loading-spinner" />
       </div>
     );
   }
 
   if (error) {
-    return <Alert color="danger">{t('errorLoading')}</Alert>;
+    return <Alert color="danger" data-cy="mqtt-server-list-error-alert">{t('errorLoading')}</Alert>;
   }
 
   if (servers.length === 0) {
-    return <Alert color="warning">{t('noServersConfigured')}</Alert>;
+    return <Alert color="warning" data-cy="mqtt-server-list-no-servers-alert">{t('noServersConfigured')}</Alert>;
   }
 
   return (
@@ -133,17 +133,17 @@ export function MqttServerList() {
         ))}
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} data-cy="mqtt-server-list-delete-confirmation-modal">
         <ModalContent>
           <ModalHeader>{t('deleteServer')}</ModalHeader>
           <ModalBody>
             <p>{t('deleteConfirmation')}</p>
           </ModalBody>
           <ModalFooter>
-            <Button color="default" variant="flat" onPress={onClose}>
+            <Button color="default" variant="flat" onPress={onClose} data-cy="mqtt-server-list-delete-confirmation-cancel-button">
               {t('cancel')}
             </Button>
-            <Button color="danger" onPress={confirmDelete} isLoading={deleteServer.isPending}>
+            <Button color="danger" onPress={confirmDelete} isLoading={deleteServer.isPending} data-cy="mqtt-server-list-delete-confirmation-delete-button">
               {t('deleteServer')}
             </Button>
           </ModalFooter>

@@ -18,7 +18,7 @@ export function PageHeader({ title, subtitle, backTo, actions, icon }: PageHeade
     <div className="flex items-center justify-between mb-8 flex-wrap gap-y-8">
       <div className="flex items-center">
         {backTo && (
-          <Button onPress={() => navigate(backTo)} variant="ghost" isIconOnly aria-label="Go back" className="mr-4">
+          <Button onPress={() => navigate(backTo)} variant="ghost" isIconOnly aria-label="Go back" className="mr-4" data-cy="back-button">
             <ArrowLeft className="w-6 h-6" />
           </Button>
         )}

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  ping(): { message: string } {
-    return { message: 'pong' };
+  getInfo(): { name: string; status: string } {
+    return { name: 'Attraccess API', status: 'ok' };
   }
 }

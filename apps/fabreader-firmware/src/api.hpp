@@ -21,6 +21,12 @@ public:
 
     void sendNFCTapped(uint8_t *uid, uint8_t uidLength);
 
+    // Check if the API is connected to the server
+    bool isConnected();
+
+    // Check if API is properly configured
+    bool isConfigured();
+
 private:
     PicoWebsocket::Client websocket;
     Client &client;
@@ -28,13 +34,15 @@ private:
     Display *display;
     Keypad *keypad;
 
-    bool isConnected();
     void processData();
     bool checkTCPConnection();
 
     bool is_connected = false;
     bool is_authenticated = false;
+    bool is_connecting = false;
 
+    unsigned long last_connection_attempt = 0;
+    unsigned long connection_retry_interval = 5000; // 5 seconds between connection attempts
     unsigned long registration_sent_at = 0;
     unsigned long authentication_sent_at = 0;
     unsigned long heartbeat_sent_at = 0;

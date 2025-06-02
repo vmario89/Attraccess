@@ -1690,9 +1690,11 @@ export interface NFCCard {
   updatedAt: string;
 }
 
-export interface Ping2Data {
-  /** @example "pong" */
-  message?: string;
+export interface InfoData {
+  /** @example "Attraccess API" */
+  name?: string;
+  /** @example "ok" */
+  status?: string;
 }
 
 export type CreateOneUserData = User;
@@ -2015,16 +2017,16 @@ export namespace Application {
   /**
    * No description
    * @tags Application
-   * @name Ping2
-   * @summary Check API availability
-   * @request GET:/api/ping
+   * @name Info
+   * @summary Return API information
+   * @request GET:/api/info
    */
-  export namespace Ping2 {
+  export namespace Info {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = Ping2Data;
+    export type ResponseBody = InfoData;
   }
 }
 
@@ -3921,13 +3923,13 @@ export class Api<
      * No description
      *
      * @tags Application
-     * @name Ping2
-     * @summary Check API availability
-     * @request GET:/api/ping
+     * @name Info
+     * @summary Return API information
+     * @request GET:/api/info
      */
-    ping2: (params: RequestParams = {}) =>
-      this.request<Ping2Data, any>({
-        path: `/api/ping`,
+    info: (params: RequestParams = {}) =>
+      this.request<InfoData, any>({
+        path: `/api/info`,
         method: "GET",
         format: "json",
         ...params,

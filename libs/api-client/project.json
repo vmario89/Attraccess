@@ -8,6 +8,16 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*",
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/tsconfig.spec.json",
+        {
+          "externalDependencies": ["typescript"]
+        }
+      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/api-client",
         "tsConfig": "libs/api-client/tsconfig.lib.json",
@@ -21,18 +31,51 @@
     "generate": {
       "executor": "nx:run-commands",
       "cache": true,
-      "outputs": ["{projectRoot}/src/lib/api.ts"],
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{workspaceRoot}/dist/apps/api-swagger/swagger.json",
+        "{projectRoot}/tools/swagger-generate.ts"
+      ],
+      "outputs": ["{projectRoot}/src/generated"],
       "options": {
         "command": "rm -rf libs/api-client/src/lib && ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
       },
       "dependsOn": ["api:export-swagger"]
     },
     "nx-release-publish": {
+      "cache": true,
       "options": {
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/",
         "access": "public"
       }
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/.eslintrc.json",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*.spec.ts",
+        "{projectRoot}/tsconfig.spec.json",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/api-client"]
     }
   }
 }

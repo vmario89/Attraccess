@@ -1,18 +1,77 @@
-/* eslint-disable */
 {
   "name": "frontend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/frontend/src",
   "projectType": "application",
   "tags": [],
+  "targets": {
+    "serve": {
+      "dependsOn": ["copy-fabreader-assets"]
+    },
+    "build": {
+      "dependsOn": ["copy-fabreader-assets"],
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["vite"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/dist/apps/frontend"]
+    },
+    "copy-fabreader-assets": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["fabreader-firmware:build"],
+      "inputs": ["{projectRoot}/**/*", "{workspaceRoot}/apps/fabreader-firmware/firmware_output/**/*"],
+      "outputs": ["{projectRoot}/public/_fabreader_assets"],
+      "options": {
+        "command": "rm -rf apps/frontend/public/_fabreader_assets && mkdir -p apps/frontend/public/_fabreader_assets && cp -r apps/fabreader-firmware/firmware_output/* apps/frontend/public/_fabreader_assets/"
+      }
+    },
+    "lint": {
+      "dependsOn": ["frontend:typecheck"],
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/frontend"]
+    },
+    "typecheck": {
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["typescript"]
+        }
+      ]
+    }
+  },
   "targetDefaults": {
-    "build": {},
     "serve": {
       "port": 4200,
       "strictPort": true
-    },
-    "lint": {
-      "dependsOn": ["frontend:typecheck"]
     }
   }
 }

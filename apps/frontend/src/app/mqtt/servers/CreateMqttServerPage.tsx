@@ -83,7 +83,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} data-cy="create-mqtt-server-form">
       <Input
         id="name"
         name="name"
@@ -93,6 +93,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         onChange={handleInputChange}
         required
         fullWidth
+        data-cy="create-mqtt-server-form-name-input"
       />
 
       <Input
@@ -104,6 +105,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         onChange={handleInputChange}
         required
         fullWidth
+        data-cy="create-mqtt-server-form-host-input"
       />
 
       <Input
@@ -116,6 +118,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         onChange={handleInputChange}
         required
         fullWidth
+        data-cy="create-mqtt-server-form-port-input"
       />
 
       <Input
@@ -126,6 +129,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         value={formValues.clientId}
         onChange={handleInputChange}
         fullWidth
+        data-cy="create-mqtt-server-form-client-id-input"
       />
 
       <Input
@@ -136,6 +140,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         value={formValues.username}
         onChange={handleInputChange}
         fullWidth
+        data-cy="create-mqtt-server-form-username-input"
       />
 
       <Input
@@ -147,6 +152,7 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         value={formValues.password}
         onChange={handleInputChange}
         fullWidth
+        data-cy="create-mqtt-server-form-password-input"
       />
 
       <Checkbox
@@ -154,15 +160,16 @@ export function CreateMqttServerForm(props?: CreateMqttServerPageProps) {
         name="useTls"
         isSelected={formValues.useTls}
         onValueChange={(checked) => setFormValues((prev) => ({ ...prev, useTls: checked }))}
+        data-cy="create-mqtt-server-form-use-tls-checkbox"
       >
         {t('useTls')}
       </Checkbox>
 
       <div className="flex justify-end space-x-3 mt-4">
-        <Button color="default" variant="flat" onPress={handleCancel}>
+        <Button color="default" variant="flat" onPress={handleCancel} data-cy="create-mqtt-server-form-cancel-button">
           {t('cancel')}
         </Button>
-        <Button color="primary" type="submit" isLoading={createMqttServer.isPending}>
+        <Button color="primary" type="submit" isLoading={createMqttServer.isPending} data-cy="create-mqtt-server-form-create-button">
           {t('create')}
         </Button>
       </div>
@@ -184,11 +191,11 @@ export function CreateMqttServerPage(props?: CreateMqttServerPageProps) {
   }, [props, navigate]);
 
   return (
-    <Card>
+    <Card data-cy="create-mqtt-server-page-card">
       <CardHeader>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Button isIconOnly variant="light" onPress={handleCancel} aria-label={t('back')}>
+            <Button isIconOnly variant="light" onPress={handleCancel} aria-label={t('back')} data-cy="create-mqtt-server-page-back-button">
               <ArrowLeft size={20} />
             </Button>
             <h2>{t('addNewMqttServer')}</h2>
