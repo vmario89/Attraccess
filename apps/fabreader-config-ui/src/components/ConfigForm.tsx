@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Save, Eye, EyeOff, Shield } from 'lucide-react';
-import { ConfigData } from '../types';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
+import { Form } from '@heroui/react';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { useConfig, useSaveConfig } from '../services/queries';
@@ -14,36 +13,37 @@ export const ConfigForm: React.FC = () => {
   const saveConfig = useSaveConfig();
   const { data: config, isLoading, refetch, isSuccess } = useConfig();
 
-  console.log('in form 2', config);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ConfigData>({
-    defaultValues: {
-      apiHostname: '',
-      apiPort: '',
-      configPagePassword: '',
-    },
-  });
-
-  // Update form values when config data is loaded
-  useEffect(() => {
-    if (isSuccess && config) {
-      console.log('Setting form data with config:', config);
-      reset(config);
-    }
-  }, [isSuccess, config, reset]);
-
   useEffect(() => {
     console.log('refetching config');
     refetch();
   }, [refetch]);
 
+  const [password, setPassword] = useState('');
+  const [apiHostname, setApiHostname] = useState('');
+  const [apiPort, setApiPort] = useState('');
+
+  useEffect(() => {
+    if (isSuccess && config) {
+      setPassword(config.configPagePassword);
+      setApiHostname(config.apiHostname);
+      setApiPort(config.apiPort);
+    }
+  }, [isSuccess, config]);
+
+  const onSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      saveConfig.mutate({
+        configPagePassword: password,
+        apiHostname,
+        apiPort,
+      });
+    },
+    [saveConfig, password, apiHostname, apiPort]
+  );
+
   return (
-    <form onSubmit={handleSubmit((data) => saveConfig.mutate(data))} className="space-y-6">
+    <Form onSubmit={onSubmit} className="space-y-6">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -61,16 +61,16 @@ export const ConfigForm: React.FC = () => {
               label="API Hostname"
               placeholder="e.g., api.example.com"
               fullWidth
-              {...register('apiHostname', { required: 'API hostname is required' })}
-              error={errors.apiHostname?.message}
+              value={apiHostname}
+              onChange={(e) => setApiHostname(e.target.value)}
             />
 
             <Input
               label="API Port"
               placeholder="e.g., 8080"
               fullWidth
-              {...register('apiPort')}
-              error={errors.apiPort?.message}
+              value={apiPort}
+              onChange={(e) => setApiPort(e.target.value)}
             />
           </motion.div>
         </CardContent>
@@ -95,10 +95,8 @@ export const ConfigForm: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter new admin password"
                 fullWidth
-                {...register('configPagePassword', {
-                  minLength: { value: 8, message: 'Password must be at least 8 characters' },
-                })}
-                error={errors.configPagePassword?.message}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -128,6 +126,6 @@ export const ConfigForm: React.FC = () => {
           Save All Settings
         </Button>
       </div>
-    </form>
+    </Form>
   );
 };

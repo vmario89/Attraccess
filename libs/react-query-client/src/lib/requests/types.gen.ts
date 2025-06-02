@@ -319,6 +319,74 @@ export type UpdateSSOProviderDto = {
     oidcConfiguration?: UpdateOIDCConfigurationDto;
 };
 
+export type PreviewMjmlDto = {
+    /**
+     * The MJML content to preview
+     */
+    mjmlContent: string;
+};
+
+export type PreviewMjmlResponseDto = {
+    /**
+     * The HTML content of the MJML
+     */
+    html: string;
+    /**
+     * Indicates if there were any errors during conversion
+     */
+    hasErrors: boolean;
+    /**
+     * Error message if conversion failed
+     */
+    error?: string;
+};
+
+/**
+ * Template type/key used by the system
+ */
+export enum EmailTemplateType {
+    VERIFY_EMAIL = 'verify-email',
+    RESET_PASSWORD = 'reset-password'
+}
+
+export type EmailTemplate = {
+    /**
+     * Template type/key used by the system
+     */
+    type: EmailTemplateType;
+    /**
+     * Email subject line
+     */
+    subject: string;
+    /**
+     * MJML content of the email body
+     */
+    body: string;
+    /**
+     * Variables used in the email body
+     */
+    variables: Array<(string)>;
+    /**
+     * Timestamp of when the template was created
+     */
+    createdAt: string;
+    /**
+     * Timestamp of when the template was last updated
+     */
+    updatedAt: string;
+};
+
+export type UpdateEmailTemplateDto = {
+    /**
+     * Email subject line
+     */
+    subject?: string;
+    /**
+     * MJML content of the email body
+     */
+    body?: string;
+};
+
 export type CreateResourceGroupDto = {
     name: string;
     description?: string;
@@ -1587,6 +1655,33 @@ export type OidcLoginCallbackData = {
 
 export type OidcLoginCallbackResponse = CreateSessionResponse;
 
+export type EmailTemplateControllerPreviewMjmlData = {
+    requestBody: PreviewMjmlDto;
+};
+
+export type EmailTemplateControllerPreviewMjmlResponse = PreviewMjmlResponseDto;
+
+export type EmailTemplateControllerFindAllResponse = Array<EmailTemplate>;
+
+export type EmailTemplateControllerFindOneData = {
+    /**
+     * Template type/type
+     */
+    type: 'verify-email' | 'reset-password';
+};
+
+export type EmailTemplateControllerFindOneResponse = EmailTemplate;
+
+export type EmailTemplateControllerUpdateData = {
+    requestBody: UpdateEmailTemplateDto;
+    /**
+     * Template type/type
+     */
+    type: 'verify-email' | 'reset-password';
+};
+
+export type EmailTemplateControllerUpdateResponse = EmailTemplate;
+
 export type CreateOneResourceGroupData = {
     requestBody: CreateResourceGroupDto;
 };
@@ -2461,6 +2556,79 @@ export type $OpenApiTs = {
                  * The user has been logged in
                  */
                 200: CreateSessionResponse;
+            };
+        };
+    };
+    '/api/email-templates/preview-mjml': {
+        post: {
+            req: EmailTemplateControllerPreviewMjmlData;
+            res: {
+                /**
+                 * MJML preview result
+                 */
+                200: PreviewMjmlResponseDto;
+                /**
+                 * Invalid MJML content
+                 */
+                400: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/email-templates': {
+        get: {
+            res: {
+                /**
+                 * List of email templates
+                 */
+                200: Array<EmailTemplate>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/email-templates/{type}': {
+        get: {
+            req: EmailTemplateControllerFindOneData;
+            res: {
+                /**
+                 * Email template found
+                 */
+                200: EmailTemplate;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Template not found
+                 */
+                404: unknown;
+            };
+        };
+        patch: {
+            req: EmailTemplateControllerUpdateData;
+            res: {
+                /**
+                 * Template updated successfully
+                 */
+                200: EmailTemplate;
+                /**
+                 * Invalid input data
+                 */
+                400: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Template not found
+                 */
+                404: unknown;
             };
         };
     };

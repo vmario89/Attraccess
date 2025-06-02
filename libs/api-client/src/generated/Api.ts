@@ -10,6 +10,12 @@
  * ---------------------------------------------------------------
  */
 
+/** Template type/key used by the system */
+export enum EmailTemplateType {
+  VerifyEmail = "verify-email",
+  ResetPassword = "reset-password",
+}
+
 /** The type of the provider */
 export enum SSOProviderType {
   OIDC = "OIDC",
@@ -350,6 +356,72 @@ export interface UpdateSSOProviderDto {
   name?: string;
   /** The OIDC configuration for the provider */
   oidcConfiguration?: UpdateOIDCConfigurationDto;
+}
+
+export interface PreviewMjmlDto {
+  /**
+   * The MJML content to preview
+   * @example "<mjml><mj-body><mj-section><mj-column><mj-text>Hello, world!</mj-text></mj-column></mj-section></mj-body></mjml>"
+   */
+  mjmlContent: string;
+}
+
+export interface PreviewMjmlResponseDto {
+  /**
+   * The HTML content of the MJML
+   * @example "<div>Hello, world!</div>"
+   */
+  html: string;
+  /**
+   * Indicates if there were any errors during conversion
+   * @example false
+   */
+  hasErrors: boolean;
+  /**
+   * Error message if conversion failed
+   * @example null
+   */
+  error?: string;
+}
+
+export interface EmailTemplate {
+  /**
+   * Template type/key used by the system
+   * @example "verify-email"
+   */
+  type: EmailTemplateType;
+  /**
+   * Email subject line
+   * @example "Verify Your Email Address"
+   */
+  subject: string;
+  /** MJML content of the email body */
+  body: string;
+  /**
+   * Variables used in the email body
+   * @example ["{{name}}","{{url}}"]
+   */
+  variables: string[];
+  /**
+   * Timestamp of when the template was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Timestamp of when the template was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface UpdateEmailTemplateDto {
+  /**
+   * Email subject line
+   * @maxLength 255
+   */
+  subject?: string;
+  /** MJML content of the email body */
+  body?: string;
 }
 
 export interface CreateResourceGroupDto {
@@ -1645,6 +1717,14 @@ export interface OidcLoginCallbackParams {
 
 export type OidcLoginCallbackData = CreateSessionResponse;
 
+export type EmailTemplateControllerPreviewMjmlData = PreviewMjmlResponseDto;
+
+export type EmailTemplateControllerFindAllData = EmailTemplate[];
+
+export type EmailTemplateControllerFindOneData = EmailTemplate;
+
+export type EmailTemplateControllerUpdateData = EmailTemplate;
+
 export type CreateOneResourceGroupData = ResourceGroup;
 
 export interface GetAllResourceGroupsParams {
@@ -2250,6 +2330,78 @@ export namespace Sso {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = OidcLoginCallbackData;
+  }
+}
+
+export namespace EmailTemplates {
+  /**
+   * No description
+   * @tags Email Templates
+   * @name EmailTemplateControllerPreviewMjml
+   * @summary Preview MJML content as HTML
+   * @request POST:/api/email-templates/preview-mjml
+   * @secure
+   */
+  export namespace EmailTemplateControllerPreviewMjml {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PreviewMjmlDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailTemplateControllerPreviewMjmlData;
+  }
+
+  /**
+   * No description
+   * @tags Email Templates
+   * @name EmailTemplateControllerFindAll
+   * @summary List all email templates
+   * @request GET:/api/email-templates
+   * @secure
+   */
+  export namespace EmailTemplateControllerFindAll {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailTemplateControllerFindAllData;
+  }
+
+  /**
+   * No description
+   * @tags Email Templates
+   * @name EmailTemplateControllerFindOne
+   * @summary Get an email template by type
+   * @request GET:/api/email-templates/{type}
+   * @secure
+   */
+  export namespace EmailTemplateControllerFindOne {
+    export type RequestParams = {
+      /** Template type/type */
+      type: "verify-email" | "reset-password";
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailTemplateControllerFindOneData;
+  }
+
+  /**
+   * No description
+   * @tags Email Templates
+   * @name EmailTemplateControllerUpdate
+   * @summary Update an email template
+   * @request PATCH:/api/email-templates/{type}
+   * @secure
+   */
+  export namespace EmailTemplateControllerUpdate {
+    export type RequestParams = {
+      /** Template type/type */
+      type: "verify-email" | "reset-password";
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateEmailTemplateDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailTemplateControllerUpdateData;
   }
 }
 
@@ -4182,6 +4334,93 @@ export class Api<
         path: `/api/auth/sso/OIDC/${providerId}/callback`,
         method: "GET",
         query: query,
+        format: "json",
+        ...params,
+      }),
+  };
+  emailTemplates = {
+    /**
+     * No description
+     *
+     * @tags Email Templates
+     * @name EmailTemplateControllerPreviewMjml
+     * @summary Preview MJML content as HTML
+     * @request POST:/api/email-templates/preview-mjml
+     * @secure
+     */
+    emailTemplateControllerPreviewMjml: (
+      data: PreviewMjmlDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<EmailTemplateControllerPreviewMjmlData, void>({
+        path: `/api/email-templates/preview-mjml`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Email Templates
+     * @name EmailTemplateControllerFindAll
+     * @summary List all email templates
+     * @request GET:/api/email-templates
+     * @secure
+     */
+    emailTemplateControllerFindAll: (params: RequestParams = {}) =>
+      this.request<EmailTemplateControllerFindAllData, void>({
+        path: `/api/email-templates`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Email Templates
+     * @name EmailTemplateControllerFindOne
+     * @summary Get an email template by type
+     * @request GET:/api/email-templates/{type}
+     * @secure
+     */
+    emailTemplateControllerFindOne: (
+      type: "verify-email" | "reset-password",
+      params: RequestParams = {},
+    ) =>
+      this.request<EmailTemplateControllerFindOneData, void>({
+        path: `/api/email-templates/${type}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Email Templates
+     * @name EmailTemplateControllerUpdate
+     * @summary Update an email template
+     * @request PATCH:/api/email-templates/{type}
+     * @secure
+     */
+    emailTemplateControllerUpdate: (
+      type: "verify-email" | "reset-password",
+      data: UpdateEmailTemplateDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<EmailTemplateControllerUpdateData, void>({
+        path: `/api/email-templates/${type}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),

@@ -1,10 +1,9 @@
-import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { useTranslations, ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import de from './fabreader-editor.de.json';
 import en from './fabreader-editor.en.json';
 import { Button, Form, ModalBody, Modal, ModalContent, ModalHeader, ModalFooter } from '@heroui/react';
 import { Input } from '@heroui/input';
 import { useCallback, useState, useEffect } from 'react';
-import { ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useFabReaderReadersServiceGetReaderById,
@@ -55,7 +54,7 @@ export function FabreaderEditor(props: Readonly<Props>) {
   });
 
   useEffect(() => {
-    setName(reader?.name || '');
+    setName(reader?.name ?? '');
     setConnectedResources(reader?.hasAccessToResourceIds ?? []);
   }, [reader]);
 
