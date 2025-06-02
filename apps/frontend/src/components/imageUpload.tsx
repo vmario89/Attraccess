@@ -161,6 +161,7 @@ export function ImageUpload({
         onDrop={handleDrop}
       >
         <input
+          data-cy="file-input"
           type="file"
           id={id}
           accept={ALLOWED_MIME_TYPES.join(',')}

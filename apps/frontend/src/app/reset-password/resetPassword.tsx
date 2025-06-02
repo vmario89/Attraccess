@@ -53,13 +53,13 @@ export function ResetPassword() {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md w-full">
+        <Card className="max-w-md w-full" data-cy="reset-password-success-card">
           <CardHeader className="text-center">{t('success.title')}</CardHeader>
           <CardBody>
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">{t('success.message')}</p>
           </CardBody>
           <CardFooter>
-            <Button fullWidth color="primary" onPress={() => navigate('/')}>
+            <Button fullWidth color="primary" onPress={() => navigate('/')} data-cy="reset-password-success-go-to-login-button">
               {t('success.goToLogin')}
             </Button>
           </CardFooter>
@@ -69,12 +69,13 @@ export function ResetPassword() {
   }
 
   return (
-    <Card>
+    <Card data-cy="reset-password-form-card">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
           onMainButtonPress();
         }}
+        data-cy="reset-password-form"
       >
         <CardHeader>{t('title')}</CardHeader>
         <CardBody>
@@ -85,6 +86,7 @@ export function ResetPassword() {
             className="mb-4"
             minLength={8}
             required
+            data-cy="reset-password-password-input"
           />
           <Input
             label={t('inputs.confirmPassword')}
@@ -97,10 +99,11 @@ export function ResetPassword() {
               }
               return true;
             }}
+            data-cy="reset-password-confirm-password-input"
           />
         </CardBody>
         <CardFooter>
-          <Button fullWidth color="primary" type="submit">
+          <Button fullWidth color="primary" type="submit" data-cy="reset-password-submit-button">
             {t('submit')}
           </Button>
         </CardFooter>

@@ -74,7 +74,7 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose} data-cy="upload-plugin-modal">
       <ModalContent>
         <ModalHeader>{t('title')}</ModalHeader>
         <ModalBody>
@@ -89,6 +89,7 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
               isInvalid={isFileInvalid}
               errorMessage={isFileInvalid ? t('errors.invalidFile') : ''}
               description={t('fileInputDescription')}
+              data-cy="upload-plugin-modal-file-input"
             />
 
             {selectedFile && (
@@ -101,7 +102,7 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button variant="flat" onPress={handleCancel} isDisabled={isPending}>
+          <Button variant="flat" onPress={handleCancel} isDisabled={isPending} data-cy="upload-plugin-modal-cancel-button">
             {t('cancel')}
           </Button>
           <Button
@@ -110,6 +111,7 @@ export function UploadPluginModal({ isOpen, onClose }: UploadPluginModalProps) {
             isLoading={isPending}
             isDisabled={!selectedFile || isFileInvalid}
             startContent={<Upload size={18} />}
+            data-cy="upload-plugin-modal-upload-button"
           >
             {t('upload')}
           </Button>

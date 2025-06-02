@@ -99,7 +99,7 @@ export function EditMqttServerPage() {
   if (isLoadingServer) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8 flex justify-center">
-        <Spinner size="lg" color="primary" />
+        <Spinner size="lg" color="primary" data-cy="edit-mqtt-server-page-loading-spinner" />
       </div>
     );
   }
@@ -110,11 +110,11 @@ export function EditMqttServerPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <Card>
+      <Card data-cy="edit-mqtt-server-page-card">
         <CardHeader>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Button isIconOnly variant="light" onPress={handleCancel} aria-label={t('back')}>
+              <Button isIconOnly variant="light" onPress={handleCancel} aria-label={t('back')} data-cy="edit-mqtt-server-page-back-button">
                 <ArrowLeft size={20} />
               </Button>
               <h2>{t('editMqttServer')}</h2>
@@ -122,7 +122,7 @@ export function EditMqttServerPage() {
           </div>
         </CardHeader>
         <div style={{ padding: '1rem' }}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" data-cy="edit-mqtt-server-form">
             <div className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium mb-1">
@@ -136,6 +136,7 @@ export function EditMqttServerPage() {
                   onChange={handleInputChange}
                   required
                   fullWidth
+                  data-cy="edit-mqtt-server-form-name-input"
                 />
               </div>
 
@@ -151,6 +152,7 @@ export function EditMqttServerPage() {
                   onChange={handleInputChange}
                   required
                   fullWidth
+                  data-cy="edit-mqtt-server-form-host-input"
                 />
               </div>
 
@@ -167,6 +169,7 @@ export function EditMqttServerPage() {
                   onChange={handleInputChange}
                   required
                   fullWidth
+                  data-cy="edit-mqtt-server-form-port-input"
                 />
               </div>
 
@@ -181,6 +184,7 @@ export function EditMqttServerPage() {
                   value={formValues.clientId}
                   onChange={handleInputChange}
                   fullWidth
+                  data-cy="edit-mqtt-server-form-client-id-input"
                 />
               </div>
 
@@ -195,6 +199,7 @@ export function EditMqttServerPage() {
                   value={formValues.username}
                   onChange={handleInputChange}
                   fullWidth
+                  data-cy="edit-mqtt-server-form-username-input"
                 />
               </div>
 
@@ -210,6 +215,7 @@ export function EditMqttServerPage() {
                   value={formValues.password}
                   onChange={handleInputChange}
                   fullWidth
+                  data-cy="edit-mqtt-server-form-password-input"
                 />
               </div>
 
@@ -219,6 +225,7 @@ export function EditMqttServerPage() {
                   name="useTls"
                   isSelected={formValues.useTls}
                   onValueChange={(checked) => setFormValues((prev) => ({ ...prev, useTls: checked }))}
+                  data-cy="edit-mqtt-server-form-use-tls-checkbox"
                 />
                 <label htmlFor="useTls" className="text-sm">
                   {t('useTls')}
@@ -227,10 +234,10 @@ export function EditMqttServerPage() {
             </div>
 
             <div className="flex justify-end space-x-3">
-              <Button color="default" variant="flat" onPress={handleCancel}>
+              <Button color="default" variant="flat" onPress={handleCancel} data-cy="edit-mqtt-server-form-cancel-button">
                 {t('cancel')}
               </Button>
-              <Button color="primary" type="submit" isLoading={updateMqttServer.isPending}>
+              <Button color="primary" type="submit" isLoading={updateMqttServer.isPending} data-cy="edit-mqtt-server-form-update-button">
                 {t('update')}
               </Button>
             </div>

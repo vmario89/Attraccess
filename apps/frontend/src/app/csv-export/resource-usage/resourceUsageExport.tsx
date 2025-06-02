@@ -237,6 +237,7 @@ export function ResourceUsageExport(props: ExportProps) {
             onSelectionChange={(keys) => {
               setSelectedColumnKeys(Array.from(keys as Set<string>));
             }}
+            data-cy="resource-usage-export-columns-listbox"
           >
             {(column) => (
               <ListboxItem key={column.csvHeader} textValue={column.csvHeader}>
@@ -252,15 +253,16 @@ export function ResourceUsageExport(props: ExportProps) {
             color="secondary"
             endContent={<RotateCwIcon className={'w-4 h-4 ' + (isRefetching || isLoading ? 'animate-spin' : '')} />}
             onPress={() => refetch()}
+            data-cy="resource-usage-export-refresh-button"
           >
             {t('refreshData')}
           </Button>
-          <Checkbox isSelected={groupByUserAndResource} onValueChange={setGroupByUserAndResource}>
+          <Checkbox isSelected={groupByUserAndResource} onValueChange={setGroupByUserAndResource} data-cy="resource-usage-export-grouping-checkbox">
             {t('options.groupByUserAndResource')}
           </Checkbox>
         </div>
 
-        <Table isCompact isVirtualized maxTableHeight={500} rowHeight={40}>
+        <Table isCompact isVirtualized maxTableHeight={500} rowHeight={40} data-cy="resource-usage-export-table">
           <TableHeader columns={selectedColumns}>
             {(column) => <TableColumn key={column.csvHeader}>{column.csvHeader}</TableColumn>}
           </TableHeader>
@@ -278,7 +280,7 @@ export function ResourceUsageExport(props: ExportProps) {
         </Table>
       </ModalBody>
       <ModalFooter>
-        <Button onPress={() => downloadCsv()}>{t('downloadCsv')}</Button>
+        <Button onPress={() => downloadCsv()} data-cy="resource-usage-export-download-csv-button">{t('downloadCsv')}</Button>
       </ModalFooter>
     </>
   );

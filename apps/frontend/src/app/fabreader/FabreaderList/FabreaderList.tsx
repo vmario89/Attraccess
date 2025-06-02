@@ -46,7 +46,7 @@ export const FabreaderList = () => {
         actions={
           <FabreaderFlasher>
             {(onOpen) => (
-              <Button variant="light" startContent={<CpuIcon className="w-4 h-4" />} onPress={onOpen}>
+              <Button variant="light" startContent={<CpuIcon className="w-4 h-4" />} onPress={onOpen} data-cy="fabreader-list-open-flasher-button">
                 {t('page.actions.openFlasher')}
               </Button>
             )}
@@ -65,7 +65,7 @@ export const FabreaderList = () => {
         onSave={() => setOpenedReaderEditor(null)}
       />
 
-      <Table aria-label="Fabreaders">
+      <Table aria-label="Fabreaders" data-cy="fabreader-list-table">
         <TableHeader>
           <TableColumn>{t('table.columns.name')}</TableColumn>
           <TableColumn>{t('table.columns.lastConnection')}</TableColumn>
@@ -83,7 +83,7 @@ export const FabreaderList = () => {
                 </Chip>
               </TableCell>
               <TableCell>
-                <Button onPress={() => setOpenedReaderEditor(reader.id)}>{t('table.actions.editReader')}</Button>
+                <Button onPress={() => setOpenedReaderEditor(reader.id)} data-cy={`fabreader-list-edit-reader-button-${reader.id}`}>{t('table.actions.editReader')}</Button>
               </TableCell>
             </TableRow>
           )}

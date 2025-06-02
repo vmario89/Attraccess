@@ -109,7 +109,7 @@ export function ResourceList() {
           </AccordionItem>
         ))}
       </Accordion>
-      {isFetchingNextPage && <Spinner variant="wave" data-cy="loading-spinner" />}
+      {isFetchingNextPage && <Spinner variant="wave" data-cy="resource-list-loading-spinner" />}
       <div ref={lastItemRef} style={{ marginTop: '200px' }}>
         &nbsp;
       </div>

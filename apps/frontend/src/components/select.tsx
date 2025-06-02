@@ -29,7 +29,7 @@ export function Select(props: SelectProps) {
       <input type="hidden" id={id} name={name} value={selectedKey} />
       <Dropdown>
         <DropdownTrigger>
-          <Button endContent={<ChevronDown size={16} />}>
+          <Button endContent={<ChevronDown size={16} />} data-cy="select-trigger-button">
             <span>{selectedItem?.label}</span>
           </Button>
         </DropdownTrigger>
