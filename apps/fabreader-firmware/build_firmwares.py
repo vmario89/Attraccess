@@ -181,7 +181,7 @@ def main():
                         break
                         
             if not fs_offset:
-                print(f"Warning: Could not find filesystem partition offset, using default 0x290000")
+                print("Warning: Could not find filesystem partition offset, using default 0x290000")
                 fs_offset = "0x290000"
                 
             print(f"Filesystem offset: {fs_offset}")

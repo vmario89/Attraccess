@@ -1,5 +1,5 @@
 // Import entities
-import { EmailTemplate } from './email-template.entity';
+import { EmailTemplate } from './entities/email-template.entity';
 import { AuthenticationDetail } from './entities/authenticationDetail.entity';
 import { MqttResourceConfig } from './entities/mqttResourceConfig.entity';
 import { MqttServer } from './entities/mqttServer.entity';

@@ -1,25 +1,25 @@
 {
-  "title": "Edit Email Template",
-  "subtitle": "Modify the subject, description, and MJML content of the template.",
+  "subtitle": "Modify the subject and body (MJML) content of the template.",
+  "templateType": {
+    "verify-email": "Email Verification",
+    "reset-password": "Password Reset"
+  },
   "form": {
     "subject": "Subject",
-    "subjectPlaceholder": "Enter email subject",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter a short description (optional)",
-    "mjmlContent": "MJML Content",
-    "mjmlContentPlaceholder": "Enter MJML for the email body",
-    "saveButton": "Save Changes",
-    "cancelButton": "Cancel",
-    "saving": "Saving..."
+    "mjmlDocumentation": "MJML Documentation"
   },
-  "notifications": {
-    "fetchError": "Failed to load email template.",
-    "updateSuccess": "Email template updated successfully!",
-    "updateError": "Failed to update email template.",
-    "missingIdError": "Email template ID is missing in URL. Redirecting...",
-    "mjmlPreviewError": "Error generating MJML preview."
+  "sections": {
+    "template": "Template",
+    "preview": "Preview"
   },
-  "loadingOrRedirecting": "Loading or redirecting...",
-  "loading": "Loading template data...",
-  "templateName": "Template Name (ID)"
+  "preview": {
+    "iframeTitle": "Body Preview",
+    "loading": "Loading...",
+    "errorPrefix": "Error loading preview."
+  },
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save Changes"
+  }
 }

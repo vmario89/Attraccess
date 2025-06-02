@@ -47,14 +47,14 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
 
   const activeSession = useMemo(() => activeSessionResponse?.usage, [activeSessionResponse]);
 
-  const isLoading = isLoadingSession || isLoadingIntroStatus || isLoadingIntroducers;
+  const isLoading = isLoadingSession ?? isLoadingIntroStatus ?? isLoadingIntroducers;
 
   const isIntroducer = useMemo(() => {
     return introducers?.some((introducer) => introducer.user?.id === user?.id);
   }, [introducers, user]);
 
   // Users with canManageResources permission can always start a session
-  const canStartSession = canManageResources || introduction?.hasValidIntroduction || isIntroducer;
+  const canStartSession = canManageResources ?? introduction?.hasValidIntroduction ?? isIntroducer;
 
   const renderContent = () => {
     if (isLoading) {

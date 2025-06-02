@@ -3,2289 +3,2052 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type {
-  InfoResponse,
-  CreateOneUserData,
-  CreateOneUserResponse,
-  GetAllUsersData,
-  GetAllUsersResponse,
-  VerifyEmailData,
-  VerifyEmailResponse,
-  RequestPasswordResetData,
-  RequestPasswordResetResponse,
-  ChangePasswordViaResetTokenData,
-  ChangePasswordViaResetTokenResponse,
-  GetCurrentResponse,
-  GetOneUserByIdData,
-  GetOneUserByIdResponse,
-  UpdatePermissionsData,
-  UpdatePermissionsResponse,
-  GetPermissionsData,
-  GetPermissionsResponse,
-  BulkUpdatePermissionsData,
-  BulkUpdatePermissionsResponse,
-  GetAllWithPermissionData,
-  GetAllWithPermissionResponse,
-  CreateSessionData,
-  CreateSessionResponse2,
-  EndSessionResponse,
-  GetAllSsoProvidersResponse,
-  CreateOneSsoProviderData,
-  CreateOneSsoProviderResponse,
-  GetOneSsoProviderByIdData,
-  GetOneSsoProviderByIdResponse,
-  UpdateOneSsoProviderData,
-  UpdateOneSsoProviderResponse,
-  DeleteOneSsoProviderData,
-  DeleteOneSsoProviderResponse,
-  LoginWithOidcData,
-  LoginWithOidcResponse,
-  OidcLoginCallbackData,
-  OidcLoginCallbackResponse,
-  EmailTemplateControllerCreateData,
-  EmailTemplateControllerCreateResponse,
-  EmailTemplateControllerFindAllResponse,
-  EmailTemplateControllerFindOneData,
-  EmailTemplateControllerFindOneResponse,
-  EmailTemplateControllerUpdateData,
-  EmailTemplateControllerUpdateResponse,
-  EmailTemplateControllerRemoveData,
-  EmailTemplateControllerRemoveResponse,
-  CreateOneResourceGroupData,
-  CreateOneResourceGroupResponse,
-  GetAllResourceGroupsData,
-  GetAllResourceGroupsResponse,
-  GetOneResourceGroupByIdData,
-  GetOneResourceGroupByIdResponse,
-  UpdateOneResourceGroupData,
-  UpdateOneResourceGroupResponse,
-  DeleteOneResourceGroupData,
-  DeleteOneResourceGroupResponse,
-  CreateOneResourceData,
-  CreateOneResourceResponse,
-  GetAllResourcesData,
-  GetAllResourcesResponse,
-  GetOneResourceByIdData,
-  GetOneResourceByIdResponse,
-  UpdateOneResourceData,
-  UpdateOneResourceResponse,
-  DeleteOneResourceData,
-  DeleteOneResourceResponse,
-  AddResourceToGroupData,
-  AddResourceToGroupResponse,
-  RemoveResourceFromGroupData,
-  RemoveResourceFromGroupResponse,
-  StartSessionData,
-  StartSessionResponse,
-  EndSessionData,
-  GetHistoryOfResourceUsageData,
-  GetHistoryOfResourceUsageResponse,
-  GetActiveSessionData,
-  GetActiveSessionResponse,
-  MarkCompletedData,
-  MarkCompletedResponse,
-  GetAllResourceIntroductionsData,
-  GetAllResourceIntroductionsResponse,
-  CheckStatusData,
-  CheckStatusResponse,
-  MarkRevokedData,
-  MarkRevokedResponse,
-  MarkUnrevokedData,
-  MarkUnrevokedResponse,
-  GetHistoryOfIntroductionData,
-  GetHistoryOfIntroductionResponse,
-  CheckIsRevokedStatusData,
-  CheckIsRevokedStatusResponse,
-  GetOneResourceIntroductionData,
-  GetOneResourceIntroductionResponse,
-  CheckCanManagePermissionData,
-  CheckCanManagePermissionResponse,
-  GetAllResourceIntroducersData,
-  GetAllResourceIntroducersResponse,
-  AddOneData,
-  AddOneResponse,
-  RemoveOneData,
-  RemoveOneResponse,
-  GetAllMqttServersResponse,
-  CreateOneMqttServerData,
-  CreateOneMqttServerResponse,
-  GetOneMqttServerByIdData,
-  GetOneMqttServerByIdResponse,
-  UpdateOneMqttServerData,
-  UpdateOneMqttServerResponse,
-  DeleteOneMqttServerData,
-  DeleteOneMqttServerResponse,
-  TestConnectionData,
-  TestConnectionResponse,
-  GetStatusOfOneData,
-  GetStatusOfOneResponse,
-  GetStatusOfAllResponse,
-  SseControllerStreamEventsData,
-  SseControllerStreamEventsResponse,
-  GetAllWebhookConfigurationsData,
-  GetAllWebhookConfigurationsResponse,
-  CreateOneWebhookConfigurationData,
-  CreateOneWebhookConfigurationResponse,
-  GetOneWebhookConfigurationByIdData,
-  GetOneWebhookConfigurationByIdResponse,
-  UpdateOneWebhookConfigurationData,
-  UpdateOneWebhookConfigurationResponse,
-  DeleteOneWebhookConfigurationData,
-  DeleteOneWebhookConfigurationResponse,
-  UpdateStatusData,
-  UpdateStatusResponse,
-  TestData,
-  TestResponse,
-  RegenerateSecretData,
-  RegenerateSecretResponse,
-  GetAllMqttConfigurationsData,
-  GetAllMqttConfigurationsResponse,
-  CreateMqttConfigurationData,
-  CreateMqttConfigurationResponse,
-  GetOneMqttConfigurationData,
-  GetOneMqttConfigurationResponse,
-  UpdateMqttConfigurationData,
-  UpdateMqttConfigurationResponse,
-  DeleteOneMqttConfigurationData,
-  DeleteOneMqttConfigurationResponse,
-  TestOneData,
-  TestOneResponse,
-  GetPluginsResponse,
-  UploadPluginData,
-  GetFrontendPluginFileData,
-  GetFrontendPluginFileResponse,
-  DeletePluginData,
-  DeletePluginResponse,
-  EnrollNfcCardData,
-  EnrollNfcCardResponse,
-  ResetNfcCardData,
-  ResetNfcCardResponse,
-  UpdateReaderData,
-  UpdateReaderResponse,
-  GetReaderByIdData,
-  GetReaderByIdResponse,
-  GetReadersResponse,
-  GetAppKeyByUidData,
-  GetAppKeyByUidResponse,
-  GetAllCardsResponse,
-  AnalyticsControllerGetResourceUsageHoursInDateRangeData,
-  AnalyticsControllerGetResourceUsageHoursInDateRangeResponse,
-} from './types.gen';
+import type { InfoResponse, CreateOneUserData, CreateOneUserResponse, GetAllUsersData, GetAllUsersResponse, VerifyEmailData, VerifyEmailResponse, RequestPasswordResetData, RequestPasswordResetResponse, ChangePasswordViaResetTokenData, ChangePasswordViaResetTokenResponse, GetCurrentResponse, GetOneUserByIdData, GetOneUserByIdResponse, UpdatePermissionsData, UpdatePermissionsResponse, GetPermissionsData, GetPermissionsResponse, BulkUpdatePermissionsData, BulkUpdatePermissionsResponse, GetAllWithPermissionData, GetAllWithPermissionResponse, CreateSessionData, CreateSessionResponse2, EndSessionResponse, GetAllSsoProvidersResponse, CreateOneSsoProviderData, CreateOneSsoProviderResponse, GetOneSsoProviderByIdData, GetOneSsoProviderByIdResponse, UpdateOneSsoProviderData, UpdateOneSsoProviderResponse, DeleteOneSsoProviderData, DeleteOneSsoProviderResponse, LoginWithOidcData, LoginWithOidcResponse, OidcLoginCallbackData, OidcLoginCallbackResponse, EmailTemplateControllerPreviewMjmlData, EmailTemplateControllerPreviewMjmlResponse, EmailTemplateControllerFindAllResponse, EmailTemplateControllerFindOneData, EmailTemplateControllerFindOneResponse, EmailTemplateControllerUpdateData, EmailTemplateControllerUpdateResponse, CreateOneResourceGroupData, CreateOneResourceGroupResponse, GetAllResourceGroupsData, GetAllResourceGroupsResponse, GetOneResourceGroupByIdData, GetOneResourceGroupByIdResponse, UpdateOneResourceGroupData, UpdateOneResourceGroupResponse, DeleteOneResourceGroupData, DeleteOneResourceGroupResponse, CreateOneResourceData, CreateOneResourceResponse, GetAllResourcesData, GetAllResourcesResponse, GetOneResourceByIdData, GetOneResourceByIdResponse, UpdateOneResourceData, UpdateOneResourceResponse, DeleteOneResourceData, DeleteOneResourceResponse, AddResourceToGroupData, AddResourceToGroupResponse, RemoveResourceFromGroupData, RemoveResourceFromGroupResponse, StartSessionData, StartSessionResponse, EndSessionData, GetHistoryOfResourceUsageData, GetHistoryOfResourceUsageResponse, GetActiveSessionData, GetActiveSessionResponse, MarkCompletedData, MarkCompletedResponse, GetAllResourceIntroductionsData, GetAllResourceIntroductionsResponse, CheckStatusData, CheckStatusResponse, MarkRevokedData, MarkRevokedResponse, MarkUnrevokedData, MarkUnrevokedResponse, GetHistoryOfIntroductionData, GetHistoryOfIntroductionResponse, CheckIsRevokedStatusData, CheckIsRevokedStatusResponse, GetOneResourceIntroductionData, GetOneResourceIntroductionResponse, CheckCanManagePermissionData, CheckCanManagePermissionResponse, GetAllResourceIntroducersData, GetAllResourceIntroducersResponse, AddOneData, AddOneResponse, RemoveOneData, RemoveOneResponse, GetAllMqttServersResponse, CreateOneMqttServerData, CreateOneMqttServerResponse, GetOneMqttServerByIdData, GetOneMqttServerByIdResponse, UpdateOneMqttServerData, UpdateOneMqttServerResponse, DeleteOneMqttServerData, DeleteOneMqttServerResponse, TestConnectionData, TestConnectionResponse, GetStatusOfOneData, GetStatusOfOneResponse, GetStatusOfAllResponse, SseControllerStreamEventsData, SseControllerStreamEventsResponse, GetAllWebhookConfigurationsData, GetAllWebhookConfigurationsResponse, CreateOneWebhookConfigurationData, CreateOneWebhookConfigurationResponse, GetOneWebhookConfigurationByIdData, GetOneWebhookConfigurationByIdResponse, UpdateOneWebhookConfigurationData, UpdateOneWebhookConfigurationResponse, DeleteOneWebhookConfigurationData, DeleteOneWebhookConfigurationResponse, UpdateStatusData, UpdateStatusResponse, TestData, TestResponse, RegenerateSecretData, RegenerateSecretResponse, GetAllMqttConfigurationsData, GetAllMqttConfigurationsResponse, CreateMqttConfigurationData, CreateMqttConfigurationResponse, GetOneMqttConfigurationData, GetOneMqttConfigurationResponse, UpdateMqttConfigurationData, UpdateMqttConfigurationResponse, DeleteOneMqttConfigurationData, DeleteOneMqttConfigurationResponse, TestOneData, TestOneResponse, GetPluginsResponse, UploadPluginData, GetFrontendPluginFileData, GetFrontendPluginFileResponse, DeletePluginData, DeletePluginResponse, EnrollNfcCardData, EnrollNfcCardResponse, ResetNfcCardData, ResetNfcCardResponse, UpdateReaderData, UpdateReaderResponse, GetReaderByIdData, GetReaderByIdResponse, GetReadersResponse, GetAppKeyByUidData, GetAppKeyByUidResponse, GetAllCardsResponse, AnalyticsControllerGetResourceUsageHoursInDateRangeData, AnalyticsControllerGetResourceUsageHoursInDateRangeResponse } from './types.gen';
 
 export class ApplicationService {
-  /**
-   * Return API information
-   * @returns unknown API information
-   * @throws ApiError
-   */
-  public static info(): CancelablePromise<InfoResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/info',
-    });
-  }
+    /**
+     * Return API information
+     * @returns unknown API information
+     * @throws ApiError
+     */
+    public static info(): CancelablePromise<InfoResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/info'
+        });
+    }
+    
 }
 
 export class UsersService {
-  /**
-   * Create a new user
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns User The user has been successfully created.
-   * @throws ApiError
-   */
-  public static createOneUser(data: CreateOneUserData): CancelablePromise<CreateOneUserResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/users',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input data.',
-      },
-    });
-  }
-
-  /**
-   * Get a paginated list of users
-   * @param data The data for the request.
-   * @param data.page Page number (1-based)
-   * @param data.limit Number of items per page
-   * @param data.search Search query
-   * @returns PaginatedUsersResponseDto List of users.
-   * @throws ApiError
-   */
-  public static getAllUsers(data: GetAllUsersData = {}): CancelablePromise<GetAllUsersResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/users',
-      query: {
-        page: data.page,
-        limit: data.limit,
-        search: data.search,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to manage users.',
-      },
-    });
-  }
-
-  /**
-   * Verify a user email address
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns unknown Email verified successfully.
-   * @throws ApiError
-   */
-  public static verifyEmail(data: VerifyEmailData): CancelablePromise<VerifyEmailResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/users/verify-email',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid token or email.',
-      },
-    });
-  }
-
-  /**
-   * Request a password reset
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns unknown OK
-   * @throws ApiError
-   */
-  public static requestPasswordReset(data: RequestPasswordResetData): CancelablePromise<RequestPasswordResetResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/users/reset-password',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input data.',
-      },
-    });
-  }
-
-  /**
-   * Change a user password after password reset
-   * @param data The data for the request.
-   * @param data.userId
-   * @param data.requestBody
-   * @returns unknown OK
-   * @throws ApiError
-   */
-  public static changePasswordViaResetToken(
-    data: ChangePasswordViaResetTokenData
-  ): CancelablePromise<ChangePasswordViaResetTokenResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/users/{userId}/change-password',
-      path: {
-        userId: data.userId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input data.',
-      },
-    });
-  }
-
-  /**
-   * Get the current authenticated user
-   * @returns User The current user.
-   * @throws ApiError
-   */
-  public static getCurrent(): CancelablePromise<GetCurrentResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/users/me',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get a user by ID
-   * @param data The data for the request.
-   * @param data.id
-   * @returns User The user with the specified ID.
-   * @throws ApiError
-   */
-  public static getOneUserById(data: GetOneUserByIdData): CancelablePromise<GetOneUserByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/users/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to access this resource.',
-        404: 'User not found.',
-      },
-    });
-  }
-
-  /**
-   * Update a user's system permissions
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.requestBody
-   * @returns User The user permissions have been successfully updated.
-   * @throws ApiError
-   */
-  public static updatePermissions(data: UpdatePermissionsData): CancelablePromise<UpdatePermissionsResponse> {
-    return __request(OpenAPI, {
-      method: 'PATCH',
-      url: '/api/users/{id}/permissions',
-      path: {
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input data.',
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to manage users.',
-        404: 'User not found.',
-      },
-    });
-  }
-
-  /**
-   * Get a user's system permissions
-   * @param data The data for the request.
-   * @param data.id
-   * @returns unknown The user's permissions.
-   * @throws ApiError
-   */
-  public static getPermissions(data: GetPermissionsData): CancelablePromise<GetPermissionsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/users/{id}/permissions',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to manage users.',
-        404: 'User not found.',
-      },
-    });
-  }
-
-  /**
-   * Bulk update user permissions
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns User The user permissions have been successfully updated.
-   * @throws ApiError
-   */
-  public static bulkUpdatePermissions(
-    data: BulkUpdatePermissionsData
-  ): CancelablePromise<BulkUpdatePermissionsResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/users/permissions',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input data.',
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to manage users.',
-      },
-    });
-  }
-
-  /**
-   * Get users with a specific permission
-   * @param data The data for the request.
-   * @param data.page Page number (1-based)
-   * @param data.limit Number of items per page
-   * @param data.permission Filter users by permission
-   * @returns PaginatedUsersResponseDto List of users with the specified permission.
-   * @throws ApiError
-   */
-  public static getAllWithPermission(
-    data: GetAllWithPermissionData = {}
-  ): CancelablePromise<GetAllWithPermissionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/users/with-permission',
-      query: {
-        page: data.page,
-        limit: data.limit,
-        permission: data.permission,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to manage users.',
-      },
-    });
-  }
+    /**
+     * Create a new user
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns User The user has been successfully created.
+     * @throws ApiError
+     */
+    public static createOneUser(data: CreateOneUserData): CancelablePromise<CreateOneUserResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/users',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data.'
+            }
+        });
+    }
+    
+    /**
+     * Get a paginated list of users
+     * @param data The data for the request.
+     * @param data.page Page number (1-based)
+     * @param data.limit Number of items per page
+     * @param data.search Search query
+     * @returns PaginatedUsersResponseDto List of users.
+     * @throws ApiError
+     */
+    public static getAllUsers(data: GetAllUsersData = {}): CancelablePromise<GetAllUsersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/users',
+            query: {
+                page: data.page,
+                limit: data.limit,
+                search: data.search
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to manage users.'
+            }
+        });
+    }
+    
+    /**
+     * Verify a user email address
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown Email verified successfully.
+     * @throws ApiError
+     */
+    public static verifyEmail(data: VerifyEmailData): CancelablePromise<VerifyEmailResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/users/verify-email',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid token or email.'
+            }
+        });
+    }
+    
+    /**
+     * Request a password reset
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns unknown OK
+     * @throws ApiError
+     */
+    public static requestPasswordReset(data: RequestPasswordResetData): CancelablePromise<RequestPasswordResetResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/users/reset-password',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data.'
+            }
+        });
+    }
+    
+    /**
+     * Change a user password after password reset
+     * @param data The data for the request.
+     * @param data.userId
+     * @param data.requestBody
+     * @returns unknown OK
+     * @throws ApiError
+     */
+    public static changePasswordViaResetToken(data: ChangePasswordViaResetTokenData): CancelablePromise<ChangePasswordViaResetTokenResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/users/{userId}/change-password',
+            path: {
+                userId: data.userId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data.'
+            }
+        });
+    }
+    
+    /**
+     * Get the current authenticated user
+     * @returns User The current user.
+     * @throws ApiError
+     */
+    public static getCurrent(): CancelablePromise<GetCurrentResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/users/me',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get a user by ID
+     * @param data The data for the request.
+     * @param data.id
+     * @returns User The user with the specified ID.
+     * @throws ApiError
+     */
+    public static getOneUserById(data: GetOneUserByIdData): CancelablePromise<GetOneUserByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/users/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to access this resource.',
+                404: 'User not found.'
+            }
+        });
+    }
+    
+    /**
+     * Update a user's system permissions
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns User The user permissions have been successfully updated.
+     * @throws ApiError
+     */
+    public static updatePermissions(data: UpdatePermissionsData): CancelablePromise<UpdatePermissionsResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/users/{id}/permissions',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data.',
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to manage users.',
+                404: 'User not found.'
+            }
+        });
+    }
+    
+    /**
+     * Get a user's system permissions
+     * @param data The data for the request.
+     * @param data.id
+     * @returns unknown The user's permissions.
+     * @throws ApiError
+     */
+    public static getPermissions(data: GetPermissionsData): CancelablePromise<GetPermissionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/users/{id}/permissions',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to manage users.',
+                404: 'User not found.'
+            }
+        });
+    }
+    
+    /**
+     * Bulk update user permissions
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns User The user permissions have been successfully updated.
+     * @throws ApiError
+     */
+    public static bulkUpdatePermissions(data: BulkUpdatePermissionsData): CancelablePromise<BulkUpdatePermissionsResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/users/permissions',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data.',
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to manage users.'
+            }
+        });
+    }
+    
+    /**
+     * Get users with a specific permission
+     * @param data The data for the request.
+     * @param data.page Page number (1-based)
+     * @param data.limit Number of items per page
+     * @param data.permission Filter users by permission
+     * @returns PaginatedUsersResponseDto List of users with the specified permission.
+     * @throws ApiError
+     */
+    public static getAllWithPermission(data: GetAllWithPermissionData = {}): CancelablePromise<GetAllWithPermissionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/users/with-permission',
+            query: {
+                page: data.page,
+                limit: data.limit,
+                permission: data.permission
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to manage users.'
+            }
+        });
+    }
+    
 }
 
 export class AuthenticationService {
-  /**
-   * Create a new session using local authentication
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns CreateSessionResponse The session has been created
-   * @throws ApiError
-   */
-  public static createSession(data: CreateSessionData): CancelablePromise<CreateSessionResponse2> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/auth/session/local',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized - Invalid credentials',
-      },
-    });
-  }
-
-  /**
-   * Logout and invalidate the current session
-   * @returns unknown The session has been deleted
-   * @throws ApiError
-   */
-  public static endSession(): CancelablePromise<EndSessionResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/auth/session',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Create a new session using local authentication
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns CreateSessionResponse The session has been created
+     * @throws ApiError
+     */
+    public static createSession(data: CreateSessionData): CancelablePromise<CreateSessionResponse2> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/auth/session/local',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized - Invalid credentials'
+            }
+        });
+    }
+    
+    /**
+     * Logout and invalidate the current session
+     * @returns unknown The session has been deleted
+     * @throws ApiError
+     */
+    public static endSession(): CancelablePromise<EndSessionResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/auth/session',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class SsoService {
-  /**
-   * Get all SSO providers
-   * @returns SSOProvider The list of SSO providers
-   * @throws ApiError
-   */
-  public static getAllSsoProviders(): CancelablePromise<GetAllSsoProvidersResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/auth/sso/providers',
-    });
-  }
-
-  /**
-   * Create a new SSO provider
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns SSOProvider The SSO provider has been created
-   * @throws ApiError
-   */
-  public static createOneSsoProvider(data: CreateOneSsoProviderData): CancelablePromise<CreateOneSsoProviderResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/auth/sso/providers',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - Insufficient permissions',
-      },
-    });
-  }
-
-  /**
-   * Get SSO provider by ID with full configuration
-   * @param data The data for the request.
-   * @param data.id The ID of the SSO provider
-   * @returns SSOProvider The SSO provider with full configuration
-   * @throws ApiError
-   */
-  public static getOneSsoProviderById(
-    data: GetOneSsoProviderByIdData
-  ): CancelablePromise<GetOneSsoProviderByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/auth/sso/providers/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - Insufficient permissions',
-        404: 'Provider not found',
-      },
-    });
-  }
-
-  /**
-   * Update an existing SSO provider
-   * @param data The data for the request.
-   * @param data.id The ID of the SSO provider
-   * @param data.requestBody
-   * @returns SSOProvider The SSO provider has been updated
-   * @throws ApiError
-   */
-  public static updateOneSsoProvider(data: UpdateOneSsoProviderData): CancelablePromise<UpdateOneSsoProviderResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/auth/sso/providers/{id}',
-      path: {
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - Insufficient permissions',
-        404: 'Provider not found',
-      },
-    });
-  }
-
-  /**
-   * Delete an SSO provider
-   * @param data The data for the request.
-   * @param data.id The ID of the SSO provider
-   * @returns unknown The SSO provider has been deleted
-   * @throws ApiError
-   */
-  public static deleteOneSsoProvider(data: DeleteOneSsoProviderData): CancelablePromise<DeleteOneSsoProviderResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/auth/sso/providers/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - Insufficient permissions',
-        404: 'Provider not found',
-      },
-    });
-  }
-
-  /**
-   * Login with OIDC
-   * Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
-   * @param data The data for the request.
-   * @param data.providerId The ID of the SSO provider
-   * @param data.redirectTo The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
-   * @returns unknown The user has been logged in
-   * @throws ApiError
-   */
-  public static loginWithOidc(data: LoginWithOidcData): CancelablePromise<LoginWithOidcResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/auth/sso/OIDC/{providerId}/login',
-      path: {
-        providerId: data.providerId,
-      },
-      query: {
-        redirectTo: data.redirectTo,
-      },
-    });
-  }
-
-  /**
-   * Callback for OIDC login
-   * @param data The data for the request.
-   * @param data.redirectTo
-   * @param data.code
-   * @param data.iss
-   * @param data.sessionState
-   * @param data.state
-   * @param data.providerId The ID of the SSO provider
-   * @returns CreateSessionResponse The user has been logged in
-   * @throws ApiError
-   */
-  public static oidcLoginCallback(data: OidcLoginCallbackData): CancelablePromise<OidcLoginCallbackResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/auth/sso/OIDC/{providerId}/callback',
-      path: {
-        providerId: data.providerId,
-      },
-      query: {
-        redirectTo: data.redirectTo,
-        code: data.code,
-        iss: data.iss,
-        'session-state': data.sessionState,
-        state: data.state,
-      },
-    });
-  }
+    /**
+     * Get all SSO providers
+     * @returns SSOProvider The list of SSO providers
+     * @throws ApiError
+     */
+    public static getAllSsoProviders(): CancelablePromise<GetAllSsoProvidersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/auth/sso/providers'
+        });
+    }
+    
+    /**
+     * Create a new SSO provider
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns SSOProvider The SSO provider has been created
+     * @throws ApiError
+     */
+    public static createOneSsoProvider(data: CreateOneSsoProviderData): CancelablePromise<CreateOneSsoProviderResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/auth/sso/providers',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - Insufficient permissions'
+            }
+        });
+    }
+    
+    /**
+     * Get SSO provider by ID with full configuration
+     * @param data The data for the request.
+     * @param data.id The ID of the SSO provider
+     * @returns SSOProvider The SSO provider with full configuration
+     * @throws ApiError
+     */
+    public static getOneSsoProviderById(data: GetOneSsoProviderByIdData): CancelablePromise<GetOneSsoProviderByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/auth/sso/providers/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - Insufficient permissions',
+                404: 'Provider not found'
+            }
+        });
+    }
+    
+    /**
+     * Update an existing SSO provider
+     * @param data The data for the request.
+     * @param data.id The ID of the SSO provider
+     * @param data.requestBody
+     * @returns SSOProvider The SSO provider has been updated
+     * @throws ApiError
+     */
+    public static updateOneSsoProvider(data: UpdateOneSsoProviderData): CancelablePromise<UpdateOneSsoProviderResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/auth/sso/providers/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - Insufficient permissions',
+                404: 'Provider not found'
+            }
+        });
+    }
+    
+    /**
+     * Delete an SSO provider
+     * @param data The data for the request.
+     * @param data.id The ID of the SSO provider
+     * @returns unknown The SSO provider has been deleted
+     * @throws ApiError
+     */
+    public static deleteOneSsoProvider(data: DeleteOneSsoProviderData): CancelablePromise<DeleteOneSsoProviderResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/auth/sso/providers/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - Insufficient permissions',
+                404: 'Provider not found'
+            }
+        });
+    }
+    
+    /**
+     * Login with OIDC
+     * Login with OIDC and redirect to the callback URL (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
+     * @param data The data for the request.
+     * @param data.providerId The ID of the SSO provider
+     * @param data.redirectTo The URL to redirect to after login (optional), if you intend to redirect to your frontned, your frontend should pass the query parameters back to the sso callback endpoint to retreive a JWT token for furhter authentication
+     * @returns unknown The user has been logged in
+     * @throws ApiError
+     */
+    public static loginWithOidc(data: LoginWithOidcData): CancelablePromise<LoginWithOidcResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/auth/sso/OIDC/{providerId}/login',
+            path: {
+                providerId: data.providerId
+            },
+            query: {
+                redirectTo: data.redirectTo
+            }
+        });
+    }
+    
+    /**
+     * Callback for OIDC login
+     * @param data The data for the request.
+     * @param data.redirectTo
+     * @param data.code
+     * @param data.iss
+     * @param data.sessionState
+     * @param data.state
+     * @param data.providerId The ID of the SSO provider
+     * @returns CreateSessionResponse The user has been logged in
+     * @throws ApiError
+     */
+    public static oidcLoginCallback(data: OidcLoginCallbackData): CancelablePromise<OidcLoginCallbackResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/auth/sso/OIDC/{providerId}/callback',
+            path: {
+                providerId: data.providerId
+            },
+            query: {
+                redirectTo: data.redirectTo,
+                code: data.code,
+                iss: data.iss,
+                'session-state': data.sessionState,
+                state: data.state
+            }
+        });
+    }
+    
 }
 
 export class EmailTemplatesService {
-  /**
-   * Create a new email template
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns EmailTemplate The template has been successfully created.
-   * @throws ApiError
-   */
-  public static emailTemplateControllerCreate(
-    data: EmailTemplateControllerCreateData
-  ): CancelablePromise<EmailTemplateControllerCreateResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/email-templates',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden.',
-      },
-    });
-  }
-
-  /**
-   * List all email templates
-   * @returns EmailTemplate List of email templates.
-   * @throws ApiError
-   */
-  public static emailTemplateControllerFindAll(): CancelablePromise<EmailTemplateControllerFindAllResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/email-templates',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get an email template by ID
-   * @param data The data for the request.
-   * @param data.id
-   * @returns EmailTemplate The email template.
-   * @throws ApiError
-   */
-  public static emailTemplateControllerFindOne(
-    data: EmailTemplateControllerFindOneData
-  ): CancelablePromise<EmailTemplateControllerFindOneResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/email-templates/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Template not found.',
-      },
-    });
-  }
-
-  /**
-   * Update an email template
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.requestBody
-   * @returns EmailTemplate The template has been successfully updated.
-   * @throws ApiError
-   */
-  public static emailTemplateControllerUpdate(
-    data: EmailTemplateControllerUpdateData
-  ): CancelablePromise<EmailTemplateControllerUpdateResponse> {
-    return __request(OpenAPI, {
-      method: 'PATCH',
-      url: '/api/email-templates/{id}',
-      path: {
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        404: 'Template not found.',
-      },
-    });
-  }
-
-  /**
-   * Delete an email template
-   * @param data The data for the request.
-   * @param data.id
-   * @returns void The template has been successfully deleted.
-   * @throws ApiError
-   */
-  public static emailTemplateControllerRemove(
-    data: EmailTemplateControllerRemoveData
-  ): CancelablePromise<EmailTemplateControllerRemoveResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/email-templates/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Template not found.',
-      },
-    });
-  }
+    /**
+     * Preview MJML content as HTML
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns PreviewMjmlResponseDto MJML preview result
+     * @throws ApiError
+     */
+    public static emailTemplateControllerPreviewMjml(data: EmailTemplateControllerPreviewMjmlData): CancelablePromise<EmailTemplateControllerPreviewMjmlResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/email-templates/preview-mjml',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid MJML content',
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * List all email templates
+     * @returns EmailTemplate List of email templates
+     * @throws ApiError
+     */
+    public static emailTemplateControllerFindAll(): CancelablePromise<EmailTemplateControllerFindAllResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/email-templates',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get an email template by type
+     * @param data The data for the request.
+     * @param data.type Template type/type
+     * @returns EmailTemplate Email template found
+     * @throws ApiError
+     */
+    public static emailTemplateControllerFindOne(data: EmailTemplateControllerFindOneData): CancelablePromise<EmailTemplateControllerFindOneResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/email-templates/{type}',
+            path: {
+                type: data.type
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Template not found'
+            }
+        });
+    }
+    
+    /**
+     * Update an email template
+     * @param data The data for the request.
+     * @param data.type Template type/type
+     * @param data.requestBody
+     * @returns EmailTemplate Template updated successfully
+     * @throws ApiError
+     */
+    public static emailTemplateControllerUpdate(data: EmailTemplateControllerUpdateData): CancelablePromise<EmailTemplateControllerUpdateResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/email-templates/{type}',
+            path: {
+                type: data.type
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input data',
+                401: 'Unauthorized',
+                404: 'Template not found'
+            }
+        });
+    }
+    
 }
 
 export class ResourceGroupsService {
-  /**
-   * Create a new resource group
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns ResourceGroup The resource group has been successfully created.
-   * @throws ApiError
-   */
-  public static createOneResourceGroup(
-    data: CreateOneResourceGroupData
-  ): CancelablePromise<CreateOneResourceGroupResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/groups',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request.',
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Retrieve all resource groups
-   * @param data The data for the request.
-   * @param data.page Page number
-   * @param data.limit Number of items per page
-   * @param data.search Search term for name or description
-   * @returns PaginatedResourceGroupResponseDto List of resource groups with pagination.
-   * @throws ApiError
-   */
-  public static getAllResourceGroups(
-    data: GetAllResourceGroupsData = {}
-  ): CancelablePromise<GetAllResourceGroupsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/groups',
-      query: {
-        page: data.page,
-        limit: data.limit,
-        search: data.search,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Retrieve a specific resource group by ID
-   * @param data The data for the request.
-   * @param data.id Resource Group ID
-   * @returns ResourceGroup The resource group details.
-   * @throws ApiError
-   */
-  public static getOneResourceGroupById(
-    data: GetOneResourceGroupByIdData
-  ): CancelablePromise<GetOneResourceGroupByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/groups/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Resource group not found.',
-      },
-    });
-  }
-
-  /**
-   * Update a specific resource group by ID
-   * @param data The data for the request.
-   * @param data.id Resource Group ID
-   * @param data.requestBody
-   * @returns ResourceGroup The resource group has been successfully updated.
-   * @throws ApiError
-   */
-  public static updateOneResourceGroup(
-    data: UpdateOneResourceGroupData
-  ): CancelablePromise<UpdateOneResourceGroupResponse> {
-    return __request(OpenAPI, {
-      method: 'PATCH',
-      url: '/api/resources/groups/{id}',
-      path: {
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource group not found.',
-      },
-    });
-  }
-
-  /**
-   * Delete a specific resource group by ID
-   * @param data The data for the request.
-   * @param data.id Resource Group ID
-   * @returns void The resource group has been successfully deleted.
-   * @throws ApiError
-   */
-  public static deleteOneResourceGroup(
-    data: DeleteOneResourceGroupData
-  ): CancelablePromise<DeleteOneResourceGroupResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/groups/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource group not found.',
-      },
-    });
-  }
+    /**
+     * Create a new resource group
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ResourceGroup The resource group has been successfully created.
+     * @throws ApiError
+     */
+    public static createOneResourceGroup(data: CreateOneResourceGroupData): CancelablePromise<CreateOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/groups',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request.',
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Retrieve all resource groups
+     * @param data The data for the request.
+     * @param data.page Page number
+     * @param data.limit Number of items per page
+     * @param data.search Search term for name or description
+     * @returns PaginatedResourceGroupResponseDto List of resource groups with pagination.
+     * @throws ApiError
+     */
+    public static getAllResourceGroups(data: GetAllResourceGroupsData = {}): CancelablePromise<GetAllResourceGroupsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/groups',
+            query: {
+                page: data.page,
+                limit: data.limit,
+                search: data.search
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Retrieve a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @returns ResourceGroup The resource group details.
+     * @throws ApiError
+     */
+    public static getOneResourceGroupById(data: GetOneResourceGroupByIdData): CancelablePromise<GetOneResourceGroupByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
+    /**
+     * Update a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @param data.requestBody
+     * @returns ResourceGroup The resource group has been successfully updated.
+     * @throws ApiError
+     */
+    public static updateOneResourceGroup(data: UpdateOneResourceGroupData): CancelablePromise<UpdateOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
+    /**
+     * Delete a specific resource group by ID
+     * @param data The data for the request.
+     * @param data.id Resource Group ID
+     * @returns void The resource group has been successfully deleted.
+     * @throws ApiError
+     */
+    public static deleteOneResourceGroup(data: DeleteOneResourceGroupData): CancelablePromise<DeleteOneResourceGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/groups/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource group not found.'
+            }
+        });
+    }
+    
 }
 
 export class ResourcesService {
-  /**
-   * Create a new resource
-   * @param data The data for the request.
-   * @param data.formData
-   * @returns Resource The resource has been successfully created.
-   * @throws ApiError
-   */
-  public static createOneResource(data: CreateOneResourceData): CancelablePromise<CreateOneResourceResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources',
-      formData: data.formData,
-      mediaType: 'multipart/form-data',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Get all resources
-   * @param data The data for the request.
-   * @param data.page Page number (1-based)
-   * @param data.limit Number of items per page
-   * @param data.search Search term to filter resources
-   * @param data.groupId Group ID to filter resources. Send -1 to find ungrouped resources.
-   * @param data.ids Resource IDs to filter resources
-   * @returns PaginatedResourceResponseDto List of resources with pagination.
-   * @throws ApiError
-   */
-  public static getAllResources(data: GetAllResourcesData = {}): CancelablePromise<GetAllResourcesResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources',
-      query: {
-        page: data.page,
-        limit: data.limit,
-        search: data.search,
-        groupId: data.groupId,
-        ids: data.ids,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get a resource by ID
-   * @param data The data for the request.
-   * @param data.id
-   * @returns Resource The found resource.
-   * @throws ApiError
-   */
-  public static getOneResourceById(data: GetOneResourceByIdData): CancelablePromise<GetOneResourceByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Update a resource
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.formData
-   * @returns Resource The resource has been successfully updated.
-   * @throws ApiError
-   */
-  public static updateOneResource(data: UpdateOneResourceData): CancelablePromise<UpdateOneResourceResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/resources/{id}',
-      path: {
-        id: data.id,
-      },
-      formData: data.formData,
-      mediaType: 'multipart/form-data',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Delete a resource
-   * @param data The data for the request.
-   * @param data.id
-   * @returns void The resource has been successfully deleted.
-   * @throws ApiError
-   */
-  public static deleteOneResource(data: DeleteOneResourceData): CancelablePromise<DeleteOneResourceResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Add a resource to a group
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.groupId
-   * @returns Resource The resource has been successfully added to the group.
-   * @throws ApiError
-   */
-  public static addResourceToGroup(data: AddResourceToGroupData): CancelablePromise<AddResourceToGroupResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{id}/groups/{groupId}',
-      path: {
-        id: data.id,
-        groupId: data.groupId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or Group not found',
-      },
-    });
-  }
-
-  /**
-   * Remove a resource from a group
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.groupId
-   * @returns void The resource has been successfully removed from the group.
-   * @throws ApiError
-   */
-  public static removeResourceFromGroup(
-    data: RemoveResourceFromGroupData
-  ): CancelablePromise<RemoveResourceFromGroupResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/{id}/groups/{groupId}',
-      path: {
-        id: data.id,
-        groupId: data.groupId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or Group not found, or resource not in group',
-      },
-    });
-  }
+    /**
+     * Create a new resource
+     * @param data The data for the request.
+     * @param data.formData
+     * @returns Resource The resource has been successfully created.
+     * @throws ApiError
+     */
+    public static createOneResource(data: CreateOneResourceData): CancelablePromise<CreateOneResourceResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Get all resources
+     * @param data The data for the request.
+     * @param data.page Page number (1-based)
+     * @param data.limit Number of items per page
+     * @param data.search Search term to filter resources
+     * @param data.groupId Group ID to filter resources. Send -1 to find ungrouped resources.
+     * @param data.ids Resource IDs to filter resources
+     * @returns PaginatedResourceResponseDto List of resources with pagination.
+     * @throws ApiError
+     */
+    public static getAllResources(data: GetAllResourcesData = {}): CancelablePromise<GetAllResourcesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources',
+            query: {
+                page: data.page,
+                limit: data.limit,
+                search: data.search,
+                groupId: data.groupId,
+                ids: data.ids
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get a resource by ID
+     * @param data The data for the request.
+     * @param data.id
+     * @returns Resource The found resource.
+     * @throws ApiError
+     */
+    public static getOneResourceById(data: GetOneResourceByIdData): CancelablePromise<GetOneResourceByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Update a resource
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.formData
+     * @returns Resource The resource has been successfully updated.
+     * @throws ApiError
+     */
+    public static updateOneResource(data: UpdateOneResourceData): CancelablePromise<UpdateOneResourceResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/resources/{id}',
+            path: {
+                id: data.id
+            },
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Delete a resource
+     * @param data The data for the request.
+     * @param data.id
+     * @returns void The resource has been successfully deleted.
+     * @throws ApiError
+     */
+    public static deleteOneResource(data: DeleteOneResourceData): CancelablePromise<DeleteOneResourceResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Add a resource to a group
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.groupId
+     * @returns Resource The resource has been successfully added to the group.
+     * @throws ApiError
+     */
+    public static addResourceToGroup(data: AddResourceToGroupData): CancelablePromise<AddResourceToGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{id}/groups/{groupId}',
+            path: {
+                id: data.id,
+                groupId: data.groupId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or Group not found'
+            }
+        });
+    }
+    
+    /**
+     * Remove a resource from a group
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.groupId
+     * @returns void The resource has been successfully removed from the group.
+     * @throws ApiError
+     */
+    public static removeResourceFromGroup(data: RemoveResourceFromGroupData): CancelablePromise<RemoveResourceFromGroupResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{id}/groups/{groupId}',
+            path: {
+                id: data.id,
+                groupId: data.groupId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or Group not found, or resource not in group'
+            }
+        });
+    }
+    
 }
 
 export class ResourceUsageService {
-  /**
-   * Start a resource usage session
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.requestBody
-   * @returns ResourceUsage Usage session started successfully.
-   * @throws ApiError
-   */
-  public static startSession(data: StartSessionData): CancelablePromise<StartSessionResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/usage/start',
-      path: {
-        resourceId: data.resourceId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request - Invalid input data',
-        401: 'Unauthorized',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * End a resource usage session
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.requestBody
-   * @returns ResourceUsage Usage session ended successfully.
-   * @throws ApiError
-   */
-  public static endSession(data: EndSessionData): CancelablePromise<EndSessionResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/resources/{resourceId}/usage/end',
-      path: {
-        resourceId: data.resourceId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request - Invalid input data or no active session',
-        401: 'Unauthorized',
-        404: 'Resource or session not found',
-      },
-    });
-  }
-
-  /**
-   * Get usage history for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.page The page number to retrieve
-   * @param data.limit The number of items per page
-   * @param data.userId The user ID to filter by
-   * @returns GetResourceHistoryResponseDto Resource usage history retrieved successfully.
-   * @throws ApiError
-   */
-  public static getHistoryOfResourceUsage(
-    data: GetHistoryOfResourceUsageData
-  ): CancelablePromise<GetHistoryOfResourceUsageResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/usage/history',
-      path: {
-        resourceId: data.resourceId,
-      },
-      query: {
-        page: data.page,
-        limit: data.limit,
-        userId: data.userId,
-      },
-      errors: {
-        400: 'Bad Request - Invalid pagination parameters',
-        401: 'Unauthorized',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Get active usage session for current user
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns GetActiveUsageSessionDto Active session retrieved successfully.
-   * @throws ApiError
-   */
-  public static getActiveSession(data: GetActiveSessionData): CancelablePromise<GetActiveSessionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/usage/active',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Resource not found',
-      },
-    });
-  }
+    /**
+     * Start a resource usage session
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.requestBody
+     * @returns ResourceUsage Usage session started successfully.
+     * @throws ApiError
+     */
+    public static startSession(data: StartSessionData): CancelablePromise<StartSessionResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/usage/start',
+            path: {
+                resourceId: data.resourceId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request - Invalid input data',
+                401: 'Unauthorized',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * End a resource usage session
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.requestBody
+     * @returns ResourceUsage Usage session ended successfully.
+     * @throws ApiError
+     */
+    public static endSession(data: EndSessionData): CancelablePromise<EndSessionResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/resources/{resourceId}/usage/end',
+            path: {
+                resourceId: data.resourceId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request - Invalid input data or no active session',
+                401: 'Unauthorized',
+                404: 'Resource or session not found'
+            }
+        });
+    }
+    
+    /**
+     * Get usage history for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.page The page number to retrieve
+     * @param data.limit The number of items per page
+     * @param data.userId The user ID to filter by
+     * @returns GetResourceHistoryResponseDto Resource usage history retrieved successfully.
+     * @throws ApiError
+     */
+    public static getHistoryOfResourceUsage(data: GetHistoryOfResourceUsageData): CancelablePromise<GetHistoryOfResourceUsageResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/usage/history',
+            path: {
+                resourceId: data.resourceId
+            },
+            query: {
+                page: data.page,
+                limit: data.limit,
+                userId: data.userId
+            },
+            errors: {
+                400: 'Bad Request - Invalid pagination parameters',
+                401: 'Unauthorized',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Get active usage session for current user
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns GetActiveUsageSessionDto Active session retrieved successfully.
+     * @throws ApiError
+     */
+    public static getActiveSession(data: GetActiveSessionData): CancelablePromise<GetActiveSessionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/usage/active',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
 }
 
 export class ResourceIntroductionsService {
-  /**
-   * Mark resource introduction as completed for a user
-   * Complete an introduction for a user identified by their user ID, username, or email.
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.requestBody
-   * @returns ResourceIntroduction Introduction marked as completed successfully.
-   * @throws ApiError
-   */
-  public static markCompleted(data: MarkCompletedData): CancelablePromise<MarkCompletedResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/introductions/complete',
-      path: {
-        resourceId: data.resourceId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad request - Neither userId nor userIdentifier provided',
-        401: 'Unauthorized',
-        404: 'User not found with the provided identifier',
-      },
-    });
-  }
-
-  /**
-   * Get introductions for a specific resource
-   * Retrieve introductions for a resource, possibly paginated
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.page Page number (1-based)
-   * @param data.limit Number of items per page
-   * @returns PaginatedResourceIntroductionResponseDto Resource introductions
-   * @throws ApiError
-   */
-  public static getAllResourceIntroductions(
-    data: GetAllResourceIntroductionsData
-  ): CancelablePromise<GetAllResourceIntroductionsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions',
-      path: {
-        resourceId: data.resourceId,
-      },
-      query: {
-        page: data.page,
-        limit: data.limit,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Check if current user has a valid introduction
-   * Check if the current user has completed the introduction for this resource and it is not revoked
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns unknown Status retrieved successfully
-   * @throws ApiError
-   */
-  public static checkStatus(data: CheckStatusData): CancelablePromise<CheckStatusResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions/status',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Revoke an introduction
-   * Revoke access for a user by marking their introduction as revoked
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.introductionId
-   * @param data.requestBody
-   * @returns ResourceIntroductionHistoryItem Introduction revoked successfully
-   * @throws ApiError
-   */
-  public static markRevoked(data: MarkRevokedData): CancelablePromise<MarkRevokedResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/introductions/{introductionId}/revoke',
-      path: {
-        resourceId: data.resourceId,
-        introductionId: data.introductionId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Unrevoke an introduction
-   * Restore access for a user by unrevoking their introduction
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.introductionId
-   * @param data.requestBody
-   * @returns ResourceIntroductionHistoryItem Introduction unrevoked successfully
-   * @throws ApiError
-   */
-  public static markUnrevoked(data: MarkUnrevokedData): CancelablePromise<MarkUnrevokedResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/introductions/{introductionId}/unrevoke',
-      path: {
-        resourceId: data.resourceId,
-        introductionId: data.introductionId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Get history for a specific introduction
-   * Retrieve the history of revoke/unrevoke actions for an introduction
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.introductionId
-   * @returns ResourceIntroductionHistoryItem Introduction history
-   * @throws ApiError
-   */
-  public static getHistoryOfIntroduction(
-    data: GetHistoryOfIntroductionData
-  ): CancelablePromise<GetHistoryOfIntroductionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions/{introductionId}/history',
-      path: {
-        resourceId: data.resourceId,
-        introductionId: data.introductionId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Check if an introduction is revoked
-   * Determine if a specific introduction is currently revoked
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.introductionId
-   * @returns unknown Status retrieved successfully
-   * @throws ApiError
-   */
-  public static checkIsRevokedStatus(data: CheckIsRevokedStatusData): CancelablePromise<CheckIsRevokedStatusResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions/{introductionId}/revoked',
-      path: {
-        resourceId: data.resourceId,
-        introductionId: data.introductionId,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get a single resource introduction
-   * Retrieve detailed information about a specific introduction
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.introductionId
-   * @returns ResourceIntroduction Introduction retrieved successfully
-   * @throws ApiError
-   */
-  public static getOneResourceIntroduction(
-    data: GetOneResourceIntroductionData
-  ): CancelablePromise<GetOneResourceIntroductionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions/{introductionId}',
-      path: {
-        resourceId: data.resourceId,
-        introductionId: data.introductionId,
-      },
-      errors: {
-        401: 'Unauthorized',
-        403: 'Forbidden - User does not have permission to view this introduction',
-        404: 'Introduction not found',
-      },
-    });
-  }
-
-  /**
-   * Check if user can manage introductions for the resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns unknown Returns whether the user can manage introductions
-   * @throws ApiError
-   */
-  public static checkCanManagePermission(
-    data: CheckCanManagePermissionData
-  ): CancelablePromise<CheckCanManagePermissionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introductions/permissions/manage',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Mark resource introduction as completed for a user
+     * Complete an introduction for a user identified by their user ID, username, or email.
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.requestBody
+     * @returns ResourceIntroduction Introduction marked as completed successfully.
+     * @throws ApiError
+     */
+    public static markCompleted(data: MarkCompletedData): CancelablePromise<MarkCompletedResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/introductions/complete',
+            path: {
+                resourceId: data.resourceId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad request - Neither userId nor userIdentifier provided',
+                401: 'Unauthorized',
+                404: 'User not found with the provided identifier'
+            }
+        });
+    }
+    
+    /**
+     * Get introductions for a specific resource
+     * Retrieve introductions for a resource, possibly paginated
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.page Page number (1-based)
+     * @param data.limit Number of items per page
+     * @returns PaginatedResourceIntroductionResponseDto Resource introductions
+     * @throws ApiError
+     */
+    public static getAllResourceIntroductions(data: GetAllResourceIntroductionsData): CancelablePromise<GetAllResourceIntroductionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions',
+            path: {
+                resourceId: data.resourceId
+            },
+            query: {
+                page: data.page,
+                limit: data.limit
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Check if current user has a valid introduction
+     * Check if the current user has completed the introduction for this resource and it is not revoked
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns unknown Status retrieved successfully
+     * @throws ApiError
+     */
+    public static checkStatus(data: CheckStatusData): CancelablePromise<CheckStatusResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions/status',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Revoke an introduction
+     * Revoke access for a user by marking their introduction as revoked
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.introductionId
+     * @param data.requestBody
+     * @returns ResourceIntroductionHistoryItem Introduction revoked successfully
+     * @throws ApiError
+     */
+    public static markRevoked(data: MarkRevokedData): CancelablePromise<MarkRevokedResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/introductions/{introductionId}/revoke',
+            path: {
+                resourceId: data.resourceId,
+                introductionId: data.introductionId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Unrevoke an introduction
+     * Restore access for a user by unrevoking their introduction
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.introductionId
+     * @param data.requestBody
+     * @returns ResourceIntroductionHistoryItem Introduction unrevoked successfully
+     * @throws ApiError
+     */
+    public static markUnrevoked(data: MarkUnrevokedData): CancelablePromise<MarkUnrevokedResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/introductions/{introductionId}/unrevoke',
+            path: {
+                resourceId: data.resourceId,
+                introductionId: data.introductionId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Get history for a specific introduction
+     * Retrieve the history of revoke/unrevoke actions for an introduction
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.introductionId
+     * @returns ResourceIntroductionHistoryItem Introduction history
+     * @throws ApiError
+     */
+    public static getHistoryOfIntroduction(data: GetHistoryOfIntroductionData): CancelablePromise<GetHistoryOfIntroductionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions/{introductionId}/history',
+            path: {
+                resourceId: data.resourceId,
+                introductionId: data.introductionId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Check if an introduction is revoked
+     * Determine if a specific introduction is currently revoked
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.introductionId
+     * @returns unknown Status retrieved successfully
+     * @throws ApiError
+     */
+    public static checkIsRevokedStatus(data: CheckIsRevokedStatusData): CancelablePromise<CheckIsRevokedStatusResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions/{introductionId}/revoked',
+            path: {
+                resourceId: data.resourceId,
+                introductionId: data.introductionId
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get a single resource introduction
+     * Retrieve detailed information about a specific introduction
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.introductionId
+     * @returns ResourceIntroduction Introduction retrieved successfully
+     * @throws ApiError
+     */
+    public static getOneResourceIntroduction(data: GetOneResourceIntroductionData): CancelablePromise<GetOneResourceIntroductionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions/{introductionId}',
+            path: {
+                resourceId: data.resourceId,
+                introductionId: data.introductionId
+            },
+            errors: {
+                401: 'Unauthorized',
+                403: 'Forbidden - User does not have permission to view this introduction',
+                404: 'Introduction not found'
+            }
+        });
+    }
+    
+    /**
+     * Check if user can manage introductions for the resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns unknown Returns whether the user can manage introductions
+     * @throws ApiError
+     */
+    public static checkCanManagePermission(data: CheckCanManagePermissionData): CancelablePromise<CheckCanManagePermissionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introductions/permissions/manage',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class ResourceIntroducersService {
-  /**
-   * Get all authorized introducers for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns ResourceIntroductionUser List of resource introducers
-   * @throws ApiError
-   */
-  public static getAllResourceIntroducers(
-    data: GetAllResourceIntroducersData
-  ): CancelablePromise<GetAllResourceIntroducersResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introducers',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Add a user as an introducer for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.userId
-   * @returns ResourceIntroductionUser User added as an introducer
-   * @throws ApiError
-   */
-  public static addOne(data: AddOneData): CancelablePromise<AddOneResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/introducers/{userId}',
-      path: {
-        resourceId: data.resourceId,
-        userId: data.userId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Remove a user as an introducer for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.userId
-   * @returns void User removed as an introducer
-   * @throws ApiError
-   */
-  public static removeOne(data: RemoveOneData): CancelablePromise<RemoveOneResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/{resourceId}/introducers/{userId}',
-      path: {
-        resourceId: data.resourceId,
-        userId: data.userId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Check if the current user can manage introducers for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns CanManageIntroducersResponseDto Permission check result
-   * @throws ApiError
-   */
-  public static checkCanManagePermission(
-    data: CheckCanManagePermissionData
-  ): CancelablePromise<CheckCanManagePermissionResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/introducers/can-manage',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Get all authorized introducers for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns ResourceIntroductionUser List of resource introducers
+     * @throws ApiError
+     */
+    public static getAllResourceIntroducers(data: GetAllResourceIntroducersData): CancelablePromise<GetAllResourceIntroducersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introducers',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Add a user as an introducer for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.userId
+     * @returns ResourceIntroductionUser User added as an introducer
+     * @throws ApiError
+     */
+    public static addOne(data: AddOneData): CancelablePromise<AddOneResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/introducers/{userId}',
+            path: {
+                resourceId: data.resourceId,
+                userId: data.userId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Remove a user as an introducer for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.userId
+     * @returns void User removed as an introducer
+     * @throws ApiError
+     */
+    public static removeOne(data: RemoveOneData): CancelablePromise<RemoveOneResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{resourceId}/introducers/{userId}',
+            path: {
+                resourceId: data.resourceId,
+                userId: data.userId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Check if the current user can manage introducers for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns CanManageIntroducersResponseDto Permission check result
+     * @throws ApiError
+     */
+    public static checkCanManagePermission(data: CheckCanManagePermissionData): CancelablePromise<CheckCanManagePermissionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/introducers/can-manage',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class MqttServersService {
-  /**
-   * Get all MQTT servers
-   * @returns MqttServer Returns all MQTT servers
-   * @throws ApiError
-   */
-  public static getAllMqttServers(): CancelablePromise<GetAllMqttServersResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/mqtt/servers',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Create new MQTT server
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns MqttServer MQTT server created successfully
-   * @throws ApiError
-   */
-  public static createOneMqttServer(data: CreateOneMqttServerData): CancelablePromise<CreateOneMqttServerResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/mqtt/servers',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get MQTT server by ID
-   * @param data The data for the request.
-   * @param data.id
-   * @returns MqttServer Returns the MQTT server with the specified ID
-   * @throws ApiError
-   */
-  public static getOneMqttServerById(data: GetOneMqttServerByIdData): CancelablePromise<GetOneMqttServerByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/mqtt/servers/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'MQTT server not found',
-      },
-    });
-  }
-
-  /**
-   * Update MQTT server
-   * @param data The data for the request.
-   * @param data.id
-   * @param data.requestBody
-   * @returns MqttServer MQTT server updated successfully
-   * @throws ApiError
-   */
-  public static updateOneMqttServer(data: UpdateOneMqttServerData): CancelablePromise<UpdateOneMqttServerResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/mqtt/servers/{id}',
-      path: {
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        404: 'MQTT server not found',
-      },
-    });
-  }
-
-  /**
-   * Delete MQTT server
-   * @param data The data for the request.
-   * @param data.id
-   * @returns unknown MQTT server deleted successfully
-   * @throws ApiError
-   */
-  public static deleteOneMqttServer(data: DeleteOneMqttServerData): CancelablePromise<DeleteOneMqttServerResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/mqtt/servers/{id}',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'MQTT server not found',
-      },
-    });
-  }
-
-  /**
-   * Test MQTT server connection
-   * @param data The data for the request.
-   * @param data.id
-   * @returns TestConnectionResponseDto Connection test result
-   * @throws ApiError
-   */
-  public static testConnection(data: TestConnectionData): CancelablePromise<TestConnectionResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/mqtt/servers/{id}/test',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'MQTT server not found',
-      },
-    });
-  }
-
-  /**
-   * Get MQTT server connection status and statistics
-   * @param data The data for the request.
-   * @param data.id
-   * @returns MqttServerStatusDto MQTT server connection status and statistics
-   * @throws ApiError
-   */
-  public static getStatusOfOne(data: GetStatusOfOneData): CancelablePromise<GetStatusOfOneResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/mqtt/servers/{id}/status',
-      path: {
-        id: data.id,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'MQTT server not found',
-      },
-    });
-  }
-
-  /**
-   * Get all MQTT server connection statuses and statistics
-   * @returns AllMqttServerStatusesDto All MQTT server connection statuses and statistics
-   * @throws ApiError
-   */
-  public static getStatusOfAll(): CancelablePromise<GetStatusOfAllResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/mqtt/servers/status',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Get all MQTT servers
+     * @returns MqttServer Returns all MQTT servers
+     * @throws ApiError
+     */
+    public static getAllMqttServers(): CancelablePromise<GetAllMqttServersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/mqtt/servers',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Create new MQTT server
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns MqttServer MQTT server created successfully
+     * @throws ApiError
+     */
+    public static createOneMqttServer(data: CreateOneMqttServerData): CancelablePromise<CreateOneMqttServerResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/mqtt/servers',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get MQTT server by ID
+     * @param data The data for the request.
+     * @param data.id
+     * @returns MqttServer Returns the MQTT server with the specified ID
+     * @throws ApiError
+     */
+    public static getOneMqttServerById(data: GetOneMqttServerByIdData): CancelablePromise<GetOneMqttServerByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/mqtt/servers/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'MQTT server not found'
+            }
+        });
+    }
+    
+    /**
+     * Update MQTT server
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns MqttServer MQTT server updated successfully
+     * @throws ApiError
+     */
+    public static updateOneMqttServer(data: UpdateOneMqttServerData): CancelablePromise<UpdateOneMqttServerResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/mqtt/servers/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized',
+                404: 'MQTT server not found'
+            }
+        });
+    }
+    
+    /**
+     * Delete MQTT server
+     * @param data The data for the request.
+     * @param data.id
+     * @returns unknown MQTT server deleted successfully
+     * @throws ApiError
+     */
+    public static deleteOneMqttServer(data: DeleteOneMqttServerData): CancelablePromise<DeleteOneMqttServerResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/mqtt/servers/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'MQTT server not found'
+            }
+        });
+    }
+    
+    /**
+     * Test MQTT server connection
+     * @param data The data for the request.
+     * @param data.id
+     * @returns TestConnectionResponseDto Connection test result
+     * @throws ApiError
+     */
+    public static testConnection(data: TestConnectionData): CancelablePromise<TestConnectionResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/mqtt/servers/{id}/test',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'MQTT server not found'
+            }
+        });
+    }
+    
+    /**
+     * Get MQTT server connection status and statistics
+     * @param data The data for the request.
+     * @param data.id
+     * @returns MqttServerStatusDto MQTT server connection status and statistics
+     * @throws ApiError
+     */
+    public static getStatusOfOne(data: GetStatusOfOneData): CancelablePromise<GetStatusOfOneResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/mqtt/servers/{id}/status',
+            path: {
+                id: data.id
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'MQTT server not found'
+            }
+        });
+    }
+    
+    /**
+     * Get all MQTT server connection statuses and statistics
+     * @returns AllMqttServerStatusesDto All MQTT server connection statuses and statistics
+     * @throws ApiError
+     */
+    public static getStatusOfAll(): CancelablePromise<GetStatusOfAllResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/mqtt/servers/status',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class SseService {
-  /**
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns unknown
-   * @throws ApiError
-   */
-  public static sseControllerStreamEvents(
-    data: SseControllerStreamEventsData
-  ): CancelablePromise<SseControllerStreamEventsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/events',
-      path: {
-        resourceId: data.resourceId,
-      },
-    });
-  }
+    /**
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns unknown
+     * @throws ApiError
+     */
+    public static sseControllerStreamEvents(data: SseControllerStreamEventsData): CancelablePromise<SseControllerStreamEventsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/events',
+            path: {
+                resourceId: data.resourceId
+            }
+        });
+    }
+    
 }
 
 export class WebhooksService {
-  /**
-   * Get all webhook configurations for a resource
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @returns WebhookConfigResponseDto List of webhook configurations for the resource
-   * @throws ApiError
-   */
-  public static getAllWebhookConfigurations(
-    data: GetAllWebhookConfigurationsData
-  ): CancelablePromise<GetAllWebhookConfigurationsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/webhooks',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-      },
-    });
-  }
-
-  /**
-   * Create a new webhook configuration
-   *
-   * Creates a new webhook configuration for a resource.
-   *
-   * ## URL Templating
-   *
-   * The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered.
-   *
-   * Example: `https://example.com/webhooks/{{id}}/{{event}}`
-   *
-   * ## Header Templating
-   *
-   * Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered.
-   *
-   * Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}`
-   *
-   * ## Available Template Variables
-   *
-   * Available template variables for URLs, headers, and payloads:
-   * - `id`: Resource ID
-   * - `name`: Resource name
-   * - `description`: Resource description
-   * - `timestamp`: ISO timestamp of the event
-   * - `user.id`: ID of the user who triggered the event
-   * - `event`: Either "started" or "ended" depending on the resource usage state
-   *
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.requestBody
-   * @returns WebhookConfigResponseDto The webhook configuration has been created
-   * @throws ApiError
-   */
-  public static createOneWebhookConfiguration(
-    data: CreateOneWebhookConfigurationData
-  ): CancelablePromise<CreateOneWebhookConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/webhooks',
-      path: {
-        resourceId: data.resourceId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input',
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Get webhook configuration by ID
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @returns WebhookConfigResponseDto The webhook configuration
-   * @throws ApiError
-   */
-  public static getOneWebhookConfigurationById(
-    data: GetOneWebhookConfigurationByIdData
-  ): CancelablePromise<GetOneWebhookConfigurationByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/webhooks/{id}',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Update webhook configuration
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @param data.requestBody
-   * @returns WebhookConfigResponseDto The webhook configuration has been updated
-   * @throws ApiError
-   */
-  public static updateOneWebhookConfiguration(
-    data: UpdateOneWebhookConfigurationData
-  ): CancelablePromise<UpdateOneWebhookConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/resources/{resourceId}/webhooks/{id}',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input',
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Delete webhook configuration
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @returns void The webhook configuration has been deleted
-   * @throws ApiError
-   */
-  public static deleteOneWebhookConfiguration(
-    data: DeleteOneWebhookConfigurationData
-  ): CancelablePromise<DeleteOneWebhookConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/{resourceId}/webhooks/{id}',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Enable or disable webhook
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @param data.requestBody
-   * @returns WebhookConfigResponseDto The webhook status has been updated
-   * @throws ApiError
-   */
-  public static updateStatus(data: UpdateStatusData): CancelablePromise<UpdateStatusResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/resources/{resourceId}/webhooks/{id}/status',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Invalid input',
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Test webhook
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @returns WebhookTestResponseDto Test result
-   * @throws ApiError
-   */
-  public static test(data: TestData): CancelablePromise<TestResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/webhooks/{id}/test',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Regenerate webhook secret
-   *
-   * When signature verification is enabled, each webhook request includes:
-   *
-   * 1. A timestamp header (X-Webhook-Timestamp)
-   * 2. A signature header (configurable, default: X-Webhook-Signature)
-   *
-   * To verify the signature:
-   * 1. Extract the timestamp from the X-Webhook-Timestamp header
-   * 2. Combine the timestamp and payload as "${timestamp}.${payload}"
-   * 3. Compute the HMAC-SHA256 signature using your webhook secret
-   * 4. Compare the resulting signature with the value in the signature header
-   *
-   * Example (Node.js):
-   * ```javascript
-   * const crypto = require('crypto');
-   *
-   * function verifySignature(payload, timestamp, signature, secret) {
-   * const signaturePayload = `${timestamp}.${payload}`;
-   * const expectedSignature = crypto
-   * .createHmac('sha256', secret)
-   * .update(signaturePayload)
-   * .digest('hex');
-   *
-   * return crypto.timingSafeEqual(
-   * Buffer.from(signature),
-   * Buffer.from(expectedSignature)
-   * );
-   * }
-   * ```
-   *
-   * @param data The data for the request.
-   * @param data.resourceId Resource ID
-   * @param data.id Webhook configuration ID
-   * @returns WebhookConfigResponseDto The webhook secret has been regenerated
-   * @throws ApiError
-   */
-  public static regenerateSecret(data: RegenerateSecretData): CancelablePromise<RegenerateSecretResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/webhooks/{id}/regenerate-secret',
-      path: {
-        resourceId: data.resourceId,
-        id: data.id,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Webhook configuration not found',
-      },
-    });
-  }
+    /**
+     * Get all webhook configurations for a resource
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @returns WebhookConfigResponseDto List of webhook configurations for the resource
+     * @throws ApiError
+     */
+    public static getAllWebhookConfigurations(data: GetAllWebhookConfigurationsData): CancelablePromise<GetAllWebhookConfigurationsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/webhooks',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource'
+            }
+        });
+    }
+    
+    /**
+     * Create a new webhook configuration
+     *
+     * Creates a new webhook configuration for a resource.
+     *
+     * ## URL Templating
+     *
+     * The webhook URL can include Handlebars templates that will be replaced with context values when the webhook is triggered.
+     *
+     * Example: `https://example.com/webhooks/{{id}}/{{event}}`
+     *
+     * ## Header Templating
+     *
+     * Header values can include Handlebars templates that will be replaced with context values when the webhook is triggered.
+     *
+     * Example: `{"Authorization": "Bearer {{user.id}}", "X-Resource-Name": "{{name}}"}`
+     *
+     * ## Available Template Variables
+     *
+     * Available template variables for URLs, headers, and payloads:
+     * - `id`: Resource ID
+     * - `name`: Resource name
+     * - `description`: Resource description
+     * - `timestamp`: ISO timestamp of the event
+     * - `user.id`: ID of the user who triggered the event
+     * - `event`: Either "started" or "ended" depending on the resource usage state
+     *
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.requestBody
+     * @returns WebhookConfigResponseDto The webhook configuration has been created
+     * @throws ApiError
+     */
+    public static createOneWebhookConfiguration(data: CreateOneWebhookConfigurationData): CancelablePromise<CreateOneWebhookConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/webhooks',
+            path: {
+                resourceId: data.resourceId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input',
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Get webhook configuration by ID
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @returns WebhookConfigResponseDto The webhook configuration
+     * @throws ApiError
+     */
+    public static getOneWebhookConfigurationById(data: GetOneWebhookConfigurationByIdData): CancelablePromise<GetOneWebhookConfigurationByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/webhooks/{id}',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Update webhook configuration
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @param data.requestBody
+     * @returns WebhookConfigResponseDto The webhook configuration has been updated
+     * @throws ApiError
+     */
+    public static updateOneWebhookConfiguration(data: UpdateOneWebhookConfigurationData): CancelablePromise<UpdateOneWebhookConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/resources/{resourceId}/webhooks/{id}',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input',
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Delete webhook configuration
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @returns void The webhook configuration has been deleted
+     * @throws ApiError
+     */
+    public static deleteOneWebhookConfiguration(data: DeleteOneWebhookConfigurationData): CancelablePromise<DeleteOneWebhookConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{resourceId}/webhooks/{id}',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Enable or disable webhook
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @param data.requestBody
+     * @returns WebhookConfigResponseDto The webhook status has been updated
+     * @throws ApiError
+     */
+    public static updateStatus(data: UpdateStatusData): CancelablePromise<UpdateStatusResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/resources/{resourceId}/webhooks/{id}/status',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Invalid input',
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Test webhook
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @returns WebhookTestResponseDto Test result
+     * @throws ApiError
+     */
+    public static test(data: TestData): CancelablePromise<TestResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/webhooks/{id}/test',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Regenerate webhook secret
+     *
+     * When signature verification is enabled, each webhook request includes:
+     *
+     * 1. A timestamp header (X-Webhook-Timestamp)
+     * 2. A signature header (configurable, default: X-Webhook-Signature)
+     *
+     * To verify the signature:
+     * 1. Extract the timestamp from the X-Webhook-Timestamp header
+     * 2. Combine the timestamp and payload as "${timestamp}.${payload}"
+     * 3. Compute the HMAC-SHA256 signature using your webhook secret
+     * 4. Compare the resulting signature with the value in the signature header
+     *
+     * Example (Node.js):
+     * ```javascript
+     * const crypto = require('crypto');
+     *
+     * function verifySignature(payload, timestamp, signature, secret) {
+     * const signaturePayload = `${timestamp}.${payload}`;
+     * const expectedSignature = crypto
+     * .createHmac('sha256', secret)
+     * .update(signaturePayload)
+     * .digest('hex');
+     *
+     * return crypto.timingSafeEqual(
+     * Buffer.from(signature),
+     * Buffer.from(expectedSignature)
+     * );
+     * }
+     * ```
+     *
+     * @param data The data for the request.
+     * @param data.resourceId Resource ID
+     * @param data.id Webhook configuration ID
+     * @returns WebhookConfigResponseDto The webhook secret has been regenerated
+     * @throws ApiError
+     */
+    public static regenerateSecret(data: RegenerateSecretData): CancelablePromise<RegenerateSecretResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/webhooks/{id}/regenerate-secret',
+            path: {
+                resourceId: data.resourceId,
+                id: data.id
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Webhook configuration not found'
+            }
+        });
+    }
+    
 }
 
 export class MqttResourceConfigurationService {
-  /**
-   * Get all MQTT configurations for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @returns MqttResourceConfig Returns all MQTT configurations for the resource
-   * @throws ApiError
-   */
-  public static getAllMqttConfigurations(
-    data: GetAllMqttConfigurationsData
-  ): CancelablePromise<GetAllMqttConfigurationsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/mqtt/config',
-      path: {
-        resourceId: data.resourceId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Create a new MQTT configuration for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.requestBody
-   * @returns MqttResourceConfig MQTT configuration created successfully
-   * @throws ApiError
-   */
-  public static createMqttConfiguration(
-    data: CreateMqttConfigurationData
-  ): CancelablePromise<CreateMqttConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/mqtt/config',
-      path: {
-        resourceId: data.resourceId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource not found',
-      },
-    });
-  }
-
-  /**
-   * Get a specific MQTT configuration for a resource
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.configId
-   * @returns MqttResourceConfig Returns the specific MQTT configuration
-   * @throws ApiError
-   */
-  public static getOneMqttConfiguration(
-    data: GetOneMqttConfigurationData
-  ): CancelablePromise<GetOneMqttConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/resources/{resourceId}/mqtt/config/{configId}',
-      path: {
-        resourceId: data.resourceId,
-        configId: data.configId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Update a specific MQTT configuration
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.configId
-   * @param data.requestBody
-   * @returns MqttResourceConfig MQTT configuration updated successfully
-   * @throws ApiError
-   */
-  public static updateMqttConfiguration(
-    data: UpdateMqttConfigurationData
-  ): CancelablePromise<UpdateMqttConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/resources/{resourceId}/mqtt/config/{configId}',
-      path: {
-        resourceId: data.resourceId,
-        configId: data.configId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Delete a specific MQTT configuration
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.configId
-   * @returns unknown MQTT configuration deleted successfully
-   * @throws ApiError
-   */
-  public static deleteOneMqttConfiguration(
-    data: DeleteOneMqttConfigurationData
-  ): CancelablePromise<DeleteOneMqttConfigurationResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/resources/{resourceId}/mqtt/config/{configId}',
-      path: {
-        resourceId: data.resourceId,
-        configId: data.configId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or MQTT configuration not found',
-      },
-    });
-  }
-
-  /**
-   * Test a specific MQTT configuration
-   * @param data The data for the request.
-   * @param data.resourceId
-   * @param data.configId
-   * @returns TestMqttConfigResponseDto Test result
-   * @throws ApiError
-   */
-  public static testOne(data: TestOneData): CancelablePromise<TestOneResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/resources/{resourceId}/mqtt/config/{configId}/test',
-      path: {
-        resourceId: data.resourceId,
-        configId: data.configId,
-      },
-      errors: {
-        401: 'User is not authenticated',
-        403: 'User does not have permission to manage this resource',
-        404: 'Resource or MQTT configuration not found',
-      },
-    });
-  }
+    /**
+     * Get all MQTT configurations for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @returns MqttResourceConfig Returns all MQTT configurations for the resource
+     * @throws ApiError
+     */
+    public static getAllMqttConfigurations(data: GetAllMqttConfigurationsData): CancelablePromise<GetAllMqttConfigurationsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/mqtt/config',
+            path: {
+                resourceId: data.resourceId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Create a new MQTT configuration for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.requestBody
+     * @returns MqttResourceConfig MQTT configuration created successfully
+     * @throws ApiError
+     */
+    public static createMqttConfiguration(data: CreateMqttConfigurationData): CancelablePromise<CreateMqttConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/mqtt/config',
+            path: {
+                resourceId: data.resourceId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource not found'
+            }
+        });
+    }
+    
+    /**
+     * Get a specific MQTT configuration for a resource
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.configId
+     * @returns MqttResourceConfig Returns the specific MQTT configuration
+     * @throws ApiError
+     */
+    public static getOneMqttConfiguration(data: GetOneMqttConfigurationData): CancelablePromise<GetOneMqttConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/resources/{resourceId}/mqtt/config/{configId}',
+            path: {
+                resourceId: data.resourceId,
+                configId: data.configId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Update a specific MQTT configuration
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.configId
+     * @param data.requestBody
+     * @returns MqttResourceConfig MQTT configuration updated successfully
+     * @throws ApiError
+     */
+    public static updateMqttConfiguration(data: UpdateMqttConfigurationData): CancelablePromise<UpdateMqttConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/resources/{resourceId}/mqtt/config/{configId}',
+            path: {
+                resourceId: data.resourceId,
+                configId: data.configId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Delete a specific MQTT configuration
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.configId
+     * @returns unknown MQTT configuration deleted successfully
+     * @throws ApiError
+     */
+    public static deleteOneMqttConfiguration(data: DeleteOneMqttConfigurationData): CancelablePromise<DeleteOneMqttConfigurationResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/resources/{resourceId}/mqtt/config/{configId}',
+            path: {
+                resourceId: data.resourceId,
+                configId: data.configId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or MQTT configuration not found'
+            }
+        });
+    }
+    
+    /**
+     * Test a specific MQTT configuration
+     * @param data The data for the request.
+     * @param data.resourceId
+     * @param data.configId
+     * @returns TestMqttConfigResponseDto Test result
+     * @throws ApiError
+     */
+    public static testOne(data: TestOneData): CancelablePromise<TestOneResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/resources/{resourceId}/mqtt/config/{configId}/test',
+            path: {
+                resourceId: data.resourceId,
+                configId: data.configId
+            },
+            errors: {
+                401: 'User is not authenticated',
+                403: 'User does not have permission to manage this resource',
+                404: 'Resource or MQTT configuration not found'
+            }
+        });
+    }
+    
 }
 
 export class PluginService {
-  /**
-   * Get all plugins
-   * @returns LoadedPluginManifest The list of all plugins
-   * @throws ApiError
-   */
-  public static getPlugins(): CancelablePromise<GetPluginsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/plugins',
-    });
-  }
-
-  /**
-   * Upload a new plugin
-   * @param data The data for the request.
-   * @param data.formData
-   * @throws ApiError
-   */
-  public static uploadPlugin(data: UploadPluginData): CancelablePromise<void> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/plugins',
-      formData: data.formData,
-      mediaType: 'multipart/form-data',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get any frontend plugin file
-   * @param data The data for the request.
-   * @param data.pluginName
-   * @param data.filePath
-   * @returns string The requested frontend plugin file
-   * @throws ApiError
-   */
-  public static getFrontendPluginFile(
-    data: GetFrontendPluginFileData
-  ): CancelablePromise<GetFrontendPluginFileResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/plugins/{pluginName}/frontend/module-federation/{filePath}',
-      path: {
-        pluginName: data.pluginName,
-        filePath: data.filePath,
-      },
-    });
-  }
-
-  /**
-   * Delete a plugin
-   * @param data The data for the request.
-   * @param data.pluginId
-   * @returns unknown The plugin has been deleted
-   * @throws ApiError
-   */
-  public static deletePlugin(data: DeletePluginData): CancelablePromise<DeletePluginResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/plugins/{pluginId}',
-      path: {
-        pluginId: data.pluginId,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Get all plugins
+     * @returns LoadedPluginManifest The list of all plugins
+     * @throws ApiError
+     */
+    public static getPlugins(): CancelablePromise<GetPluginsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/plugins'
+        });
+    }
+    
+    /**
+     * Upload a new plugin
+     * @param data The data for the request.
+     * @param data.formData
+     * @throws ApiError
+     */
+    public static uploadPlugin(data: UploadPluginData): CancelablePromise<void> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/plugins',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get any frontend plugin file
+     * @param data The data for the request.
+     * @param data.pluginName
+     * @param data.filePath
+     * @returns string The requested frontend plugin file
+     * @throws ApiError
+     */
+    public static getFrontendPluginFile(data: GetFrontendPluginFileData): CancelablePromise<GetFrontendPluginFileResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/plugins/{pluginName}/frontend/module-federation/{filePath}',
+            path: {
+                pluginName: data.pluginName,
+                filePath: data.filePath
+            }
+        });
+    }
+    
+    /**
+     * Delete a plugin
+     * @param data The data for the request.
+     * @param data.pluginId
+     * @returns unknown The plugin has been deleted
+     * @throws ApiError
+     */
+    public static deletePlugin(data: DeletePluginData): CancelablePromise<DeletePluginResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/plugins/{pluginId}',
+            path: {
+                pluginId: data.pluginId
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class FabReaderReadersService {
-  /**
-   * Enroll a new NFC card
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns EnrollNfcCardResponseDto Enrollment initiated, continue on Reader
-   * @throws ApiError
-   */
-  public static enrollNfcCard(data: EnrollNfcCardData): CancelablePromise<EnrollNfcCardResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/fabreader/readers/enroll-nfc-card',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Reset an NFC card
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns ResetNfcCardResponseDto Reset initiated, continue on Reader
-   * @throws ApiError
-   */
-  public static resetNfcCard(data: ResetNfcCardData): CancelablePromise<ResetNfcCardResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/fabreader/readers/reset-nfc-card',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Update reader name and connected resources
-   * @param data The data for the request.
-   * @param data.readerId The ID of the reader to update
-   * @param data.requestBody
-   * @returns UpdateReaderResponseDto Reader updated successfully
-   * @throws ApiError
-   */
-  public static updateReader(data: UpdateReaderData): CancelablePromise<UpdateReaderResponse> {
-    return __request(OpenAPI, {
-      method: 'PATCH',
-      url: '/api/fabreader/readers/{readerId}',
-      path: {
-        readerId: data.readerId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-        404: 'Reader not found',
-      },
-    });
-  }
-
-  /**
-   * Get a reader by ID
-   * @param data The data for the request.
-   * @param data.readerId The ID of the reader to get
-   * @returns FabReader The reader
-   * @throws ApiError
-   */
-  public static getReaderById(data: GetReaderByIdData): CancelablePromise<GetReaderByIdResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/fabreader/readers/{readerId}',
-      path: {
-        readerId: data.readerId,
-      },
-      errors: {
-        401: 'Unauthorized',
-        404: 'Reader not found',
-      },
-    });
-  }
-
-  /**
-   * Get all readers
-   * @returns FabReader The list of readers
-   * @throws ApiError
-   */
-  public static getReaders(): CancelablePromise<GetReadersResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/fabreader/readers',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Enroll a new NFC card
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns EnrollNfcCardResponseDto Enrollment initiated, continue on Reader
+     * @throws ApiError
+     */
+    public static enrollNfcCard(data: EnrollNfcCardData): CancelablePromise<EnrollNfcCardResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/fabreader/readers/enroll-nfc-card',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Reset an NFC card
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ResetNfcCardResponseDto Reset initiated, continue on Reader
+     * @throws ApiError
+     */
+    public static resetNfcCard(data: ResetNfcCardData): CancelablePromise<ResetNfcCardResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/fabreader/readers/reset-nfc-card',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Update reader name and connected resources
+     * @param data The data for the request.
+     * @param data.readerId The ID of the reader to update
+     * @param data.requestBody
+     * @returns UpdateReaderResponseDto Reader updated successfully
+     * @throws ApiError
+     */
+    public static updateReader(data: UpdateReaderData): CancelablePromise<UpdateReaderResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/fabreader/readers/{readerId}',
+            path: {
+                readerId: data.readerId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized',
+                404: 'Reader not found'
+            }
+        });
+    }
+    
+    /**
+     * Get a reader by ID
+     * @param data The data for the request.
+     * @param data.readerId The ID of the reader to get
+     * @returns FabReader The reader
+     * @throws ApiError
+     */
+    public static getReaderById(data: GetReaderByIdData): CancelablePromise<GetReaderByIdResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/fabreader/readers/{readerId}',
+            path: {
+                readerId: data.readerId
+            },
+            errors: {
+                401: 'Unauthorized',
+                404: 'Reader not found'
+            }
+        });
+    }
+    
+    /**
+     * Get all readers
+     * @returns FabReader The list of readers
+     * @throws ApiError
+     */
+    public static getReaders(): CancelablePromise<GetReadersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/fabreader/readers',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class FabReaderNfcCardsService {
-  /**
-   * Get the app key for a card by UID
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns AppKeyResponseDto The app key for the card
-   * @throws ApiError
-   */
-  public static getAppKeyByUid(data: GetAppKeyByUidData): CancelablePromise<GetAppKeyByUidResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/fabreader/cards/keys',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
-
-  /**
-   * Get all cards (to which you have access)
-   * @returns NFCCard The list of all cards
-   * @throws ApiError
-   */
-  public static getAllCards(): CancelablePromise<GetAllCardsResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/fabreader/cards',
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * Get the app key for a card by UID
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns AppKeyResponseDto The app key for the card
+     * @throws ApiError
+     */
+    public static getAppKeyByUid(data: GetAppKeyByUidData): CancelablePromise<GetAppKeyByUidResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/fabreader/cards/keys',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
+    /**
+     * Get all cards (to which you have access)
+     * @returns NFCCard The list of all cards
+     * @throws ApiError
+     */
+    public static getAllCards(): CancelablePromise<GetAllCardsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/fabreader/cards',
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }
 
 export class AnalyticsService {
-  /**
-   * @param data The data for the request.
-   * @param data.start The start date of the range
-   * @param data.end The end date of the range
-   * @returns ResourceUsage The resource usage hours in the date range
-   * @throws ApiError
-   */
-  public static analyticsControllerGetResourceUsageHoursInDateRange(
-    data: AnalyticsControllerGetResourceUsageHoursInDateRangeData
-  ): CancelablePromise<AnalyticsControllerGetResourceUsageHoursInDateRangeResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/analytics/resource-usage-hours',
-      query: {
-        start: data.start,
-        end: data.end,
-      },
-      errors: {
-        401: 'Unauthorized',
-      },
-    });
-  }
+    /**
+     * @param data The data for the request.
+     * @param data.start The start date of the range
+     * @param data.end The end date of the range
+     * @returns ResourceUsage The resource usage hours in the date range
+     * @throws ApiError
+     */
+    public static analyticsControllerGetResourceUsageHoursInDateRange(data: AnalyticsControllerGetResourceUsageHoursInDateRangeData): CancelablePromise<AnalyticsControllerGetResourceUsageHoursInDateRangeResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/analytics/resource-usage-hours',
+            query: {
+                start: data.start,
+                end: data.end
+            },
+            errors: {
+                401: 'Unauthorized'
+            }
+        });
+    }
+    
 }

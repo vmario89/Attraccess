@@ -10,6 +10,12 @@
  * ---------------------------------------------------------------
  */
 
+/** Template type/key used by the system */
+export enum EmailTemplateType {
+  VerifyEmail = "verify-email",
+  ResetPassword = "reset-password",
+}
+
 /** The type of the provider */
 export enum SSOProviderType {
   OIDC = "OIDC",
@@ -352,46 +358,70 @@ export interface UpdateSSOProviderDto {
   oidcConfiguration?: UpdateOIDCConfigurationDto;
 }
 
-export interface CreateEmailTemplateDto {
+export interface PreviewMjmlDto {
   /**
-   * Unique name for the template (e.g., verify-email, reset-password)
-   * @maxLength 255
-   * @example "verify-email"
-   */
-  name: string;
-  /**
-   * Email subject line
-   * @maxLength 255
-   * @example "Verify Your Email Address"
-   */
-  subject: string;
-  /**
-   * MJML content of the email body
-   * @example "<mjml><mj-body><mj-section><mj-column><mj-text>Hello World</mj-text></mj-column></mj-section></mj-body></mjml>"
+   * The MJML content to preview
+   * @example "<mjml><mj-body><mj-section><mj-column><mj-text>Hello, world!</mj-text></mj-column></mj-section></mj-body></mjml>"
    */
   mjmlContent: string;
 }
 
-export type EmailTemplate = object;
+export interface PreviewMjmlResponseDto {
+  /**
+   * The HTML content of the MJML
+   * @example "<div>Hello, world!</div>"
+   */
+  html: string;
+  /**
+   * Indicates if there were any errors during conversion
+   * @example false
+   */
+  hasErrors: boolean;
+  /**
+   * Error message if conversion failed
+   * @example null
+   */
+  error?: string;
+}
+
+export interface EmailTemplate {
+  /**
+   * Template type/key used by the system
+   * @example "verify-email"
+   */
+  type: EmailTemplateType;
+  /**
+   * Email subject line
+   * @example "Verify Your Email Address"
+   */
+  subject: string;
+  /** MJML content of the email body */
+  body: string;
+  /**
+   * Variables used in the email body
+   * @example ["{{name}}","{{url}}"]
+   */
+  variables: string[];
+  /**
+   * Timestamp of when the template was created
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Timestamp of when the template was last updated
+   * @format date-time
+   */
+  updatedAt: string;
+}
 
 export interface UpdateEmailTemplateDto {
   /**
-   * Unique name for the template (e.g., verify-email, reset-password)
-   * @maxLength 255
-   * @example "verify-email"
-   */
-  name?: string;
-  /**
    * Email subject line
    * @maxLength 255
-   * @example "Verify Your Email Address"
    */
   subject?: string;
-  /**
-   * MJML content of the email body
-   * @example "<mjml><mj-body><mj-section><mj-column><mj-text>Hello World Updated</mj-text></mj-column></mj-section></mj-body></mjml>"
-   */
-  mjmlContent?: string;
+  /** MJML content of the email body */
+  body?: string;
 }
 
 export interface CreateResourceGroupDto {
@@ -1687,15 +1717,13 @@ export interface OidcLoginCallbackParams {
 
 export type OidcLoginCallbackData = CreateSessionResponse;
 
-export type EmailTemplateControllerCreateData = EmailTemplate;
+export type EmailTemplateControllerPreviewMjmlData = PreviewMjmlResponseDto;
 
 export type EmailTemplateControllerFindAllData = EmailTemplate[];
 
 export type EmailTemplateControllerFindOneData = EmailTemplate;
 
 export type EmailTemplateControllerUpdateData = EmailTemplate;
-
-export type EmailTemplateControllerRemoveData = any;
 
 export type CreateOneResourceGroupData = ResourceGroup;
 
@@ -2309,17 +2337,17 @@ export namespace EmailTemplates {
   /**
    * No description
    * @tags Email Templates
-   * @name EmailTemplateControllerCreate
-   * @summary Create a new email template
-   * @request POST:/api/email-templates
+   * @name EmailTemplateControllerPreviewMjml
+   * @summary Preview MJML content as HTML
+   * @request POST:/api/email-templates/preview-mjml
    * @secure
    */
-  export namespace EmailTemplateControllerCreate {
+  export namespace EmailTemplateControllerPreviewMjml {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = CreateEmailTemplateDto;
+    export type RequestBody = PreviewMjmlDto;
     export type RequestHeaders = {};
-    export type ResponseBody = EmailTemplateControllerCreateData;
+    export type ResponseBody = EmailTemplateControllerPreviewMjmlData;
   }
 
   /**
@@ -2342,13 +2370,14 @@ export namespace EmailTemplates {
    * No description
    * @tags Email Templates
    * @name EmailTemplateControllerFindOne
-   * @summary Get an email template by ID
-   * @request GET:/api/email-templates/{id}
+   * @summary Get an email template by type
+   * @request GET:/api/email-templates/{type}
    * @secure
    */
   export namespace EmailTemplateControllerFindOne {
     export type RequestParams = {
-      id: string;
+      /** Template type/type */
+      type: "verify-email" | "reset-password";
     };
     export type RequestQuery = {};
     export type RequestBody = never;
@@ -2361,35 +2390,18 @@ export namespace EmailTemplates {
    * @tags Email Templates
    * @name EmailTemplateControllerUpdate
    * @summary Update an email template
-   * @request PATCH:/api/email-templates/{id}
+   * @request PATCH:/api/email-templates/{type}
    * @secure
    */
   export namespace EmailTemplateControllerUpdate {
     export type RequestParams = {
-      id: string;
+      /** Template type/type */
+      type: "verify-email" | "reset-password";
     };
     export type RequestQuery = {};
     export type RequestBody = UpdateEmailTemplateDto;
     export type RequestHeaders = {};
     export type ResponseBody = EmailTemplateControllerUpdateData;
-  }
-
-  /**
-   * No description
-   * @tags Email Templates
-   * @name EmailTemplateControllerRemove
-   * @summary Delete an email template
-   * @request DELETE:/api/email-templates/{id}
-   * @secure
-   */
-  export namespace EmailTemplateControllerRemove {
-    export type RequestParams = {
-      id: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = EmailTemplateControllerRemoveData;
   }
 }
 
@@ -4331,17 +4343,17 @@ export class Api<
      * No description
      *
      * @tags Email Templates
-     * @name EmailTemplateControllerCreate
-     * @summary Create a new email template
-     * @request POST:/api/email-templates
+     * @name EmailTemplateControllerPreviewMjml
+     * @summary Preview MJML content as HTML
+     * @request POST:/api/email-templates/preview-mjml
      * @secure
      */
-    emailTemplateControllerCreate: (
-      data: CreateEmailTemplateDto,
+    emailTemplateControllerPreviewMjml: (
+      data: PreviewMjmlDto,
       params: RequestParams = {},
     ) =>
-      this.request<EmailTemplateControllerCreateData, void>({
-        path: `/api/email-templates`,
+      this.request<EmailTemplateControllerPreviewMjmlData, void>({
+        path: `/api/email-templates/preview-mjml`,
         method: "POST",
         body: data,
         secure: true,
@@ -4373,13 +4385,16 @@ export class Api<
      *
      * @tags Email Templates
      * @name EmailTemplateControllerFindOne
-     * @summary Get an email template by ID
-     * @request GET:/api/email-templates/{id}
+     * @summary Get an email template by type
+     * @request GET:/api/email-templates/{type}
      * @secure
      */
-    emailTemplateControllerFindOne: (id: string, params: RequestParams = {}) =>
+    emailTemplateControllerFindOne: (
+      type: "verify-email" | "reset-password",
+      params: RequestParams = {},
+    ) =>
       this.request<EmailTemplateControllerFindOneData, void>({
-        path: `/api/email-templates/${id}`,
+        path: `/api/email-templates/${type}`,
         method: "GET",
         secure: true,
         format: "json",
@@ -4392,38 +4407,21 @@ export class Api<
      * @tags Email Templates
      * @name EmailTemplateControllerUpdate
      * @summary Update an email template
-     * @request PATCH:/api/email-templates/{id}
+     * @request PATCH:/api/email-templates/{type}
      * @secure
      */
     emailTemplateControllerUpdate: (
-      id: string,
+      type: "verify-email" | "reset-password",
       data: UpdateEmailTemplateDto,
       params: RequestParams = {},
     ) =>
       this.request<EmailTemplateControllerUpdateData, void>({
-        path: `/api/email-templates/${id}`,
+        path: `/api/email-templates/${type}`,
         method: "PATCH",
         body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Email Templates
-     * @name EmailTemplateControllerRemove
-     * @summary Delete an email template
-     * @request DELETE:/api/email-templates/{id}
-     * @secure
-     */
-    emailTemplateControllerRemove: (id: string, params: RequestParams = {}) =>
-      this.request<EmailTemplateControllerRemoveData, void>({
-        path: `/api/email-templates/${id}`,
-        method: "DELETE",
-        secure: true,
         ...params,
       }),
   };

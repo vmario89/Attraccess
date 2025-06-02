@@ -478,65 +478,74 @@ export const $UpdateSSOProviderDto = {
     }
 } as const;
 
-export const $CreateEmailTemplateDto = {
+export const $PreviewMjmlDto = {
     type: 'object',
     properties: {
-        name: {
-            type: 'string',
-            description: 'Unique name for the template (e.g., verify-email, reset-password)',
-            example: 'verify-email',
-            maxLength: 255
-        },
-        subject: {
-            type: 'string',
-            description: 'Email subject line',
-            example: 'Verify Your Email Address',
-            maxLength: 255
-        },
-        description: {
-            type: 'string',
-            description: 'Optional description for the template',
-            example: 'Template for verifying new user emails.'
-        },
         mjmlContent: {
             type: 'string',
-            description: 'MJML content of the email body',
-            example: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello World</mj-text></mj-column></mj-section></mj-body></mjml>'
+            description: 'The MJML content to preview',
+            example: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello, world!</mj-text></mj-column></mj-section></mj-body></mjml>'
         }
     },
-    required: ['name', 'subject', 'mjmlContent']
+    required: ['mjmlContent']
+} as const;
+
+export const $PreviewMjmlResponseDto = {
+    type: 'object',
+    properties: {
+        html: {
+            type: 'string',
+            description: 'The HTML content of the MJML',
+            example: '<div>Hello, world!</div>'
+        },
+        hasErrors: {
+            type: 'boolean',
+            description: 'Indicates if there were any errors during conversion',
+            example: false
+        },
+        error: {
+            type: 'string',
+            description: 'Error message if conversion failed',
+            example: null
+        }
+    },
+    required: ['html', 'hasErrors']
+} as const;
+
+export const $EmailTemplateType = {
+    type: 'string',
+    enum: ['verify-email', 'reset-password'],
+    description: 'Template type/key used by the system'
 } as const;
 
 export const $EmailTemplate = {
     type: 'object',
     properties: {
-        id: {
-            type: 'string',
-            description: 'The unique identifier of the email template',
-            example: 'd0646829-3e28-4e55-9879-7070d806e630'
-        },
-        name: {
-            type: 'string',
-            description: 'Unique internal name for the template',
-            example: 'verify-email'
+        type: {
+            description: 'Template type/key used by the system',
+            example: 'verify-email',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/EmailTemplateType'
+                }
+            ]
         },
         subject: {
             type: 'string',
             description: 'Email subject line',
             example: 'Verify Your Email Address'
         },
-        description: {
-            type: 'string',
-            description: 'Optional description for the template in the admin UI',
-            example: 'Sent to new users to verify their email.'
-        },
-        mjmlContent: {
+        body: {
             type: 'string',
             description: 'MJML content of the email body'
         },
-        htmlContent: {
-            type: 'string',
-            description: 'Compiled HTML content of the email body (auto-generated from MJML)'
+        variables: {
+            description: 'Variables used in the email body',
+            example: ['{{name}}', '{{url}}'],
+            type: 'array',
+            items: {
+                type: 'string'
+            }
         },
         createdAt: {
             format: 'date-time',
@@ -549,33 +558,20 @@ export const $EmailTemplate = {
             description: 'Timestamp of when the template was last updated'
         }
     },
-    required: ['id', 'name', 'subject', 'mjmlContent', 'htmlContent', 'createdAt', 'updatedAt']
+    required: ['type', 'subject', 'body', 'variables', 'createdAt', 'updatedAt']
 } as const;
 
 export const $UpdateEmailTemplateDto = {
     type: 'object',
     properties: {
-        name: {
-            type: 'string',
-            description: 'Unique name for the template (e.g., verify-email, reset-password)',
-            example: 'verify-email',
-            maxLength: 255
-        },
         subject: {
             type: 'string',
             description: 'Email subject line',
-            example: 'Verify Your Email Address',
             maxLength: 255
         },
-        description: {
+        body: {
             type: 'string',
-            description: 'Optional description for the template',
-            example: 'Updated description for verifying emails.'
-        },
-        mjmlContent: {
-            type: 'string',
-            description: 'MJML content of the email body',
-            example: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello World Updated</mj-text></mj-column></mj-section></mj-body></mjml>'
+            description: 'MJML content of the email body'
         }
     }
 } as const;

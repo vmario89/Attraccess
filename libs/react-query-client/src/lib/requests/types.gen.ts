@@ -319,50 +319,53 @@ export type UpdateSSOProviderDto = {
     oidcConfiguration?: UpdateOIDCConfigurationDto;
 };
 
-export type CreateEmailTemplateDto = {
+export type PreviewMjmlDto = {
     /**
-     * Unique name for the template (e.g., verify-email, reset-password)
-     */
-    name: string;
-    /**
-     * Email subject line
-     */
-    subject: string;
-    /**
-     * Optional description for the template
-     */
-    description?: string;
-    /**
-     * MJML content of the email body
+     * The MJML content to preview
      */
     mjmlContent: string;
 };
 
+export type PreviewMjmlResponseDto = {
+    /**
+     * The HTML content of the MJML
+     */
+    html: string;
+    /**
+     * Indicates if there were any errors during conversion
+     */
+    hasErrors: boolean;
+    /**
+     * Error message if conversion failed
+     */
+    error?: string;
+};
+
+/**
+ * Template type/key used by the system
+ */
+export enum EmailTemplateType {
+    VERIFY_EMAIL = 'verify-email',
+    RESET_PASSWORD = 'reset-password'
+}
+
 export type EmailTemplate = {
     /**
-     * The unique identifier of the email template
+     * Template type/key used by the system
      */
-    id: string;
-    /**
-     * Unique internal name for the template
-     */
-    name: string;
+    type: EmailTemplateType;
     /**
      * Email subject line
      */
     subject: string;
     /**
-     * Optional description for the template in the admin UI
-     */
-    description?: string;
-    /**
      * MJML content of the email body
      */
-    mjmlContent: string;
+    body: string;
     /**
-     * Compiled HTML content of the email body (auto-generated from MJML)
+     * Variables used in the email body
      */
-    htmlContent: string;
+    variables: Array<(string)>;
     /**
      * Timestamp of when the template was created
      */
@@ -375,21 +378,13 @@ export type EmailTemplate = {
 
 export type UpdateEmailTemplateDto = {
     /**
-     * Unique name for the template (e.g., verify-email, reset-password)
-     */
-    name?: string;
-    /**
      * Email subject line
      */
     subject?: string;
     /**
-     * Optional description for the template
-     */
-    description?: string;
-    /**
      * MJML content of the email body
      */
-    mjmlContent?: string;
+    body?: string;
 };
 
 export type CreateResourceGroupDto = {
@@ -1660,32 +1655,32 @@ export type OidcLoginCallbackData = {
 
 export type OidcLoginCallbackResponse = CreateSessionResponse;
 
-export type EmailTemplateControllerCreateData = {
-    requestBody: CreateEmailTemplateDto;
+export type EmailTemplateControllerPreviewMjmlData = {
+    requestBody: PreviewMjmlDto;
 };
 
-export type EmailTemplateControllerCreateResponse = EmailTemplate;
+export type EmailTemplateControllerPreviewMjmlResponse = PreviewMjmlResponseDto;
 
 export type EmailTemplateControllerFindAllResponse = Array<EmailTemplate>;
 
 export type EmailTemplateControllerFindOneData = {
-    id: string;
+    /**
+     * Template type/type
+     */
+    type: 'verify-email' | 'reset-password';
 };
 
 export type EmailTemplateControllerFindOneResponse = EmailTemplate;
 
 export type EmailTemplateControllerUpdateData = {
-    id: string;
     requestBody: UpdateEmailTemplateDto;
+    /**
+     * Template type/type
+     */
+    type: 'verify-email' | 'reset-password';
 };
 
 export type EmailTemplateControllerUpdateResponse = EmailTemplate;
-
-export type EmailTemplateControllerRemoveData = {
-    id: string;
-};
-
-export type EmailTemplateControllerRemoveResponse = void;
 
 export type CreateOneResourceGroupData = {
     requestBody: CreateResourceGroupDto;
@@ -2564,28 +2559,30 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/email-templates': {
+    '/api/email-templates/preview-mjml': {
         post: {
-            req: EmailTemplateControllerCreateData;
+            req: EmailTemplateControllerPreviewMjmlData;
             res: {
                 /**
-                 * The template has been successfully created.
+                 * MJML preview result
                  */
-                201: EmailTemplate;
+                200: PreviewMjmlResponseDto;
+                /**
+                 * Invalid MJML content
+                 */
+                400: unknown;
                 /**
                  * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * Forbidden.
-                 */
-                403: unknown;
             };
         };
+    };
+    '/api/email-templates': {
         get: {
             res: {
                 /**
-                 * List of email templates.
+                 * List of email templates
                  */
                 200: Array<EmailTemplate>;
                 /**
@@ -2595,12 +2592,12 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/email-templates/{id}': {
+    '/api/email-templates/{type}': {
         get: {
             req: EmailTemplateControllerFindOneData;
             res: {
                 /**
-                 * The email template.
+                 * Email template found
                  */
                 200: EmailTemplate;
                 /**
@@ -2608,7 +2605,7 @@ export type $OpenApiTs = {
                  */
                 401: unknown;
                 /**
-                 * Template not found.
+                 * Template not found
                  */
                 404: unknown;
             };
@@ -2617,32 +2614,19 @@ export type $OpenApiTs = {
             req: EmailTemplateControllerUpdateData;
             res: {
                 /**
-                 * The template has been successfully updated.
+                 * Template updated successfully
                  */
                 200: EmailTemplate;
                 /**
-                 * Unauthorized
+                 * Invalid input data
                  */
-                401: unknown;
-                /**
-                 * Template not found.
-                 */
-                404: unknown;
-            };
-        };
-        delete: {
-            req: EmailTemplateControllerRemoveData;
-            res: {
-                /**
-                 * The template has been successfully deleted.
-                 */
-                204: void;
+                400: unknown;
                 /**
                  * Unauthorized
                  */
                 401: unknown;
                 /**
-                 * Template not found.
+                 * Template not found
                  */
                 404: unknown;
             };

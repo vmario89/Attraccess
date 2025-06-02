@@ -11,7 +11,7 @@ interface PageHeaderProps {
   icon?: ReactNode;
 }
 
-export function PageHeader({ title, subtitle, backTo, actions, icon }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, backTo, actions, icon }: Readonly<PageHeaderProps>) {
   const navigate = useNavigate();
 
   return (
@@ -25,7 +25,7 @@ export function PageHeader({ title, subtitle, backTo, actions, icon }: PageHeade
 
         <div className="flex-shrink">
           <div className="flex items-center gap-2">
-            {icon && icon}
+            {icon}
             <h1 className="text-2xl font-bold">{title}</h1>
           </div>
           {subtitle && <p className="mt-1 text-sm text-foreground-500">{subtitle}</p>}

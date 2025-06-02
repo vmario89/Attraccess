@@ -10,7 +10,8 @@ import {
   Package,
   NfcIcon,
   ComputerIcon,
-  FileChartColumnIncreasingIcon, Mail,
+  FileChartColumnIncreasingIcon,
+  Mail,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage, CreateMqttServerPage, EditMqttServerPage } from '../mqtt';
@@ -161,7 +162,7 @@ const coreRoutes: RouteConfig[] = [
     },
   },
   {
-    path: '/admin/email-templates',
+    path: '/email-templates',
     element: <EmailTemplatesPage />,
     sidebar: {
       translationKey: 'emailTemplates',
@@ -171,7 +172,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageSystemConfiguration',
   },
   {
-    path: '/admin/email-templates/:id/edit',
+    path: '/email-templates/:type/edit',
     element: <EditEmailTemplatePage />,
     authRequired: 'canManageSystemConfiguration',
   },
