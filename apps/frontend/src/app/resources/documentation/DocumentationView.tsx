@@ -40,7 +40,7 @@ function DocumentationViewComponent() {
   if (isLoadingResource) {
     return (
       <div className="flex justify-center items-center h-[50vh]">
-        <Spinner size="lg" label={t('loading')} />
+        <Spinner size="lg" label={t('loading')} data-cy="documentation-view-loading-spinner" />
       </div>
     );
   }
@@ -56,10 +56,10 @@ function DocumentationViewComponent() {
           <p className="text-danger">{resourceError instanceof Error ? resourceError.message : t('error.unknown')}</p>
         </CardBody>
         <CardFooter className="flex justify-center gap-4">
-          <Button onPress={() => refetchResource()} color="primary" startContent={<RefreshCw size={16} />}>
+          <Button onPress={() => refetchResource()} color="primary" startContent={<RefreshCw size={16} />} data-cy="documentation-view-error-retry-button">
             {t('actions.retry')}
           </Button>
-          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />} data-cy="documentation-view-error-back-to-resources-button">
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -78,7 +78,7 @@ function DocumentationViewComponent() {
           <p>{t('notFound.message')}</p>
         </CardBody>
         <CardFooter className="justify-center">
-          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />} data-cy="documentation-view-not-found-back-to-resources-button">
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -100,6 +100,7 @@ function DocumentationViewComponent() {
                 variant="flat"
                 onPress={handleEditDocumentation}
                 startContent={<Edit size={16} />}
+                data-cy="documentation-view-header-edit-button"
               >
                 {t('actions.edit')}
               </Button>
@@ -110,6 +111,7 @@ function DocumentationViewComponent() {
               isLoading={isFetching}
               startContent={<RefreshCw size={16} />}
               aria-label={t('actions.refresh')}
+              data-cy="documentation-view-header-refresh-button"
             >
               {t('actions.refresh')}
             </Button>
@@ -124,7 +126,7 @@ function DocumentationViewComponent() {
         <CardBody className="relative">
           {isFetching && (
             <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
-              <Spinner size="lg" />
+              <Spinner size="lg" data-cy="documentation-view-fetching-spinner" />
             </div>
           )}
 

@@ -98,13 +98,13 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         <h2 className="text-3xl font-bold">{t('title')}</h2>
         <p className="mt-2 text-gray-600 dark:text-gray-300">
           {t('hasAccount')}{' '}
-          <Button onPress={onHasAccount} variant="light" color="secondary" isDisabled={createUser.isPending}>
+          <Button onPress={onHasAccount} variant="light" color="secondary" isDisabled={createUser.isPending} data-cy="registration-form-sign-in-button">
             {t('signInButton')}
           </Button>
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit} data-cy="registration-form">
         <Input
           id="username"
           name="username"
@@ -113,6 +113,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           required
           variant="underlined"
           isDisabled={createUser.isPending}
+          data-cy="registration-form-username-input"
         />
 
         <Input
@@ -123,6 +124,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           required
           variant="underlined"
           isDisabled={createUser.isPending}
+          data-cy="registration-form-email-input"
         />
 
         <Input
@@ -133,6 +135,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           required
           variant="underlined"
           isDisabled={createUser.isPending}
+          data-cy="registration-form-password-input"
         />
 
         <Input
@@ -143,6 +146,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           required
           variant="underlined"
           isDisabled={createUser.isPending}
+          data-cy="registration-form-password-confirmation-input"
         />
 
         <Button
@@ -152,14 +156,15 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
           endContent={<ArrowRight className="group-hover:translate-x-1 transition-transform" />}
           isLoading={createUser.isPending}
           isDisabled={createUser.isPending}
+          data-cy="registration-form-create-account-button"
         >
           {createUser.isPending ? t('creatingAccount') : t('createAccountButton')}
         </Button>
 
-        {error && <Alert color="danger" title={t('error.title')} description={error} />}
+        {error && <Alert color="danger" title={t('error.title')} description={error} data-cy="registration-form-error-alert" />}
       </form>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside" data-cy="registration-form-success-modal">
         <ModalContent>
           {(onClose) => (
             <>
@@ -175,7 +180,7 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" fullWidth onPress={onClose}>
+                <Button color="primary" fullWidth onPress={onClose} data-cy="registration-form-success-modal-close-button">
                   {t('success.closeButton')}
                 </Button>
               </ModalFooter>

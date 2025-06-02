@@ -82,8 +82,8 @@ export function FabreaderEditor(props: Readonly<Props>) {
   );
 
   return (
-    <Form onSubmit={onSubmit}>
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside">
+    <Form onSubmit={onSubmit} data-cy="fabreader-editor-form">
+      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside" data-cy="fabreader-editor-modal">
         <ModalContent>
           {() => (
             <>
@@ -95,10 +95,12 @@ export function FabreaderEditor(props: Readonly<Props>) {
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t('enterReaderName')}
                   className="w-full"
+                  data-cy="fabreader-editor-name-input"
                 />
                 <ResourceSelector
                   selection={connectedResources}
                   onSelectionChange={(selection) => setConnectedResources(selection)}
+                  data-cy="fabreader-editor-resource-selector"
                 />
               </ModalBody>
               <ModalFooter>
@@ -109,10 +111,11 @@ export function FabreaderEditor(props: Readonly<Props>) {
                     props.onCancel();
                   }}
                   disabled={updateReaderMutation.isPending}
+                  data-cy="fabreader-editor-cancel-button"
                 >
                   {t('cancel')}
                 </Button>
-                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save}>
+                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save} data-cy="fabreader-editor-save-button">
                   {t('save')}
                 </Button>
               </ModalFooter>

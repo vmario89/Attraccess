@@ -57,6 +57,7 @@ export function CsvExport() {
               id="date-range"
               showMonthAndYearPickers
               aria-label={t('rangeCalendar.label')}
+              data-cy="csv-export-range-calendar"
             />
             <p>
               <br />
@@ -74,13 +75,14 @@ export function CsvExport() {
             onPress={() => {
               openExport('resourceUsageHours');
             }}
+            data-cy="csv-export-resource-usage-hours-button"
           >
             {t('exports.resourceUsageHours.button')}
           </Button>
         </CardFooter>
       </Card>
 
-      <Modal isOpen={showExport} onClose={() => setShowExport(false)} scrollBehavior="inside" size="5xl">
+      <Modal isOpen={showExport} onClose={() => setShowExport(false)} scrollBehavior="inside" size="5xl" data-cy="csv-export-modal">
         <ModalContent>
           <ModalHeader>
             <div>
