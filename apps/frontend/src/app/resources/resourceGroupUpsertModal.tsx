@@ -174,7 +174,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside">
+      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside" data-cy="resource-group-upsert-modal">
         <ModalContent>
           {(onClose) => (
             <Form onSubmit={handleSubmit}>
@@ -206,7 +206,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
               </ModalBody>
 
               <ModalFooter>
-                <Button variant="flat" color="default" onPress={onClose} data-cy="cancel-resource-group-button">
+                <Button variant="flat" color="default" onPress={onClose} data-cy="resource-group-upsert-modal-cancel-button">
                   {t('cancelButton')}
                 </Button>
                 {/* Use the general mutation.isPending state */}
@@ -214,7 +214,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
                   color="primary"
                   type="submit"
                   isLoading={mutation.isPending}
-                  data-cy="submit-resource-group-button"
+                  data-cy="resource-group-upsert-modal-submit-button"
                 >
                   {isEditMode ? t('updateButton') : t('createButton')}
                 </Button>

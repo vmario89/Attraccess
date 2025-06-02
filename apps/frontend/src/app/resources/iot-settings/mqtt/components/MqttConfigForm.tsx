@@ -258,7 +258,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
         <h2 className="text-xl font-semibold">{isEdit ? t('editTitle') : t('createTitle')}</h2>
       </div>
 
-      <Modal isOpen={showCreateServerModal} onClose={() => setShowCreateServerModal(false)}>
+      <Modal isOpen={showCreateServerModal} onClose={() => setShowCreateServerModal(false)} data-cy="mqtt-config-form-create-server-modal">
         <ModalContent>
           <ModalHeader>{t('createServer')}</ModalHeader>
           <ModalBody>
@@ -285,6 +285,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
               value={formValues.name}
               onChange={handleInputChange}
               placeholder={t('namePlaceholder')}
+              data-cy="mqtt-config-form-name-input"
               className="mb-4"
               required
             />
@@ -301,6 +302,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
                     key: server.id.toString(),
                     label: server.name,
                   }))}
+                  data-cy="mqtt-config-form-server-select"
                 />
               )}
 
@@ -308,6 +310,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
                 color="secondary"
                 variant={(mqttServers ?? []).length > 0 ? 'light' : 'solid'}
                 onPress={() => setShowCreateServerModal(true)}
+                data-cy="mqtt-config-form-open-create-server-modal-button"
               >
                 {t('createServer')}
               </Button>
@@ -322,6 +325,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
             <Input
               label={t('topicLabel')}
               id="inUseTopic"
+              data-cy="mqtt-config-form-in-use-topic-input"
               name="inUseTopic"
               value={formValues.inUseTopic}
               onChange={handleInputChange}
@@ -333,6 +337,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
             <Textarea
               label={t('messageLabel')}
               id="inUseMessage"
+              data-cy="mqtt-config-form-in-use-message-textarea"
               name="inUseMessage"
               value={formValues.inUseMessage}
               onChange={handleInputChange}
@@ -350,6 +355,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
             <Input
               label={t('topicLabel')}
               id="notInUseTopic"
+              data-cy="mqtt-config-form-not-in-use-topic-input"
               name="notInUseTopic"
               value={formValues.notInUseTopic}
               onChange={handleInputChange}
@@ -361,6 +367,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
             <Textarea
               label={t('messageLabel')}
               id="notInUseMessage"
+              data-cy="mqtt-config-form-not-in-use-message-textarea"
               name="notInUseMessage"
               value={formValues.notInUseMessage}
               onChange={handleInputChange}
@@ -374,13 +381,14 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: MqttCon
         <TemplateVariablesHelp />
 
         <div className="flex justify-end gap-2 mb-4 w-full">
-          <Button color="secondary" onPress={handleCancel}>
+          <Button color="secondary" onPress={handleCancel} data-cy="mqtt-config-form-cancel-button">
             {t('cancelButton')}
           </Button>
           <Button
             type="submit"
             color="primary"
             isDisabled={createConfig.isPending || updateConfig.isPending || formValues.serverId === 0}
+            data-cy="mqtt-config-form-submit-button"
           >
             {isEdit ? t('updateButton') : t('createButton')}
           </Button>

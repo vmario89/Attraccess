@@ -1,10 +1,9 @@
-import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { useTranslations, ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import de from './fabreader-editor.de.json';
 import en from './fabreader-editor.en.json';
 import { Button, Form, ModalBody, Modal, ModalContent, ModalHeader, ModalFooter } from '@heroui/react';
 import { Input } from '@heroui/input';
 import { useCallback, useState, useEffect } from 'react';
-import { ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useFabReaderReadersServiceGetReaderById,
@@ -55,7 +54,7 @@ export function FabreaderEditor(props: Readonly<Props>) {
   });
 
   useEffect(() => {
-    setName(reader?.name || '');
+    setName(reader?.name ?? '');
     setConnectedResources(reader?.hasAccessToResourceIds ?? []);
   }, [reader]);
 
@@ -82,8 +81,8 @@ export function FabreaderEditor(props: Readonly<Props>) {
   );
 
   return (
-    <Form onSubmit={onSubmit}>
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside">
+    <Form onSubmit={onSubmit} data-cy="fabreader-editor-form">
+      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside" data-cy="fabreader-editor-modal">
         <ModalContent>
           {() => (
             <>
@@ -95,10 +94,12 @@ export function FabreaderEditor(props: Readonly<Props>) {
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t('enterReaderName')}
                   className="w-full"
+                  data-cy="fabreader-editor-name-input"
                 />
                 <ResourceSelector
                   selection={connectedResources}
                   onSelectionChange={(selection) => setConnectedResources(selection)}
+                  data-cy="fabreader-editor-resource-selector"
                 />
               </ModalBody>
               <ModalFooter>
@@ -109,10 +110,11 @@ export function FabreaderEditor(props: Readonly<Props>) {
                     props.onCancel();
                   }}
                   disabled={updateReaderMutation.isPending}
+                  data-cy="fabreader-editor-cancel-button"
                 >
                   {t('cancel')}
                 </Button>
-                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save}>
+                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save} data-cy="fabreader-editor-save-button">
                   {t('save')}
                 </Button>
               </ModalFooter>

@@ -60,13 +60,13 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
         <h2 className="text-3xl font-bold">{t('title')}</h2>
         <p className="mt-2 text-gray-600 dark:text-gray-300">
           {t('noAccount')}{' '}
-          <Button onPress={onNeedsAccount} variant="light" color="secondary" isDisabled={login.isPending}>
+          <Button onPress={onNeedsAccount} variant="light" color="secondary" isDisabled={login.isPending} data-cy="login-form-sign-up-button">
             {t('signUpButton')}
           </Button>
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit} data-cy="login-form">
         <Input
           id="username"
           name="username"
@@ -75,6 +75,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           variant="underlined"
           required
           isDisabled={login.isPending}
+          data-cy="login-form-username-input"
         />
         <Input
           id="password"
@@ -84,6 +85,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           variant="underlined"
           required
           isDisabled={login.isPending}
+          data-cy="login-form-password-input"
         />
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -92,12 +94,13 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
               isSelected={rememberMe}
               onValueChange={setRememberMe}
               isDisabled={login.isPending}
+              data-cy="login-form-remember-me-checkbox"
             >
               {t('rememberMe')}
             </Checkbox>
           </div>
 
-          <Button onPress={onForgotPassword} variant="light" color="secondary" isDisabled={login.isPending}>
+          <Button onPress={onForgotPassword} variant="light" color="secondary" isDisabled={login.isPending} data-cy="login-form-forgot-password-button">
             {t('forgotPassword')}
           </Button>
         </div>
@@ -108,11 +111,12 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           endContent={memoizedArrowRight}
           isLoading={login.isPending}
           isDisabled={login.isPending}
+          data-cy="login-form-sign-in-button"
         >
           {login.isPending ? t('signingIn') : t('signInButton')}
         </Button>
 
-        {error && <Alert color="danger" title={t('error.title')} description={error} />}
+        {error && <Alert color="danger" title={t('error.title')} description={error} data-cy="login-form-error-alert" />}
       </form>
     </>
   );

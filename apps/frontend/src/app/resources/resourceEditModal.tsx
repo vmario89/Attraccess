@@ -190,7 +190,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
   return (
     <>
       {props.children?.(onOpen)}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside" data-cy="resource-edit-modal">
         <ModalContent>
           {(onClose) => (
             <>
@@ -211,16 +211,19 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
                     onChange={(e) => setField('name', e.target.value)}
                     isInvalid={!formData.name}
                     required
+                    data-cy="resource-edit-modal-name-input"
                   />
                   <Input
                     label={t('inputs.description.label')}
                     value={formData.description}
                     onChange={(e) => setField('description', e.target.value)}
+                    data-cy="resource-edit-modal-description-input"
                   />
 
                   <Switch
                     isSelected={formData.allowTakeOver}
                     onValueChange={(value) => setField('allowTakeOver', value)}
+                    data-cy="resource-edit-modal-allow-takeover-switch"
                   >
                     <div className="flex flex-col">
                       <span className="text-small">{t('inputs.allowTakeOver.label')}</span>
@@ -241,10 +244,10 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
               </ModalBody>
 
               <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">
-                <Button variant="bordered" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onClose}>
+                <Button variant="bordered" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onClose} data-cy="resource-edit-modal-cancel-button">
                   {t('buttons.cancel')}
                 </Button>
-                <Button color="primary" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onSubmit}>
+                <Button color="primary" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onSubmit} data-cy={`resource-edit-modal-${props.resourceId ? 'update' : 'create'}-button`}>
                   {props.resourceId ? t('buttons.update') : t('buttons.create')}
                 </Button>
               </ModalFooter>

@@ -119,6 +119,7 @@ export function MqttConfigList({ resourceId }: MqttConfigListProps) {
         <AccordionItem
           key={`mqtt-config-${config.id}`}
           aria-label={`MQTT Configuration: ${config.name}`}
+          data-cy={`mqtt-config-item-${config.id}`}
           title={
             <div className="flex justify-between items-center w-full gap-2">
               <span className="font-medium">{config.name}</span>
@@ -159,10 +160,10 @@ export function MqttConfigList({ resourceId }: MqttConfigListProps) {
             </div>
 
             <div className="flex justify-end gap-3 mt-4">
-              <Button color="secondary" size="sm" onPress={() => handleTest(config.id)}>
+              <Button color="secondary" size="sm" onPress={() => handleTest(config.id)} data-cy={`mqtt-config-item-test-button-${config.id}`}>
                 {t('testButton')}
               </Button>
-              <Button color="primary" size="sm" onPress={() => handleEdit(config.id)}>
+              <Button color="primary" size="sm" onPress={() => handleEdit(config.id)} data-cy={`mqtt-config-item-edit-button-${config.id}`}>
                 {t('editButton')}
               </Button>
               <Button
@@ -170,6 +171,7 @@ export function MqttConfigList({ resourceId }: MqttConfigListProps) {
                 size="sm"
                 onPress={() => handleDelete(config.id)}
                 disabled={deleteConfig.isPending}
+                data-cy={`mqtt-config-item-delete-button-${config.id}`}
               >
                 {deleteConfig.isPending ? t('deletingButton') : t('deleteButton')}
               </Button>

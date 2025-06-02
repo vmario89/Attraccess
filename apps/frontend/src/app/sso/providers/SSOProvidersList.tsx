@@ -306,7 +306,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Spinner size="lg" color="primary" />
+        <Spinner size="lg" color="primary" data-cy="sso-providers-list-loading-spinner" />
       </div>
     );
   }
@@ -318,7 +318,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
   return (
     <>
       {providers && providers.length > 0 ? (
-        <Table aria-label="SSO Providers List">
+        <Table aria-label="SSO Providers List" data-cy="sso-providers-table">
           <TableHeader>
             <TableColumn>{t('name')}</TableColumn>
             <TableColumn>{t('type')}</TableColumn>
@@ -337,7 +337,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Tooltip content={t('edit')}>
-                      <Button size="sm" variant="ghost" isIconOnly onPress={() => handleEdit(provider)}>
+                      <Button size="sm" variant="ghost" isIconOnly onPress={() => handleEdit(provider)} data-cy={`sso-provider-edit-button-${provider.id}`}>
                         <Pencil size={16} />
                       </Button>
                     </Tooltip>
@@ -348,6 +348,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         isIconOnly
                         color="danger"
                         onPress={() => handleDelete(provider.id)}
+                        data-cy={`sso-provider-delete-button-${provider.id}`}
                       >
                         <Trash size={16} />
                       </Button>
@@ -370,6 +371,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
         onOpenChange={(open) => setIsDiscoverDialogOpen(open)}
         size="md"
         scrollBehavior="inside"
+        data-cy="sso-discover-config-modal"
       >
         <ModalContent>
           {(onClose) => (
@@ -384,6 +386,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                     onChange={(e) => setKeycloakHost(e.target.value)}
                     placeholder={t('discoverPlaceholder')}
                     isRequired
+                    data-cy="sso-discover-config-keycloak-host-input"
                   />
 
                   <Input
@@ -392,11 +395,12 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                     onChange={(e) => setKeycloakRealm(e.target.value)}
                     placeholder={t('realmPlaceholder')}
                     isRequired
+                    data-cy="sso-discover-config-keycloak-realm-input"
                   />
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button variant="flat" onPress={onClose}>
+                <Button variant="flat" onPress={onClose} data-cy="sso-discover-config-cancel-button">
                   {t('cancel')}
                 </Button>
                 <Button
@@ -404,6 +408,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                   onPress={discoverOIDCConfiguration}
                   isLoading={isDiscovering}
                   startContent={!isDiscovering && <Download size={16} />}
+                  data-cy="sso-discover-config-discover-button"
                 >
                   {t('discover')}
                 </Button>
@@ -414,7 +419,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
       </Modal>
 
       {/* Main Provider Form Modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior="inside">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior="inside" data-cy="sso-provider-form-modal">
         <ModalContent>
           {(onClose) => (
             <>
@@ -428,6 +433,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                     onChange={handleInputChange}
                     placeholder="e.g. Company OIDC"
                     isRequired
+                    data-cy="sso-provider-form-name-input"
                   />
 
                   <Select
@@ -435,8 +441,9 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                     selectedKeys={[formValues.type]}
                     onChange={(e) => handleSelectChange(e.target.value)}
                     isRequired
+                    data-cy="sso-provider-form-type-select"
                   >
-                    <SelectItem key="OIDC">{t('oidc')}</SelectItem>
+                    <SelectItem key="OIDC" data-cy="sso-provider-form-type-oidc-select-item">{t('oidc')}</SelectItem>
                   </Select>
 
                   {formValues.type === 'OIDC' && (
@@ -453,6 +460,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                           color="primary"
                           startContent={<Download size={16} />}
                           onPress={() => setIsDiscoverDialogOpen(true)}
+                          data-cy="sso-provider-form-discover-from-keycloak-button"
                         >
                           {t('discoverFromKeycloak')}
                         </Button>
@@ -465,6 +473,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="https://sso.example.com/auth/realms/example"
                         isRequired
+                        data-cy="sso-provider-form-oidc-issuer-input"
                       />
 
                       <Input
@@ -474,6 +483,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="https://sso.example.com/auth/realms/example/protocol/openid-connect/auth"
                         isRequired
+                        data-cy="sso-provider-form-oidc-authorization-url-input"
                       />
 
                       <Input
@@ -483,6 +493,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="https://sso.example.com/auth/realms/example/protocol/openid-connect/token"
                         isRequired
+                        data-cy="sso-provider-form-oidc-token-url-input"
                       />
 
                       <Input
@@ -492,6 +503,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="https://sso.example.com/auth/realms/example/protocol/openid-connect/userinfo"
                         isRequired
+                        data-cy="sso-provider-form-oidc-user-info-url-input"
                       />
 
                       <Input
@@ -501,6 +513,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="your-client-id"
                         isRequired
+                        data-cy="sso-provider-form-oidc-client-id-input"
                       />
 
                       <Input
@@ -511,6 +524,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                         onChange={handleInputChange}
                         placeholder="••••••••••••••••"
                         isRequired
+                        data-cy="sso-provider-form-oidc-client-secret-input"
                         endContent={
                           <Tooltip content={showClientSecret ? t('hideClientSecret') : t('showClientSecret')}>
                             <Button
@@ -518,6 +532,7 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                               size="sm"
                               variant="light"
                               onPress={() => setShowClientSecret(!showClientSecret)}
+                              data-cy="sso-provider-form-oidc-toggle-client-secret-button"
                             >
                               {showClientSecret ? <EyeOff size={16} /> : <Eye size={16} />}
                             </Button>
@@ -529,10 +544,10 @@ export const SSOProvidersList = forwardRef<SSOProvidersListRef, React.ComponentP
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button variant="flat" onPress={onClose}>
+                <Button variant="flat" onPress={onClose} data-cy="sso-provider-form-cancel-button">
                   {t('cancel')}
                 </Button>
-                <Button color="primary" onPress={handleSubmit}>
+                <Button color="primary" onPress={handleSubmit} data-cy="sso-provider-form-save-button">
                   {t('save')}
                 </Button>
               </ModalFooter>

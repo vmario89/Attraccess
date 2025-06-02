@@ -75,14 +75,14 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) 
   };
 
   if (isLoading) {
-    return <div className="flex justify-center p-4">Loading permissions...</div>;
+    return <div className="flex justify-center p-4" data-cy="user-permission-form-loading">Loading permissions...</div>;
   }
 
   return (
-    <Card className="p-6 w-full">
+    <Card className="p-6 w-full" data-cy="user-permission-form-card">
       <div className="mb-4">
         <h3 className="text-lg font-semibold mb-2">{t('managingUser')}</h3>
-        <AttraccessUser user={user} />
+        <AttraccessUser user={user} data-cy="user-permission-form-user-display" />
       </div>
 
       <div className="border-t pt-4 my-4">
@@ -95,6 +95,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) 
               onValueChange={handlePermissionChange('canManageResources')}
               color="primary"
               className="mr-2"
+              data-cy="user-permission-form-canManageResources-checkbox"
             />
             <span>{t('canManageResources')}</span>
           </div>
@@ -105,6 +106,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) 
               onValueChange={handlePermissionChange('canManageSystemConfiguration')}
               color="primary"
               className="mr-2"
+              data-cy="user-permission-form-canManageSystemConfiguration-checkbox"
             />
             <span>{t('canManageSystemConfiguration')}</span>
           </div>
@@ -115,6 +117,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) 
               onValueChange={handlePermissionChange('canManageUsers')}
               color="primary"
               className="mr-2"
+              data-cy="user-permission-form-canManageUsers-checkbox"
             />
             <span>{t('canManageUsers')}</span>
           </div>
@@ -122,7 +125,7 @@ export const UserPermissionForm: React.FC<UserPermissionFormProps> = ({ user }) 
       </div>
 
       <div className="flex justify-end mt-6">
-        <Button color="primary" onPress={handleSave} isLoading={updatePermissions.isPending}>
+        <Button color="primary" onPress={handleSave} isLoading={updatePermissions.isPending} data-cy="user-permission-form-save-button">
           {t('saveChanges')}
         </Button>
       </div>

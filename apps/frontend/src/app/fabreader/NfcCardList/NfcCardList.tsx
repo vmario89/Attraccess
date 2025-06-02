@@ -56,7 +56,7 @@ const NfcCardDeleteModal = (props: DeleteModalProps) => {
   }, [props.cardId, resetNfcCard, readerId]);
 
   return (
-    <Modal isOpen={props.show} onClose={() => props.close()} scrollBehavior="inside">
+    <Modal isOpen={props.show} onClose={() => props.close()} scrollBehavior="inside" data-cy="nfc-card-delete-modal">
       <ModalContent>
         <ModalHeader>
           <h1>{t('nfcCardsTable.deleteModal.title')}</h1>
@@ -68,11 +68,12 @@ const NfcCardDeleteModal = (props: DeleteModalProps) => {
             placeholder={t('nfcCardsTable.deleteModal.readerPlaceholder')}
             selection={readerId}
             onSelectionChange={(readerId) => setReaderId(readerId ?? null)}
+            data-cy="nfc-card-delete-modal-reader-select"
           />
         </ModalBody>
         <ModalFooter>
-          <Button onPress={() => props.close()}>{t('nfcCardsTable.deleteModal.cancel')}</Button>
-          <Button isDisabled={!readerId} onPress={deleteCard}>
+          <Button onPress={() => props.close()} data-cy="nfc-card-delete-modal-cancel-button">{t('nfcCardsTable.deleteModal.cancel')}</Button>
+          <Button isDisabled={!readerId} onPress={deleteCard} data-cy="nfc-card-delete-modal-delete-button">
             {t('nfcCardsTable.deleteModal.delete')} ID: {!readerId ? 'null' : readerId}
           </Button>
         </ModalFooter>
@@ -104,7 +105,7 @@ const NfcCardTableCell = (props: NfcCardTableCellProps) => {
   if (props.header === 'actions') {
     return (
       <div>
-        <Button onPress={() => props.onDeleteClick()}>{t('nfcCardsTable.actions.delete')}</Button>
+        <Button onPress={() => props.onDeleteClick()} data-cy={`nfc-card-table-cell-delete-button-${props.card.id}`}>{t('nfcCardsTable.actions.delete')}</Button>
       </div>
     );
   }
@@ -133,10 +134,10 @@ const EnrollNfcCardButton = () => {
 
   return (
     <>
-      <Button color="primary" onPress={() => setShow(true)}>
+      <Button color="primary" onPress={() => setShow(true)} data-cy="enroll-nfc-card-button-trigger">
         {t('enroll')}
       </Button>
-      <Modal isOpen={show} onClose={() => setShow(false)} scrollBehavior="inside">
+      <Modal isOpen={show} onClose={() => setShow(false)} scrollBehavior="inside" data-cy="enroll-nfc-card-modal">
         <ModalContent>
           <ModalHeader>
             <h1>{t('enrollModal.title')}</h1>
@@ -148,11 +149,12 @@ const EnrollNfcCardButton = () => {
               placeholder={t('enrollModal.readerPlaceholder')}
               selection={readerId}
               onSelectionChange={(readerId) => setReaderId(readerId ?? null)}
+              data-cy="enroll-nfc-card-modal-reader-select"
             />
           </ModalBody>
           <ModalFooter>
-            <Button onPress={() => setShow(false)}>{t('enrollModal.cancel')}</Button>
-            <Button isDisabled={!readerId} onPress={enrollNfcCard}>
+            <Button onPress={() => setShow(false)} data-cy="enroll-nfc-card-modal-cancel-button">{t('enrollModal.cancel')}</Button>
+            <Button isDisabled={!readerId} onPress={enrollNfcCard} data-cy="enroll-nfc-card-modal-enroll-button">
               {t('enrollModal.enroll')}
             </Button>
           </ModalFooter>
@@ -205,7 +207,7 @@ export function NfcCardList() {
   return (
     <>
       <Alert color="danger">{t('workInProgress')}</Alert>
-      <Card>
+      <Card data-cy="nfc-card-list-card">
         <CardHeader className="flex justify-between items-center">
           <h1>{t('nfcCards')}</h1>
           <EnrollNfcCardButton />
@@ -217,7 +219,7 @@ export function NfcCardList() {
             cardId={cardToDeleteId}
           />
 
-          <Table aria-label={t('nfcCards')} removeWrapper>
+          <Table aria-label={t('nfcCards')} removeWrapper data-cy="nfc-card-list-table">
             <TableHeader>
               {headers.map((header) => (
                 <TableColumn key={header}>{t('nfcCardsTable.headers.' + header)}</TableColumn>

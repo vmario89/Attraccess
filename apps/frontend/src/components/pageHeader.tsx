@@ -11,21 +11,21 @@ interface PageHeaderProps {
   icon?: ReactNode;
 }
 
-export function PageHeader({ title, subtitle, backTo, actions, icon }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, backTo, actions, icon }: Readonly<PageHeaderProps>) {
   const navigate = useNavigate();
 
   return (
     <div className="flex items-center justify-between mb-8 flex-wrap gap-y-8">
       <div className="flex items-center">
         {backTo && (
-          <Button onPress={() => navigate(backTo)} variant="ghost" isIconOnly aria-label="Go back" className="mr-4">
+          <Button onPress={() => navigate(backTo)} variant="ghost" isIconOnly aria-label="Go back" className="mr-4" data-cy="back-button">
             <ArrowLeft className="w-6 h-6" />
           </Button>
         )}
 
         <div className="flex-shrink">
           <div className="flex items-center gap-2">
-            {icon && icon}
+            {icon}
             <h1 className="text-2xl font-bold">{title}</h1>
           </div>
           {subtitle && <p className="mt-1 text-sm text-foreground-500">{subtitle}</p>}

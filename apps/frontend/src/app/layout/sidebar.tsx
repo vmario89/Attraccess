@@ -12,7 +12,7 @@ import deRoutes from '../routes/translations/de.json';
 import enRoutes from '../routes/translations/en.json';
 
 function NavLink(
-  props: Omit<PropsOf<typeof Link>, 'children'> & { label: string; icon: React.ReactNode; isExternal?: boolean }
+  props: Omit<PropsOf<typeof Link>, 'children'> & { label: string; icon: React.ReactNode; isExternal?: boolean; 'data-cy'?: string }
 ) {
   return (
     <Link
@@ -108,6 +108,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         }`}
         onClick={toggleSidebar}
         aria-hidden="true"
+        data-cy="sidebar-mobile-backdrop"
       />
 
       {/* Sidebar */}
@@ -118,10 +119,10 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-          <Link href="/" className="text-xl font-semibold" color="foreground" underline="none">
+          <Link href="/" className="text-xl font-semibold" color="foreground" underline="none" data-cy="sidebar-home-link">
             Attraccess
           </Link>
-          <Button variant="light" aria-label="Close sidebar" isIconOnly className="md:hidden" onPress={toggleSidebar}>
+          <Button variant="light" aria-label="Close sidebar" isIconOnly className="md:hidden" onPress={toggleSidebar} data-cy="sidebar-close-button">
             <X className="h-6 w-6" />
           </Button>
         </div>
@@ -135,6 +136,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                 href={route.path as string}
                 icon={route.sidebar?.icon}
                 label={route.sidebar?.label ?? tRoutes(route.sidebar?.translationKey || '')}
+                data-cy={`sidebar-nav-${route.sidebar?.translationKey || route.path?.replace('/', '') || index}`}
               />
             ))}
           </nav>
@@ -143,7 +145,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         {/* Helpful Links */}
         <div className="py-4">
           <nav className="px-2 space-y-1">
-            <NavLink href="/docs" target="_blank" icon={<Book />} label={t('docs')} isExternal />
+            <NavLink href="/docs" target="_blank" icon={<Book />} label={t('docs')} isExternal data-cy="sidebar-link-docs" />
             <NavLink
               href={newGithubIssueUrl({
                 user: 'FabInfra',
@@ -169,6 +171,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
               icon={<Github />} // Consider a more specific bug icon if available
               label={t('reportBug')}
               isExternal
+              data-cy="sidebar-link-report-bug"
             />
             <NavLink
               href={newGithubIssueUrl({
@@ -195,6 +198,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
               icon={<Github />} // Consider a lightbulb or similar icon for features
               label={t('requestFeature')}
               isExternal
+              data-cy="sidebar-link-request-feature"
             />
           </nav>
         </div>
@@ -207,14 +211,14 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                 <User className="h-4 w-4 mr-2" />
                 <span>{user.username}</span>
               </div>
-              <Dropdown>
+              <Dropdown data-cy="sidebar-settings-dropdown">
                 <DropdownTrigger>
-                  <Button variant="light" aria-label="Settings" isIconOnly>
+                  <Button variant="light" aria-label="Settings" isIconOnly data-cy="sidebar-settings-button">
                     <Settings className="h-5 w-5" />
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key="logout" onPress={() => logout.mutateAsync()} startContent={<LogOut />}>
+                <DropdownMenu data-cy="sidebar-settings-dropdown-menu">
+                  <DropdownItem key="logout" onPress={() => logout.mutateAsync()} startContent={<LogOut />} data-cy="sidebar-logout-button">
                     {t('logout')}
                   </DropdownItem>
                 </DropdownMenu>

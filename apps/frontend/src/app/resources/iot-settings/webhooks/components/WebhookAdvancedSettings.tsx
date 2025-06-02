@@ -40,6 +40,7 @@ const WebhookAdvancedSettings: React.FC = () => {
           <Switch
             isSelected={values.retryEnabled}
             onValueChange={(checked) => handleSwitchChange('retryEnabled', checked)}
+            data-cy="webhook-form-retry-enabled-switch"
           />
         </div>
       </div>
@@ -53,6 +54,7 @@ const WebhookAdvancedSettings: React.FC = () => {
               max={10}
               value={values.maxRetries}
               onValueChange={(value) => handleNumberChange('maxRetries', value)}
+              data-cy="webhook-form-max-retries-input"
             />
             <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('maxRetriesHelp')}</div>
           </div>

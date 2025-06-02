@@ -65,7 +65,7 @@ export function VerifyEmail() {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md w-full">
+        <Card className="max-w-md w-full" data-cy="verify-email-success-card">
           <CardHeader className="text-center">
             <h2 className="text-3xl font-bold">{t('success.title')}</h2>
           </CardHeader>
@@ -73,7 +73,7 @@ export function VerifyEmail() {
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">{t('success.message')}</p>
           </CardBody>
           <CardFooter>
-            <Button fullWidth color="primary" onPress={() => navigate('/')}>
+            <Button fullWidth color="primary" onPress={() => navigate('/')} data-cy="verify-email-success-login-button">
               {t('success.goToLogin')}
             </Button>
           </CardFooter>
@@ -85,19 +85,19 @@ export function VerifyEmail() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md w-full">
+        <Card className="max-w-md w-full" data-cy="verify-email-error-card">
           <CardHeader className="text-center">
             <h2 className="text-3xl font-bold">{t('error.title')}</h2>
           </CardHeader>
           <CardBody>
-            <Alert color="danger" title={t('error.errorTitle')} description={error} />
+            <Alert color="danger" title={t('error.errorTitle')} description={error} data-cy="verify-email-error-alert" />
           </CardBody>
           <CardFooter>
-            <Button fullWidth color="primary" onPress={activateEmail} isDisabled={verifyEmail.isPending}>
+            <Button fullWidth color="primary" onPress={activateEmail} isDisabled={verifyEmail.isPending} data-cy="verify-email-error-try-again-button">
               {t('error.tryAgain')}
             </Button>
             <Spacer y={2} />
-            <Button fullWidth variant="bordered" onPress={() => navigate('/')}>
+            <Button fullWidth variant="bordered" onPress={() => navigate('/')} data-cy="verify-email-error-back-to-login-button">
               {t('error.backToLogin')}
             </Button>
           </CardFooter>

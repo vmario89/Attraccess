@@ -11,6 +11,7 @@ import {
   NfcIcon,
   ComputerIcon,
   FileChartColumnIncreasingIcon,
+  Mail,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage, CreateMqttServerPage, EditMqttServerPage } from '../mqtt';
@@ -26,6 +27,8 @@ import { NfcCardList } from '../fabreader/NfcCardList/NfcCardList';
 import { CsvExport } from '../csv-export/csv-export';
 import { CreateMqttConfig, EditMqttConfig, TestMqttConfig } from '../resources/iot-settings/mqtt';
 import { DocumentationEditor, DocumentationView } from '../resources/documentation';
+import { EmailTemplatesPage } from '../email-templates/EmailTemplatesPage'; // Placeholder - to be created
+import { EditEmailTemplatePage } from '../email-templates/EditEmailTemplatePage'; // Placeholder - to be created
 import { ResourceGroupEditPage } from '../resources/groups/ResourceGroupEditPage';
 
 const coreRoutes: RouteConfig[] = [
@@ -163,6 +166,21 @@ const coreRoutes: RouteConfig[] = [
       icon: <Package className="h-5 w-5" />,
       order: 8,
     },
+  },
+  {
+    path: '/email-templates',
+    element: <EmailTemplatesPage />,
+    sidebar: {
+      translationKey: 'emailTemplates',
+      icon: <Mail className="h-5 w-5" />,
+      order: 9,
+    },
+    authRequired: 'canManageSystemConfiguration',
+  },
+  {
+    path: '/email-templates/:type/edit',
+    element: <EditEmailTemplatePage />,
+    authRequired: 'canManageSystemConfiguration',
   },
 ];
 

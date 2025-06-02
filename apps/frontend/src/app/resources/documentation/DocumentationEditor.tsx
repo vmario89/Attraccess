@@ -142,7 +142,7 @@ function DocumentationEditorComponent() {
   if (isLoadingResource) {
     return (
       <div className="flex justify-center items-center h-[50vh]">
-        <Spinner size="lg" label={t('loading')} />
+        <Spinner size="lg" label={t('loading')} data-cy="documentation-editor-loading-spinner" />
       </div>
     );
   }
@@ -158,10 +158,10 @@ function DocumentationEditorComponent() {
           <p className="text-danger">{resourceError instanceof Error ? resourceError.message : t('error.unknown')}</p>
         </CardBody>
         <CardFooter className="flex justify-center gap-4">
-          <Button onPress={() => refetchResource()} color="primary">
+          <Button onPress={() => refetchResource()} color="primary" data-cy="documentation-editor-error-retry-button">
             {t('actions.retry')}
           </Button>
-          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />} data-cy="documentation-editor-error-back-to-resources-button">
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -180,7 +180,7 @@ function DocumentationEditorComponent() {
           <p>{t('notFound.message')}</p>
         </CardBody>
         <CardFooter className="justify-center">
-          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />}>
+          <Button onPress={() => navigate('/resources')} variant="flat" startContent={<ArrowLeft size={16} />} data-cy="documentation-editor-not-found-back-to-resources-button">
             {t('actions.backToResources')}
           </Button>
         </CardFooter>
@@ -200,6 +200,7 @@ function DocumentationEditorComponent() {
             onPress={handleSave}
             isLoading={updateResource.isPending}
             startContent={<Save className="w-4 h-4" />}
+            data-cy="documentation-editor-header-save-button"
           >
             {t('actions.save')}
           </Button>
@@ -214,15 +215,16 @@ function DocumentationEditorComponent() {
             value={documentationType}
             onValueChange={setDocumentationType as (value: string) => void}
             isDisabled={updateResource.isPending}
+            data-cy="documentation-editor-type-radiogroup"
           >
-            <Radio value={DocumentationType.MARKDOWN}>{t('documentationType.markdown')}</Radio>
-            <Radio value={DocumentationType.URL}>{t('documentationType.url')}</Radio>
+            <Radio value={DocumentationType.MARKDOWN} data-cy="documentation-editor-type-markdown-radio">{t('documentationType.markdown')}</Radio>
+            <Radio value={DocumentationType.URL} data-cy="documentation-editor-type-url-radio">{t('documentationType.url')}</Radio>
           </RadioGroup>
         </CardHeader>
         <CardBody>
           {documentationType === DocumentationType.MARKDOWN && (
-            <Tabs selectedKey={selectedTab} onSelectionChange={(key) => setSelectedTab(key.toString())}>
-              <Tab key="edit" title={t('edit')}>
+            <Tabs selectedKey={selectedTab} onSelectionChange={(key) => setSelectedTab(key.toString())} data-cy="documentation-editor-markdown-tabs">
+              <Tab key="edit" title={t('edit')} data-cy="documentation-editor-markdown-edit-tab">
                 <Textarea
                   label={t('markdownContent.label')}
                   placeholder={t('markdownContent.placeholder')}
@@ -232,9 +234,10 @@ function DocumentationEditorComponent() {
                   isInvalid={!!validationErrors.markdown}
                   errorMessage={validationErrors.markdown}
                   isDisabled={updateResource.isPending}
+                  data-cy="documentation-editor-markdown-textarea"
                 />
               </Tab>
-              <Tab key="preview" title={t('preview')}>
+              <Tab key="preview" title={t('preview')} data-cy="documentation-editor-markdown-preview-tab">
                 <div className="border rounded p-4 min-h-[300px] prose max-w-none">
                   {markdownContent ? (
                     <ReactMarkdown>{markdownContent}</ReactMarkdown>
@@ -255,6 +258,7 @@ function DocumentationEditorComponent() {
               isInvalid={!!validationErrors.url}
               errorMessage={validationErrors.url}
               isDisabled={updateResource.isPending}
+              data-cy="documentation-editor-url-input"
             />
           )}
         </CardBody>
@@ -264,10 +268,11 @@ function DocumentationEditorComponent() {
               variant="light"
               onPress={() => navigate(`/resources/${resourceId}`)}
               isDisabled={updateResource.isPending}
+              data-cy="documentation-editor-footer-cancel-button"
             >
               {t('actions.cancel')}
             </Button>
-            <Button color="primary" onPress={handleSave} isLoading={updateResource.isPending}>
+            <Button color="primary" onPress={handleSave} isLoading={updateResource.isPending} data-cy="documentation-editor-footer-save-button">
               {t('actions.save')}
             </Button>
           </div>

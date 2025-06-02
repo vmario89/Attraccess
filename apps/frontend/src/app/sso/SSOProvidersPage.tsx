@@ -43,6 +43,7 @@ export const SSOProvidersPage: React.FC = () => {
             startContent={<Plus size={16} />}
             onPress={handleAddNewProvider}
             className="hidden md:flex"
+            data-cy="sso-providers-page-header-add-new-provider-button"
           >
             {t('addNewProvider')}
           </Button>
@@ -54,6 +55,7 @@ export const SSOProvidersPage: React.FC = () => {
         startContent={<Plus size={16} />}
         onPress={handleAddNewProvider}
         className="md:hidden"
+        data-cy="sso-providers-page-add-new-provider-button"
       >
         {t('addNewProvider')}
       </Button>

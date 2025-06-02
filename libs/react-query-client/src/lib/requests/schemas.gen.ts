@@ -478,6 +478,104 @@ export const $UpdateSSOProviderDto = {
     }
 } as const;
 
+export const $PreviewMjmlDto = {
+    type: 'object',
+    properties: {
+        mjmlContent: {
+            type: 'string',
+            description: 'The MJML content to preview',
+            example: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello, world!</mj-text></mj-column></mj-section></mj-body></mjml>'
+        }
+    },
+    required: ['mjmlContent']
+} as const;
+
+export const $PreviewMjmlResponseDto = {
+    type: 'object',
+    properties: {
+        html: {
+            type: 'string',
+            description: 'The HTML content of the MJML',
+            example: '<div>Hello, world!</div>'
+        },
+        hasErrors: {
+            type: 'boolean',
+            description: 'Indicates if there were any errors during conversion',
+            example: false
+        },
+        error: {
+            type: 'string',
+            description: 'Error message if conversion failed',
+            example: null
+        }
+    },
+    required: ['html', 'hasErrors']
+} as const;
+
+export const $EmailTemplateType = {
+    type: 'string',
+    enum: ['verify-email', 'reset-password'],
+    description: 'Template type/key used by the system'
+} as const;
+
+export const $EmailTemplate = {
+    type: 'object',
+    properties: {
+        type: {
+            description: 'Template type/key used by the system',
+            example: 'verify-email',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/EmailTemplateType'
+                }
+            ]
+        },
+        subject: {
+            type: 'string',
+            description: 'Email subject line',
+            example: 'Verify Your Email Address'
+        },
+        body: {
+            type: 'string',
+            description: 'MJML content of the email body'
+        },
+        variables: {
+            description: 'Variables used in the email body',
+            example: ['{{name}}', '{{url}}'],
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        createdAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'Timestamp of when the template was created'
+        },
+        updatedAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'Timestamp of when the template was last updated'
+        }
+    },
+    required: ['type', 'subject', 'body', 'variables', 'createdAt', 'updatedAt']
+} as const;
+
+export const $UpdateEmailTemplateDto = {
+    type: 'object',
+    properties: {
+        subject: {
+            type: 'string',
+            description: 'Email subject line',
+            maxLength: 255
+        },
+        body: {
+            type: 'string',
+            description: 'MJML content of the email body'
+        }
+    }
+} as const;
+
 export const $CreateResourceGroupDto = {
     type: 'object',
     properties: {

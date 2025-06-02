@@ -61,7 +61,7 @@ function useRoutesWithAuthElements(routes: RouteConfig[]) {
   return useMemo(
     () =>
       routesWithAuthElements.map((route: RouteConfig, index) => (
-        <Route key={index} path={route.path} element={route.element} />
+        <Route key={route.path} path={route.path} element={route.element} />
       )),
     [routesWithAuthElements]
   );

@@ -25,11 +25,11 @@ export function MqttServersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <Card>
+      <Card data-cy="mqtt-servers-page-card">
         <CardHeader>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2>{t('title')}</h2>
-            <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewServer}>
+            <Button color="primary" startContent={<Plus size={16} />} onPress={handleAddNewServer} data-cy="mqtt-servers-page-add-new-server-button">
               {t('addNewServer')}
             </Button>
           </div>

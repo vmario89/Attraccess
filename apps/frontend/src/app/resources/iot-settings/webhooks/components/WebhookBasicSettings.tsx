@@ -51,6 +51,7 @@ const WebhookBasicSettings: React.FC = () => {
           onChange={handleInputChange}
           placeholder={t('namePlaceholder')}
           isRequired
+          data-cy="webhook-form-name-input"
         />
         <Input
           label={t('urlLabel')}
@@ -59,6 +60,7 @@ const WebhookBasicSettings: React.FC = () => {
           onChange={handleInputChange}
           placeholder={t('urlPlaceholder')}
           isRequired
+          data-cy="webhook-form-url-input"
         />
       </div>
 
@@ -68,6 +70,7 @@ const WebhookBasicSettings: React.FC = () => {
           label={t('methodLabel')}
           selectedKeys={[values.method]}
           onChange={(e) => handleSelectChange('method', e.target.value)}
+          data-cy="webhook-form-method-select"
         >
           {Object.values(WebhookHttpMethod).map((method) => (
             <SelectItem key={method}>{method}</SelectItem>
@@ -83,6 +86,7 @@ const WebhookBasicSettings: React.FC = () => {
         onChange={handleInputChange}
         placeholder={t('headersPlaceholder')}
         description={t('headersHelp')}
+        data-cy="webhook-form-headers-textarea"
       />
     </div>
   );

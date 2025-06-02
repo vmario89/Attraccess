@@ -25,21 +25,21 @@ interface Props extends Omit<ButtonProps, 'slot' | 'onPress' | 'children'> {
   firmware: Firmware;
 }
 
-export function FabreaderFlashButton(props: Props) {
+export function FabreaderFlashButton(props: Readonly<Props>) {
   const { t } = useTranslations('fabreader-flash-button', {
     de,
     en,
   });
 
   return (
-    <esp-web-install-button manifest={props.firmware.manifest_path}>
-      <Button {...props} slot="activate">
+    <esp-web-install-button manifest={props.firmware.manifest_path} data-cy="fabreader-flash-esp-web-install-button">
+      <Button {...props} slot="activate" data-cy="fabreader-flash-activate-button">
         {t('button.flash')}
       </Button>
-      <Button {...props} isDisabled color="danger" slot="unsupported">
+      <Button {...props} isDisabled color="danger" slot="unsupported" data-cy="fabreader-flash-unsupported-button">
         {t('errors.unsupported')}
       </Button>
-      <Button {...props} isDisabled color="danger" slot="not-allowed">
+      <Button {...props} isDisabled color="danger" slot="not-allowed" data-cy="fabreader-flash-not-allowed-button">
         {t('errors.notAllowed')}
       </Button>
     </esp-web-install-button>

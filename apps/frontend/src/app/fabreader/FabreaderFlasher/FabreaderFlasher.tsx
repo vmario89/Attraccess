@@ -26,7 +26,7 @@ export function FabreaderFlasher(props: { children: (onOpen: () => void) => Reac
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} data-cy="fabreader-flasher-modal">
         <ModalContent>
           <ModalHeader>
             <h1 className="text-xl font-bold">FabReader Flasher</h1>
@@ -54,7 +54,7 @@ export function FabreaderFlasher(props: { children: (onOpen: () => void) => Reac
                         )}
                       </div>
                     </div>
-                    <FabreaderFlashButton firmware={firmware} color="primary" className="min-w-[120px]" />
+                    <FabreaderFlashButton firmware={firmware} color="primary" className="min-w-[120px]" data-cy={`fabreader-flasher-flash-button-${firmware.environment}`} />
                   </div>
                 </div>
               ))
