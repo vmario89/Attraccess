@@ -49,6 +49,7 @@ export function IoTSettings() {
           onPress={() => navigate('/resources')}
           variant="light"
           startContent={<ArrowLeft className="w-4 h-4" />}
+          data-cy="iot-settings-back-to-resources-button"
         >
           Back to Resources
         </Button>

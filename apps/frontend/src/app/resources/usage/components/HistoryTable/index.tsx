@@ -83,6 +83,7 @@ export const HistoryTable = ({
     <Table
       aria-label="Resource usage history"
       shadow="none"
+      data-cy="resource-usage-history-table"
       bottomContent={
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2">

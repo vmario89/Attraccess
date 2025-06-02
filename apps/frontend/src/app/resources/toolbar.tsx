@@ -57,7 +57,7 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
                 startContent={<Plus size={18} />}
                 color="secondary"
                 size="sm"
-                data-cy="add-resource-group-button"
+                data-cy="toolbar-open-create-resource-group-modal-button"
               >
                 {t('addGroup')}
               </Button>
@@ -72,7 +72,7 @@ export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
                 startContent={<Plus size={18} />}
                 color="primary"
                 size="sm"
-                data-cy="add-resource-button"
+                data-cy="toolbar-open-create-resource-modal-button"
               >
                 {t('addResource')}
               </Button>

@@ -16,7 +16,7 @@ export function WebhookCreateModal(props: WebhookCreateModalProps) {
   const { t } = useTranslations('webhooksCreateModal', { en, de });
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside" data-cy="webhook-create-modal">
       <ModalContent>
         {() => (
           <>
