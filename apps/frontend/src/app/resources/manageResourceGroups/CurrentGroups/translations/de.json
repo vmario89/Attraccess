@@ -1,0 +1,14 @@
+{
+  "title": "Aktuelle Gruppen",
+  "subtitle": "Gruppen, zu denen diese Ressource derzeit gehört",
+  "groupCount": "{{count}} Gruppen",
+  "loading": "Lade Gruppen...",
+  "loadError": "Fehler beim Laden der Gruppen",
+  "loadErrorDescription": "Es gab einen Fehler beim Laden der aktuellen Gruppen. Bitte versuchen Sie, die Seite zu aktualisieren.",
+  "noGroups": "Keine Gruppen zugewiesen",
+  "noGroupsDescription": "Diese Ressource ist derzeit keinen Gruppen zugewiesen. Verwenden Sie die Suche unten, um Gruppen hinzuzufügen.",
+  "removeSuccessTitle": "Gruppe erfolgreich entfernt",
+  "removeSuccessDescription": "{{groupName}} wurde von dieser Ressource entfernt",
+  "removeErrorTitle": "Fehler beim Entfernen der Gruppe",
+  "removeErrorDescription": "Es gab einen Fehler beim Entfernen der Gruppe. Bitte versuchen Sie es erneut."
+}

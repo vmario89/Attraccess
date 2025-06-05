@@ -15,11 +15,11 @@ import * as en from './resourceGroupUpsertModal.en.json';
 import * as de from './resourceGroupUpsertModal.de.json';
 import {
   ResourceGroup,
-  useResourceGroupsServiceCreateOneResourceGroup,
-  UseResourceGroupsServiceGetAllResourceGroupsKeyFn,
+  useResourcesServiceResourceGroupsCreateOne,
   CreateResourceGroupDto,
-  useResourceGroupsServiceUpdateOneResourceGroup,
+  useResourcesServiceResourceGroupsUpdateOne,
   UpdateResourceGroupDto,
+  useResourcesServiceResourceGroupsGetManyKey,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -42,7 +42,7 @@ interface ApiValidationError {
   message?: string; // General error message field
 }
 
-export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
+export function ResourceGroupUpsertModal(props: Readonly<ResourceGroupUpsertModalProps>) {
   const { isOpen, onOpen, onOpenChange, onClose: closeDisclosure } = useDisclosure();
   const { t } = useTranslations('resourceGroupUpsertModal', {
     en,
@@ -74,7 +74,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
     }
 
     queryClient.invalidateQueries({
-      queryKey: [UseResourceGroupsServiceGetAllResourceGroupsKeyFn()[0]],
+      queryKey: [useResourcesServiceResourceGroupsGetManyKey],
     });
 
     if (!isEditMode) {
@@ -94,7 +94,7 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
       showErrorToast({
         title: isEditMode ? t('errorTitleUpdate') : t('errorTitleCreate'),
         // Consider adding a specific translation for validation errors
-        description: t('fieldValidationError') || 'Please check the form for errors.',
+        description: t('fieldValidationError') ?? 'Please check the form for errors.',
       });
     } else {
       setApiErrors({});
@@ -106,12 +106,12 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
   };
 
   // Pass onSuccess and onError directly to the hook options
-  const createMutation = useResourceGroupsServiceCreateOneResourceGroup({
+  const createMutation = useResourcesServiceResourceGroupsCreateOne({
     onSuccess: handleSuccess,
     onError: handleError,
   });
 
-  const updateMutation = useResourceGroupsServiceUpdateOneResourceGroup({
+  const updateMutation = useResourcesServiceResourceGroupsUpdateOne({
     onSuccess: handleSuccess,
     onError: handleError,
   });
@@ -174,7 +174,13 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
   return (
     <>
       {props.children(onOpen)}
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange} scrollBehavior="inside" data-cy="resource-group-upsert-modal">
+      <Modal
+        isOpen={isOpen}
+        placement="top-center"
+        onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+        data-cy="resource-group-upsert-modal"
+      >
         <ModalContent>
           {(onClose) => (
             <Form onSubmit={handleSubmit}>
@@ -206,7 +212,12 @@ export function ResourceGroupUpsertModal(props: ResourceGroupUpsertModalProps) {
               </ModalBody>
 
               <ModalFooter>
-                <Button variant="flat" color="default" onPress={onClose} data-cy="resource-group-upsert-modal-cancel-button">
+                <Button
+                  variant="flat"
+                  color="default"
+                  onPress={onClose}
+                  data-cy="resource-group-upsert-modal-cancel-button"
+                >
                   {t('cancelButton')}
                 </Button>
                 {/* Use the general mutation.isPending state */}

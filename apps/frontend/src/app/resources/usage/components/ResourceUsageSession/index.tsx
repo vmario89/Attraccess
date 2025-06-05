@@ -8,9 +8,9 @@ import { OtherUserSessionDisplay } from '../OtherUserSessionDisplay';
 import { IntroductionRequiredDisplay } from '../IntroductionRequiredDisplay';
 import { StartSessionControls } from '../StartSessionControls';
 import {
-  useResourceIntroducersServiceGetAllResourceIntroducers,
-  useResourceIntroductionsServiceCheckStatus,
-  useResourceUsageServiceGetActiveSession,
+  useAccessControlServiceResourceIntroducersGetMany,
+  useAccessControlServiceResourceIntroductionsGetStatus,
+  useResourcesServiceResourceUsageGetActiveSession,
   Resource,
 } from '@attraccess/react-query-client';
 import * as en from './translations/en.json';
@@ -27,17 +27,20 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
   const canManageResources = hasPermission('canManageResources');
 
   // Check if user has completed the introduction
-  const { data: introduction, isLoading: isLoadingIntroStatus } = useResourceIntroductionsServiceCheckStatus({
+  const { data: introduction, isLoading: isLoadingIntroStatus } = useAccessControlServiceResourceIntroductionsGetStatus(
+    {
+      resourceId,
+      userId: user?.id || 0,
+    }
+  );
+
+  // Get list of users who can give introductions
+  const { data: introducers, isLoading: isLoadingIntroducers } = useAccessControlServiceResourceIntroducersGetMany({
     resourceId,
   });
 
-  // Get list of users who can give introductions
-  const { data: introducers, isLoading: isLoadingIntroducers } = useResourceIntroducersServiceGetAllResourceIntroducers(
-    { resourceId }
-  );
-
   // Get active session
-  const { data: activeSessionResponse, isLoading: isLoadingSession } = useResourceUsageServiceGetActiveSession(
+  const { data: activeSessionResponse, isLoading: isLoadingSession } = useResourcesServiceResourceUsageGetActiveSession(
     { resourceId },
     undefined,
     {
@@ -50,7 +53,7 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
   const isLoading = isLoadingSession ?? isLoadingIntroStatus ?? isLoadingIntroducers;
 
   const isIntroducer = useMemo(() => {
-    return introducers?.some((introducer) => introducer.user?.id === user?.id);
+    return introducers?.some((introducer) => introducer.userId === user?.id);
   }, [introducers, user]);
 
   // Users with canManageResources permission can always start a session

@@ -5,18 +5,16 @@ import { Resource } from '@attraccess/database-entities';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { PaginatedResponse, makePaginatedResponse } from '../types/response';
-import { ResourceImageService } from '../common/services/resource-image.service';
+import { ResourceImageService } from './resourceImage.service';
 import { FileUpload } from '../common/types/file-upload.types';
 import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
-import { ResourceGroupsService } from './groups/resourceGroups.service';
 
 @Injectable()
 export class ResourcesService {
   constructor(
     @InjectRepository(Resource)
     private resourceRepository: Repository<Resource>,
-    private resourceImageService: ResourceImageService,
-    private resourceGroupsService: ResourceGroupsService
+    private resourceImageService: ResourceImageService
   ) {}
 
   async createResource(dto: CreateResourceDto, image?: FileUpload): Promise<Resource> {
@@ -168,19 +166,5 @@ export class ResourcesService {
     });
 
     return makePaginatedResponse({ page, limit }, resources, total);
-  }
-
-  async addResourceToGroup(resourceId: number, groupId: number): Promise<void> {
-    // Ensure resource exists first (optional, group service might also check)
-    await this.getResourceById(resourceId);
-    // Call the method in ResourceGroupsService
-    await this.resourceGroupsService.addResourceToGroup(resourceId, groupId);
-  }
-
-  async removeResourceFromGroup(resourceId: number, groupId: number): Promise<void> {
-    // Ensure resource exists first (optional, group service might also check)
-    await this.getResourceById(resourceId);
-    // Call the method in ResourceGroupsService
-    await this.resourceGroupsService.removeResourceFromGroup(resourceId, groupId);
   }
 }

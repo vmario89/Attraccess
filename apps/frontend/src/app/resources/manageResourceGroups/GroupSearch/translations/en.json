@@ -1,0 +1,16 @@
+{
+  "title": "Add Groups",
+  "subtitle": "Search and add resource groups to this resource",
+  "searchPlaceholder": "Search for groups...",
+  "searching": "Searching...",
+  "searchError": "Failed to search groups. Please try again.",
+  "noResults": "No groups found",
+  "tryDifferentSearch": "Try a different search term",
+  "searchResultsCount": "{{count}} groups found",
+  "availableToAdd": "Available to add",
+  "addButton": "Add",
+  "addSuccessTitle": "Group added successfully",
+  "addSuccessDescription": "{{groupName}} has been added to this resource",
+  "addErrorTitle": "Failed to add group",
+  "addErrorDescription": "There was an error adding the group. Please try again."
+}

@@ -244,10 +244,20 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
               </ModalBody>
 
               <ModalFooter className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full">
-                <Button variant="bordered" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onClose} data-cy="resource-edit-modal-cancel-button">
+                <Button
+                  variant="bordered"
+                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
+                  onPress={onClose}
+                  data-cy="resource-edit-modal-cancel-button"
+                >
                   {t('buttons.cancel')}
                 </Button>
-                <Button color="primary" className="w-full sm:w-auto min-w-full sm:min-w-fit" onPress={onSubmit} data-cy={`resource-edit-modal-${props.resourceId ? 'update' : 'create'}-button`}>
+                <Button
+                  color="primary"
+                  className="w-full sm:w-auto min-w-full sm:min-w-fit"
+                  onPress={onSubmit}
+                  data-cy={`resource-edit-modal-${props.resourceId ? 'update' : 'create'}-button`}
+                >
                   {props.resourceId ? t('buttons.update') : t('buttons.create')}
                 </Button>
               </ModalFooter>

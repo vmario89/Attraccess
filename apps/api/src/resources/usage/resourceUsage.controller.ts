@@ -10,14 +10,14 @@ import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
 import { GetActiveUsageSessionDto } from './dtos/getActiveUsageSession.dto';
 
-@ApiTags('Resource Usage')
+@ApiTags('Resources')
 @Controller('resources/:resourceId/usage')
 export class ResourceUsageController {
   constructor(private readonly resourceUsageService: ResourceUsageService) {}
 
   @Post('start')
   @Auth()
-  @ApiOperation({ summary: 'Start a resource usage session', operationId: 'startSession' })
+  @ApiOperation({ summary: 'Start a resource usage session', operationId: 'resourceUsageStartSession' })
   @ApiResponse({
     status: 201,
     description: 'Usage session started successfully.',
@@ -45,7 +45,7 @@ export class ResourceUsageController {
 
   @Put('end')
   @Auth()
-  @ApiOperation({ summary: 'End a resource usage session', operationId: 'endSession' })
+  @ApiOperation({ summary: 'End a resource usage session', operationId: 'resourceUsageEndSession' })
   @ApiResponse({
     status: 200,
     description: 'Usage session ended successfully.',
@@ -73,7 +73,7 @@ export class ResourceUsageController {
 
   @Get('history')
   @Auth()
-  @ApiOperation({ summary: 'Get usage history for a resource', operationId: 'getHistoryOfResourceUsage' })
+  @ApiOperation({ summary: 'Get usage history for a resource', operationId: 'resourceUsageGetHistory' })
   @ApiResponse({
     status: 200,
     description: 'Resource usage history retrieved successfully.',
@@ -122,7 +122,7 @@ export class ResourceUsageController {
 
   @Get('active')
   @Auth()
-  @ApiOperation({ summary: 'Get active usage session for current user', operationId: 'getActiveSession' })
+  @ApiOperation({ summary: 'Get active usage session for current user', operationId: 'resourceUsageGetActiveSession' })
   @ApiResponse({
     status: 200,
     description: 'Active session retrieved successfully.',

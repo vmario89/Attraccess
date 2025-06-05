@@ -1,0 +1,16 @@
+{
+  "title": "Group Details",
+  "subtitle": "Edit the group name and description",
+  "nameLabel": "Group Name",
+  "namePlaceholder": "Enter group name",
+  "descriptionLabel": "Description",
+  "descriptionPlaceholder": "Enter group description (optional)",
+  "saveButton": "Save Changes",
+  "loading": "Loading group details...",
+  "loadError": "Failed to load group",
+  "loadErrorDescription": "There was an error loading the group details. Please try refreshing the page.",
+  "updateSuccessTitle": "Group updated successfully",
+  "updateSuccessDescription": "The group details have been saved",
+  "updateErrorTitle": "Failed to update group",
+  "updateErrorDescription": "There was an error updating the group: {{error}}"
+}

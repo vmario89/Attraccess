@@ -10,18 +10,14 @@ import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
 import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { ResourceIntroductions } from './introductions/resourceIntroductions';
-import { ManageIntroducers } from './introductions/components/ManageIntroducers';
 import { memo, useMemo } from 'react';
 import {
-  useResourceIntroducersServiceCheckCanManagePermission,
-  useResourceIntroductionsServiceCheckCanManagePermission,
   useResourcesServiceDeleteOneResource,
   useResourcesServiceGetOneResourceById,
   UseResourcesServiceGetAllResourcesKeyFn,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ManageResourceGroups } from './groups/ManageResourceGroups';
+import { ManageResourceGroups } from './manageResourceGroups';
 import { DocumentationModal } from './documentation';
 import de from './resourceDetails.de.json';
 import en from './resourceDetails.en.json';
@@ -73,23 +69,8 @@ function ResourceDetailsComponent() {
   };
 
   const canManageResourceGroups = hasPermission('canManageResources');
-  const { data: canManageIntroductions } = useResourceIntroductionsServiceCheckCanManagePermission({ resourceId });
-  const { data: canManageIntroducers } = useResourceIntroducersServiceCheckCanManagePermission({ resourceId });
 
-  const showIntroductionsManagement = useMemo(
-    () => canManageResourceGroups || canManageIntroductions?.canManageIntroductions,
-    [canManageResourceGroups, canManageIntroductions]
-  );
-
-  const showIntroducersManagement = useMemo(
-    () => canManageResourceGroups || canManageIntroducers?.canManageIntroductions,
-    [canManageResourceGroups, canManageIntroducers]
-  );
-
-  const showGroupsManagement = useMemo(
-    () => canManageResourceGroups || canManageResourceGroups,
-    [canManageResourceGroups]
-  );
+  const showGroupsManagement = useMemo(() => canManageResourceGroups, [canManageResourceGroups]);
 
   if (isLoadingResource) {
     return (
@@ -121,7 +102,7 @@ function ResourceDetailsComponent() {
       <PageHeader
         title={resource.name}
         icon={<ShapesIcon className="w-6 h-6" />}
-        subtitle={resource.description || undefined}
+        subtitle={resource.description ?? undefined}
         backTo="/resources"
         actions={
           <>
@@ -183,23 +164,6 @@ function ResourceDetailsComponent() {
         <ResourceUsageSession resourceId={resourceId} resource={resource} data-cy="resource-usage-session" />
         <ResourceUsageHistory resourceId={resourceId} data-cy="resource-usage-history" />
       </div>
-
-      {/* 2-column layout for Introductions and Introducers on non-mobile */}
-      {(showIntroducersManagement || showIntroductionsManagement) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {showIntroductionsManagement && (
-            <div className="w-full">
-              <ResourceIntroductions resourceId={resourceId} data-cy="resource-introductions" />
-            </div>
-          )}
-
-          {showIntroducersManagement && (
-            <div className="w-full">
-              <ManageIntroducers resourceId={resourceId} data-cy="manage-introducers" />
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Add the ManageResourceGroups component */}
       {showGroupsManagement && (

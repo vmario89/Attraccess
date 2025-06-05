@@ -1,0 +1,79 @@
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ResourceIntroductionsService } from './resouceIntroductions.service';
+import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
+import { GetIntroductionStatusResponseDto } from './dtos/getStatus.response.dto';
+import { IsResourceIntroducer } from './isIntroducer.decorator';
+import { UpdateResourceIntroductionDto } from './dtos/update.request.dto';
+
+@ApiTags('Access Control')
+@Controller('resources/:resourceId/introductions')
+export class ResourceIntroductionsController {
+  constructor(private readonly resourceIntroductionsService: ResourceIntroductionsService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all introductions for a resource', operationId: 'resourceIntroductionsGetMany' })
+  @ApiResponse({
+    status: 200,
+    description: 'All introductions for a resource',
+    type: [ResourceIntroduction],
+  })
+  async getManyByResource(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<ResourceIntroduction[]> {
+    return await this.resourceIntroductionsService.getMany(resourceId);
+  }
+
+  @Post('/:userId/grant')
+  @ApiOperation({ summary: 'Grant a user usage permission for a resource', operationId: 'resourceIntroductionsGrant' })
+  @ApiResponse({
+    status: 200,
+    description: 'Introduction granted',
+    type: ResourceIntroductionHistoryItem,
+  })
+  @IsResourceIntroducer()
+  async grant(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('userId', ParseIntPipe) userId: number
+  ): Promise<ResourceIntroductionHistoryItem> {
+    return await this.resourceIntroductionsService.grant(resourceId, userId);
+  }
+
+  @Delete('/:userId/revoke')
+  @ApiOperation({
+    summary: 'Revoke a user usage permission for a resource',
+    operationId: 'resourceIntroductionsRevoke',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Introduction revoked',
+    type: ResourceIntroductionHistoryItem,
+  })
+  @IsResourceIntroducer()
+  async revoke(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() data: UpdateResourceIntroductionDto
+  ): Promise<ResourceIntroductionHistoryItem> {
+    return await this.resourceIntroductionsService.revoke(resourceId, userId, data);
+  }
+
+  @Get('/:userId/status')
+  @ApiOperation({
+    summary: 'Get the status of an introduction for a user',
+    operationId: 'resourceIntroductionsGetStatus',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Introduction status',
+    type: GetIntroductionStatusResponseDto,
+  })
+  async getStatus(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('userId', ParseIntPipe) userId: number
+  ): Promise<{ hasValidIntroduction: boolean }> {
+    const hasValidIntroduction = await this.resourceIntroductionsService.hasValidIntroduction(resourceId, userId);
+
+    return {
+      hasValidIntroduction,
+    };
+  }
+}

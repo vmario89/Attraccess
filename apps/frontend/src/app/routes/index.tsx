@@ -29,7 +29,7 @@ import { CreateMqttConfig, EditMqttConfig, TestMqttConfig } from '../resources/i
 import { DocumentationEditor, DocumentationView } from '../resources/documentation';
 import { EmailTemplatesPage } from '../email-templates/EmailTemplatesPage'; // Placeholder - to be created
 import { EditEmailTemplatePage } from '../email-templates/EditEmailTemplatePage'; // Placeholder - to be created
-import { ResourceGroupEditPage } from '../resources/groups/ResourceGroupEditPage';
+import { ResourceGroupEditPage } from '../resource-groups';
 
 const coreRoutes: RouteConfig[] = [
   {

@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toolbar } from './toolbar';
-import { Accordion, AccordionItem, Selection, Spinner, Button } from '@heroui/react'; // Added Button
-import { Settings2 } from 'lucide-react'; // Added Settings2
+import { Accordion, AccordionItem, Selection, Button } from '@heroui/react';
+import { Settings2Icon } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './resourceList.en.json';
 import * as de from './resourceList.de.json';
 import {
-  PaginatedResourceGroupResponseDto,
-  useResourceGroupsServiceGetAllResourceGroupsInfinite,
+  useResourcesServiceResourceGroupsGetMany,
   useResourcesServiceGetAllResources,
 } from '@attraccess/react-query-client';
-import { useInView } from 'react-intersection-observer';
 import { ResourcesInGroupList } from './list.resources-in-group';
 
 export function ResourceList() {
@@ -23,54 +21,36 @@ export function ResourceList() {
   });
   const navigate = useNavigate();
 
-  const [lastItemRef, lastItemInView] = useInView();
-
   const handleSearch = useCallback((searchValue: string) => {
     setSearchInput(searchValue);
   }, []);
 
-  const {
-    data: groups,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useResourceGroupsServiceGetAllResourceGroupsInfinite({
-    limit: 50,
-  });
-
-  useEffect(() => {
-    if (lastItemInView && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [lastItemInView, fetchNextPage, isFetchingNextPage]);
+  const { data: groups } = useResourcesServiceResourceGroupsGetMany();
 
   const resourceWithoutGroup = useResourcesServiceGetAllResources({
     groupId: -1,
     limit: 1,
   });
 
-  const allGroups = useMemo(() => {
-    return groups?.pages.flatMap((page: PaginatedResourceGroupResponseDto) => page.data) ?? [];
-  }, [groups]);
-
   const [userSelectedGroups, setUserSelectedGroups] = useState<Set<number>>(new Set([]));
 
   const selectedKeys = useMemo(() => {
     if (searchInput) {
-      return new Set([-1, ...allGroups.map((group) => group.id)].map(String));
+      return new Set([-1, ...(groups ?? []).map((group) => group.id)].map(String));
     }
 
     return userSelectedGroups;
-  }, [allGroups, userSelectedGroups, searchInput]);
+  }, [groups, userSelectedGroups, searchInput]);
 
   const onAccordionSelectionChange = useCallback(
     (keys: Selection) => {
       if (keys === 'all') {
-        setUserSelectedGroups(new Set(allGroups.map((group) => group.id)));
+        setUserSelectedGroups(new Set((groups ?? []).map((group) => group.id)));
       } else {
         setUserSelectedGroups(keys as Set<number>);
       }
     },
-    [allGroups]
+    [groups]
   );
 
   const allGroupLists = useMemo(() => {
@@ -80,12 +60,12 @@ export function ResourceList() {
       groupLists.push({ name: t('ungrouped'), id: -1 });
     }
 
-    allGroups.forEach((group) => {
+    (groups ?? []).forEach((group) => {
       groupLists.push({ name: group.name, id: group.id });
     });
 
     return groupLists;
-  }, [allGroups, t, resourceWithoutGroup.data?.total]);
+  }, [groups, t, resourceWithoutGroup.data?.total]);
 
   return (
     <>
@@ -112,7 +92,7 @@ export function ResourceList() {
                     onPress={() => navigate(`/resource-groups/${group.id}/edit`)}
                     aria-label={`Edit group ${group.name}`}
                   >
-                    <Settings2 className="w-5 h-5" />
+                    <Settings2Icon className="w-5 h-5" />
                   </Button>
                 )}
               </div>
@@ -127,10 +107,6 @@ export function ResourceList() {
           </AccordionItem>
         ))}
       </Accordion>
-      {isFetchingNextPage && <Spinner variant="wave" data-cy="resource-list-loading-spinner" />}
-      <div ref={lastItemRef} style={{ marginTop: '200px' }}>
-        &nbsp;
-      </div>
     </>
   );
 }

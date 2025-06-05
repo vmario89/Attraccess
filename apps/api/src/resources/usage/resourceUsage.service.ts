@@ -1,28 +1,30 @@
 import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, FindOneOptions } from 'typeorm';
-import { ResourceUsage, User } from '@attraccess/database-entities';
-import { ResourcesService } from '../resources.service';
+import { Resource, ResourceUsage, User } from '@attraccess/database-entities';
 import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
-import { ResourceIntroductionService } from '../introduction/resourceIntroduction.service';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from './events/resource-usage.events';
+import { ResourceIntroductionsService } from '../introductions/resouceIntroductions.service';
+import { ResourceIntroducersService } from '../introducers/resourceIntroducers.service';
 
 @Injectable()
 export class ResourceUsageService {
   constructor(
+    @InjectRepository(Resource)
+    private resourceRepository: Repository<Resource>,
     @InjectRepository(ResourceUsage)
     private resourceUsageRepository: Repository<ResourceUsage>,
-    private resourcesService: ResourcesService,
-    private resourceIntroductionService: ResourceIntroductionService,
+    private resourceIntroductionService: ResourceIntroductionsService,
+    private resourceIntroducersService: ResourceIntroducersService,
     private eventEmitter: EventEmitter2
   ) {}
 
   async startSession(resourceId: number, user: User, dto: StartUsageSessionDto): Promise<ResourceUsage> {
     // Check if resource exists and is ready
-    const resource = await this.resourcesService.getResourceById(resourceId);
+    const resource = await this.resourceRepository.findOne({ where: { id: resourceId } });
     if (!resource) {
       throw new ResourceNotFoundException(resourceId);
     }
@@ -35,16 +37,13 @@ export class ResourceUsageService {
     // Only check for introduction if user doesn't have resource management permission
     if (!canStartSession) {
       // Check if user has completed the introduction
-      const hasCompletedIntroduction = await this.resourceIntroductionService.hasValidIntroduction(
-        resourceId,
-        user.id
-      );
+      const hasCompletedIntroduction = await this.resourceIntroductionService.hasValidIntroduction(resourceId, user.id);
 
       canStartSession = hasCompletedIntroduction;
     }
 
     if (!canStartSession) {
-      const canGiveIntroductions = await this.resourceIntroductionService.canGiveIntroductionForResource(resourceId, user.id);
+      const canGiveIntroductions = await this.resourceIntroducersService.isIntroducer(resourceId, user.id);
 
       canStartSession = canGiveIntroductions;
     }
