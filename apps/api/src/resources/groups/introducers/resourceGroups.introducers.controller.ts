@@ -1,17 +1,13 @@
 import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { ResourceGroupsService } from '../resourceGroups.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ResourceGroup, ResourceIntroducer } from '@attraccess/database-entities';
+import { ResourceIntroducer } from '@attraccess/database-entities';
 import { ResourceGroupsIntroducersService } from './resourceGroups.introducers.service';
 import { Auth } from '@attraccess/plugins-backend-sdk';
 
 @ApiTags('Access Control')
 @Controller('resource-groups/:groupId/introducers')
 export class ResourceGroupsIntroducersController {
-  constructor(
-    private readonly resourceGroupsService: ResourceGroupsService,
-    private readonly resourceGroupsIntroducersService: ResourceGroupsIntroducersService
-  ) {}
+  constructor(private readonly resourceGroupsIntroducersService: ResourceGroupsIntroducersService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all introducers for a resource group', operationId: 'resourceGroupIntroducersGetMany' })
@@ -26,9 +22,7 @@ export class ResourceGroupsIntroducersController {
     description: 'The resource group has not been found.',
   })
   async getMany(@Param('groupId', ParseIntPipe) groupId: number): Promise<ResourceIntroducer[]> {
-    const group = await this.resourceGroupsService.getOne({ id: groupId }, ['introducers']);
-
-    return group.introducers;
+    return await this.resourceGroupsIntroducersService.getMany(groupId);
   }
 
   @Post('/:userId/grant')
@@ -47,7 +41,7 @@ export class ResourceGroupsIntroducersController {
     @Param('userId', ParseIntPipe) userId: number,
     @Param('groupId', ParseIntPipe) groupId: number
   ): Promise<ResourceIntroducer> {
-    return this.resourceGroupsIntroducersService.grant(groupId, userId);
+    return await this.resourceGroupsIntroducersService.grant(groupId, userId);
   }
 
   @Post('/:userId/revoke')

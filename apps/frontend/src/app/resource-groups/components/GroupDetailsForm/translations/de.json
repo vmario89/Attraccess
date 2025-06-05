@@ -1,16 +1,51 @@
 {
-  "title": "Gruppendetails",
-  "subtitle": "Bearbeiten Sie den Gruppennamen und die Beschreibung",
-  "nameLabel": "Gruppenname",
-  "namePlaceholder": "Gruppennamen eingeben",
-  "descriptionLabel": "Beschreibung",
-  "descriptionPlaceholder": "Gruppenbeschreibung eingeben (optional)",
-  "saveButton": "Änderungen speichern",
-  "loading": "Lade Gruppendetails...",
-  "loadError": "Fehler beim Laden der Gruppe",
-  "loadErrorDescription": "Es gab einen Fehler beim Laden der Gruppendetails. Bitte versuchen Sie, die Seite zu aktualisieren.",
-  "updateSuccessTitle": "Gruppe erfolgreich aktualisiert",
-  "updateSuccessDescription": "Die Gruppendetails wurden gespeichert",
-  "updateErrorTitle": "Fehler beim Aktualisieren der Gruppe",
-  "updateErrorDescription": "Es gab einen Fehler beim Aktualisieren der Gruppe: {{error}}"
+  "form": {
+    "title": "Gruppendetails",
+    "subtitle": "Bearbeiten Sie den Gruppennamen und die Beschreibung",
+    "fields": {
+      "name": {
+        "label": "Gruppenname",
+        "placeholder": "Gruppennamen eingeben"
+      },
+      "description": {
+        "label": "Beschreibung",
+        "placeholder": "Gruppenbeschreibung eingeben (optional)"
+      }
+    },
+    "buttons": {
+      "save": "Änderungen speichern",
+      "delete": "Gruppe löschen"
+    }
+  },
+  "states": {
+    "loading": "Lade Gruppendetails..."
+  },
+  "errors": {
+    "load": {
+      "title": "Fehler beim Laden der Gruppe",
+      "description": "Es gab einen Fehler beim Laden der Gruppendetails. Bitte versuchen Sie, die Seite zu aktualisieren."
+    }
+  },
+  "operations": {
+    "update": {
+      "success": {
+        "title": "Gruppe erfolgreich aktualisiert",
+        "description": "Die Gruppendetails wurden gespeichert"
+      },
+      "error": {
+        "title": "Fehler beim Aktualisieren der Gruppe",
+        "description": "Es gab einen Fehler beim Aktualisieren der Gruppe: {{error}}"
+      }
+    },
+    "delete": {
+      "success": {
+        "title": "Gruppe erfolgreich gelöscht",
+        "description": "Die Gruppe wurde erfolgreich gelöscht"
+      },
+      "error": {
+        "title": "Fehler beim Löschen der Gruppe",
+        "description": "Es gab einen Fehler beim Löschen der Gruppe: {{error}}"
+      }
+    }
+  }
 }

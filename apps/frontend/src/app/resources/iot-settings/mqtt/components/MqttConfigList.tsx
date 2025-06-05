@@ -51,7 +51,7 @@ export function MqttConfigList({ resourceId }: MqttConfigListProps) {
   });
 
   const handleEdit = (configId: number) => {
-    navigate(`/resources/${resourceId}/iot/mqtt/edit/${configId}`);
+    navigate(`/resources/${resourceId}/iot/mqtt/${configId}`);
   };
 
   const handleDelete = async (configId: number) => {

@@ -407,6 +407,11 @@ export const useResourcesServiceResourceGroupsRemoveResource = <TData = Common.R
   groupId: number;
   resourceId: number;
 }, TContext>({ mutationFn: ({ groupId, resourceId }) => ResourcesService.resourceGroupsRemoveResource({ groupId, resourceId }) as unknown as Promise<TData>, ...options });
+export const useResourcesServiceResourceGroupsDeleteOne = <TData = Common.ResourcesServiceResourceGroupsDeleteOneMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  groupId: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  groupId: number;
+}, TContext>({ mutationFn: ({ groupId }) => ResourcesService.resourceGroupsDeleteOne({ groupId }) as unknown as Promise<TData>, ...options });
 export const useMqttServiceMqttServersDeleteOne = <TData = Common.MqttServiceMqttServersDeleteOneMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {

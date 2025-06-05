@@ -1,1 +1,0 @@
-export { ResourceGroupCard } from './ResourceGroupCard';

@@ -98,7 +98,7 @@ export function MqttServerList() {
   });
 
   const handleEditServer = (serverId: number) => {
-    navigate(`/mqtt/servers/${serverId}/edit`);
+    navigate(`/mqtt/servers/${serverId}`);
   };
 
   const handleDeleteServer = (serverId: number) => {

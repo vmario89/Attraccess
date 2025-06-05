@@ -9,8 +9,19 @@ import { ResourceGroupIntroducerNotFoundException } from './errors/ResourceGroup
 export class ResourceGroupsIntroducersService {
   constructor(
     @InjectRepository(ResourceIntroducer)
-    private resourceIntroducerRepository: Repository<ResourceIntroducer>
+    private readonly resourceIntroducerRepository: Repository<ResourceIntroducer>
   ) {}
+
+  public async getMany(groupId: number): Promise<ResourceIntroducer[]> {
+    return this.resourceIntroducerRepository.find({
+      where: {
+        resourceGroup: {
+          id: groupId,
+        },
+      },
+      relations: ['user'],
+    });
+  }
 
   public async grant(groupId: number, userId: number): Promise<ResourceIntroducer> {
     const existingIntroducer = await this.resourceIntroducerRepository.findOne({
@@ -24,7 +35,7 @@ export class ResourceGroupsIntroducersService {
       },
     });
 
-    if (!existingIntroducer) {
+    if (existingIntroducer) {
       return existingIntroducer;
     }
 
@@ -32,12 +43,13 @@ export class ResourceGroupsIntroducersService {
   }
 
   private async createOne(groupId: number, userId: number): Promise<ResourceIntroducer> {
-    const introducer = await this.resourceIntroducerRepository.create({
+    const introducer = this.resourceIntroducerRepository.create({
       resourceGroup: { id: groupId },
       user: { id: userId },
     });
 
-    return await this.resourceIntroducerRepository.save(introducer);
+    console.log('creating one', introducer);
+    return await this.resourceIntroducerRepository.save(introducer, { reload: true });
   }
 
   public async revoke(groupId: number, userId: number): Promise<ResourceIntroducer> {

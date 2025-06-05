@@ -36,11 +36,12 @@ export class ResourceGroupsService {
       where: {
         id: searchOptions.id,
       },
+
       relations,
     });
 
     if (!group) {
-      throw new ResourceGroupNotFoundException(JSON.stringify(searchOptions));
+      throw new ResourceGroupNotFoundException({ id: searchOptions.id });
     }
 
     return group;
@@ -85,5 +86,12 @@ export class ResourceGroupsService {
 
     resourceGroup.resources = resourceGroup.resources.filter((resource) => resource.id !== resourceId);
     await this.resourceGroupRepository.save(resourceGroup);
+  }
+
+  public async deleteOne(groupId: number): Promise<void> {
+    const result = await this.resourceGroupRepository.delete(groupId);
+    if (result.affected === 0) {
+      throw new ResourceGroupNotFoundException({ id: groupId });
+    }
   }
 }

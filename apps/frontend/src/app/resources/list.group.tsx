@@ -89,7 +89,7 @@ export function ResourceList() {
                     size="sm"
                     variant="light"
                     isIconOnly
-                    onPress={() => navigate(`/resource-groups/${group.id}/edit`)}
+                    onPress={() => navigate(`/resource-groups/${group.id}`)}
                     aria-label={`Edit group ${group.name}`}
                   >
                     <Settings2Icon className="w-5 h-5" />

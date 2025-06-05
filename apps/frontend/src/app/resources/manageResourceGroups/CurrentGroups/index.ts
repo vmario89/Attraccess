@@ -1,1 +1,0 @@
-export { CurrentGroups } from './CurrentGroups';

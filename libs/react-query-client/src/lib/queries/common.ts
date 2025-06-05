@@ -291,6 +291,7 @@ export type AuthenticationServiceEndSessionMutationResult = Awaited<ReturnType<t
 export type AuthenticationServiceDeleteOneSsoProviderMutationResult = Awaited<ReturnType<typeof AuthenticationService.deleteOneSsoProvider>>;
 export type ResourcesServiceDeleteOneResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.deleteOneResource>>;
 export type ResourcesServiceResourceGroupsRemoveResourceMutationResult = Awaited<ReturnType<typeof ResourcesService.resourceGroupsRemoveResource>>;
+export type ResourcesServiceResourceGroupsDeleteOneMutationResult = Awaited<ReturnType<typeof ResourcesService.resourceGroupsDeleteOne>>;
 export type MqttServiceMqttServersDeleteOneMutationResult = Awaited<ReturnType<typeof MqttService.mqttServersDeleteOne>>;
 export type MqttServiceMqttResourceConfigDeleteOneMutationResult = Awaited<ReturnType<typeof MqttService.mqttResourceConfigDeleteOne>>;
 export type WebhooksServiceWebhookConfigDeleteOneMutationResult = Awaited<ReturnType<typeof WebhooksService.webhookConfigDeleteOne>>;

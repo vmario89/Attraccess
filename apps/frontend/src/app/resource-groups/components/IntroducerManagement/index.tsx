@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Card, CardHeader, CardBody, CardProps } from '@heroui/react';
-import { Users, AlertCircle } from 'lucide-react';
+import { Users, AlertCircle, Trash2Icon } from 'lucide-react';
 import {
   useAccessControlServiceResourceGroupIntroducersGetMany,
   useAccessControlServiceResourceGroupIntroducersGrant,
@@ -33,8 +33,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
     error,
   } = useAccessControlServiceResourceGroupIntroducersGetMany({ groupId });
 
-  const { mutate: grantIntroducerMutation, isPending: isAdding } = useAccessControlServiceResourceGroupIntroducersGrant(
-    {
+  const { mutate: grantIntroducerMutation, isPending: isGranting } =
+    useAccessControlServiceResourceGroupIntroducersGrant({
       onSuccess: () => {
         success({
           title: t('addSuccessTitle'),
@@ -50,10 +50,15 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
           description: t('addErrorDescription', { error: err.message }),
         });
       },
-    }
-  );
+    });
 
-  const { mutate: revokeIntroducerMutation, isPending: isRemoving } =
+  const grantIntroducer = (user: User) => {
+    if (user?.id) {
+      grantIntroducerMutation({ groupId, userId: user.id });
+    }
+  };
+
+  const { mutate: revokeIntroducerMutation, isPending: isRevoking } =
     useAccessControlServiceResourceGroupIntroducersRevoke({
       onSuccess: () => {
         success({
@@ -71,12 +76,6 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
         });
       },
     });
-
-  const grantIntroducer = (user: User) => {
-    if (user?.id) {
-      grantIntroducerMutation({ groupId, userId: user.id });
-    }
-  };
 
   const revokeIntroducer = (user: User) => {
     if (user?.id) {
@@ -113,14 +112,23 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
         <UserSelectionList
           selectedUsers={introducerUsers ?? []}
           onAddToSelection={grantIntroducer}
-          onRemoveFromSelection={revokeIntroducer}
-          addToSelectionIsLoading={isAdding}
-          removeFromSelectionIsLoading={isRemoving}
+          addToSelectionIsLoading={isGranting}
           selectedUserIsLoading={isLoading}
           tableProps={{
             removeWrapper: true,
             shadow: 'none',
           }}
+          actions={[
+            {
+              color: 'danger',
+              isIconOnly: true,
+              isLoading: isRevoking,
+              startContent: <Trash2Icon className="w-4 h-4" />,
+              onClick: (userToRevoke) => {
+                revokeIntroducer(userToRevoke);
+              },
+            },
+          ]}
         />
       </CardBody>
     </Card>

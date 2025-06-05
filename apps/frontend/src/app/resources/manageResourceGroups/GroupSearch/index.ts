@@ -1,1 +1,0 @@
-export { GroupSearch } from './GroupSearch';

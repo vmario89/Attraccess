@@ -1791,6 +1791,15 @@ export type ResourceGroupsRemoveResourceData = {
 
 export type ResourceGroupsRemoveResourceResponse = unknown;
 
+export type ResourceGroupsDeleteOneData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+};
+
+export type ResourceGroupsDeleteOneResponse = unknown;
+
 export type ResourceUsageStartSessionData = {
     requestBody: StartUsageSessionDto;
     resourceId: number;
@@ -2821,6 +2830,21 @@ export type $OpenApiTs = {
             res: {
                 /**
                  * The resource has been successfully removed from the resource group.
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}': {
+        delete: {
+            req: ResourceGroupsDeleteOneData;
+            res: {
+                /**
+                 * The resource group has been successfully deleted.
                  */
                 200: unknown;
                 /**

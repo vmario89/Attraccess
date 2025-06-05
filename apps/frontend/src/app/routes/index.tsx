@@ -63,7 +63,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
-    path: '/resources/:resourceId/iot/mqtt/edit/:configId',
+    path: '/resources/:resourceId/iot/mqtt/:configId',
     element: <EditMqttConfig />,
     authRequired: 'canManageResources',
   },
@@ -83,7 +83,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
-    path: '/resource-groups/:groupId/edit',
+    path: '/resource-groups/:groupId',
     element: <ResourceGroupEditPage />,
     authRequired: 'canManageResources',
   },
@@ -103,7 +103,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
-    path: '/mqtt/servers/:serverId/edit',
+    path: '/mqtt/servers/:serverId',
     element: <EditMqttServerPage />,
     authRequired: 'canManageResources',
   },
@@ -178,7 +178,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageSystemConfiguration',
   },
   {
-    path: '/email-templates/:type/edit',
+    path: '/email-templates/:type',
     element: <EditEmailTemplatePage />,
     authRequired: 'canManageSystemConfiguration',
   },

@@ -1,9 +1,11 @@
+import { ResourceGroup } from '@attraccess/database-entities';
 import { NotFoundException } from '@nestjs/common';
+import { FindOneOptions } from 'typeorm';
 
 export class ResourceGroupNotFoundException extends NotFoundException {
-  constructor(identifier: unknown) {
+  constructor(identifier: FindOneOptions<ResourceGroup>['where']) {
     super('ResourceGroupNotFound', {
-      cause: `Resource group with identifier ${identifier} not found`,
+      cause: `Resource group with identifier ${JSON.stringify(identifier)} not found`,
     });
   }
 }

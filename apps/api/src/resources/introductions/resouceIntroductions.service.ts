@@ -39,8 +39,16 @@ export class ResourceIntroductionsService {
     });
   }
 
-  private async getLastHistoryItemOfUser(resourceId: number, userId: number): Promise<ResourceIntroductionHistoryItem> {
+  private async getLastHistoryItemOfUser(
+    resourceId: number,
+    userId: number
+  ): Promise<ResourceIntroductionHistoryItem | null> {
     const introduction = await this.getIntroductionOfUser(resourceId, userId);
+
+    if (!introduction) {
+      return null;
+    }
+
     return await this.getLastHistoryItemOfIntroduction(introduction.id);
   }
 
@@ -61,13 +69,11 @@ export class ResourceIntroductionsService {
   ) {
     let resourceIntroduction = await this.getIntroductionOfUser(resourceId, userId);
 
-    if (!resourceIntroduction) {
-      resourceIntroduction = await this.createOne(resourceId, userId);
-    }
+    resourceIntroduction ??= await this.createOne(resourceId, userId);
 
     const lastHistoryItem = await this.getLastHistoryItemOfUser(resourceId, userId);
 
-    if (lastHistoryItem.action === nextStatus) {
+    if (lastHistoryItem?.action === nextStatus) {
       return lastHistoryItem;
     }
 
