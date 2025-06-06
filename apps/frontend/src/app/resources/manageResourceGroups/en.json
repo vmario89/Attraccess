@@ -1,6 +1,6 @@
 {
-  "title": "Resource Groups",
-  "subtitle": "Manage resource groups",
+  "title": "Groups",
+  "subtitle": "Manage groups",
   "columns": {
     "group": "Group",
     "actions": "Actions"

@@ -1,23 +1,23 @@
-import { useAccessControlServiceResourceGroupIntroductionsGetHistory } from '@attraccess/react-query-client';
+import { useAccessControlServiceResourceIntroductionsGetHistory } from '@attraccess/react-query-client';
 import { useEffect } from 'react';
-import { IntroductionHistoryModal } from '../../../../../components/IntroductionsManagement/history';
+import { IntroductionHistoryModal } from '../../../../components/IntroductionsManagement/history';
 
 interface Props {
-  groupId: number;
+  resourceId: number;
   userId: number;
   isOpen: boolean;
   onClose: () => void;
 }
-export function ResourceGroupIntroductionHistoryModal(props: Readonly<Props>) {
-  const { groupId, userId, isOpen, onClose } = props;
+export function ResourceIntroductionHistoryModal(props: Readonly<Props>) {
+  const { resourceId, userId, isOpen, onClose } = props;
 
   const {
     data: history,
     isLoading,
     refetch,
-  } = useAccessControlServiceResourceGroupIntroductionsGetHistory(
+  } = useAccessControlServiceResourceIntroductionsGetHistory(
     {
-      groupId,
+      resourceId,
       userId,
     },
     undefined,

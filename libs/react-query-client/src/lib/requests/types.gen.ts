@@ -2139,6 +2139,7 @@ export type ResourceIntroductionsGetManyData = {
 export type ResourceIntroductionsGetManyResponse = Array<ResourceIntroduction>;
 
 export type ResourceIntroductionsGrantData = {
+    requestBody: UpdateResourceIntroductionDto;
     resourceId: number;
     userId: number;
 };
@@ -2159,6 +2160,19 @@ export type ResourceIntroductionsGetStatusData = {
 };
 
 export type ResourceIntroductionsGetStatusResponse = GetIntroductionStatusResponseDto;
+
+export type ResourceIntroductionsGetHistoryData = {
+    /**
+     * The ID of the resource
+     */
+    resourceId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceIntroductionsGetHistoryResponse = Array<ResourceIntroductionHistoryItem>;
 
 export type GetPluginsResponse = Array<LoadedPluginManifest>;
 
@@ -3566,6 +3580,25 @@ export type $OpenApiTs = {
                  * Introduction status
                  */
                 200: GetIntroductionStatusResponseDto;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introductions/{userId}/history': {
+        get: {
+            req: ResourceIntroductionsGetHistoryData;
+            res: {
+                /**
+                 * The history has been successfully retrieved.
+                 */
+                200: Array<ResourceIntroductionHistoryItem>;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to introduce users to this resource
+                 */
+                403: unknown;
             };
         };
     };

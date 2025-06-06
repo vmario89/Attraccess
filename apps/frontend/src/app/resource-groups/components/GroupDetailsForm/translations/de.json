@@ -1,6 +1,6 @@
 {
   "form": {
-    "title": "Gruppendetails",
+    "title": "Details",
     "subtitle": "Bearbeiten Sie den Gruppennamen und die Beschreibung",
     "fields": {
       "name": {

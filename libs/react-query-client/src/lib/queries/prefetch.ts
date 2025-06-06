@@ -114,6 +114,10 @@ export const prefetchUseAccessControlServiceResourceIntroductionsGetStatus = (qu
   resourceId: number;
   userId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetStatusKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroductionsGetStatus({ resourceId, userId }) });
+export const prefetchUseAccessControlServiceResourceIntroductionsGetHistory = (queryClient: QueryClient, { resourceId, userId }: {
+  resourceId: number;
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetHistoryKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroductionsGetHistory({ resourceId, userId }) });
 export const prefetchUsePluginsServiceGetPlugins = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePluginsServiceGetPluginsKeyFn(), queryFn: () => PluginsService.getPlugins() });
 export const prefetchUsePluginsServiceGetFrontendPluginFile = (queryClient: QueryClient, { filePath, pluginName }: {
   filePath: string;

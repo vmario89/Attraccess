@@ -3,8 +3,8 @@ import { useResourcesServiceResourceGroupsGetOne } from '@attraccess/react-query
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { PageHeader } from '../../components/pageHeader';
 import { GroupDetailsForm } from './components/GroupDetailsForm';
-import { IntroducerManagement } from './components/IntroducerManagement';
-import { IntroductionsManagement } from './components/IntroductionsManagement';
+import { ResoureGroupIntroducerManagement } from './components/IntroducerManagement';
+import { ResourceGroupIntroductionsManagement } from './components/IntroductionsManagement';
 import { Spinner } from '@heroui/react';
 import * as en from './en.json';
 import * as de from './de.json';
@@ -36,13 +36,13 @@ export function ResourceGroupEditPage() {
 
   return (
     <div>
-      <PageHeader title={group.name} subtitle={t('page.subtitle')} icon={<GroupIcon />} />
+      <PageHeader title={group.name} subtitle={t('page.subtitle')} icon={<GroupIcon />} backTo="/" />
 
-      <div className="flex flex-row flex-wrap gap-4">
-        <GroupDetailsForm groupId={numericGroupId} className="flex-grow" />
-        <IntroducerManagement groupId={numericGroupId} className="flex-grow" />
+      <div className="flex flex-row flex-wrap gap-4 items-stretch">
+        <GroupDetailsForm groupId={numericGroupId} className="flex-1 min-w-80" />
+        <ResoureGroupIntroducerManagement groupId={numericGroupId} className="flex-1 min-w-80" />
 
-        <IntroductionsManagement groupId={numericGroupId} className="flex-grow" />
+        <ResourceGroupIntroductionsManagement groupId={numericGroupId} className="flex-1 min-w-80" />
       </div>
     </div>
   );

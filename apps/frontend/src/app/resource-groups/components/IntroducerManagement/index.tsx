@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
-import { Card, CardHeader, CardBody, CardProps } from '@heroui/react';
-import { Users, AlertCircle, Trash2Icon } from 'lucide-react';
+import { Card, CardBody, CardProps } from '@heroui/react';
+import { AlertCircle } from 'lucide-react';
 import {
   useAccessControlServiceResourceGroupIntroducersGetMany,
   useAccessControlServiceResourceGroupIntroducersGrant,
@@ -11,19 +10,20 @@ import {
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useToastMessage } from '../../../../components/toastProvider';
 import { useQueryClient } from '@tanstack/react-query';
-import { UserSelectionList } from '../../../../components/userSelectionList';
 import * as en from './en.json';
 import * as de from './de.json';
-import { PageHeader } from '../../../../components/pageHeader';
+import { IntroducerManagement } from '../../../../components/IntroducerManagement';
 
-interface IntroducerManagementProps {
+interface ResourceGroupIntroducerManagementProps {
   groupId: number;
 }
 
-export function IntroducerManagement(props: Readonly<IntroducerManagementProps & Omit<CardProps, 'children'>>) {
+export function ResoureGroupIntroducerManagement(
+  props: Readonly<ResourceGroupIntroducerManagementProps & Omit<CardProps, 'children'>>
+) {
   const { groupId, ...rest } = props;
 
-  const { t } = useTranslations('introducerManagement', { en, de });
+  const { t } = useTranslations('resourceGroupIntroducerManagement', { en, de });
   const { success, error: showError } = useToastMessage();
   const queryClient = useQueryClient();
 
@@ -37,8 +37,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
     useAccessControlServiceResourceGroupIntroducersGrant({
       onSuccess: () => {
         success({
-          title: t('addSuccessTitle'),
-          description: t('addSuccessDescription'),
+          title: t('add.successTitle'),
+          description: t('add.successDescription'),
         });
         queryClient.invalidateQueries({
           queryKey: UseAccessControlServiceResourceGroupIntroducersGetManyKeyFn({ groupId }),
@@ -46,8 +46,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
       },
       onError: (err: Error) => {
         showError({
-          title: t('addErrorTitle'),
-          description: t('addErrorDescription', { error: err.message }),
+          title: t('add.errorTitle'),
+          description: t('add.errorDescription', { error: err.message }),
         });
       },
     });
@@ -62,8 +62,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
     useAccessControlServiceResourceGroupIntroducersRevoke({
       onSuccess: () => {
         success({
-          title: t('removeSuccessTitle'),
-          description: t('removeSuccessDescription'),
+          title: t('remove.successTitle'),
+          description: t('remove.successDescription'),
         });
         queryClient.invalidateQueries({
           queryKey: UseAccessControlServiceResourceGroupIntroducersGetManyKeyFn({ groupId }),
@@ -71,8 +71,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
       },
       onError: (err: Error) => {
         showError({
-          title: t('removeErrorTitle'),
-          description: t('removeErrorDescription', { error: err.message }),
+          title: t('remove.errorTitle'),
+          description: t('remove.errorDescription', { error: err.message }),
         });
       },
     });
@@ -83,10 +83,6 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
     }
   };
 
-  const introducerUsers = useMemo(() => {
-    return introducersData?.map((introducer) => introducer.user);
-  }, [introducersData]);
-
   if (error) {
     return (
       <Card {...rest}>
@@ -94,8 +90,8 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <AlertCircle size={20} color="red" />
             <div>
-              <p style={{ color: 'red', fontWeight: '500' }}>{t('loadError')}</p>
-              <p style={{ fontSize: '14px', opacity: 0.7 }}>{t('loadErrorDescription')}</p>
+              <p style={{ color: 'red', fontWeight: '500' }}>{t('load.error')}</p>
+              <p style={{ fontSize: '14px', opacity: 0.7 }}>{t('load.errorDescription')}</p>
             </div>
           </div>
         </CardBody>
@@ -104,33 +100,13 @@ export function IntroducerManagement(props: Readonly<IntroducerManagementProps &
   }
 
   return (
-    <Card {...rest}>
-      <CardHeader>
-        <PageHeader title={t('title')} subtitle={t('subtitle')} icon={<Users size={20} />} noMargin={true} />
-      </CardHeader>
-      <CardBody>
-        <UserSelectionList
-          selectedUsers={introducerUsers ?? []}
-          onAddToSelection={grantIntroducer}
-          addToSelectionIsLoading={isGranting}
-          selectedUserIsLoading={isLoading}
-          tableProps={{
-            removeWrapper: true,
-            shadow: 'none',
-          }}
-          actions={[
-            {
-              color: 'danger',
-              isIconOnly: true,
-              isLoading: isRevoking,
-              startContent: <Trash2Icon className="w-4 h-4" />,
-              onClick: (userToRevoke) => {
-                revokeIntroducer(userToRevoke);
-              },
-            },
-          ]}
-        />
-      </CardBody>
-    </Card>
+    <IntroducerManagement
+      isLoadingIntroducers={isLoading}
+      introducers={introducersData ?? []}
+      onGrantIntroducer={grantIntroducer}
+      onRevokeIntroducer={revokeIntroducer}
+      isGranting={isGranting}
+      isRevoking={isRevoking}
+    />
   );
 }

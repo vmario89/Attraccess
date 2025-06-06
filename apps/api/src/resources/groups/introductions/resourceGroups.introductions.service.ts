@@ -57,12 +57,6 @@ export class ResourceGroupsIntroductionsService {
 
     existingIntroduction ??= await this.createOne(groupId, userId);
 
-    const lastHistoryItem = await this.getLastHistoryItemOfIntroduction(existingIntroduction.id);
-
-    if (lastHistoryItem?.action === nextStatus) {
-      return lastHistoryItem;
-    }
-
     const historyItem = this.resourceIntroductionHistoryItemRepository.create({
       introduction: existingIntroduction,
       action: nextStatus,

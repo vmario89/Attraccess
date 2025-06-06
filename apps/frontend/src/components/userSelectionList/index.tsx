@@ -3,6 +3,7 @@ import { User } from '@attraccess/react-query-client';
 import {
   Button,
   ButtonProps,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -14,11 +15,12 @@ import {
 
 import de from './de.json';
 import en from './en.json';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { PlusIcon } from 'lucide-react';
 import { EmptyState } from '../EmptyState';
 
-interface Action<TUser> extends Omit<ButtonProps, 'onClick' | 'children' | 'key'> {
+export interface Action<TUser> extends Omit<ButtonProps, 'onClick' | 'children' | 'key'> {
+  key: string;
   label?: string;
   onClick: (user: TUser) => void;
 }
@@ -27,6 +29,8 @@ export interface Column<TUser> {
   key: string;
   label: string;
   value: ReactNode | ((user: TUser) => ReactNode);
+  headerClassName?: string;
+  cellClassName?: string;
 }
 
 interface Props<TUser> {
@@ -35,8 +39,9 @@ interface Props<TUser> {
   onAddToSelection: (user: User) => void;
   addToSelectionIsLoading?: boolean;
   actions?: Action<TUser>[] | ((user: TUser) => Action<TUser>[]);
-  tableProps?: TableProps;
+  tableProps?: Omit<TableProps, 'bottomContent' | 'children'>;
   additionalColumns?: Column<TUser>[];
+  rowClassName?: string | ((user: TUser) => string | undefined);
 }
 
 export function UserSelectionList<TUser extends User = User>(props: Readonly<Props<TUser>>) {
@@ -48,6 +53,7 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
     actions,
     tableProps,
     additionalColumns,
+    rowClassName,
   } = props;
 
   const { t } = useTranslations('userSelectionList', {
@@ -75,6 +81,19 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
     return actions;
   };
 
+  const [page, setPage] = useState(1);
+  const totalPages = useMemo(() => {
+    return Math.ceil((selectedUsers?.length ?? 0) / 10);
+  }, [selectedUsers]);
+
+  const currentPage = useMemo(() => {
+    if (!selectedUsers) {
+      return [];
+    }
+
+    return selectedUsers.slice((page - 1) * 10, page * 10);
+  }, [selectedUsers, page]);
+
   return (
     <div className="flex flex-col gap-2">
       <UserSearch
@@ -94,22 +113,37 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
         }
       />
 
-      <Table {...tableProps}>
+      <Table
+        {...tableProps}
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination isCompact showControls page={page} total={totalPages} onChange={(page) => setPage(page)} />
+          </div>
+        }
+      >
         <TableHeader>
           <TableColumn>{t('selectedUsers.columns.user')}</TableColumn>
-          {(additionalColumns ?? []).map((col) => <TableColumn key={col.key}>{col.label}</TableColumn>) as any}
+          {
+            (additionalColumns ?? []).map((col) => (
+              <TableColumn className={col.headerClassName} key={col.key}>
+                {col.label}
+              </TableColumn>
+            )) as any
+          }
           <TableColumn>{t('selectedUsers.columns.actions')}</TableColumn>
         </TableHeader>
-        <TableBody items={selectedUsers ?? []} isLoading={selectedUserIsLoading} emptyContent={<EmptyState />}>
+        <TableBody items={currentPage} isLoading={selectedUserIsLoading} emptyContent={<EmptyState />}>
           {(user) => (
-            <TableRow key={user.id}>
+            <TableRow key={user.id} className={typeof rowClassName === 'function' ? rowClassName(user) : rowClassName}>
               <TableCell className="w-full">
                 <AttraccessUser user={user} />
               </TableCell>
 
               {
                 (additionalColumns ?? []).map((col) => (
-                  <TableCell key={col.key}>{typeof col.value === 'function' ? col.value(user) : col.value}</TableCell>
+                  <TableCell className={col.cellClassName} key={col.key}>
+                    {typeof col.value === 'function' ? col.value(user) : col.value}
+                  </TableCell>
                 )) as any
               }
 
@@ -118,7 +152,7 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
                   {parseActions(user).map((action) => (
                     <Button
                       {...{ ...action, label: undefined, onClick: undefined }}
-                      key={action.label}
+                      key={action.key}
                       onPress={() => action.onClick(user)}
                       className="flex"
                     >

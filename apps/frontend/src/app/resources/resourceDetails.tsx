@@ -10,7 +10,7 @@ import { ResourceUsageHistory } from './usage/resourceUsageHistory';
 import { PageHeader } from '../../components/pageHeader';
 import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import {
   useResourcesServiceDeleteOneResource,
   useResourcesServiceGetOneResourceById,
@@ -22,6 +22,8 @@ import { DocumentationModal } from './documentation';
 import de from './resourceDetails.de.json';
 import en from './resourceDetails.en.json';
 import { ResourceEditModal } from './resourceEditModal';
+import { ResoureIntroducerManagement } from './IntroducerManagement';
+import { ResourceIntroductionsManagement } from './IntroductionsManagement';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -69,8 +71,6 @@ function ResourceDetailsComponent() {
   };
 
   const canManageResourceGroups = hasPermission('canManageResources');
-
-  const showGroupsManagement = useMemo(() => canManageResourceGroups, [canManageResourceGroups]);
 
   if (isLoadingResource) {
     return (
@@ -160,27 +160,44 @@ function ResourceDetailsComponent() {
       />
 
       {/* Full width Usage section for all devices */}
-      <div className="w-full space-y-6 mb-8">
+      <div className="w-full space-y-6 mb-6">
         <ResourceUsageSession resourceId={resourceId} resource={resource} data-cy="resource-usage-session" />
         <ResourceUsageHistory resourceId={resourceId} data-cy="resource-usage-history" />
       </div>
 
       {/* Add the ManageResourceGroups component */}
-      {showGroupsManagement && (
-        <div className="mt-8 w-full">
-          <ManageResourceGroups resourceId={resourceId} data-cy="manage-resource-groups" />
-        </div>
-      )}
+      {canManageResourceGroups && (
+        <>
+          <div className="flex flex-row flex-wrap w-full gap-6 items-stretch">
+            <ResourceIntroductionsManagement
+              resourceId={resourceId}
+              className="flex-1 min-w-80"
+              data-cy="manage-resource-introductions"
+            />
 
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        onClose={() => onOpenChange()}
-        onConfirm={handleDelete}
-        itemName={resource.name}
-        data-cy="delete-confirmation-modal"
-      />
+            <ResoureIntroducerManagement
+              resourceId={resourceId}
+              className="flex-1 min-w-80"
+              data-cy="manage-resource-introducers"
+            />
+
+            <ManageResourceGroups
+              resourceId={resourceId}
+              data-cy="manage-resource-groups"
+              className="flex-1 min-w-80"
+            />
+          </div>
+
+          <DeleteConfirmationModal
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            onClose={() => onOpenChange()}
+            onConfirm={handleDelete}
+            itemName={resource.name}
+            data-cy="delete-confirmation-modal"
+          />
+        </>
+      )}
     </div>
   );
 }

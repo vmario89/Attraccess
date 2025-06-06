@@ -1,6 +1,6 @@
 {
   "title": "Introductions",
-  "subtitle": "Manage user introductions for this resource group",
+  "subtitle": "Manage user introductions for this resource",
   "createSuccessTitle": "Introduction Granted",
   "createSuccessDescription": "The introduction has been successfully granted to the user.",
   "createErrorTitle": "Failed to Grant Introduction",

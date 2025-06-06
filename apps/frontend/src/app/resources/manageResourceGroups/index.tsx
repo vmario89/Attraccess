@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ResourceGroup,
   useResourcesServiceGetOneResourceById,
@@ -12,6 +12,8 @@ import {
   Card,
   CardBody,
   CardHeader,
+  CardProps,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -31,7 +33,10 @@ interface ManageResourceGroupsProps {
   resourceId: number;
 }
 
-export function ManageResourceGroups({ resourceId }: Readonly<ManageResourceGroupsProps>) {
+export function ManageResourceGroups({
+  resourceId,
+  ...cardProps
+}: Readonly<ManageResourceGroupsProps & Omit<CardProps, 'children'>>) {
   const { t } = useTranslations('manageResourceGroups', { de, en });
   const queryClient = useQueryClient();
 
@@ -80,26 +85,60 @@ export function ManageResourceGroups({ resourceId }: Readonly<ManageResourceGrou
       return [];
     }
 
-    return groups?.map((group) => ({
-      ...group,
-      resource: isAdded(group) ? resource : null,
-    }));
+    return groups
+      .map((group) => ({
+        ...group,
+        resource: isAdded(group) ? resource : null,
+      }))
+      .sort((a, b) => {
+        if ((a.resource && b.resource) || (!a.resource && !b.resource)) {
+          return a.name.localeCompare(b.name);
+        }
+
+        return a.resource ? -1 : 1;
+      });
   }, [groups, resource, isAdded]);
 
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+  const totalPages = useMemo(() => {
+    return Math.ceil((groupsWithResource?.length ?? 0) / perPage);
+  }, [groupsWithResource]);
+
+  const currentPage = useMemo(() => {
+    if (!groupsWithResource) {
+      return [];
+    }
+
+    return groupsWithResource.slice((page - 1) * perPage, page * perPage);
+  }, [groupsWithResource, page]);
+
   return (
-    <Card>
+    <Card {...cardProps}>
       <CardHeader>
         <PageHeader title={t('title')} subtitle={t('subtitle')} icon={<GroupIcon />} noMargin />
       </CardHeader>
       <CardBody>
-        <Table shadow="none" removeWrapper>
+        <Table
+          isCompact
+          shadow="none"
+          removeWrapper
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination isCompact showControls page={page} total={totalPages} onChange={(page) => setPage(page)} />
+            </div>
+          }
+        >
           <TableHeader>
             <TableColumn>{t('columns.group')}</TableColumn>
             <TableColumn>{t('columns.actions')}</TableColumn>
           </TableHeader>
-          <TableBody items={groupsWithResource} isLoading={isLoadingGroups}>
+          <TableBody items={currentPage} isLoading={isLoadingGroups}>
             {(group) => (
-              <TableRow key={group.id}>
+              <TableRow
+                key={group.id}
+                className={isAdded(group) ? 'border-l-8 border-l-success' : 'border-l-8 border-l-danger'}
+              >
                 <TableCell className="w-full">{group.name}</TableCell>
                 <TableCell className="text-right">
                   <Button

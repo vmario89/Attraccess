@@ -2,30 +2,30 @@ import { useCallback, useState } from 'react';
 import { Card, CardBody, CardProps, useDisclosure } from '@heroui/react';
 import { AlertCircle } from 'lucide-react';
 import {
-  UseAccessControlServiceResourceGroupIntroductionsGetHistoryKeyFn,
-  useAccessControlServiceResourceGroupIntroductionsGetMany,
-  useAccessControlServiceResourceGroupIntroductionsGetManyKey,
-  useAccessControlServiceResourceGroupIntroductionsGrant,
-  useAccessControlServiceResourceGroupIntroductionsRevoke,
+  UseAccessControlServiceResourceIntroductionsGetHistoryKeyFn,
+  useAccessControlServiceResourceIntroductionsGetMany,
+  useAccessControlServiceResourceIntroductionsGetManyKey,
+  useAccessControlServiceResourceIntroductionsGrant,
+  useAccessControlServiceResourceIntroductionsRevoke,
   User,
 } from '@attraccess/react-query-client';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { useToastMessage } from '../../../../components/toastProvider';
+import { useToastMessage } from '../../../components/toastProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import * as en from './en.json';
 import * as de from './de.json';
-import { ResourceGroupIntroductionHistoryModal } from './history';
-import { IntroductionsManagement } from '../../../../components/IntroductionsManagement';
+import { ResourceIntroductionHistoryModal } from './history';
+import { IntroductionsManagement } from '../../../components/IntroductionsManagement';
 
-interface ResourceGroupIntroductionsManagementProps {
-  groupId: number;
+interface ResourceIntroductionsManagementProps {
+  resourceId: number;
 }
 
-export function ResourceGroupIntroductionsManagement(
-  props: Readonly<ResourceGroupIntroductionsManagementProps & Omit<CardProps, 'children'>>
+export function ResourceIntroductionsManagement(
+  props: Readonly<ResourceIntroductionsManagementProps & Omit<CardProps, 'children'>>
 ) {
-  const { groupId, ...rest } = props;
-  const { t } = useTranslations('resourceGroupIntroductionsManagement', { en, de });
+  const { resourceId, ...rest } = props;
+  const { t } = useTranslations('resourceIntroductionsManagement', { en, de });
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
@@ -36,19 +36,19 @@ export function ResourceGroupIntroductionsManagement(
     data: introductions,
     isLoading,
     error,
-  } = useAccessControlServiceResourceGroupIntroductionsGetMany({
-    groupId,
+  } = useAccessControlServiceResourceIntroductionsGetMany({
+    resourceId,
   });
 
   const { mutateAsync: grantIntroductionMutation, isPending: isGranting } =
-    useAccessControlServiceResourceGroupIntroductionsGrant({
+    useAccessControlServiceResourceIntroductionsGrant({
       onSuccess: (data) => {
         toast.success({
           title: t('createSuccessTitle'),
           description: t('createSuccessDescription'),
         });
         queryClient.invalidateQueries({
-          queryKey: [useAccessControlServiceResourceGroupIntroductionsGetManyKey],
+          queryKey: [useAccessControlServiceResourceIntroductionsGetManyKey],
         });
       },
       onError: (err: Error) => {
@@ -62,7 +62,7 @@ export function ResourceGroupIntroductionsManagement(
   const grantIntroduction = useCallback(
     async (user: User, comment?: string) => {
       await grantIntroductionMutation({
-        groupId,
+        resourceId,
         userId: user.id,
         requestBody: {
           comment,
@@ -70,21 +70,21 @@ export function ResourceGroupIntroductionsManagement(
       });
 
       queryClient.invalidateQueries({
-        queryKey: [UseAccessControlServiceResourceGroupIntroductionsGetHistoryKeyFn({ groupId, userId: user.id })],
+        queryKey: [UseAccessControlServiceResourceIntroductionsGetHistoryKeyFn({ resourceId, userId: user.id })],
       });
     },
-    [grantIntroductionMutation, groupId, queryClient]
+    [grantIntroductionMutation, resourceId, queryClient]
   );
 
   const { mutateAsync: revokeIntroductionMutation, isPending: isRevoking } =
-    useAccessControlServiceResourceGroupIntroductionsRevoke({
+    useAccessControlServiceResourceIntroductionsRevoke({
       onSuccess: () => {
         toast.success({
           title: t('revokeSuccessTitle'),
           description: t('revokeSuccessDescription'),
         });
         queryClient.invalidateQueries({
-          queryKey: [useAccessControlServiceResourceGroupIntroductionsGetManyKey],
+          queryKey: [useAccessControlServiceResourceIntroductionsGetManyKey],
         });
       },
       onError: (err: Error) => {
@@ -98,7 +98,7 @@ export function ResourceGroupIntroductionsManagement(
   const revokeIntroduction = useCallback(
     async (user: User, comment?: string) => {
       await revokeIntroductionMutation({
-        groupId,
+        resourceId,
         userId: user.id,
         requestBody: {
           comment,
@@ -106,10 +106,10 @@ export function ResourceGroupIntroductionsManagement(
       });
 
       queryClient.invalidateQueries({
-        queryKey: [UseAccessControlServiceResourceGroupIntroductionsGetHistoryKeyFn({ groupId, userId: user.id })],
+        queryKey: [UseAccessControlServiceResourceIntroductionsGetHistoryKeyFn({ resourceId, userId: user.id })],
       });
     },
-    [revokeIntroductionMutation, groupId, queryClient]
+    [revokeIntroductionMutation, resourceId, queryClient]
   );
 
   if (error) {
@@ -144,8 +144,8 @@ export function ResourceGroupIntroductionsManagement(
         {...rest}
       />
 
-      <ResourceGroupIntroductionHistoryModal
-        groupId={groupId}
+      <ResourceIntroductionHistoryModal
+        resourceId={resourceId}
         userId={userIdForHistoryModal ?? -1}
         isOpen={isHistoryModalOpen}
         onClose={onHistoryModalClose}

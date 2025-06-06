@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroductionsService } from './resouceIntroductions.service';
 import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
 import { GetIntroductionStatusResponseDto } from './dtos/getStatus.response.dto';
@@ -32,9 +32,10 @@ export class ResourceIntroductionsController {
   @IsResourceIntroducer()
   async grant(
     @Param('resourceId', ParseIntPipe) resourceId: number,
-    @Param('userId', ParseIntPipe) userId: number
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() data: UpdateResourceIntroductionDto
   ): Promise<ResourceIntroductionHistoryItem> {
-    return await this.resourceIntroductionsService.grant(resourceId, userId);
+    return await this.resourceIntroductionsService.grant(resourceId, userId, data);
   }
 
   @Delete('/:userId/revoke')
@@ -75,5 +76,25 @@ export class ResourceIntroductionsController {
     return {
       hasValidIntroduction,
     };
+  }
+
+  @Get('/:userId/history')
+  @ApiOperation({
+    summary: 'Get history of introductions by resource ID and user ID',
+    operationId: 'resourceIntroductionsGetHistory',
+  })
+  @ApiParam({ name: 'resourceId', description: 'The ID of the resource', type: Number })
+  @ApiParam({ name: 'userId', description: 'The ID of the user', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'The history has been successfully retrieved.',
+    type: [ResourceIntroductionHistoryItem],
+  })
+  @IsResourceIntroducer()
+  async getHistory(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Param('userId', ParseIntPipe) userId: number
+  ): Promise<ResourceIntroductionHistoryItem[]> {
+    return await this.resourceIntroductionsService.getHistoryByResourceIdAndUserId(resourceId, userId);
   }
 }
