@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import {
   ResourceGroup,
+  useResourcesServiceGetAllResourcesKey,
   useResourcesServiceGetOneResourceById,
   UseResourcesServiceGetOneResourceByIdKeyFn,
   useResourcesServiceResourceGroupsAddResource,
@@ -22,12 +23,12 @@ import {
   TableRow,
 } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-
-import * as en from './en.json';
-import * as de from './de.json';
 import { GroupIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '../../../components/pageHeader';
+
+import * as en from './en.json';
+import * as de from './de.json';
 
 interface ManageResourceGroupsProps {
   resourceId: number;
@@ -44,17 +45,14 @@ export function ManageResourceGroups({
 
   const { data: groups, isLoading: isLoadingGroups } = useResourcesServiceResourceGroupsGetMany();
 
-  const { mutate: addResourceToGroup, isPending: isAdding } = useResourcesServiceResourceGroupsAddResource({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId }) });
-    },
-  });
+  const { mutateAsync: addResourceToGroup, isPending: isAdding } = useResourcesServiceResourceGroupsAddResource();
 
-  const { mutate: removeResourceFromGroup, isPending: isRemoving } = useResourcesServiceResourceGroupsRemoveResource({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId }) });
-    },
-  });
+  const { mutateAsync: removeResourceFromGroup, isPending: isRemoving } =
+    useResourcesServiceResourceGroupsRemoveResource({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId }) });
+      },
+    });
 
   const isAdded = useCallback(
     (group: ResourceGroup) => {
@@ -64,20 +62,25 @@ export function ManageResourceGroups({
   );
 
   const handleGroupClick = useCallback(
-    (group: ResourceGroup) => {
+    async (group: ResourceGroup) => {
       if (!isAdded(group)) {
-        addResourceToGroup({
+        await addResourceToGroup({
           groupId: group.id,
           resourceId,
         });
       } else {
-        removeResourceFromGroup({
+        await removeResourceFromGroup({
           groupId: group.id,
           resourceId,
         });
       }
+
+      queryClient.invalidateQueries({
+        queryKey: [useResourcesServiceGetAllResourcesKey],
+      });
+      queryClient.invalidateQueries({ queryKey: UseResourcesServiceGetOneResourceByIdKeyFn({ id: resourceId }) });
     },
-    [addResourceToGroup, removeResourceFromGroup, resourceId, isAdded]
+    [addResourceToGroup, removeResourceFromGroup, resourceId, isAdded, queryClient]
   );
 
   const groupsWithResource = useMemo(() => {

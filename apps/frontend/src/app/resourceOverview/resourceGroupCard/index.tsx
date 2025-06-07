@@ -7,10 +7,12 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   CardProps,
   Image,
   Link,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -19,7 +21,7 @@ import {
   TableRow,
 } from '@heroui/react';
 import { PageHeader } from '../../../components/pageHeader';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { filenameToUrl } from '../../../api';
 import { StatusChip } from './statusChip';
 import { ChevronRightIcon, Settings2Icon } from 'lucide-react';
@@ -28,6 +30,7 @@ import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import en from './en.json';
 import de from './de.json';
 import { useAuth } from '../../../hooks/useAuth';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 interface Props {
   groupId: number | 'none';
@@ -40,6 +43,10 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
   const { t } = useTranslations('resourceGroupCard', { de, en });
   const { hasPermission, user } = useAuth();
 
+  const debouncedSearchValue = useDebounce(searchValue, 250);
+  const perPage = 1;
+  const [page, setPage] = useState(1);
+
   const { data: group, isLoading: isLoadingGroup } = useResourcesServiceResourceGroupsGetOne(
     { id: groupId as number },
     undefined,
@@ -49,12 +56,25 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
   );
 
   const { data: resources, isLoading: isLoadingResources } = useResourcesServiceGetAllResources(
-    { groupId: groupId === 'none' ? -1 : groupId, search: searchValue?.trim() || undefined },
+    {
+      groupId: groupId === 'none' ? -1 : groupId,
+      search: debouncedSearchValue?.trim() || undefined,
+      page,
+      limit: perPage,
+    },
     undefined,
     {
       enabled: !!groupId,
     }
   );
+
+  const totalPages = useMemo(() => {
+    if (!resources?.total) {
+      return 1;
+    }
+
+    return Math.ceil(resources.total / perPage);
+  }, [resources, perPage]);
 
   const isLoading = useMemo(() => isLoadingGroup || isLoadingResources, [isLoadingGroup, isLoadingResources]);
 
@@ -139,6 +159,10 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
           </TableBody>
         </Table>
       </CardBody>
+
+      <CardFooter className="flex w-full justify-center">
+        <Pagination isCompact showControls page={page} total={totalPages} onChange={(page) => setPage(page)} />
+      </CardFooter>
     </Card>
   );
 }

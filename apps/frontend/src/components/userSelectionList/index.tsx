@@ -86,13 +86,17 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
     return Math.ceil((selectedUsers?.length ?? 0) / 10);
   }, [selectedUsers]);
 
-  const currentPage = useMemo(() => {
+  const sortedUsers = useMemo(() => {
     if (!selectedUsers) {
       return [];
     }
 
-    return selectedUsers.slice((page - 1) * 10, page * 10);
-  }, [selectedUsers, page]);
+    return [...selectedUsers].sort((a, b) => a.username.localeCompare(b.username));
+  }, [selectedUsers]);
+
+  const currentPage = useMemo(() => {
+    return sortedUsers.slice((page - 1) * 10, page * 10);
+  }, [sortedUsers, page]);
 
   return (
     <div className="flex flex-col gap-2">

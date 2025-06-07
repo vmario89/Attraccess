@@ -18,7 +18,7 @@ import {
   useAccessControlServiceResourceIntroducersIsIntroducer,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ManageResourceGroups } from '../manageResourceGroups';
+import { ManageResourceGroups } from '../groups';
 import { DocumentationModal } from '../documentation';
 import de from './resourceDetails.de.json';
 import en from './resourceDetails.en.json';

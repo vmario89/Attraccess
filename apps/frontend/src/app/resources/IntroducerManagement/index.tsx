@@ -29,8 +29,6 @@ export function ResoureIntroducerManagement(
 
   const { data: introducers, isLoading, error } = useAccessControlServiceResourceIntroducersGetMany({ resourceId });
 
-  console.log('introducersData', introducers);
-
   const { mutate: grantIntroducerMutation, isPending: isGranting } = useAccessControlServiceResourceIntroducersGrant({
     onSuccess: () => {
       success({

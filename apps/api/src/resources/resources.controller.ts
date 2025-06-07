@@ -32,14 +32,14 @@ export class ResourcesController {
     private readonly resourceImageService: ResourceImageService
   ) {}
 
-  private transformResource = (resource: Resource): Resource => {
+  private transformResource(resource: Resource): Resource {
     return {
       ...resource,
       imageFilename: resource.imageFilename
         ? this.resourceImageService.getPublicPath(resource.id, resource.imageFilename)
         : null,
     };
-  };
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new resource', operationId: 'createOneResource' })
@@ -71,7 +71,9 @@ export class ResourcesController {
   async getAll(@Query() query: ListResourcesDto): Promise<PaginatedResponse<Resource>> {
     const resources = (await this.resourcesService.listResources(query)) as PaginatedResourceResponseDto;
 
-    resources.data = resources.data.map(this.transformResource);
+    resources.data = resources.data.map((resource) => {
+      return this.transformResource(resource);
+    });
     return resources;
   }
 

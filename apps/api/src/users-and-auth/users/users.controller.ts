@@ -266,7 +266,6 @@ export class UsersController {
     description: 'Forbidden - User does not have permission to manage users.',
   })
   async findMany(@Query() query: FindManyUsersQueryDto): Promise<PaginatedUsersResponseDto> {
-    console.log(query);
     const result = (await this.usersService.findMany({
       page: query.page,
       limit: query.limit,

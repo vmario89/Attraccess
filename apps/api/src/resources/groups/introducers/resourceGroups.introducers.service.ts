@@ -48,7 +48,6 @@ export class ResourceGroupsIntroducersService {
       user: { id: userId },
     });
 
-    console.log('creating one', introducer);
     return await this.resourceIntroducerRepository.save(introducer, { reload: true });
   }
 

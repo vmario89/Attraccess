@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ResourcesService } from './resources.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Resource, DocumentationType } from '@attraccess/database-entities';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { ResourceNotFoundException } from '../exceptions/resource.notFound.exception';
@@ -22,7 +22,13 @@ describe('ResourcesService', () => {
     delete: jest.fn(),
     createQueryBuilder: jest.fn(() => ({
       leftJoinAndSelect: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getSql: jest.fn().mockReturnValue('SELECT * FROM resource'),
+      getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
       getOne: jest.fn(),
     })),
   });
@@ -98,7 +104,20 @@ describe('ResourcesService', () => {
         },
       ];
 
-      resourceRepository.findAndCount.mockResolvedValue([mockResources, 2]);
+      // Mock the query builder chain to return the expected results
+      const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getSql: jest.fn().mockReturnValue('SELECT * FROM resource'),
+        getManyAndCount: jest.fn().mockResolvedValue([mockResources, 2]),
+        getOne: jest.fn(),
+      } as unknown as SelectQueryBuilder<Resource>;
+
+      resourceRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
       const result = await service.listResources({ page: 1, limit: 10 });
 
@@ -106,7 +125,12 @@ describe('ResourcesService', () => {
       expect(result.total).toEqual(2);
       expect(result.page).toEqual(1);
       expect(result.limit).toEqual(10);
-      expect(resourceRepository.findAndCount).toHaveBeenCalled();
+      expect(resourceRepository.createQueryBuilder).toHaveBeenCalledWith('resource');
+      expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('resource.groups', 'groups');
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('resource.createdAt', 'DESC');
+      expect(mockQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(10);
+      expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalled();
     });
   });
 
