@@ -24,9 +24,9 @@ import {
   useResourcesServiceCreateOneResource,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ImageUpload } from '../../components/imageUpload';
-import { useToastMessage } from '../../components/toastProvider';
-import { filenameToUrl } from '../../api';
+import { ImageUpload } from '../../../components/imageUpload';
+import { useToastMessage } from '../../../components/toastProvider';
+import { filenameToUrl } from '../../../api';
 
 interface ResourceEditModalProps {
   resourceId?: Resource['id'];

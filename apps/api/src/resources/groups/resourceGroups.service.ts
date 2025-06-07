@@ -14,9 +14,9 @@ interface GetOneSearchOptions {
 export class ResourceGroupsService {
   constructor(
     @InjectRepository(ResourceGroup)
-    private resourceGroupRepository: Repository<ResourceGroup>,
+    private readonly resourceGroupRepository: Repository<ResourceGroup>,
     @InjectRepository(Resource)
-    private resourceRepository: Repository<Resource>
+    private readonly resourceRepository: Repository<Resource>
   ) {}
 
   public async createOne(dto: CreateResourceGroupDto): Promise<ResourceGroup> {
@@ -93,5 +93,15 @@ export class ResourceGroupsService {
     if (result.affected === 0) {
       throw new ResourceGroupNotFoundException({ id: groupId });
     }
+  }
+
+  public async getGroupsOfResource(resourceId: number): Promise<ResourceGroup[]> {
+    return await this.resourceGroupRepository.find({
+      where: {
+        resources: {
+          id: resourceId,
+        },
+      },
+    });
   }
 }

@@ -1,6 +1,6 @@
 import { useAccessControlServiceResourceGroupIntroductionsGetHistory } from '@attraccess/react-query-client';
 import { useEffect } from 'react';
-import { IntroductionHistoryModal } from '../../../../../components/IntroductionsManagement/history';
+import { IntroductionHistoryModal } from '../../../../components/IntroductionsManagement/history';
 
 interface Props {
   groupId: number;

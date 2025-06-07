@@ -66,4 +66,15 @@ export class ResourceGroupsIntroducersService {
 
     return await this.resourceIntroducerRepository.remove(introducer);
   }
+
+  public async isIntroducer({ groupId, userId }: { groupId: number; userId: number }): Promise<boolean> {
+    const introducer = await this.resourceIntroducerRepository.findOne({
+      where: {
+        resourceGroup: { id: groupId },
+        user: { id: userId },
+      },
+    });
+
+    return !!introducer;
+  }
 }

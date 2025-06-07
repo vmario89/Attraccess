@@ -10,12 +10,12 @@ import {
   User,
 } from '@attraccess/react-query-client';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { useToastMessage } from '../../../../components/toastProvider';
+import { useToastMessage } from '../../../components/toastProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import * as en from './en.json';
 import * as de from './de.json';
 import { ResourceGroupIntroductionHistoryModal } from './history';
-import { IntroductionsManagement } from '../../../../components/IntroductionsManagement';
+import { IntroductionsManagement } from '../../../components/IntroductionsManagement';
 
 interface ResourceGroupIntroductionsManagementProps {
   groupId: number;

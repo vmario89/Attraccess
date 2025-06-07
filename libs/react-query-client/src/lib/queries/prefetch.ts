@@ -68,6 +68,9 @@ export const prefetchUseResourcesServiceResourceUsageGetHistory = (queryClient: 
 export const prefetchUseResourcesServiceResourceUsageGetActiveSession = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceResourceUsageGetActiveSessionKeyFn({ resourceId }), queryFn: () => ResourcesService.resourceUsageGetActiveSession({ resourceId }) });
+export const prefetchUseResourcesServiceResourceUsageCanControl = (queryClient: QueryClient, { resourceId }: {
+  resourceId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceResourceUsageCanControlKeyFn({ resourceId }), queryFn: () => ResourcesService.resourceUsageCanControl({ resourceId }) });
 export const prefetchUseMqttServiceMqttServersGetAll = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseMqttServiceMqttServersGetAllKeyFn(), queryFn: () => MqttService.mqttServersGetAll() });
 export const prefetchUseMqttServiceMqttServersGetOneById = (queryClient: QueryClient, { id }: {
   id: number;
@@ -100,20 +103,20 @@ export const prefetchUseAccessControlServiceResourceGroupIntroductionsGetHistory
 export const prefetchUseAccessControlServiceResourceGroupIntroducersGetMany = (queryClient: QueryClient, { groupId }: {
   groupId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceGroupIntroducersGetManyKeyFn({ groupId }), queryFn: () => AccessControlService.resourceGroupIntroducersGetMany({ groupId }) });
+export const prefetchUseAccessControlServiceResourceGroupIntroducersIsIntroducer = (queryClient: QueryClient, { groupId, userId }: {
+  groupId: number;
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceGroupIntroducersIsIntroducerKeyFn({ groupId, userId }), queryFn: () => AccessControlService.resourceGroupIntroducersIsIntroducer({ groupId, userId }) });
+export const prefetchUseAccessControlServiceResourceIntroducersIsIntroducer = (queryClient: QueryClient, { resourceId, userId }: {
+  resourceId: number;
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroducersIsIntroducerKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroducersIsIntroducer({ resourceId, userId }) });
 export const prefetchUseAccessControlServiceResourceIntroducersGetMany = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroducersGetManyKeyFn({ resourceId }), queryFn: () => AccessControlService.resourceIntroducersGetMany({ resourceId }) });
-export const prefetchUseAccessControlServiceResourceIntroducersGetStatus = (queryClient: QueryClient, { resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroducersGetStatusKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroducersGetStatus({ resourceId, userId }) });
 export const prefetchUseAccessControlServiceResourceIntroductionsGetMany = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetManyKeyFn({ resourceId }), queryFn: () => AccessControlService.resourceIntroductionsGetMany({ resourceId }) });
-export const prefetchUseAccessControlServiceResourceIntroductionsGetStatus = (queryClient: QueryClient, { resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetStatusKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroductionsGetStatus({ resourceId, userId }) });
 export const prefetchUseAccessControlServiceResourceIntroductionsGetHistory = (queryClient: QueryClient, { resourceId, userId }: {
   resourceId: number;
   userId: number;

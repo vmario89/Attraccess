@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetIntroducerStatusResponseDto {
+export class IsResourceGroupIntroducerResponseDto {
   @ApiProperty({
     description: 'Whether the user is an introducer for the resource',
-    example: true,
+    type: Boolean,
   })
-  isIntroducer!: boolean;
+  isIntroducer: boolean;
 }

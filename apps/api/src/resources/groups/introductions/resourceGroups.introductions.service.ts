@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import {
   IntroductionHistoryAction,
+  ResourceGroup,
   ResourceIntroduction,
   ResourceIntroductionHistoryItem,
 } from '@attraccess/database-entities';
@@ -15,7 +16,9 @@ export class ResourceGroupsIntroductionsService {
     @InjectRepository(ResourceIntroduction)
     private readonly resourceIntroductionRepository: Repository<ResourceIntroduction>,
     @InjectRepository(ResourceIntroductionHistoryItem)
-    private readonly resourceIntroductionHistoryItemRepository: Repository<ResourceIntroductionHistoryItem>
+    private readonly resourceIntroductionHistoryItemRepository: Repository<ResourceIntroductionHistoryItem>,
+    @InjectRepository(ResourceGroup)
+    private readonly resourceGroupRepository: Repository<ResourceGroup>
   ) {}
 
   private async getLastHistoryItemOfIntroduction(
@@ -100,5 +103,25 @@ export class ResourceGroupsIntroductionsService {
     return await this.resourceIntroductionHistoryItemRepository.find({
       where: { introduction: { resourceGroup: { id: groupId }, receiverUser: { id: userId } } },
     });
+  }
+
+  public async hasValidIntroduction({ groupId, userId }: { groupId: number; userId: number }): Promise<boolean> {
+    const introduction = await this.resourceIntroductionRepository.findOne({
+      where: {
+        resourceGroup: {
+          id: groupId,
+        },
+        receiverUser: {
+          id: userId,
+        },
+      },
+    });
+
+    if (!introduction) {
+      return false;
+    }
+
+    const lastHistoryItem = await this.getLastHistoryItemOfIntroduction(introduction.id);
+    return lastHistoryItem?.action === IntroductionHistoryAction.GRANT;
   }
 }

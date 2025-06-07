@@ -23,7 +23,7 @@ import {
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useToastMessage } from '../../components/toastProvider';
+import { useToastMessage } from '../../../components/toastProvider';
 import { useNavigate } from 'react-router-dom';
 
 interface ResourceGroupUpsertModalProps {

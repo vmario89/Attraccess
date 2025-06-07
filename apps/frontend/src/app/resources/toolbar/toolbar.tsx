@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
 import { Search, Plus } from 'lucide-react';
-import { ResourceGroupUpsertModal } from './resourceGroupUpsertModal';
-import { useAuth } from '../../hooks/useAuth';
+import { ResourceGroupUpsertModal } from '../../resource-groups/upsertModal/resourceGroupUpsertModal';
+import { useAuth } from '../../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './toolbar.en.json';
-import * as de from './toolbar.de.json';
-import { ResourceEditModal } from './resourceEditModal';
+import * as en from '../toolbar/toolbar.en.json';
+import * as de from '../toolbar/toolbar.de.json';
+import { ResourceEditModal } from '../../resources/editModal/resourceEditModal';
 import { useNavigate } from 'react-router-dom';
 
 interface ToolbarProps {
@@ -15,7 +15,7 @@ interface ToolbarProps {
   searchIsLoading?: boolean;
 }
 
-export function Toolbar({ onSearch, searchIsLoading }: ToolbarProps) {
+export function Toolbar({ onSearch, searchIsLoading }: Readonly<ToolbarProps>) {
   const { hasPermission } = useAuth();
   const canManageResources = hasPermission('canManageResources');
   const [searchValue, setSearchValue] = useState('');

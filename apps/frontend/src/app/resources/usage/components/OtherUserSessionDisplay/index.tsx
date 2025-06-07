@@ -8,8 +8,9 @@ import {
   UseResourcesServiceResourceUsageGetActiveSessionKeyFn,
   UseResourcesServiceResourceUsageGetHistoryKeyFn,
   useResourcesServiceResourceUsageGetActiveSession,
-  useAccessControlServiceResourceIntroductionsGetStatus,
   useAccessControlServiceResourceIntroducersGetMany,
+  useResourcesServiceResourceUsageCanControl,
+  useResourcesServiceGetOneResourceById,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../../../hooks/useAuth';
@@ -36,11 +37,7 @@ export function OtherUserSessionDisplay({ resourceId }: OtherUserSessionDisplayP
   const { data: activeSessionResponse } = useResourcesServiceResourceUsageGetActiveSession({ resourceId });
   const activeSession = useMemo(() => activeSessionResponse?.usage, [activeSessionResponse]);
 
-  // Check if user has completed the introduction
-  const { data: introduction } = useAccessControlServiceResourceIntroductionsGetStatus({
-    resourceId,
-    userId: user?.id || 0,
-  });
+  const { data: access } = useResourcesServiceResourceUsageCanControl({ resourceId });
 
   // Get list of users who can give introductions
   const { data: introducers } = useAccessControlServiceResourceIntroducersGetMany({ resourceId });
@@ -51,9 +48,10 @@ export function OtherUserSessionDisplay({ resourceId }: OtherUserSessionDisplayP
     return introducers?.some((introducer) => introducer.userId === user?.id);
   }, [introducers, user]);
 
-  const canStartSession = canManageResources || introduction?.hasValidIntroduction || isIntroducer;
-  // For now, we'll assume takeover is allowed - this should be fetched from resource data if needed
-  const canTakeover = canStartSession; // resource?.allowTakeOver && canStartSession;
+  const { data: resource } = useResourcesServiceGetOneResourceById({ id: resourceId });
+
+  const canStartSession = canManageResources || access?.canControl || isIntroducer;
+  const canTakeover = resource?.allowTakeOver && canStartSession;
 
   const startSession = useResourcesServiceResourceUsageStartSession({
     onSuccess: () => {

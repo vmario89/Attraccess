@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestj
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroductionsService } from './resouceIntroductions.service';
 import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
-import { GetIntroductionStatusResponseDto } from './dtos/getStatus.response.dto';
 import { IsResourceIntroducer } from './isIntroducer.decorator';
 import { UpdateResourceIntroductionDto } from './dtos/update.request.dto';
 
@@ -55,27 +54,6 @@ export class ResourceIntroductionsController {
     @Body() data: UpdateResourceIntroductionDto
   ): Promise<ResourceIntroductionHistoryItem> {
     return await this.resourceIntroductionsService.revoke(resourceId, userId, data);
-  }
-
-  @Get('/:userId/status')
-  @ApiOperation({
-    summary: 'Get the status of an introduction for a user',
-    operationId: 'resourceIntroductionsGetStatus',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Introduction status',
-    type: GetIntroductionStatusResponseDto,
-  })
-  async getStatus(
-    @Param('resourceId', ParseIntPipe) resourceId: number,
-    @Param('userId', ParseIntPipe) userId: number
-  ): Promise<{ hasValidIntroduction: boolean }> {
-    const hasValidIntroduction = await this.resourceIntroductionsService.hasValidIntroduction(resourceId, userId);
-
-    return {
-      hasValidIntroduction,
-    };
   }
 
   @Get('/:userId/history')

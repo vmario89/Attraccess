@@ -124,6 +124,12 @@ export const useResourcesServiceResourceUsageGetActiveSessionKey = "ResourcesSer
 export const UseResourcesServiceResourceUsageGetActiveSessionKeyFn = ({ resourceId }: {
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useResourcesServiceResourceUsageGetActiveSessionKey, ...(queryKey ?? [{ resourceId }])];
+export type ResourcesServiceResourceUsageCanControlDefaultResponse = Awaited<ReturnType<typeof ResourcesService.resourceUsageCanControl>>;
+export type ResourcesServiceResourceUsageCanControlQueryResult<TData = ResourcesServiceResourceUsageCanControlDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useResourcesServiceResourceUsageCanControlKey = "ResourcesServiceResourceUsageCanControl";
+export const UseResourcesServiceResourceUsageCanControlKeyFn = ({ resourceId }: {
+  resourceId: number;
+}, queryKey?: Array<unknown>) => [useResourcesServiceResourceUsageCanControlKey, ...(queryKey ?? [{ resourceId }])];
 export type MqttServiceMqttServersGetAllDefaultResponse = Awaited<ReturnType<typeof MqttService.mqttServersGetAll>>;
 export type MqttServiceMqttServersGetAllQueryResult<TData = MqttServiceMqttServersGetAllDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useMqttServiceMqttServersGetAllKey = "MqttServiceMqttServersGetAll";
@@ -189,32 +195,32 @@ export const useAccessControlServiceResourceGroupIntroducersGetManyKey = "Access
 export const UseAccessControlServiceResourceGroupIntroducersGetManyKeyFn = ({ groupId }: {
   groupId: number;
 }, queryKey?: Array<unknown>) => [useAccessControlServiceResourceGroupIntroducersGetManyKey, ...(queryKey ?? [{ groupId }])];
+export type AccessControlServiceResourceGroupIntroducersIsIntroducerDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceGroupIntroducersIsIntroducer>>;
+export type AccessControlServiceResourceGroupIntroducersIsIntroducerQueryResult<TData = AccessControlServiceResourceGroupIntroducersIsIntroducerDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useAccessControlServiceResourceGroupIntroducersIsIntroducerKey = "AccessControlServiceResourceGroupIntroducersIsIntroducer";
+export const UseAccessControlServiceResourceGroupIntroducersIsIntroducerKeyFn = ({ groupId, userId }: {
+  groupId: number;
+  userId: number;
+}, queryKey?: Array<unknown>) => [useAccessControlServiceResourceGroupIntroducersIsIntroducerKey, ...(queryKey ?? [{ groupId, userId }])];
+export type AccessControlServiceResourceIntroducersIsIntroducerDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroducersIsIntroducer>>;
+export type AccessControlServiceResourceIntroducersIsIntroducerQueryResult<TData = AccessControlServiceResourceIntroducersIsIntroducerDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useAccessControlServiceResourceIntroducersIsIntroducerKey = "AccessControlServiceResourceIntroducersIsIntroducer";
+export const UseAccessControlServiceResourceIntroducersIsIntroducerKeyFn = ({ resourceId, userId }: {
+  resourceId: number;
+  userId: number;
+}, queryKey?: Array<unknown>) => [useAccessControlServiceResourceIntroducersIsIntroducerKey, ...(queryKey ?? [{ resourceId, userId }])];
 export type AccessControlServiceResourceIntroducersGetManyDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroducersGetMany>>;
 export type AccessControlServiceResourceIntroducersGetManyQueryResult<TData = AccessControlServiceResourceIntroducersGetManyDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useAccessControlServiceResourceIntroducersGetManyKey = "AccessControlServiceResourceIntroducersGetMany";
 export const UseAccessControlServiceResourceIntroducersGetManyKeyFn = ({ resourceId }: {
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useAccessControlServiceResourceIntroducersGetManyKey, ...(queryKey ?? [{ resourceId }])];
-export type AccessControlServiceResourceIntroducersGetStatusDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroducersGetStatus>>;
-export type AccessControlServiceResourceIntroducersGetStatusQueryResult<TData = AccessControlServiceResourceIntroducersGetStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useAccessControlServiceResourceIntroducersGetStatusKey = "AccessControlServiceResourceIntroducersGetStatus";
-export const UseAccessControlServiceResourceIntroducersGetStatusKeyFn = ({ resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}, queryKey?: Array<unknown>) => [useAccessControlServiceResourceIntroducersGetStatusKey, ...(queryKey ?? [{ resourceId, userId }])];
 export type AccessControlServiceResourceIntroductionsGetManyDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroductionsGetMany>>;
 export type AccessControlServiceResourceIntroductionsGetManyQueryResult<TData = AccessControlServiceResourceIntroductionsGetManyDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useAccessControlServiceResourceIntroductionsGetManyKey = "AccessControlServiceResourceIntroductionsGetMany";
 export const UseAccessControlServiceResourceIntroductionsGetManyKeyFn = ({ resourceId }: {
   resourceId: number;
 }, queryKey?: Array<unknown>) => [useAccessControlServiceResourceIntroductionsGetManyKey, ...(queryKey ?? [{ resourceId }])];
-export type AccessControlServiceResourceIntroductionsGetStatusDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroductionsGetStatus>>;
-export type AccessControlServiceResourceIntroductionsGetStatusQueryResult<TData = AccessControlServiceResourceIntroductionsGetStatusDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useAccessControlServiceResourceIntroductionsGetStatusKey = "AccessControlServiceResourceIntroductionsGetStatus";
-export const UseAccessControlServiceResourceIntroductionsGetStatusKeyFn = ({ resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}, queryKey?: Array<unknown>) => [useAccessControlServiceResourceIntroductionsGetStatusKey, ...(queryKey ?? [{ resourceId, userId }])];
 export type AccessControlServiceResourceIntroductionsGetHistoryDefaultResponse = Awaited<ReturnType<typeof AccessControlService.resourceIntroductionsGetHistory>>;
 export type AccessControlServiceResourceIntroductionsGetHistoryQueryResult<TData = AccessControlServiceResourceIntroductionsGetHistoryDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useAccessControlServiceResourceIntroductionsGetHistoryKey = "AccessControlServiceResourceIntroductionsGetHistory";

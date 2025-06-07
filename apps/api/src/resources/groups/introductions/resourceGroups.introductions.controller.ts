@@ -4,7 +4,6 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroduction, ResourceIntroductionHistoryItem } from '@attraccess/database-entities';
 import { IsResourceGroupIntroducer } from './isIntroducer.decorator';
 import { UpdateResourceGroupIntroductionDto } from './dtos/update.request.dto';
-import { IsResourceIntroducer } from '../../introductions/isIntroducer.decorator';
 
 @ApiTags('Access Control')
 @Controller('resource-groups/:groupId/introductions')
@@ -19,7 +18,7 @@ export class ResourceGroupsIntroductionsController {
     description: 'The introductions have been successfully retrieved.',
     type: [ResourceIntroduction],
   })
-  @IsResourceIntroducer()
+  @IsResourceGroupIntroducer()
   async getMany(@Param('groupId', ParseIntPipe) groupId: number): Promise<ResourceIntroduction[]> {
     return await this.resourceGroupsIntroductionsService.getManyByGroupId(groupId);
   }
@@ -36,7 +35,7 @@ export class ResourceGroupsIntroductionsController {
     description: 'The history has been successfully retrieved.',
     type: [ResourceIntroductionHistoryItem],
   })
-  @IsResourceIntroducer()
+  @IsResourceGroupIntroducer()
   async getHistory(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('userId', ParseIntPipe) userId: number

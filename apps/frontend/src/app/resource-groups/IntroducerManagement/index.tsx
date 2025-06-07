@@ -8,11 +8,11 @@ import {
   User,
 } from '@attraccess/react-query-client';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { useToastMessage } from '../../../../components/toastProvider';
+import { useToastMessage } from '../../../components/toastProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import * as en from './en.json';
 import * as de from './de.json';
-import { IntroducerManagement } from '../../../../components/IntroducerManagement';
+import { IntroducerManagement } from '../../../components/IntroducerManagement';
 
 interface ResourceGroupIntroducerManagementProps {
   groupId: number;
@@ -21,7 +21,7 @@ interface ResourceGroupIntroducerManagementProps {
 export function ResoureGroupIntroducerManagement(
   props: Readonly<ResourceGroupIntroducerManagementProps & Omit<CardProps, 'children'>>
 ) {
-  const { groupId, ...rest } = props;
+  const { groupId, ...cardProps } = props;
 
   const { t } = useTranslations('resourceGroupIntroducerManagement', { en, de });
   const { success, error: showError } = useToastMessage();
@@ -85,7 +85,7 @@ export function ResoureGroupIntroducerManagement(
 
   if (error) {
     return (
-      <Card {...rest}>
+      <Card {...cardProps}>
         <CardBody>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <AlertCircle size={20} color="red" />
@@ -107,6 +107,7 @@ export function ResoureGroupIntroducerManagement(
       onRevokeIntroducer={revokeIntroducer}
       isGranting={isGranting}
       isRevoking={isRevoking}
+      {...cardProps}
     />
   );
 }

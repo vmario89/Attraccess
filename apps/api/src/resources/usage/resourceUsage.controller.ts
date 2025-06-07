@@ -9,6 +9,7 @@ import { makePaginatedResponse } from '../../types/response';
 import { GetResourceHistoryQueryDto } from './dtos/getResourceHistoryQuery.dto';
 import { GetResourceHistoryResponseDto } from './dtos/GetResourceHistoryResponse.dto';
 import { GetActiveUsageSessionDto } from './dtos/getActiveUsageSession.dto';
+import { CanControlResponseDto } from './dtos/canControl.response.dto';
 
 @ApiTags('Resources')
 @Controller('resources/:resourceId/usage')
@@ -139,5 +140,22 @@ export class ResourceUsageController {
   async getActiveSession(@Param('resourceId', ParseIntPipe) resourceId: number): Promise<GetActiveUsageSessionDto> {
     const activeSession = await this.resourceUsageService.getActiveSession(resourceId);
     return { usage: activeSession || null };
+  }
+
+  @Get('can-control')
+  @Auth()
+  @ApiOperation({ summary: 'Check if the current user can control a resource', operationId: 'resourceUsageCanControl' })
+  @ApiResponse({
+    status: 200,
+    description: 'User can control resource',
+    type: CanControlResponseDto,
+  })
+  async canControl(
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Req() req: AuthenticatedRequest
+  ): Promise<CanControlResponseDto> {
+    return {
+      canControl: await this.resourceUsageService.canControllResource(resourceId, req.user),
+    } as CanControlResponseDto;
   }
 }

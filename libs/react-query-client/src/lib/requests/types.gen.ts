@@ -1175,6 +1175,13 @@ export type ResourceIntroducer = {
     user: User;
 };
 
+export type IsResourceGroupIntroducerResponseDto = {
+    /**
+     * Whether the user is an introducer for the resource
+     */
+    isIntroducer: boolean;
+};
+
 export type StartUsageSessionDto = {
     /**
      * Optional notes about the usage session
@@ -1259,7 +1266,14 @@ export type GetActiveUsageSessionDto = {
     usage: (ResourceUsage) | null;
 };
 
-export type GetIntroducerStatusResponseDto = {
+export type CanControlResponseDto = {
+    /**
+     * Whether the user can control the resource
+     */
+    canControl: boolean;
+};
+
+export type IsResourceIntroducerResponseDto = {
     /**
      * Whether the user is an introducer for the resource
      */
@@ -1271,13 +1285,6 @@ export type UpdateResourceIntroductionDto = {
      * The comment for the action
      */
     comment?: string;
-};
-
-export type GetIntroductionStatusResponseDto = {
-    /**
-     * Whether the user has a valid introduction for the resource
-     */
-    hasValidIntroduction: boolean;
 };
 
 export type PluginMainFrontend = {
@@ -1838,6 +1845,12 @@ export type ResourceUsageGetActiveSessionData = {
 
 export type ResourceUsageGetActiveSessionResponse = GetActiveUsageSessionDto;
 
+export type ResourceUsageCanControlData = {
+    resourceId: number;
+};
+
+export type ResourceUsageCanControlResponse = CanControlResponseDto;
+
 export type MqttServersGetAllResponse = Array<MqttServer>;
 
 export type MqttServersCreateOneData = {
@@ -2079,6 +2092,19 @@ export type ResourceGroupIntroducersGetManyData = {
 
 export type ResourceGroupIntroducersGetManyResponse = Array<ResourceIntroducer>;
 
+export type ResourceGroupIntroducersIsIntroducerData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroducersIsIntroducerResponse = IsResourceGroupIntroducerResponseDto;
+
 export type ResourceGroupIntroducersGrantData = {
     /**
      * The ID of the resource group
@@ -2105,6 +2131,13 @@ export type ResourceGroupIntroducersRevokeData = {
 
 export type ResourceGroupIntroducersRevokeResponse = unknown;
 
+export type ResourceIntroducersIsIntroducerData = {
+    resourceId: number;
+    userId: number;
+};
+
+export type ResourceIntroducersIsIntroducerResponse = IsResourceIntroducerResponseDto;
+
 export type ResourceIntroducersGetManyData = {
     resourceId: number;
 };
@@ -2124,13 +2157,6 @@ export type ResourceIntroducersRevokeData = {
 };
 
 export type ResourceIntroducersRevokeResponse = ResourceIntroducer;
-
-export type ResourceIntroducersGetStatusData = {
-    resourceId: number;
-    userId: number;
-};
-
-export type ResourceIntroducersGetStatusResponse = GetIntroducerStatusResponseDto;
 
 export type ResourceIntroductionsGetManyData = {
     resourceId: number;
@@ -2153,13 +2179,6 @@ export type ResourceIntroductionsRevokeData = {
 };
 
 export type ResourceIntroductionsRevokeResponse = ResourceIntroductionHistoryItem;
-
-export type ResourceIntroductionsGetStatusData = {
-    resourceId: number;
-    userId: number;
-};
-
-export type ResourceIntroductionsGetStatusResponse = GetIntroductionStatusResponseDto;
 
 export type ResourceIntroductionsGetHistoryData = {
     /**
@@ -2956,6 +2975,21 @@ export type $OpenApiTs = {
             };
         };
     };
+    '/api/resources/{resourceId}/usage/can-control': {
+        get: {
+            req: ResourceUsageCanControlData;
+            res: {
+                /**
+                 * User can control resource
+                 */
+                200: CanControlResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
     '/api/mqtt/servers': {
         get: {
             res: {
@@ -3363,7 +3397,7 @@ export type $OpenApiTs = {
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to introduce users to this resource
+                 * User does not have permission to introduce users to this resource group
                  */
                 403: unknown;
             };
@@ -3382,7 +3416,7 @@ export type $OpenApiTs = {
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to introduce users to this resource
+                 * User does not have permission to introduce users to this resource group
                  */
                 403: unknown;
             };
@@ -3441,6 +3475,17 @@ export type $OpenApiTs = {
             };
         };
     };
+    '/api/resource-groups/{groupId}/introducers/{userId}/is-introducer': {
+        get: {
+            req: ResourceGroupIntroducersIsIntroducerData;
+            res: {
+                /**
+                 * The user is an introducer for the resource group.
+                 */
+                200: IsResourceGroupIntroducerResponseDto;
+            };
+        };
+    };
     '/api/resource-groups/{groupId}/introducers/{userId}/grant': {
         post: {
             req: ResourceGroupIntroducersGrantData;
@@ -3468,6 +3513,17 @@ export type $OpenApiTs = {
                  * Unauthorized
                  */
                 401: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introducers/{userId}/is-introducer': {
+        get: {
+            req: ResourceIntroducersIsIntroducerData;
+            res: {
+                /**
+                 * User is an introducer for the resource
+                 */
+                200: IsResourceIntroducerResponseDto;
             };
         };
     };
@@ -3509,17 +3565,6 @@ export type $OpenApiTs = {
                  * Unauthorized
                  */
                 401: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introducers/{userId}/status': {
-        get: {
-            req: ResourceIntroducersGetStatusData;
-            res: {
-                /**
-                 * Introducer status
-                 */
-                200: GetIntroducerStatusResponseDto;
             };
         };
     };
@@ -3569,17 +3614,6 @@ export type $OpenApiTs = {
                  * User does not have permission to introduce users to this resource
                  */
                 403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{userId}/status': {
-        get: {
-            req: ResourceIntroductionsGetStatusData;
-            res: {
-                /**
-                 * Introduction status
-                 */
-                200: GetIntroductionStatusResponseDto;
             };
         };
     };

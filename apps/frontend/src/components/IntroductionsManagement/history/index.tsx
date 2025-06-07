@@ -27,7 +27,7 @@ export function IntroductionHistoryModal(props: Readonly<Props>) {
     });
   }, [history]);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const rowsPerPage = 10;
   const [page, setPage] = useState(1);
 
   const totalPages = useMemo(() => {

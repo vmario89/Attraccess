@@ -9,9 +9,9 @@ import { IntroductionRequiredDisplay } from '../IntroductionRequiredDisplay';
 import { StartSessionControls } from '../StartSessionControls';
 import {
   useAccessControlServiceResourceIntroducersGetMany,
-  useAccessControlServiceResourceIntroductionsGetStatus,
   useResourcesServiceResourceUsageGetActiveSession,
   Resource,
+  useResourcesServiceResourceUsageCanControl,
 } from '@attraccess/react-query-client';
 import * as en from './translations/en.json';
 import * as de from './translations/de.json';
@@ -27,10 +27,11 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
   const canManageResources = hasPermission('canManageResources');
 
   // Check if user has completed the introduction
-  const { data: introduction, isLoading: isLoadingIntroStatus } = useAccessControlServiceResourceIntroductionsGetStatus(
+  const { data: access, isLoading: isLoadingIntroStatus } = useResourcesServiceResourceUsageCanControl(
+    { resourceId },
+    undefined,
     {
-      resourceId,
-      userId: user?.id || 0,
+      refetchInterval: 3000,
     }
   );
 
@@ -44,7 +45,7 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
     { resourceId },
     undefined,
     {
-      refetchInterval: 1000,
+      refetchInterval: 3000,
     }
   );
 
@@ -57,7 +58,7 @@ export function ResourceUsageSession({ resourceId, resource, ...rest }: Resource
   }, [introducers, user]);
 
   // Users with canManageResources permission can always start a session
-  const canStartSession = canManageResources ?? introduction?.hasValidIntroduction ?? isIntroducer;
+  const canStartSession = canManageResources || access?.canControl || isIntroducer;
 
   const renderContent = () => {
     if (isLoading) {

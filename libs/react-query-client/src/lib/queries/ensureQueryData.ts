@@ -68,6 +68,9 @@ export const ensureUseResourcesServiceResourceUsageGetHistoryData = (queryClient
 export const ensureUseResourcesServiceResourceUsageGetActiveSessionData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceResourceUsageGetActiveSessionKeyFn({ resourceId }), queryFn: () => ResourcesService.resourceUsageGetActiveSession({ resourceId }) });
+export const ensureUseResourcesServiceResourceUsageCanControlData = (queryClient: QueryClient, { resourceId }: {
+  resourceId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceResourceUsageCanControlKeyFn({ resourceId }), queryFn: () => ResourcesService.resourceUsageCanControl({ resourceId }) });
 export const ensureUseMqttServiceMqttServersGetAllData = (queryClient: QueryClient) => queryClient.ensureQueryData({ queryKey: Common.UseMqttServiceMqttServersGetAllKeyFn(), queryFn: () => MqttService.mqttServersGetAll() });
 export const ensureUseMqttServiceMqttServersGetOneByIdData = (queryClient: QueryClient, { id }: {
   id: number;
@@ -100,20 +103,20 @@ export const ensureUseAccessControlServiceResourceGroupIntroductionsGetHistoryDa
 export const ensureUseAccessControlServiceResourceGroupIntroducersGetManyData = (queryClient: QueryClient, { groupId }: {
   groupId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceGroupIntroducersGetManyKeyFn({ groupId }), queryFn: () => AccessControlService.resourceGroupIntroducersGetMany({ groupId }) });
+export const ensureUseAccessControlServiceResourceGroupIntroducersIsIntroducerData = (queryClient: QueryClient, { groupId, userId }: {
+  groupId: number;
+  userId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceGroupIntroducersIsIntroducerKeyFn({ groupId, userId }), queryFn: () => AccessControlService.resourceGroupIntroducersIsIntroducer({ groupId, userId }) });
+export const ensureUseAccessControlServiceResourceIntroducersIsIntroducerData = (queryClient: QueryClient, { resourceId, userId }: {
+  resourceId: number;
+  userId: number;
+}) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceIntroducersIsIntroducerKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroducersIsIntroducer({ resourceId, userId }) });
 export const ensureUseAccessControlServiceResourceIntroducersGetManyData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceIntroducersGetManyKeyFn({ resourceId }), queryFn: () => AccessControlService.resourceIntroducersGetMany({ resourceId }) });
-export const ensureUseAccessControlServiceResourceIntroducersGetStatusData = (queryClient: QueryClient, { resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceIntroducersGetStatusKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroducersGetStatus({ resourceId, userId }) });
 export const ensureUseAccessControlServiceResourceIntroductionsGetManyData = (queryClient: QueryClient, { resourceId }: {
   resourceId: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetManyKeyFn({ resourceId }), queryFn: () => AccessControlService.resourceIntroductionsGetMany({ resourceId }) });
-export const ensureUseAccessControlServiceResourceIntroductionsGetStatusData = (queryClient: QueryClient, { resourceId, userId }: {
-  resourceId: number;
-  userId: number;
-}) => queryClient.ensureQueryData({ queryKey: Common.UseAccessControlServiceResourceIntroductionsGetStatusKeyFn({ resourceId, userId }), queryFn: () => AccessControlService.resourceIntroductionsGetStatus({ resourceId, userId }) });
 export const ensureUseAccessControlServiceResourceIntroductionsGetHistoryData = (queryClient: QueryClient, { resourceId, userId }: {
   resourceId: number;
   userId: number;

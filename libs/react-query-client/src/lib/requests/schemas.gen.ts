@@ -1677,6 +1677,17 @@ export const $ResourceIntroducer = {
     required: ['id', 'userId', 'grantedAt', 'user']
 } as const;
 
+export const $IsResourceGroupIntroducerResponseDto = {
+    type: 'object',
+    properties: {
+        isIntroducer: {
+            type: 'boolean',
+            description: 'Whether the user is an introducer for the resource'
+        }
+    },
+    required: ['isIntroducer']
+} as const;
+
 export const $StartUsageSessionDto = {
     type: 'object',
     properties: {
@@ -1819,13 +1830,23 @@ export const $GetActiveUsageSessionDto = {
     required: ['usage']
 } as const;
 
-export const $GetIntroducerStatusResponseDto = {
+export const $CanControlResponseDto = {
+    type: 'object',
+    properties: {
+        canControl: {
+            type: 'boolean',
+            description: 'Whether the user can control the resource'
+        }
+    },
+    required: ['canControl']
+} as const;
+
+export const $IsResourceIntroducerResponseDto = {
     type: 'object',
     properties: {
         isIntroducer: {
             type: 'boolean',
-            description: 'Whether the user is an introducer for the resource',
-            example: true
+            description: 'Whether the user is an introducer for the resource'
         }
     },
     required: ['isIntroducer']
@@ -1840,18 +1861,6 @@ export const $UpdateResourceIntroductionDto = {
             example: 'This is a comment'
         }
     }
-} as const;
-
-export const $GetIntroductionStatusResponseDto = {
-    type: 'object',
-    properties: {
-        hasValidIntroduction: {
-            type: 'boolean',
-            description: 'Whether the user has a valid introduction for the resource',
-            example: true
-        }
-    },
-    required: ['hasValidIntroduction']
 } as const;
 
 export const $PluginMainFrontend = {

@@ -108,7 +108,7 @@ export class ResourceIntroductionsService {
   public async hasValidIntroduction(resourceId: number, userId: number): Promise<boolean> {
     this.logger.debug(`Checking if user ${userId} has valid introduction for resource ${resourceId}`);
     const lastHistoryItem = await this.getLastHistoryItemOfUser(resourceId, userId);
-    const hasValid = !!lastHistoryItem;
+    const hasValid = lastHistoryItem?.action === IntroductionHistoryAction.GRANT;
     this.logger.debug(`User has valid introduction: ${hasValid}`);
     return hasValid;
   }

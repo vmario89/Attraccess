@@ -3,6 +3,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResourceIntroducer } from '@attraccess/database-entities';
 import { ResourceGroupsIntroducersService } from './resourceGroups.introducers.service';
 import { Auth } from '@attraccess/plugins-backend-sdk';
+import { IsResourceGroupIntroducerResponseDto } from './dtos/isIntroducer.response.dto';
 
 @ApiTags('Access Control')
 @Controller('resource-groups/:groupId/introducers')
@@ -23,6 +24,27 @@ export class ResourceGroupsIntroducersController {
   })
   async getMany(@Param('groupId', ParseIntPipe) groupId: number): Promise<ResourceIntroducer[]> {
     return await this.resourceGroupsIntroducersService.getMany(groupId);
+  }
+
+  @Get('/:userId/is-introducer')
+  @ApiOperation({
+    summary: 'Check if a user is an introducer for a resource group',
+    operationId: 'resourceGroupIntroducersIsIntroducer',
+  })
+  @ApiParam({ name: 'userId', description: 'The ID of the user', type: Number })
+  @ApiParam({ name: 'groupId', description: 'The ID of the resource group', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'The user is an introducer for the resource group.',
+    type: IsResourceGroupIntroducerResponseDto,
+  })
+  async isIntroducer(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('groupId', ParseIntPipe) groupId: number
+  ): Promise<IsResourceGroupIntroducerResponseDto> {
+    return {
+      isIntroducer: await this.resourceGroupsIntroducersService.isIntroducer({ groupId, userId }),
+    };
   }
 
   @Post('/:userId/grant')

@@ -1,45 +1,63 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { useToastMessage } from '../../components/toastProvider';
+import { useAuth } from '../../../hooks/useAuth';
+import { useToastMessage } from '../../../components/toastProvider';
 import { ArrowLeft, BookOpen, PenSquareIcon, ShapesIcon, Trash, Wifi } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Spinner, Link } from '@heroui/react';
 import { useDisclosure } from '@heroui/modal';
-import { ResourceUsageSession } from './usage/resourceUsageSession';
-import { ResourceUsageHistory } from './usage/resourceUsageHistory';
-import { PageHeader } from '../../components/pageHeader';
-import { DeleteConfirmationModal } from '../../components/deleteConfirmationModal';
+import { ResourceUsageSession } from '../usage/resourceUsageSession';
+import { ResourceUsageHistory } from '../usage/resourceUsageHistory';
+import { PageHeader } from '../../../components/pageHeader';
+import { DeleteConfirmationModal } from '../../../components/deleteConfirmationModal';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import {
   useResourcesServiceDeleteOneResource,
   useResourcesServiceGetOneResourceById,
   UseResourcesServiceGetAllResourcesKeyFn,
+  useAccessControlServiceResourceIntroducersIsIntroducer,
 } from '@attraccess/react-query-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ManageResourceGroups } from './manageResourceGroups';
-import { DocumentationModal } from './documentation';
+import { ManageResourceGroups } from '../manageResourceGroups';
+import { DocumentationModal } from '../documentation';
 import de from './resourceDetails.de.json';
 import en from './resourceDetails.en.json';
-import { ResourceEditModal } from './resourceEditModal';
-import { ResoureIntroducerManagement } from './IntroducerManagement';
-import { ResourceIntroductionsManagement } from './IntroductionsManagement';
+import { ResourceEditModal } from '../editModal/resourceEditModal';
+import { ResoureIntroducerManagement } from '../IntroducerManagement';
+import { ResourceIntroductionsManagement } from '../IntroductionsManagement';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
   const resourceId = parseInt(id || '', 10);
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  const { hasPermission } = useAuth();
-  const { success, error: showError } = useToastMessage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const { hasPermission, user } = useAuth();
+  const { success, error: showError } = useToastMessage();
 
   const { t } = useTranslations('resourceDetails', {
     en,
     de,
   });
+
+  const { data: isIntroducer } = useAccessControlServiceResourceIntroducersIsIntroducer(
+    { resourceId, userId: user?.id as number },
+    undefined,
+    {
+      enabled: !!user?.id,
+      refetchInterval: 3000,
+    }
+  );
+
+  const canManageResources = hasPermission('canManageResources');
+
+  const canManageIntroductions = useMemo(
+    () => canManageResources || isIntroducer?.isIntroducer,
+    [canManageResources, isIntroducer]
+  );
 
   const {
     data: resource,
@@ -69,8 +87,6 @@ function ResourceDetailsComponent() {
       throw err;
     }
   };
-
-  const canManageResourceGroups = hasPermission('canManageResources');
 
   if (isLoadingResource) {
     return (
@@ -119,7 +135,7 @@ function ResourceDetailsComponent() {
               )}
             </DocumentationModal>
 
-            {canManageResourceGroups && (
+            {canManageResources && (
               <>
                 <Button
                   as={Link}
@@ -166,15 +182,18 @@ function ResourceDetailsComponent() {
       </div>
 
       {/* Add the ManageResourceGroups component */}
-      {canManageResourceGroups && (
-        <>
-          <div className="flex flex-row flex-wrap w-full gap-6 items-stretch">
-            <ResourceIntroductionsManagement
-              resourceId={resourceId}
-              className="flex-1 min-w-80"
-              data-cy="manage-resource-introductions"
-            />
 
+      <div className="flex flex-row flex-wrap w-full gap-6 items-stretch">
+        {canManageIntroductions && (
+          <ResourceIntroductionsManagement
+            resourceId={resourceId}
+            className="flex-1 min-w-80"
+            data-cy="manage-resource-introductions"
+          />
+        )}
+
+        {canManageResources && (
+          <>
             <ResoureIntroducerManagement
               resourceId={resourceId}
               className="flex-1 min-w-80"
@@ -186,17 +205,19 @@ function ResourceDetailsComponent() {
               data-cy="manage-resource-groups"
               className="flex-1 min-w-80"
             />
-          </div>
+          </>
+        )}
+      </div>
 
-          <DeleteConfirmationModal
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            onClose={() => onOpenChange()}
-            onConfirm={handleDelete}
-            itemName={resource.name}
-            data-cy="delete-confirmation-modal"
-          />
-        </>
+      {canManageResources && (
+        <DeleteConfirmationModal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          onClose={() => onOpenChange()}
+          onConfirm={handleDelete}
+          itemName={resource.name}
+          data-cy="delete-confirmation-modal"
+        />
       )}
     </div>
   );

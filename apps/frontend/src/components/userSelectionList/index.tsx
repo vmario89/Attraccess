@@ -128,6 +128,7 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
               <TableColumn className={col.headerClassName} key={col.key}>
                 {col.label}
               </TableColumn>
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             )) as any
           }
           <TableColumn>{t('selectedUsers.columns.actions')}</TableColumn>
@@ -144,6 +145,7 @@ export function UserSelectionList<TUser extends User = User>(props: Readonly<Pro
                   <TableCell className={col.cellClassName} key={col.key}>
                     {typeof col.value === 'function' ? col.value(user) : col.value}
                   </TableCell>
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 )) as any
               }
 
