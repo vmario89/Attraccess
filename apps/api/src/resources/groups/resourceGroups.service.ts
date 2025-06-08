@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateResourceGroupDto } from './dto/createGroup.dto';
 import { UpdateResourceGroupDto } from './dto/updateGroup.dto';
 import { ResourceGroupNotFoundException } from './errors/groupNotFound.error';
+import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 
 interface GetOneSearchOptions {
   id: number;
@@ -71,6 +72,10 @@ export class ResourceGroupsService {
         id: resourceId,
       },
     });
+
+    if (!resource) {
+      throw new ResourceNotFoundException(resourceId);
+    }
 
     resourceGroup.resources.push(resource);
     await this.resourceGroupRepository.save(resourceGroup);
