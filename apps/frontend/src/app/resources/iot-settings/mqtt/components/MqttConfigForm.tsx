@@ -390,7 +390,7 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: Readonl
           <Button
             type="submit"
             color="primary"
-            isDisabled={createConfig.isPending ?? updateConfig.isPending ?? formValues.serverId === 0}
+            isDisabled={createConfig.isPending || updateConfig.isPending || formValues.serverId === 0}
             data-cy="mqtt-config-form-submit-button"
           >
             {isEdit ? t('updateButton') : t('createButton')}
