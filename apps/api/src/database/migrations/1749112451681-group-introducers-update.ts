@@ -22,25 +22,31 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "temporary_resource_introduction_history_item" RENAME TO "resource_introduction_history_item"`
     );
+    const originalIntroduceCount = await queryRunner.query(`SELECT COUNT(*) FROM "resource_introduction_user"`);
+
     await queryRunner.query(
-      `CREATE TABLE "temporary_resource_introducer" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "resourceId" integer, "userId" integer NOT NULL, "resourceGroupId" integer, "grantedAt" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "FK_cd443e54af5fcbe1c9b7a2fe633" FOREIGN KEY ("resourceId") REFERENCES "resource" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_e56231d39612dcfa29f78e1f68d" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT "FK_58e298501d9635bc1978798cb90" FOREIGN KEY ("resourceGroupId") REFERENCES "resource_group" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)`
+      `CREATE TABLE "resource_introducer" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "resourceId" integer, "userId" integer NOT NULL, "resourceGroupId" integer, "grantedAt" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "FK_cd443e54af5fcbe1c9b7a2fe633" FOREIGN KEY ("resourceId") REFERENCES "resource" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_e56231d39612dcfa29f78e1f68d" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT "FK_58e298501d9635bc1978798cb90" FOREIGN KEY ("resourceGroupId") REFERENCES "resource_group" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)`
     );
     await queryRunner.query(
-      `INSERT INTO "temporary_resource_introducer"("id", "resourceId", "userId", "resourceGroupId", "grantedAt") SELECT "id", "resourceId", "userId", "resourceGroupId", "grantedAt" FROM "resource_introducer"`
+      `INSERT INTO "resource_introducer"("id", "resourceId", "userId", "resourceGroupId", "grantedAt") SELECT "id", "resourceId", "userId", "resourceGroupId", "grantedAt" FROM "resource_introduction_user"`
     );
-    await queryRunner.query(`DROP TABLE "resource_introducer"`);
-    await queryRunner.query(`ALTER TABLE "temporary_resource_introducer" RENAME TO "resource_introducer"`);
+
+    const newIntroduceCount = await queryRunner.query(`SELECT COUNT(*) FROM "resource_introducer"`);
+
+    if (originalIntroduceCount[0].count !== newIntroduceCount[0].count) {
+      throw new Error('Introduce count is not the same');
+    }
+
+    await queryRunner.query(`DROP TABLE "resource_introduction_user"`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "resource_introducer" RENAME TO "temporary_resource_introducer"`);
     await queryRunner.query(
-      `CREATE TABLE "resource_introducer" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "resourceId" integer, "userId" integer NOT NULL, "resourceGroupId" integer, "grantedAt" datetime NOT NULL DEFAULT (datetime('now')))`
+      `CREATE TABLE "resource_introduction_user" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "resourceId" integer, "userId" integer NOT NULL, "resourceGroupId" integer, "grantedAt" datetime NOT NULL DEFAULT (datetime('now')))`
     );
     await queryRunner.query(
-      `INSERT INTO "resource_introducer"("id", "resourceId", "userId", "resourceGroupId", "grantedAt") SELECT "id", "resourceId", "userId", "resourceGroupId", "grantedAt" FROM "temporary_resource_introducer"`
+      `INSERT INTO "resource_introduction_user"("id", "resourceId", "userId", "resourceGroupId", "grantedAt") SELECT "id", "resourceId", "userId", "resourceGroupId", "grantedAt" FROM "resource_introducer"`
     );
-    await queryRunner.query(`DROP TABLE "temporary_resource_introducer"`);
     await queryRunner.query(
       `ALTER TABLE "resource_introduction_history_item" RENAME TO "temporary_resource_introduction_history_item"`
     );

@@ -135,6 +135,17 @@
         "commands": ["typeorm -d dist/apps/migrations/main.js migration:run"]
       }
     },
+
+    "migration-revert": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": ".",
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:revert"]
+      }
+    },
     "lint": {
       "executor": "nx:run-commands",
       "cache": true,
