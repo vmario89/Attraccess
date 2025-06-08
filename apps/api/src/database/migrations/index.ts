@@ -20,3 +20,4 @@ export * from './1748886859855-seed-email-templates';
 export * from './1748888690640-email-template-variables';
 export * from './1748812242552-editResourceGroupIntroductions';
 export * from './1749112451681-group-introducers-update';
+export * from './1749367635348-resource-takeover-iot';
