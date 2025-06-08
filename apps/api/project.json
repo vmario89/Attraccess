@@ -117,7 +117,7 @@
     },
     "migration-generate": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -127,7 +127,7 @@
     },
     "migrations-run": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -138,7 +138,7 @@
 
     "migration-revert": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {

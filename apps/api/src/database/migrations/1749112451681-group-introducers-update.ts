@@ -16,7 +16,14 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
       `CREATE TABLE "temporary_resource_introduction_history_item" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "introductionId" integer NOT NULL, "action" varchar CHECK( "action" IN ('revoke','grant') ) NOT NULL, "performedByUserId" integer NOT NULL, "comment" text, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "FK_d8111a1260c0438d095303dc136" FOREIGN KEY ("introductionId") REFERENCES "resource_introduction" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_6e8c08c535b7a63961699049cba" FOREIGN KEY ("performedByUserId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION)`
     );
     await queryRunner.query(
-      `INSERT INTO "temporary_resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") SELECT "id", "introductionId", "action", "performedByUserId", "comment", "createdAt" FROM "resource_introduction_history_item"`
+      `INSERT INTO "temporary_resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") 
+       SELECT "id", "introductionId", 
+              CASE 
+                WHEN "action" = 'unrevoke' THEN 'grant'
+                ELSE "action"
+              END as "action",
+              "performedByUserId", "comment", "createdAt" 
+       FROM "resource_introduction_history_item"`
     );
 
     // for all introductions without any history items, add a history item with the action "grant"
@@ -24,8 +31,9 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
       `INSERT INTO "temporary_resource_introduction_history_item"("introductionId", "action", "performedByUserId", "comment", "createdAt") 
        SELECT "resource_introduction"."id", 'grant', "resource_introduction"."tutorUserId", NULL, "resource_introduction"."createdAt" 
        FROM "resource_introduction" 
-       LEFT JOIN "resource_introduction_history_item" ON "resource_introduction_history_item"."introductionId" = "resource_introduction"."id" 
-       WHERE "resource_introduction_history_item"."id" IS NULL`
+       LEFT JOIN "temporary_resource_introduction_history_item" ON "temporary_resource_introduction_history_item"."introductionId" = "resource_introduction"."id" 
+       WHERE "temporary_resource_introduction_history_item"."id" IS NULL
+       AND "resource_introduction"."tutorUserId" IS NOT NULL`
     );
 
     await queryRunner.query(`DROP TABLE "resource_introduction_history_item"`);
@@ -64,7 +72,14 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
       `CREATE TABLE "resource_introduction_history_item" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "introductionId" integer NOT NULL, "action" varchar CHECK( "action" IN ('revoke','unrevoke') ) NOT NULL, "performedByUserId" integer NOT NULL, "comment" text, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "FK_d8111a1260c0438d095303dc136" FOREIGN KEY ("introductionId") REFERENCES "resource_introduction" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_6e8c08c535b7a63961699049cba" FOREIGN KEY ("performedByUserId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION)`
     );
     await queryRunner.query(
-      `INSERT INTO "resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") SELECT "id", "introductionId", "action", "performedByUserId", "comment", "createdAt" FROM "temporary_resource_introduction_history_item"`
+      `INSERT INTO "resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") 
+       SELECT "id", "introductionId", 
+              CASE 
+                WHEN "action" = 'grant' THEN 'unrevoke'
+                ELSE "action"
+              END as "action",
+              "performedByUserId", "comment", "createdAt" 
+       FROM "temporary_resource_introduction_history_item"`
     );
 
     await queryRunner.query(`DROP TABLE "temporary_resource_introduction_history_item"`);
