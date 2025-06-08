@@ -132,8 +132,8 @@ export function ResourceGroupIntroductionsManagement(
     <>
       <IntroductionsManagement
         introductions={introductions ?? []}
-        onGrantIntroduction={grantIntroduction}
-        onRevokeIntroduction={revokeIntroduction}
+        onGrantIntroduction={({ user, comment }) => grantIntroduction(user, comment)}
+        onRevokeIntroduction={({ user, comment }) => revokeIntroduction(user, comment)}
         isGranting={isGranting}
         isRevoking={isRevoking}
         isLoadingIntroductions={isLoading}

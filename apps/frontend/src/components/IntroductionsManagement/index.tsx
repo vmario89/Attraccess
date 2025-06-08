@@ -1,5 +1,19 @@
-import { useMemo } from 'react';
-import { Card, CardHeader, CardBody, CardProps } from '@heroui/react';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardProps,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Textarea,
+  ModalFooter,
+  Button,
+  Form,
+} from '@heroui/react';
 import { HistoryIcon, ShieldCheckIcon } from 'lucide-react';
 import { ResourceIntroduction, User } from '@attraccess/react-query-client';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
@@ -15,8 +29,8 @@ interface UserWithIntroductionStatus extends User {
 
 interface IntroductionsManagementProps {
   introductions: ResourceIntroduction[];
-  onGrantIntroduction: (user: User) => void;
-  onRevokeIntroduction: (user: User) => void;
+  onGrantIntroduction: (data: { user: User; comment?: string }) => void;
+  onRevokeIntroduction: (data: { user: User; comment?: string }) => void;
   isGranting: boolean;
   isRevoking: boolean;
   isLoadingIntroductions: boolean;
@@ -36,6 +50,10 @@ export function IntroductionsManagement(props: Readonly<IntroductionsManagementP
   } = props;
 
   const { t } = useTranslations('introductionsManagement', { en, de });
+  const [comment, setComment] = useState<string | undefined>(undefined);
+  const { isOpen: commentModalIsOpen, onOpen: openCommentModal, onClose: closeCommentModal } = useDisclosure();
+  const [action, setAction] = useState<'grant' | 'revoke'>('grant');
+  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
   const usersWithIntroductions = useMemo(() => {
     return (introductions ?? []).map((introduction) => introduction.receiverUser);
@@ -66,16 +84,14 @@ export function IntroductionsManagement(props: Readonly<IntroductionsManagementP
             label: user.hasValidIntroduction ? t('actions.revoke') : t('actions.grant'),
             isLoading: isRevoking ?? isGranting,
             onClick: (user) => {
-              if (user.hasValidIntroduction) {
-                onRevokeIntroduction(user);
-                return;
-              }
-
-              onGrantIntroduction(user);
+              setSelectedUser(user);
+              setComment(undefined);
+              setAction(user.hasValidIntroduction ? 'revoke' : 'grant');
+              openCommentModal();
             },
           },
         ],
-    [onHistoryModalOpen, onRevokeIntroduction, isRevoking, isGranting, t, onGrantIntroduction, introductions]
+    [onHistoryModalOpen, isRevoking, isGranting, t, introductions, openCommentModal]
   );
 
   const userWithIntroductionStatus = useMemo((): UserWithIntroductionStatus[] => {
@@ -88,6 +104,20 @@ export function IntroductionsManagement(props: Readonly<IntroductionsManagementP
     });
   }, [usersWithIntroductions, userHasValidIntroduction]);
 
+  const onCommentModalSubmit = useCallback(() => {
+    if (!selectedUser) {
+      return;
+    }
+
+    if (action === 'grant') {
+      onGrantIntroduction({ user: selectedUser, comment: comment ?? undefined });
+    } else {
+      onRevokeIntroduction({ user: selectedUser, comment: comment ?? undefined });
+    }
+
+    closeCommentModal();
+  }, [selectedUser, action, comment, onGrantIntroduction, onRevokeIntroduction, closeCommentModal]);
+
   return (
     <Card {...rest}>
       <CardHeader>
@@ -96,7 +126,7 @@ export function IntroductionsManagement(props: Readonly<IntroductionsManagementP
       <CardBody>
         <UserSelectionList
           selectedUsers={userWithIntroductionStatus}
-          onAddToSelection={onGrantIntroduction}
+          onAddToSelection={(user) => onGrantIntroduction({ user })}
           addToSelectionIsLoading={isGranting}
           selectedUserIsLoading={isLoadingIntroductions}
           rowClassName={(user) =>
@@ -108,6 +138,33 @@ export function IntroductionsManagement(props: Readonly<IntroductionsManagementP
           }}
           actions={Actions}
         />
+
+        <Modal isOpen={commentModalIsOpen} onClose={closeCommentModal}>
+          <ModalContent>
+            <ModalHeader>{t('commentModal.title')}</ModalHeader>
+
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onCommentModalSubmit();
+                }}
+              >
+                <Textarea
+                  label={t('commentModal.label')}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <button type="submit" hidden />
+              </Form>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button onPress={onCommentModalSubmit}>{t('commentModal.submit')}</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </CardBody>
     </Card>
   );

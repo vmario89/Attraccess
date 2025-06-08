@@ -19,5 +19,10 @@
     "status": {
       "label": "Status"
     }
+  },
+  "commentModal": {
+    "title": "Add Comment",
+    "label": "Comment (optional)",
+    "submit": "Submit"
   }
 }

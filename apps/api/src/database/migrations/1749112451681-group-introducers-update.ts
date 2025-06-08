@@ -18,6 +18,16 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
     await queryRunner.query(
       `INSERT INTO "temporary_resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") SELECT "id", "introductionId", "action", "performedByUserId", "comment", "createdAt" FROM "resource_introduction_history_item"`
     );
+
+    // for all introductions without any history items, add a history item with the action "grant"
+    await queryRunner.query(
+      `INSERT INTO "temporary_resource_introduction_history_item"("introductionId", "action", "performedByUserId", "comment", "createdAt") 
+       SELECT "resource_introduction"."id", 'grant', "resource_introduction"."tutorUserId", NULL, "resource_introduction"."createdAt" 
+       FROM "resource_introduction" 
+       LEFT JOIN "resource_introduction_history_item" ON "resource_introduction_history_item"."introductionId" = "resource_introduction"."id" 
+       WHERE "resource_introduction_history_item"."id" IS NULL`
+    );
+
     await queryRunner.query(`DROP TABLE "resource_introduction_history_item"`);
     await queryRunner.query(
       `ALTER TABLE "temporary_resource_introduction_history_item" RENAME TO "resource_introduction_history_item"`
@@ -56,6 +66,7 @@ export class GroupIntroducersUpdate1749112451681 implements MigrationInterface {
     await queryRunner.query(
       `INSERT INTO "resource_introduction_history_item"("id", "introductionId", "action", "performedByUserId", "comment", "createdAt") SELECT "id", "introductionId", "action", "performedByUserId", "comment", "createdAt" FROM "temporary_resource_introduction_history_item"`
     );
+
     await queryRunner.query(`DROP TABLE "temporary_resource_introduction_history_item"`);
     await queryRunner.query(`ALTER TABLE "email_templates" RENAME TO "temporary_email_templates"`);
     await queryRunner.query(
