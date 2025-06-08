@@ -1163,6 +1163,26 @@ export const $WebhookConfigResponseDto = {
             description: 'Name of the header that contains the signature',
             example: 'X-Webhook-Signature'
         },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage starts',
+            example: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage stops',
+            example: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage is taken over',
+            example: false
+        },
+        takeoverTemplate: {
+            type: 'string',
+            description: 'Template for payload when resource usage is taken over',
+            example: '{"status": "taken_over", "resource": "{{name}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
+        },
         createdAt: {
             format: 'date-time',
             type: 'string',
@@ -1174,7 +1194,7 @@ export const $WebhookConfigResponseDto = {
             description: 'When the webhook configuration was last updated'
         }
     },
-    required: ['id', 'resourceId', 'name', 'url', 'method', 'headers', 'inUseTemplate', 'notInUseTemplate', 'active', 'retryEnabled', 'maxRetries', 'retryDelay', 'signatureHeader', 'createdAt', 'updatedAt']
+    required: ['id', 'resourceId', 'name', 'url', 'method', 'headers', 'inUseTemplate', 'notInUseTemplate', 'active', 'retryEnabled', 'maxRetries', 'retryDelay', 'signatureHeader', 'sendOnStart', 'sendOnStop', 'sendOnTakeover', 'takeoverTemplate', 'createdAt', 'updatedAt']
 } as const;
 
 export const $CreateWebhookConfigDto = {
@@ -1240,6 +1260,29 @@ export const $CreateWebhookConfigDto = {
             description: 'Name of the header that contains the signature',
             example: 'X-Webhook-Signature',
             default: 'X-Webhook-Signature'
+        },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage starts',
+            example: true,
+            default: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage stops',
+            example: true,
+            default: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage is taken over',
+            example: false,
+            default: false
+        },
+        takeoverTemplate: {
+            type: 'string',
+            description: 'Template for payload when resource usage is taken over',
+            example: '{"status": "taken_over", "resource": "{{name}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
         }
     },
     required: ['name', 'url', 'method', 'inUseTemplate', 'notInUseTemplate']
@@ -1298,6 +1341,26 @@ export const $UpdateWebhookConfigDto = {
             type: 'string',
             description: 'Name of the header that contains the signature',
             example: 'X-Webhook-Signature'
+        },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage starts',
+            example: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage stops',
+            example: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send a webhook when a resource usage is taken over',
+            example: false
+        },
+        takeoverTemplate: {
+            type: 'string',
+            description: 'Template for payload when resource usage is taken over',
+            example: '{"status": "taken_over", "resource": "{{name}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
         }
     }
 } as const;
@@ -1374,6 +1437,31 @@ export const $MqttResourceConfig = {
             description: 'Message template using Handlebars for not-in-use status',
             example: '{"status": "not_in_use", "resourceId": "{{id}}", "timestamp": "{{timestamp}}"}'
         },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage starts',
+            example: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage stops',
+            example: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage is taken over',
+            example: false
+        },
+        takeoverTopic: {
+            type: 'string',
+            description: 'Topic template using Handlebars for takeover status',
+            example: 'resources/{{id}}/status'
+        },
+        takeoverMessage: {
+            type: 'string',
+            description: 'Message template using Handlebars for takeover status',
+            example: '{"status": "taken_over", "resourceId": "{{id}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
+        },
         createdAt: {
             format: 'date-time',
             type: 'string',
@@ -1385,7 +1473,7 @@ export const $MqttResourceConfig = {
             description: 'When the MQTT resource configuration was last updated'
         }
     },
-    required: ['id', 'resourceId', 'name', 'serverId', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage', 'createdAt', 'updatedAt']
+    required: ['id', 'resourceId', 'name', 'serverId', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage', 'sendOnStart', 'sendOnStop', 'sendOnTakeover', 'createdAt', 'updatedAt']
 } as const;
 
 export const $CreateMqttResourceConfigDto = {
@@ -1420,6 +1508,34 @@ export const $CreateMqttResourceConfigDto = {
             type: 'string',
             description: 'Message template for when resource is not in use',
             example: '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}'
+        },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage starts',
+            example: true,
+            default: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage stops',
+            example: true,
+            default: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage is taken over',
+            example: false,
+            default: false
+        },
+        takeoverTopic: {
+            type: 'string',
+            description: 'Topic template for when resource usage is taken over',
+            example: 'resources/{{id}}/status'
+        },
+        takeoverMessage: {
+            type: 'string',
+            description: 'Message template for when resource usage is taken over',
+            example: '{"status": "taken_over", "resourceId": "{{id}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
         }
     },
     required: ['serverId', 'name', 'inUseTopic', 'inUseMessage', 'notInUseTopic', 'notInUseMessage']
@@ -1457,6 +1573,34 @@ export const $UpdateMqttResourceConfigDto = {
             type: 'string',
             description: 'Message template for when resource is not in use',
             example: '{"status":"not_in_use","resourceId":{{id}},"resourceName":"{{name}}"}'
+        },
+        sendOnStart: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage starts',
+            example: true,
+            default: true
+        },
+        sendOnStop: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage stops',
+            example: true,
+            default: true
+        },
+        sendOnTakeover: {
+            type: 'boolean',
+            description: 'Whether to send an MQTT message when a resource usage is taken over',
+            example: false,
+            default: false
+        },
+        takeoverTopic: {
+            type: 'string',
+            description: 'Topic template for when resource usage is taken over',
+            example: 'resources/{{id}}/status'
+        },
+        takeoverMessage: {
+            type: 'string',
+            description: 'Message template for when resource usage is taken over',
+            example: '{"status": "taken_over", "resourceId": "{{id}}", "newUser": "{{user.name}}", "previousUser": "{{previousUser.name}}", "timestamp": "{{timestamp}}"}'
         }
     }
 } as const;

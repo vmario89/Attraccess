@@ -1716,7 +1716,7 @@ export class AccessControlService {
      * @param data The data for the request.
      * @param data.resourceId
      * @param data.userId
-     * @returns ResourceIntroducer Introduction permissions revoked
+     * @returns unknown Introduction permissions revoked
      * @throws ApiError
      */
     public static resourceIntroducersRevoke(data: ResourceIntroducersRevokeData): CancelablePromise<ResourceIntroducersRevokeResponse> {

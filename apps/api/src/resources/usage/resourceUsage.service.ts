@@ -6,7 +6,11 @@ import { StartUsageSessionDto } from './dtos/startUsageSession.dto';
 import { EndUsageSessionDto } from './dtos/endUsageSession.dto';
 import { ResourceNotFoundException } from '../../exceptions/resource.notFound.exception';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ResourceUsageStartedEvent, ResourceUsageEndedEvent } from './events/resource-usage.events';
+import {
+  ResourceUsageStartedEvent,
+  ResourceUsageEndedEvent,
+  ResourceUsageTakenOverEvent,
+} from './events/resource-usage.events';
 import { ResourceIntroductionsService } from '../introductions/resouceIntroductions.service';
 import { ResourceIntroducersService } from '../introducers/resourceIntroducers.service';
 import { ResourceGroupsIntroductionsService } from '../groups/introductions/resourceGroups.introductions.service';
@@ -105,12 +109,24 @@ export class ResourceUsageService {
           .where('id = :id', { id: existingActiveSession.id })
           .execute();
 
+        const takeoverTime = new Date();
         this.logger.debug(`Ended existing session ${existingActiveSession.id} due to takeover`);
 
         // Emit event for the ended session
         this.eventEmitter.emit(
           'resource.usage.ended',
-          new ResourceUsageEndedEvent(resourceId, existingActiveSession.startTime, new Date(), user)
+          new ResourceUsageEndedEvent(
+            resourceId,
+            existingActiveSession.startTime,
+            takeoverTime,
+            existingActiveSession.user
+          )
+        );
+
+        // Emit event for the takeover
+        this.eventEmitter.emit(
+          'resource.usage.taken_over',
+          new ResourceUsageTakenOverEvent(resourceId, takeoverTime, user, existingActiveSession.user)
         );
       } else if (dto.forceTakeOver && !resource.allowTakeOver) {
         this.logger.warn(`Takeover attempted for resource ${resourceId} but not allowed`);
