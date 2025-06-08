@@ -1,9 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Injectable } from '@nestjs/common';
 import { ResourceIntroducer } from '@attraccess/database-entities';
 import { Repository } from 'typeorm';
-import { ResourceGroupIntroducerNotFoundException } from './errors/ResourceGroupIntroducerNotFound.error';
 
 @Injectable()
 export class ResourceGroupsIntroducersService {
@@ -24,16 +22,7 @@ export class ResourceGroupsIntroducersService {
   }
 
   public async grant(groupId: number, userId: number): Promise<ResourceIntroducer> {
-    const existingIntroducer = await this.resourceIntroducerRepository.findOne({
-      where: {
-        user: {
-          id: userId,
-        },
-        resourceGroup: {
-          id: groupId,
-        },
-      },
-    });
+    const existingIntroducer = await this.getByResourceGroupIdAndUserId(groupId, userId);
 
     if (existingIntroducer) {
       return existingIntroducer;
@@ -52,27 +41,26 @@ export class ResourceGroupsIntroducersService {
   }
 
   public async revoke(groupId: number, userId: number): Promise<ResourceIntroducer> {
-    const introducer = await this.resourceIntroducerRepository.findOne({
-      where: {
-        resourceGroup: { id: groupId },
-        user: { id: userId },
-      },
-    });
+    const introducer = await this.getByResourceGroupIdAndUserId(groupId, userId);
 
     if (!introducer) {
-      throw new ResourceGroupIntroducerNotFoundException(groupId, userId);
+      return;
     }
 
     return await this.resourceIntroducerRepository.remove(introducer);
   }
 
-  public async isIntroducer({ groupId, userId }: { groupId: number; userId: number }): Promise<boolean> {
-    const introducer = await this.resourceIntroducerRepository.findOne({
+  public async getByResourceGroupIdAndUserId(groupId: number, userId: number): Promise<ResourceIntroducer | null> {
+    return await this.resourceIntroducerRepository.findOne({
       where: {
         resourceGroup: { id: groupId },
         user: { id: userId },
       },
     });
+  }
+
+  public async isIntroducer({ groupId, userId }: { groupId: number; userId: number }): Promise<boolean> {
+    const introducer = await this.getByResourceGroupIdAndUserId(groupId, userId);
 
     return !!introducer;
   }

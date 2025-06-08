@@ -66,13 +66,16 @@ export class ResourceIntroducersController {
   @ApiResponse({
     status: 200,
     description: 'Introduction permissions revoked',
-    type: ResourceIntroducer,
   })
   @Auth('canManageResources')
   async revoke(
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Param('userId', ParseIntPipe) userId: number
-  ): Promise<ResourceIntroducer> {
-    return await this.resourceIntroducersService.revoke(resourceId, userId);
+  ): Promise<{ OK: true }> {
+    await this.resourceIntroducersService.revoke(resourceId, userId);
+
+    return {
+      OK: true,
+    };
   }
 }
