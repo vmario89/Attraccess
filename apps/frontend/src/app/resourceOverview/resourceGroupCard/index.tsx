@@ -44,7 +44,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
   const { hasPermission, user } = useAuth();
 
   const debouncedSearchValue = useDebounce(searchValue, 250);
-  const perPage = 1;
+  const perPage = 10;
   const [page, setPage] = useState(1);
 
   const { data: group, isLoading: isLoadingGroup } = useResourcesServiceResourceGroupsGetOne(
