@@ -98,6 +98,7 @@ export function ESPHomeConfigurationPanel(props: ESPHomeConfigurationPanelProps)
           key="esphome"
           aria-label="ESPHome Configuration"
           title={<span className="mx-4">{t('title')}</span>}
+          data-cy="esphome-config-accordion-item"
         >
           <CardBody className="pt-4">
             <div className="flex flex-col gap-4">
@@ -109,7 +110,7 @@ export function ESPHomeConfigurationPanel(props: ESPHomeConfigurationPanelProps)
               <div className="mt-2">
                 <h3 className="text-md font-medium mb-2">{t('setupInstructions')}</h3>
 
-                <Snippet className="w-full" hideSymbol>
+                <Snippet className="w-full" hideSymbol data-cy="esphome-config-snippet">
                   {esphomeConfig.split('\n').map((line, index) => (
                     <div key={index} className="whitespace-pre-wrap min-h-[1em] min-w-[1em]">
                       {line}
@@ -127,6 +128,7 @@ export function ESPHomeConfigurationPanel(props: ESPHomeConfigurationPanelProps)
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-blue-500"
+                  data-cy="esphome-config-learn-more-link"
                 >
                   {t('learnMore')}
                   <ExternalLink className="w-3 h-3" />

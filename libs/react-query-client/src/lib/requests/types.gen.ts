@@ -319,49 +319,72 @@ export type UpdateSSOProviderDto = {
     oidcConfiguration?: UpdateOIDCConfigurationDto;
 };
 
-export type CreateResourceGroupDto = {
-    name: string;
-    description?: string;
+export type PreviewMjmlDto = {
+    /**
+     * The MJML content to preview
+     */
+    mjmlContent: string;
 };
 
-export type ResourceGroup = {
+export type PreviewMjmlResponseDto = {
     /**
-     * The unique identifier of the resource group
+     * The HTML content of the MJML
      */
-    id: number;
+    html: string;
     /**
-     * The name of the resource
+     * Indicates if there were any errors during conversion
      */
-    name: string;
+    hasErrors: boolean;
     /**
-     * A detailed description of the resource
+     * Error message if conversion failed
      */
-    description?: string;
+    error?: string;
+};
+
+/**
+ * Template type/key used by the system
+ */
+export enum EmailTemplateType {
+    VERIFY_EMAIL = 'verify-email',
+    RESET_PASSWORD = 'reset-password'
+}
+
+export type EmailTemplate = {
     /**
-     * When the resource was created
+     * Template type/key used by the system
+     */
+    type: EmailTemplateType;
+    /**
+     * Email subject line
+     */
+    subject: string;
+    /**
+     * MJML content of the email body
+     */
+    body: string;
+    /**
+     * Variables used in the email body
+     */
+    variables: Array<(string)>;
+    /**
+     * Timestamp of when the template was created
      */
     createdAt: string;
     /**
-     * When the resource was last updated
+     * Timestamp of when the template was last updated
      */
     updatedAt: string;
 };
 
-export type PaginatedResourceGroupResponseDto = {
-    total: number;
-    page: number;
-    limit: number;
+export type UpdateEmailTemplateDto = {
     /**
-     * The next page number, or null if it is the last page.
+     * Email subject line
      */
-    nextPage: number | null;
-    totalPages: number;
-    data: Array<ResourceGroup>;
-};
-
-export type UpdateResourceGroupDto = {
-    name?: string;
-    description?: string;
+    subject?: string;
+    /**
+     * MJML content of the email body
+     */
+    body?: string;
 };
 
 export type CreateResourceDto = {
@@ -402,6 +425,29 @@ export enum documentationType {
     MARKDOWN = 'markdown',
     URL = 'url'
 }
+
+export type ResourceGroup = {
+    /**
+     * The unique identifier of the resource group
+     */
+    id: number;
+    /**
+     * The name of the resource
+     */
+    name: string;
+    /**
+     * A detailed description of the resource
+     */
+    description?: string;
+    /**
+     * When the resource was created
+     */
+    createdAt: string;
+    /**
+     * When the resource was last updated
+     */
+    updatedAt: string;
+};
 
 export type Resource = {
     /**
@@ -495,231 +541,6 @@ export type UpdateResourceDto = {
      * Whether this resource allows overtaking by the next user without the prior user ending their session
      */
     allowTakeOver?: boolean;
-};
-
-export type StartUsageSessionDto = {
-    /**
-     * Optional notes about the usage session
-     */
-    notes?: string;
-    /**
-     * Whether to force takeover of an existing session (only works if resource allows takeover)
-     */
-    forceTakeOver?: boolean;
-};
-
-export type ResourceUsage = {
-    /**
-     * The unique identifier of the resource usage
-     */
-    id: number;
-    /**
-     * The ID of the resource being used
-     */
-    resourceId: number;
-    /**
-     * The ID of the user using the resource (null if user was deleted)
-     */
-    userId?: number;
-    /**
-     * When the usage session started
-     */
-    startTime: string;
-    /**
-     * Notes provided when starting the session
-     */
-    startNotes?: string;
-    /**
-     * When the usage session ended
-     */
-    endTime?: string;
-    /**
-     * Notes provided when ending the session
-     */
-    endNotes?: string;
-    /**
-     * The resource being used
-     */
-    resource?: Resource;
-    /**
-     * The user who used the resource
-     */
-    user?: User;
-    /**
-     * The duration of the usage session in minutes
-     */
-    usageInMinutes: number;
-};
-
-export type EndUsageSessionDto = {
-    /**
-     * Additional notes about the completed session
-     */
-    notes?: string;
-    /**
-     * The end time of the session. If not provided, current time will be used.
-     */
-    endTime?: string;
-};
-
-export type GetResourceHistoryResponseDto = {
-    total: number;
-    page: number;
-    limit: number;
-    /**
-     * The next page number, or null if it is the last page.
-     */
-    nextPage: number | null;
-    totalPages: number;
-    data: Array<ResourceUsage>;
-};
-
-export type GetActiveUsageSessionDto = {
-    /**
-     * The active usage session or null if none exists
-     */
-    usage: (ResourceUsage) | null;
-};
-
-export type CompleteIntroductionDto = {
-    /**
-     * User ID
-     */
-    userId?: number;
-};
-
-export type ResourceIntroductionHistoryItem = {
-    /**
-     * The unique identifier of the introduction history entry
-     */
-    id: number;
-    /**
-     * The ID of the related introduction
-     */
-    introductionId: number;
-    /**
-     * The action performed (revoke or unrevoke)
-     */
-    action: 'revoke' | 'unrevoke';
-    /**
-     * The ID of the user who performed the action
-     */
-    performedByUserId: number;
-    /**
-     * Optional comment explaining the reason for the action
-     */
-    comment?: string;
-    /**
-     * When the action was performed
-     */
-    createdAt: string;
-    /**
-     * The user who performed the action
-     */
-    performedByUser: User;
-};
-
-/**
- * The action performed (revoke or unrevoke)
- */
-export enum action {
-    REVOKE = 'revoke',
-    UNREVOKE = 'unrevoke'
-}
-
-export type ResourceIntroduction = {
-    /**
-     * The unique identifier of the introduction
-     */
-    id: number;
-    /**
-     * The ID of the resource
-     */
-    resourceId: number;
-    /**
-     * The ID of the user who received the introduction
-     */
-    receiverUserId: number;
-    /**
-     * The ID of the user who tutored the receiver
-     */
-    tutorUserId: number;
-    /**
-     * When the introduction was completed
-     */
-    completedAt: string;
-    /**
-     * When the introduction record was created
-     */
-    createdAt: string;
-    /**
-     * The user who received the introduction
-     */
-    receiverUser: User;
-    /**
-     * The user who tutored the receiver
-     */
-    tutorUser: User;
-    /**
-     * History of revoke/unrevoke actions for this introduction
-     */
-    history: Array<ResourceIntroductionHistoryItem>;
-};
-
-export type PaginatedResourceIntroductionResponseDto = {
-    total: number;
-    page: number;
-    limit: number;
-    /**
-     * The next page number, or null if it is the last page.
-     */
-    nextPage: number | null;
-    totalPages: number;
-    data: Array<ResourceIntroduction>;
-};
-
-export type RevokeIntroductionDto = {
-    /**
-     * Optional comment explaining the reason for revoking access
-     */
-    comment?: string;
-};
-
-export type UnrevokeIntroductionDto = {
-    /**
-     * Optional comment explaining the reason for unrevoking access
-     */
-    comment?: string;
-};
-
-export type ResourceIntroductionUser = {
-    /**
-     * The unique identifier of the introduction permission
-     */
-    id: number;
-    /**
-     * The ID of the resource
-     */
-    resourceId: number;
-    /**
-     * The ID of the user who can give introductions
-     */
-    userId: number;
-    /**
-     * When the permission was granted
-     */
-    grantedAt: string;
-    /**
-     * The user who can give introductions
-     */
-    user: User;
-};
-
-export type CanManageIntroducersResponseDto = {
-    /**
-     * Whether the user can manage introducers for the resource
-     */
-    canManageIntroducers: boolean;
 };
 
 export type MqttServer = {
@@ -1324,6 +1145,256 @@ export type TestMqttConfigResponseDto = {
     message: string;
 };
 
+export type CreateResourceGroupDto = {
+    /**
+     * The name of the resource group
+     */
+    name: string;
+    /**
+     * The description of the resource group
+     */
+    description?: string;
+};
+
+export type UpdateResourceGroupDto = {
+    /**
+     * The name of the resource group
+     */
+    name: string;
+    /**
+     * The description of the resource group
+     */
+    description?: string;
+};
+
+export type ResourceIntroductionHistoryItem = {
+    /**
+     * The unique identifier of the introduction history entry
+     */
+    id: number;
+    /**
+     * The ID of the related introduction
+     */
+    introductionId: number;
+    /**
+     * The action performed (revoke or grant)
+     */
+    action: 'revoke' | 'grant';
+    /**
+     * The ID of the user who performed the action
+     */
+    performedByUserId: number;
+    /**
+     * Optional comment explaining the reason for the action
+     */
+    comment?: string;
+    /**
+     * When the action was performed
+     */
+    createdAt: string;
+    /**
+     * The user who performed the action
+     */
+    performedByUser: User;
+};
+
+/**
+ * The action performed (revoke or grant)
+ */
+export enum action {
+    REVOKE = 'revoke',
+    GRANT = 'grant'
+}
+
+export type ResourceIntroduction = {
+    /**
+     * The unique identifier of the introduction
+     */
+    id: number;
+    /**
+     * The ID of the resource (if this is a resource-specific introduction)
+     */
+    resourceId?: number;
+    /**
+     * The ID of the user who received the introduction
+     */
+    receiverUserId: number;
+    /**
+     * The ID of the user who tutored the receiver
+     */
+    tutorUserId: number;
+    /**
+     * The ID of the resource group (if this is a group-level introduction)
+     */
+    resourceGroupId?: number;
+    /**
+     * When the introduction was completed
+     */
+    completedAt: string;
+    /**
+     * When the introduction record was created
+     */
+    createdAt: string;
+    /**
+     * The user who received the introduction
+     */
+    receiverUser: User;
+    /**
+     * The user who tutored the receiver
+     */
+    tutorUser: User;
+    /**
+     * History of revoke/unrevoke actions for this introduction
+     */
+    history: Array<ResourceIntroductionHistoryItem>;
+};
+
+export type UpdateResourceGroupIntroductionDto = {
+    /**
+     * The comment for the action
+     */
+    comment?: string;
+};
+
+export type ResourceIntroducer = {
+    /**
+     * The unique identifier of the introduction permission
+     */
+    id: number;
+    /**
+     * The ID of the resource (if permission is for a specific resource)
+     */
+    resourceId?: number;
+    /**
+     * The ID of the user who can give introductions
+     */
+    userId: number;
+    /**
+     * The ID of the resource group (if permission is for a group)
+     */
+    resourceGroupId?: number;
+    /**
+     * When the permission was granted
+     */
+    grantedAt: string;
+    /**
+     * The user who can give introductions
+     */
+    user: User;
+};
+
+export type IsResourceGroupIntroducerResponseDto = {
+    /**
+     * Whether the user is an introducer for the resource
+     */
+    isIntroducer: boolean;
+};
+
+export type StartUsageSessionDto = {
+    /**
+     * Optional notes about the usage session
+     */
+    notes?: string;
+    /**
+     * Whether to force takeover of an existing session (only works if resource allows takeover)
+     */
+    forceTakeOver?: boolean;
+};
+
+export type ResourceUsage = {
+    /**
+     * The unique identifier of the resource usage
+     */
+    id: number;
+    /**
+     * The ID of the resource being used
+     */
+    resourceId: number;
+    /**
+     * The ID of the user using the resource (null if user was deleted)
+     */
+    userId?: number;
+    /**
+     * When the usage session started
+     */
+    startTime: string;
+    /**
+     * Notes provided when starting the session
+     */
+    startNotes?: string;
+    /**
+     * When the usage session ended
+     */
+    endTime?: string;
+    /**
+     * Notes provided when ending the session
+     */
+    endNotes?: string;
+    /**
+     * The resource being used
+     */
+    resource?: Resource;
+    /**
+     * The user who used the resource
+     */
+    user?: User;
+    /**
+     * The duration of the usage session in minutes
+     */
+    usageInMinutes: number;
+};
+
+export type EndUsageSessionDto = {
+    /**
+     * Additional notes about the completed session
+     */
+    notes?: string;
+    /**
+     * The end time of the session. If not provided, current time will be used.
+     */
+    endTime?: string;
+};
+
+export type GetResourceHistoryResponseDto = {
+    total: number;
+    page: number;
+    limit: number;
+    /**
+     * The next page number, or null if it is the last page.
+     */
+    nextPage: number | null;
+    totalPages: number;
+    data: Array<ResourceUsage>;
+};
+
+export type GetActiveUsageSessionDto = {
+    /**
+     * The active usage session or null if none exists
+     */
+    usage: (ResourceUsage) | null;
+};
+
+export type CanControlResponseDto = {
+    /**
+     * Whether the user can control the resource
+     */
+    canControl: boolean;
+};
+
+export type IsResourceIntroducerResponseDto = {
+    /**
+     * Whether the user is an introducer for the resource
+     */
+    isIntroducer: boolean;
+};
+
+export type UpdateResourceIntroductionDto = {
+    /**
+     * The comment for the action
+     */
+    comment?: string;
+};
+
 export type PluginMainFrontend = {
     /**
      * The directory of the plugins frontend files
@@ -1533,7 +1604,11 @@ export type CreateOneUserData = {
 
 export type CreateOneUserResponse = User;
 
-export type GetAllUsersData = {
+export type FindManyData = {
+    /**
+     * User IDs
+     */
+    ids?: Array<(number)>;
     /**
      * Number of items per page
      */
@@ -1548,7 +1623,7 @@ export type GetAllUsersData = {
     search?: string;
 };
 
-export type GetAllUsersResponse = PaginatedUsersResponseDto;
+export type FindManyResponse = PaginatedUsersResponseDto;
 
 export type VerifyEmailData = {
     requestBody: VerifyEmailDto;
@@ -1695,56 +1770,32 @@ export type OidcLoginCallbackData = {
 
 export type OidcLoginCallbackResponse = CreateSessionResponse;
 
-export type CreateOneResourceGroupData = {
-    requestBody: CreateResourceGroupDto;
+export type EmailTemplateControllerPreviewMjmlData = {
+    requestBody: PreviewMjmlDto;
 };
 
-export type CreateOneResourceGroupResponse = ResourceGroup;
+export type EmailTemplateControllerPreviewMjmlResponse = PreviewMjmlResponseDto;
 
-export type GetAllResourceGroupsData = {
+export type EmailTemplateControllerFindAllResponse = Array<EmailTemplate>;
+
+export type EmailTemplateControllerFindOneData = {
     /**
-     * Number of items per page
+     * Template type/type
      */
-    limit?: number;
-    /**
-     * Page number
-     */
-    page?: number;
-    /**
-     * Search term for name or description
-     */
-    search?: string;
+    type: 'verify-email' | 'reset-password';
 };
 
-export type GetAllResourceGroupsResponse = PaginatedResourceGroupResponseDto;
+export type EmailTemplateControllerFindOneResponse = EmailTemplate;
 
-export type GetOneResourceGroupByIdData = {
+export type EmailTemplateControllerUpdateData = {
+    requestBody: UpdateEmailTemplateDto;
     /**
-     * Resource Group ID
+     * Template type/type
      */
-    id: number;
+    type: 'verify-email' | 'reset-password';
 };
 
-export type GetOneResourceGroupByIdResponse = ResourceGroup;
-
-export type UpdateOneResourceGroupData = {
-    /**
-     * Resource Group ID
-     */
-    id: number;
-    requestBody: UpdateResourceGroupDto;
-};
-
-export type UpdateOneResourceGroupResponse = ResourceGroup;
-
-export type DeleteOneResourceGroupData = {
-    /**
-     * Resource Group ID
-     */
-    id: number;
-};
-
-export type DeleteOneResourceGroupResponse = void;
+export type EmailTemplateControllerUpdateResponse = EmailTemplate;
 
 export type CreateOneResourceData = {
     formData: CreateResourceDto;
@@ -1796,33 +1847,89 @@ export type DeleteOneResourceData = {
 
 export type DeleteOneResourceResponse = void;
 
-export type AddResourceToGroupData = {
-    groupId: number;
+export type SseControllerStreamEventsData = {
+    resourceId: number;
+};
+
+export type SseControllerStreamEventsResponse = unknown;
+
+export type ResourceGroupsCreateOneData = {
+    requestBody: CreateResourceGroupDto;
+};
+
+export type ResourceGroupsCreateOneResponse = ResourceGroup;
+
+export type ResourceGroupsGetManyResponse = Array<ResourceGroup>;
+
+export type ResourceGroupsGetOneData = {
+    /**
+     * The ID of the resource group
+     */
     id: number;
 };
 
-export type AddResourceToGroupResponse = Resource;
+export type ResourceGroupsGetOneResponse = ResourceGroup;
 
-export type RemoveResourceFromGroupData = {
-    groupId: number;
+export type ResourceGroupsUpdateOneData = {
+    /**
+     * The ID of the resource group
+     */
     id: number;
+    requestBody: UpdateResourceGroupDto;
 };
 
-export type RemoveResourceFromGroupResponse = void;
+export type ResourceGroupsUpdateOneResponse = ResourceGroup;
 
-export type StartSessionData = {
+export type ResourceGroupsAddResourceData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the resource
+     */
+    resourceId: number;
+};
+
+export type ResourceGroupsAddResourceResponse = unknown;
+
+export type ResourceGroupsRemoveResourceData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the resource
+     */
+    resourceId: number;
+};
+
+export type ResourceGroupsRemoveResourceResponse = unknown;
+
+export type ResourceGroupsDeleteOneData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+};
+
+export type ResourceGroupsDeleteOneResponse = unknown;
+
+export type ResourceUsageStartSessionData = {
     requestBody: StartUsageSessionDto;
     resourceId: number;
 };
 
-export type StartSessionResponse = ResourceUsage;
+export type ResourceUsageStartSessionResponse = ResourceUsage;
 
-export type EndSessionData = {
+export type ResourceUsageEndSessionData = {
     requestBody: EndUsageSessionDto;
     resourceId: number;
 };
 
-export type GetHistoryOfResourceUsageData = {
+export type ResourceUsageEndSessionResponse = ResourceUsage;
+
+export type ResourceUsageGetHistoryData = {
     /**
      * The number of items per page
      */
@@ -1838,167 +1945,113 @@ export type GetHistoryOfResourceUsageData = {
     userId?: number;
 };
 
-export type GetHistoryOfResourceUsageResponse = GetResourceHistoryResponseDto;
+export type ResourceUsageGetHistoryResponse = GetResourceHistoryResponseDto;
 
-export type GetActiveSessionData = {
+export type ResourceUsageGetActiveSessionData = {
     resourceId: number;
 };
 
-export type GetActiveSessionResponse = GetActiveUsageSessionDto;
+export type ResourceUsageGetActiveSessionResponse = GetActiveUsageSessionDto;
 
-export type MarkCompletedData = {
-    requestBody: CompleteIntroductionDto;
+export type ResourceUsageCanControlData = {
     resourceId: number;
 };
 
-export type MarkCompletedResponse = ResourceIntroduction;
+export type ResourceUsageCanControlResponse = CanControlResponseDto;
 
-export type GetAllResourceIntroductionsData = {
-    /**
-     * Number of items per page
-     */
-    limit: number;
-    /**
-     * Page number (1-based)
-     */
-    page?: number;
-    resourceId: number;
-};
+export type MqttServersGetAllResponse = Array<MqttServer>;
 
-export type GetAllResourceIntroductionsResponse = PaginatedResourceIntroductionResponseDto;
-
-export type CheckStatusData = {
-    resourceId: number;
-};
-
-export type CheckStatusResponse = {
-    hasValidIntroduction?: boolean;
-};
-
-export type MarkRevokedData = {
-    introductionId: number;
-    requestBody: RevokeIntroductionDto;
-    resourceId: number;
-};
-
-export type MarkRevokedResponse = ResourceIntroductionHistoryItem;
-
-export type MarkUnrevokedData = {
-    introductionId: number;
-    requestBody: UnrevokeIntroductionDto;
-    resourceId: number;
-};
-
-export type MarkUnrevokedResponse = ResourceIntroductionHistoryItem;
-
-export type GetHistoryOfIntroductionData = {
-    introductionId: number;
-    resourceId: number;
-};
-
-export type GetHistoryOfIntroductionResponse = Array<ResourceIntroductionHistoryItem>;
-
-export type CheckIsRevokedStatusData = {
-    introductionId: number;
-    resourceId: number;
-};
-
-export type CheckIsRevokedStatusResponse = {
-    isRevoked?: boolean;
-};
-
-export type GetOneResourceIntroductionData = {
-    introductionId: number;
-    resourceId: number;
-};
-
-export type GetOneResourceIntroductionResponse = ResourceIntroduction;
-
-export type CheckCanManagePermissionData = {
-    resourceId: number;
-};
-
-export type CheckCanManagePermissionResponse = {
-    canManageIntroductions?: boolean;
-};
-
-export type GetAllResourceIntroducersData = {
-    resourceId: number;
-};
-
-export type GetAllResourceIntroducersResponse = Array<ResourceIntroductionUser>;
-
-export type AddOneData = {
-    resourceId: number;
-    userId: number;
-};
-
-export type AddOneResponse = ResourceIntroductionUser;
-
-export type RemoveOneData = {
-    resourceId: number;
-    userId: number;
-};
-
-export type RemoveOneResponse = void;
-
-export type GetAllMqttServersResponse = Array<MqttServer>;
-
-export type CreateOneMqttServerData = {
+export type MqttServersCreateOneData = {
     requestBody: CreateMqttServerDto;
 };
 
-export type CreateOneMqttServerResponse = MqttServer;
+export type MqttServersCreateOneResponse = MqttServer;
 
-export type GetOneMqttServerByIdData = {
+export type MqttServersGetOneByIdData = {
     id: number;
 };
 
-export type GetOneMqttServerByIdResponse = MqttServer;
+export type MqttServersGetOneByIdResponse = MqttServer;
 
-export type UpdateOneMqttServerData = {
+export type MqttServersUpdateOneData = {
     id: number;
     requestBody: UpdateMqttServerDto;
 };
 
-export type UpdateOneMqttServerResponse = MqttServer;
+export type MqttServersUpdateOneResponse = MqttServer;
 
-export type DeleteOneMqttServerData = {
+export type MqttServersDeleteOneData = {
     id: number;
 };
 
-export type DeleteOneMqttServerResponse = unknown;
+export type MqttServersDeleteOneResponse = unknown;
 
-export type TestConnectionData = {
+export type MqttServersTestConnectionData = {
     id: number;
 };
 
-export type TestConnectionResponse = TestConnectionResponseDto;
+export type MqttServersTestConnectionResponse = TestConnectionResponseDto;
 
-export type GetStatusOfOneData = {
+export type MqttServersGetStatusOfOneData = {
     id: number;
 };
 
-export type GetStatusOfOneResponse = MqttServerStatusDto;
+export type MqttServersGetStatusOfOneResponse = MqttServerStatusDto;
 
-export type GetStatusOfAllResponse = AllMqttServerStatusesDto;
+export type MqttServersGetStatusOfAllResponse = AllMqttServerStatusesDto;
 
-export type SseControllerStreamEventsData = {
+export type MqttResourceConfigGetAllData = {
     resourceId: number;
 };
 
-export type SseControllerStreamEventsResponse = unknown;
+export type MqttResourceConfigGetAllResponse = Array<MqttResourceConfig>;
 
-export type GetAllWebhookConfigurationsData = {
+export type MqttResourceConfigCreateData = {
+    requestBody: CreateMqttResourceConfigDto;
+    resourceId: number;
+};
+
+export type MqttResourceConfigCreateResponse = MqttResourceConfig;
+
+export type MqttResourceConfigGetOneData = {
+    configId: number;
+    resourceId: number;
+};
+
+export type MqttResourceConfigGetOneResponse = MqttResourceConfig;
+
+export type MqttResourceConfigUpdateData = {
+    configId: number;
+    requestBody: UpdateMqttResourceConfigDto;
+    resourceId: number;
+};
+
+export type MqttResourceConfigUpdateResponse = MqttResourceConfig;
+
+export type MqttResourceConfigDeleteOneData = {
+    configId: number;
+    resourceId: number;
+};
+
+export type MqttResourceConfigDeleteOneResponse = unknown;
+
+export type MqttResourceConfigTestOneData = {
+    configId: number;
+    resourceId: number;
+};
+
+export type MqttResourceConfigTestOneResponse = TestMqttConfigResponseDto;
+
+export type WebhookConfigGetAllData = {
     /**
      * Resource ID
      */
     resourceId: number;
 };
 
-export type GetAllWebhookConfigurationsResponse = Array<WebhookConfigResponseDto>;
+export type WebhookConfigGetAllResponse = Array<WebhookConfigResponseDto>;
 
-export type CreateOneWebhookConfigurationData = {
+export type WebhookConfigCreateOneData = {
     requestBody: CreateWebhookConfigDto;
     /**
      * Resource ID
@@ -2006,9 +2059,9 @@ export type CreateOneWebhookConfigurationData = {
     resourceId: number;
 };
 
-export type CreateOneWebhookConfigurationResponse = WebhookConfigResponseDto;
+export type WebhookConfigCreateOneResponse = WebhookConfigResponseDto;
 
-export type GetOneWebhookConfigurationByIdData = {
+export type WebhookConfigGetOneByIdData = {
     /**
      * Webhook configuration ID
      */
@@ -2019,9 +2072,9 @@ export type GetOneWebhookConfigurationByIdData = {
     resourceId: number;
 };
 
-export type GetOneWebhookConfigurationByIdResponse = WebhookConfigResponseDto;
+export type WebhookConfigGetOneByIdResponse = WebhookConfigResponseDto;
 
-export type UpdateOneWebhookConfigurationData = {
+export type WebhookConfigUpdateOneData = {
     /**
      * Webhook configuration ID
      */
@@ -2033,9 +2086,9 @@ export type UpdateOneWebhookConfigurationData = {
     resourceId: number;
 };
 
-export type UpdateOneWebhookConfigurationResponse = WebhookConfigResponseDto;
+export type WebhookConfigUpdateOneResponse = WebhookConfigResponseDto;
 
-export type DeleteOneWebhookConfigurationData = {
+export type WebhookConfigDeleteOneData = {
     /**
      * Webhook configuration ID
      */
@@ -2046,9 +2099,9 @@ export type DeleteOneWebhookConfigurationData = {
     resourceId: number;
 };
 
-export type DeleteOneWebhookConfigurationResponse = void;
+export type WebhookConfigDeleteOneResponse = void;
 
-export type UpdateStatusData = {
+export type WebhookConfigUpdateStatusData = {
     /**
      * Webhook configuration ID
      */
@@ -2060,9 +2113,9 @@ export type UpdateStatusData = {
     resourceId: number;
 };
 
-export type UpdateStatusResponse = WebhookConfigResponseDto;
+export type WebhookConfigUpdateStatusResponse = WebhookConfigResponseDto;
 
-export type TestData = {
+export type WebhookConfigTestData = {
     /**
      * Webhook configuration ID
      */
@@ -2073,9 +2126,9 @@ export type TestData = {
     resourceId: number;
 };
 
-export type TestResponse = WebhookTestResponseDto;
+export type WebhookConfigTestResponse = WebhookTestResponseDto;
 
-export type RegenerateSecretData = {
+export type WebhookConfigRegenerateSecretData = {
     /**
      * Webhook configuration ID
      */
@@ -2086,49 +2139,167 @@ export type RegenerateSecretData = {
     resourceId: number;
 };
 
-export type RegenerateSecretResponse = WebhookConfigResponseDto;
+export type WebhookConfigRegenerateSecretResponse = WebhookConfigResponseDto;
 
-export type GetAllMqttConfigurationsData = {
+export type ResourceGroupIntroductionsGetManyData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+};
+
+export type ResourceGroupIntroductionsGetManyResponse = Array<ResourceIntroduction>;
+
+export type ResourceGroupIntroductionsGetHistoryData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroductionsGetHistoryResponse = Array<ResourceIntroductionHistoryItem>;
+
+export type ResourceGroupIntroductionsGrantData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    requestBody: UpdateResourceGroupIntroductionDto;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroductionsGrantResponse = ResourceIntroductionHistoryItem;
+
+export type ResourceGroupIntroductionsRevokeData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    requestBody: UpdateResourceGroupIntroductionDto;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroductionsRevokeResponse = ResourceIntroductionHistoryItem;
+
+export type ResourceGroupIntroducersGetManyData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+};
+
+export type ResourceGroupIntroducersGetManyResponse = Array<ResourceIntroducer>;
+
+export type ResourceGroupIntroducersIsIntroducerData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroducersIsIntroducerResponse = IsResourceGroupIntroducerResponseDto;
+
+export type ResourceGroupIntroducersGrantData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroducersGrantResponse = unknown;
+
+export type ResourceGroupIntroducersRevokeData = {
+    /**
+     * The ID of the resource group
+     */
+    groupId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
+};
+
+export type ResourceGroupIntroducersRevokeResponse = unknown;
+
+export type ResourceIntroducersIsIntroducerData = {
+    resourceId: number;
+    userId: number;
+};
+
+export type ResourceIntroducersIsIntroducerResponse = IsResourceIntroducerResponseDto;
+
+export type ResourceIntroducersGetManyData = {
     resourceId: number;
 };
 
-export type GetAllMqttConfigurationsResponse = Array<MqttResourceConfig>;
+export type ResourceIntroducersGetManyResponse = Array<ResourceIntroducer>;
 
-export type CreateMqttConfigurationData = {
-    requestBody: CreateMqttResourceConfigDto;
+export type ResourceIntroducersGrantData = {
+    resourceId: number;
+    userId: number;
+};
+
+export type ResourceIntroducersGrantResponse = ResourceIntroducer;
+
+export type ResourceIntroducersRevokeData = {
+    resourceId: number;
+    userId: number;
+};
+
+export type ResourceIntroducersRevokeResponse = ResourceIntroducer;
+
+export type ResourceIntroductionsGetManyData = {
     resourceId: number;
 };
 
-export type CreateMqttConfigurationResponse = MqttResourceConfig;
+export type ResourceIntroductionsGetManyResponse = Array<ResourceIntroduction>;
 
-export type GetOneMqttConfigurationData = {
-    configId: number;
+export type ResourceIntroductionsGrantData = {
+    requestBody: UpdateResourceIntroductionDto;
     resourceId: number;
+    userId: number;
 };
 
-export type GetOneMqttConfigurationResponse = MqttResourceConfig;
+export type ResourceIntroductionsGrantResponse = ResourceIntroductionHistoryItem;
 
-export type UpdateMqttConfigurationData = {
-    configId: number;
-    requestBody: UpdateMqttResourceConfigDto;
+export type ResourceIntroductionsRevokeData = {
+    requestBody: UpdateResourceIntroductionDto;
     resourceId: number;
+    userId: number;
 };
 
-export type UpdateMqttConfigurationResponse = MqttResourceConfig;
+export type ResourceIntroductionsRevokeResponse = ResourceIntroductionHistoryItem;
 
-export type DeleteOneMqttConfigurationData = {
-    configId: number;
+export type ResourceIntroductionsGetHistoryData = {
+    /**
+     * The ID of the resource
+     */
     resourceId: number;
+    /**
+     * The ID of the user
+     */
+    userId: number;
 };
 
-export type DeleteOneMqttConfigurationResponse = unknown;
-
-export type TestOneData = {
-    configId: number;
-    resourceId: number;
-};
-
-export type TestOneResponse = TestMqttConfigResponseDto;
+export type ResourceIntroductionsGetHistoryResponse = Array<ResourceIntroductionHistoryItem>;
 
 export type GetPluginsResponse = Array<LoadedPluginManifest>;
 
@@ -2232,7 +2403,7 @@ export type $OpenApiTs = {
             };
         };
         get: {
-            req: GetAllUsersData;
+            req: FindManyData;
             res: {
                 /**
                  * List of users.
@@ -2572,35 +2743,18 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/groups': {
+    '/api/email-templates/preview-mjml': {
         post: {
-            req: CreateOneResourceGroupData;
+            req: EmailTemplateControllerPreviewMjmlData;
             res: {
                 /**
-                 * The resource group has been successfully created.
+                 * MJML preview result
                  */
-                201: ResourceGroup;
+                200: PreviewMjmlResponseDto;
                 /**
-                 * Bad Request.
+                 * Invalid MJML content
                  */
                 400: unknown;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-        get: {
-            req: GetAllResourceGroupsData;
-            res: {
-                /**
-                 * List of resource groups with pagination.
-                 */
-                200: PaginatedResourceGroupResponseDto;
                 /**
                  * Unauthorized
                  */
@@ -2608,62 +2762,55 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/groups/{id}': {
+    '/api/email-templates': {
         get: {
-            req: GetOneResourceGroupByIdData;
             res: {
                 /**
-                 * The resource group details.
+                 * List of email templates
                  */
-                200: ResourceGroup;
+                200: Array<EmailTemplate>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/email-templates/{type}': {
+        get: {
+            req: EmailTemplateControllerFindOneData;
+            res: {
+                /**
+                 * Email template found
+                 */
+                200: EmailTemplate;
                 /**
                  * Unauthorized
                  */
                 401: unknown;
                 /**
-                 * Resource group not found.
+                 * Template not found
                  */
                 404: unknown;
             };
         };
         patch: {
-            req: UpdateOneResourceGroupData;
+            req: EmailTemplateControllerUpdateData;
             res: {
                 /**
-                 * The resource group has been successfully updated.
+                 * Template updated successfully
                  */
-                200: ResourceGroup;
+                200: EmailTemplate;
                 /**
-                 * User is not authenticated
+                 * Invalid input data
+                 */
+                400: unknown;
+                /**
+                 * Unauthorized
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource group not found.
-                 */
-                404: unknown;
-            };
-        };
-        delete: {
-            req: DeleteOneResourceGroupData;
-            res: {
-                /**
-                 * The resource group has been successfully deleted.
-                 */
-                204: void;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource group not found.
+                 * Template not found
                  */
                 404: unknown;
             };
@@ -2678,13 +2825,9 @@ export type $OpenApiTs = {
                  */
                 201: Resource;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
             };
         };
         get: {
@@ -2727,13 +2870,9 @@ export type $OpenApiTs = {
                  */
                 200: Resource;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
             };
         };
         delete: {
@@ -2744,63 +2883,121 @@ export type $OpenApiTs = {
                  */
                 204: void;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
             };
         };
     };
-    '/api/resources/{id}/groups/{groupId}': {
+    '/api/resources/{resourceId}/events': {
+        get: {
+            req: SseControllerStreamEventsData;
+            res: {
+                200: unknown;
+            };
+        };
+    };
+    '/api/resource-groups': {
         post: {
-            req: AddResourceToGroupData;
+            req: ResourceGroupsCreateOneData;
             res: {
                 /**
-                 * The resource has been successfully added to the group.
+                 * The resource group has been successfully created.
                  */
-                200: Resource;
+                201: ResourceGroup;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
+            };
+        };
+        get: {
+            res: {
                 /**
-                 * User does not have permission to manage this resource
+                 * The resource groups have been successfully retrieved.
                  */
-                403: unknown;
+                200: Array<ResourceGroup>;
+            };
+        };
+    };
+    '/api/resource-groups/{id}': {
+        get: {
+            req: ResourceGroupsGetOneData;
+            res: {
                 /**
-                 * Resource or Group not found
+                 * The resource group has been successfully retrieved.
+                 */
+                200: ResourceGroup;
+                /**
+                 * The resource group has not been found.
                  */
                 404: unknown;
             };
         };
-        delete: {
-            req: RemoveResourceFromGroupData;
+        put: {
+            req: ResourceGroupsUpdateOneData;
             res: {
                 /**
-                 * The resource has been successfully removed from the group.
+                 * The resource group has been successfully updated.
                  */
-                204: void;
+                200: ResourceGroup;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource or Group not found, or resource not in group
+                 * The resource group has not been found.
                  */
                 404: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/resources/{resourceId}': {
+        post: {
+            req: ResourceGroupsAddResourceData;
+            res: {
+                /**
+                 * The resource has been successfully added to the resource group.
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+        delete: {
+            req: ResourceGroupsRemoveResourceData;
+            res: {
+                /**
+                 * The resource has been successfully removed from the resource group.
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}': {
+        delete: {
+            req: ResourceGroupsDeleteOneData;
+            res: {
+                /**
+                 * The resource group has been successfully deleted.
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
             };
         };
     };
     '/api/resources/{resourceId}/usage/start': {
         post: {
-            req: StartSessionData;
+            req: ResourceUsageStartSessionData;
             res: {
                 /**
                  * Usage session started successfully.
@@ -2823,7 +3020,7 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/usage/end': {
         put: {
-            req: EndSessionData;
+            req: ResourceUsageEndSessionData;
             res: {
                 /**
                  * Usage session ended successfully.
@@ -2846,7 +3043,7 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/usage/history': {
         get: {
-            req: GetHistoryOfResourceUsageData;
+            req: ResourceUsageGetHistoryData;
             res: {
                 /**
                  * Resource usage history retrieved successfully.
@@ -2869,7 +3066,7 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/usage/active': {
         get: {
-            req: GetActiveSessionData;
+            req: ResourceUsageGetActiveSessionData;
             res: {
                 /**
                  * Active session retrieved successfully.
@@ -2886,242 +3083,14 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/{resourceId}/introductions/complete': {
-        post: {
-            req: MarkCompletedData;
-            res: {
-                /**
-                 * Introduction marked as completed successfully.
-                 */
-                201: ResourceIntroduction;
-                /**
-                 * Bad request - Neither userId nor userIdentifier provided
-                 */
-                400: unknown;
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-                /**
-                 * User not found with the provided identifier
-                 */
-                404: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions': {
+    '/api/resources/{resourceId}/usage/can-control': {
         get: {
-            req: GetAllResourceIntroductionsData;
+            req: ResourceUsageCanControlData;
             res: {
                 /**
-                 * Resource introductions
+                 * User can control resource
                  */
-                200: PaginatedResourceIntroductionResponseDto;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/status': {
-        get: {
-            req: CheckStatusData;
-            res: {
-                /**
-                 * Status retrieved successfully
-                 */
-                200: {
-                    hasValidIntroduction?: boolean;
-                };
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-                /**
-                 * Resource not found
-                 */
-                404: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{introductionId}/revoke': {
-        post: {
-            req: MarkRevokedData;
-            res: {
-                /**
-                 * Introduction revoked successfully
-                 */
-                201: ResourceIntroductionHistoryItem;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{introductionId}/unrevoke': {
-        post: {
-            req: MarkUnrevokedData;
-            res: {
-                /**
-                 * Introduction unrevoked successfully
-                 */
-                201: ResourceIntroductionHistoryItem;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{introductionId}/history': {
-        get: {
-            req: GetHistoryOfIntroductionData;
-            res: {
-                /**
-                 * Introduction history
-                 */
-                200: Array<ResourceIntroductionHistoryItem>;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{introductionId}/revoked': {
-        get: {
-            req: CheckIsRevokedStatusData;
-            res: {
-                /**
-                 * Status retrieved successfully
-                 */
-                200: {
-                    isRevoked?: boolean;
-                };
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/{introductionId}': {
-        get: {
-            req: GetOneResourceIntroductionData;
-            res: {
-                /**
-                 * Introduction retrieved successfully
-                 */
-                200: ResourceIntroduction;
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-                /**
-                 * Forbidden - User does not have permission to view this introduction
-                 */
-                403: unknown;
-                /**
-                 * Introduction not found
-                 */
-                404: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introductions/permissions/manage': {
-        get: {
-            req: CheckCanManagePermissionData;
-            res: {
-                /**
-                 * Returns whether the user can manage introductions
-                 */
-                200: {
-                    canManageIntroductions?: boolean;
-                };
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introducers': {
-        get: {
-            req: GetAllResourceIntroducersData;
-            res: {
-                /**
-                 * List of resource introducers
-                 */
-                200: Array<ResourceIntroductionUser>;
-                /**
-                 * Unauthorized
-                 */
-                401: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introducers/{userId}': {
-        post: {
-            req: AddOneData;
-            res: {
-                /**
-                 * User added as an introducer
-                 */
-                201: ResourceIntroductionUser;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-        delete: {
-            req: RemoveOneData;
-            res: {
-                /**
-                 * User removed as an introducer
-                 */
-                204: void;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-            };
-        };
-    };
-    '/api/resources/{resourceId}/introducers/can-manage': {
-        get: {
-            req: CheckCanManagePermissionData;
-            res: {
-                /**
-                 * Permission check result
-                 */
-                200: CanManageIntroducersResponseDto;
+                200: CanControlResponseDto;
                 /**
                  * Unauthorized
                  */
@@ -3143,7 +3112,7 @@ export type $OpenApiTs = {
             };
         };
         post: {
-            req: CreateOneMqttServerData;
+            req: MqttServersCreateOneData;
             res: {
                 /**
                  * MQTT server created successfully
@@ -3158,7 +3127,7 @@ export type $OpenApiTs = {
     };
     '/api/mqtt/servers/{id}': {
         get: {
-            req: GetOneMqttServerByIdData;
+            req: MqttServersGetOneByIdData;
             res: {
                 /**
                  * Returns the MQTT server with the specified ID
@@ -3175,7 +3144,7 @@ export type $OpenApiTs = {
             };
         };
         put: {
-            req: UpdateOneMqttServerData;
+            req: MqttServersUpdateOneData;
             res: {
                 /**
                  * MQTT server updated successfully
@@ -3192,7 +3161,7 @@ export type $OpenApiTs = {
             };
         };
         delete: {
-            req: DeleteOneMqttServerData;
+            req: MqttServersDeleteOneData;
             res: {
                 /**
                  * MQTT server deleted successfully
@@ -3211,7 +3180,7 @@ export type $OpenApiTs = {
     };
     '/api/mqtt/servers/{id}/test': {
         post: {
-            req: TestConnectionData;
+            req: MqttServersTestConnectionData;
             res: {
                 /**
                  * Connection test result
@@ -3230,7 +3199,7 @@ export type $OpenApiTs = {
     };
     '/api/mqtt/servers/{id}/status': {
         get: {
-            req: GetStatusOfOneData;
+            req: MqttServersGetStatusOfOneData;
             res: {
                 /**
                  * MQTT server connection status and statistics
@@ -3261,34 +3230,130 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/{resourceId}/events': {
+    '/api/resources/{resourceId}/mqtt/config': {
         get: {
-            req: SseControllerStreamEventsData;
+            req: MqttResourceConfigGetAllData;
             res: {
+                /**
+                 * Returns all MQTT configurations for the resource
+                 */
+                200: Array<MqttResourceConfig>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource not found
+                 */
+                404: unknown;
+            };
+        };
+        post: {
+            req: MqttResourceConfigCreateData;
+            res: {
+                /**
+                 * MQTT configuration created successfully
+                 */
+                201: MqttResourceConfig;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/mqtt/config/{configId}': {
+        get: {
+            req: MqttResourceConfigGetOneData;
+            res: {
+                /**
+                 * Returns the specific MQTT configuration
+                 */
+                200: MqttResourceConfig;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource or configuration not found
+                 */
+                404: unknown;
+            };
+        };
+        put: {
+            req: MqttResourceConfigUpdateData;
+            res: {
+                /**
+                 * MQTT configuration updated successfully
+                 */
+                200: MqttResourceConfig;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource or configuration not found
+                 */
+                404: unknown;
+            };
+        };
+        delete: {
+            req: MqttResourceConfigDeleteOneData;
+            res: {
+                /**
+                 * MQTT configuration deleted successfully
+                 */
                 200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource or MQTT configuration not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/mqtt/config/{configId}/test': {
+        post: {
+            req: MqttResourceConfigTestOneData;
+            res: {
+                /**
+                 * Test result
+                 */
+                200: TestMqttConfigResponseDto;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Resource or MQTT configuration not found
+                 */
+                404: unknown;
             };
         };
     };
     '/api/resources/{resourceId}/webhooks': {
         get: {
-            req: GetAllWebhookConfigurationsData;
+            req: WebhookConfigGetAllData;
             res: {
                 /**
                  * List of webhook configurations for the resource
                  */
                 200: Array<WebhookConfigResponseDto>;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
             };
         };
         post: {
-            req: CreateOneWebhookConfigurationData;
+            req: WebhookConfigCreateOneData;
             res: {
                 /**
                  * The webhook configuration has been created
@@ -3299,13 +3364,9 @@ export type $OpenApiTs = {
                  */
                 400: unknown;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Resource not found
                  */
@@ -3315,20 +3376,16 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/webhooks/{id}': {
         get: {
-            req: GetOneWebhookConfigurationByIdData;
+            req: WebhookConfigGetOneByIdData;
             res: {
                 /**
                  * The webhook configuration
                  */
                 200: WebhookConfigResponseDto;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3336,7 +3393,7 @@ export type $OpenApiTs = {
             };
         };
         put: {
-            req: UpdateOneWebhookConfigurationData;
+            req: WebhookConfigUpdateOneData;
             res: {
                 /**
                  * The webhook configuration has been updated
@@ -3347,13 +3404,9 @@ export type $OpenApiTs = {
                  */
                 400: unknown;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3361,20 +3414,16 @@ export type $OpenApiTs = {
             };
         };
         delete: {
-            req: DeleteOneWebhookConfigurationData;
+            req: WebhookConfigDeleteOneData;
             res: {
                 /**
                  * The webhook configuration has been deleted
                  */
                 204: void;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3384,7 +3433,7 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/webhooks/{id}/status': {
         put: {
-            req: UpdateStatusData;
+            req: WebhookConfigUpdateStatusData;
             res: {
                 /**
                  * The webhook status has been updated
@@ -3395,13 +3444,9 @@ export type $OpenApiTs = {
                  */
                 400: unknown;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3411,20 +3456,16 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/webhooks/{id}/test': {
         post: {
-            req: TestData;
+            req: WebhookConfigTestData;
             res: {
                 /**
                  * Test result
                  */
                 200: WebhookTestResponseDto;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3434,20 +3475,16 @@ export type $OpenApiTs = {
     };
     '/api/resources/{resourceId}/webhooks/{id}/regenerate-secret': {
         post: {
-            req: RegenerateSecretData;
+            req: WebhookConfigRegenerateSecretData;
             res: {
                 /**
                  * The webhook secret has been regenerated
                  */
                 200: WebhookConfigResponseDto;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
                 /**
                  * Webhook configuration not found
                  */
@@ -3455,135 +3492,255 @@ export type $OpenApiTs = {
             };
         };
     };
-    '/api/resources/{resourceId}/mqtt/config': {
+    '/api/resource-groups/{groupId}/introductions': {
         get: {
-            req: GetAllMqttConfigurationsData;
+            req: ResourceGroupIntroductionsGetManyData;
             res: {
                 /**
-                 * Returns all MQTT configurations for the resource
+                 * The introductions have been successfully retrieved.
                  */
-                200: Array<MqttResourceConfig>;
+                200: Array<ResourceIntroduction>;
                 /**
                  * User is not authenticated
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to manage this resource
+                 * User does not have permission to introduce users to this resource group
                  */
                 403: unknown;
-                /**
-                 * Resource not found
-                 */
-                404: unknown;
             };
         };
-        post: {
-            req: CreateMqttConfigurationData;
+    };
+    '/api/resource-groups/{groupId}/introductions/{userId}/history': {
+        get: {
+            req: ResourceGroupIntroductionsGetHistoryData;
             res: {
                 /**
-                 * MQTT configuration created successfully
+                 * The history has been successfully retrieved.
                  */
-                201: MqttResourceConfig;
+                200: Array<ResourceIntroductionHistoryItem>;
                 /**
                  * User is not authenticated
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to manage this resource
+                 * User does not have permission to introduce users to this resource group
                  */
                 403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{userId}/grant': {
+        post: {
+            req: ResourceGroupIntroductionsGrantData;
+            res: {
                 /**
-                 * Resource not found
+                 * The introduction has been successfully granted.
+                 */
+                200: ResourceIntroductionHistoryItem;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to introduce users to this resource group
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introductions/{userId}/revoke': {
+        post: {
+            req: ResourceGroupIntroductionsRevokeData;
+            res: {
+                /**
+                 * The introduction has been successfully revoked.
+                 */
+                200: ResourceIntroductionHistoryItem;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to introduce users to this resource group
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resource-groups/{groupId}/introducers': {
+        get: {
+            req: ResourceGroupIntroducersGetManyData;
+            res: {
+                /**
+                 * The introducers have been successfully retrieved.
+                 */
+                200: Array<ResourceIntroducer>;
+                /**
+                 * The resource group has not been found.
                  */
                 404: unknown;
             };
         };
     };
-    '/api/resources/{resourceId}/mqtt/config/{configId}': {
+    '/api/resource-groups/{groupId}/introducers/{userId}/is-introducer': {
         get: {
-            req: GetOneMqttConfigurationData;
+            req: ResourceGroupIntroducersIsIntroducerData;
             res: {
                 /**
-                 * Returns the specific MQTT configuration
+                 * The user is an introducer for the resource group.
                  */
-                200: MqttResourceConfig;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource or configuration not found
-                 */
-                404: unknown;
+                200: IsResourceGroupIntroducerResponseDto;
             };
         };
-        put: {
-            req: UpdateMqttConfigurationData;
+    };
+    '/api/resource-groups/{groupId}/introducers/{userId}/grant': {
+        post: {
+            req: ResourceGroupIntroducersGrantData;
             res: {
                 /**
-                 * MQTT configuration updated successfully
-                 */
-                200: MqttResourceConfig;
-                /**
-                 * User is not authenticated
-                 */
-                401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource or configuration not found
-                 */
-                404: unknown;
-            };
-        };
-        delete: {
-            req: DeleteOneMqttConfigurationData;
-            res: {
-                /**
-                 * MQTT configuration deleted successfully
+                 * The introducer has been successfully granted.
                  */
                 200: unknown;
                 /**
-                 * User is not authenticated
+                 * Unauthorized
                  */
                 401: unknown;
-                /**
-                 * User does not have permission to manage this resource
-                 */
-                403: unknown;
-                /**
-                 * Resource or MQTT configuration not found
-                 */
-                404: unknown;
             };
         };
     };
-    '/api/resources/{resourceId}/mqtt/config/{configId}/test': {
+    '/api/resource-groups/{groupId}/introducers/{userId}/revoke': {
         post: {
-            req: TestOneData;
+            req: ResourceGroupIntroducersRevokeData;
             res: {
                 /**
-                 * Test result
+                 * The introducer has been successfully revoked.
                  */
-                200: TestMqttConfigResponseDto;
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introducers/{userId}/is-introducer': {
+        get: {
+            req: ResourceIntroducersIsIntroducerData;
+            res: {
+                /**
+                 * User is an introducer for the resource
+                 */
+                200: IsResourceIntroducerResponseDto;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introducers': {
+        get: {
+            req: ResourceIntroducersGetManyData;
+            res: {
+                /**
+                 * All introducers for a resource
+                 */
+                200: Array<ResourceIntroducer>;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introducers/{userId}/grant': {
+        post: {
+            req: ResourceIntroducersGrantData;
+            res: {
+                /**
+                 * Introduction permissions granted
+                 */
+                200: ResourceIntroducer;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introducers/{userId}/revoke': {
+        delete: {
+            req: ResourceIntroducersRevokeData;
+            res: {
+                /**
+                 * Introduction permissions revoked
+                 */
+                200: ResourceIntroducer;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introductions': {
+        get: {
+            req: ResourceIntroductionsGetManyData;
+            res: {
+                /**
+                 * All introductions for a resource
+                 */
+                200: Array<ResourceIntroduction>;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introductions/{userId}/grant': {
+        post: {
+            req: ResourceIntroductionsGrantData;
+            res: {
+                /**
+                 * Introduction granted
+                 */
+                200: ResourceIntroductionHistoryItem;
                 /**
                  * User is not authenticated
                  */
                 401: unknown;
                 /**
-                 * User does not have permission to manage this resource
+                 * User does not have permission to introduce users to this resource
                  */
                 403: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introductions/{userId}/revoke': {
+        delete: {
+            req: ResourceIntroductionsRevokeData;
+            res: {
                 /**
-                 * Resource or MQTT configuration not found
+                 * Introduction revoked
                  */
-                404: unknown;
+                200: ResourceIntroductionHistoryItem;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to introduce users to this resource
+                 */
+                403: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/introductions/{userId}/history': {
+        get: {
+            req: ResourceIntroductionsGetHistoryData;
+            res: {
+                /**
+                 * The history has been successfully retrieved.
+                 */
+                200: Array<ResourceIntroductionHistoryItem>;
+                /**
+                 * User is not authenticated
+                 */
+                401: unknown;
+                /**
+                 * User does not have permission to introduce users to this resource
+                 */
+                403: unknown;
             };
         };
     };

@@ -1,4 +1,5 @@
 // Import entities
+import { EmailTemplate } from './entities/email-template.entity';
 import { AuthenticationDetail } from './entities/authenticationDetail.entity';
 import { MqttResourceConfig } from './entities/mqttResourceConfig.entity';
 import { MqttServer } from './entities/mqttServer.entity';
@@ -10,7 +11,7 @@ import {
   ResourceIntroductionHistoryItem,
   IntroductionHistoryAction,
 } from './entities/resourceIntroductionHistoryItem.entity';
-import { ResourceIntroductionUser } from './entities/resourceIntroductionUser.entity';
+import { ResourceIntroducer } from './entities/resourceIntroducer.entity';
 import { ResourceUsage } from './entities/resourceUsage.entity';
 import { RevokedToken } from './entities/revokedToken.entity';
 import { SSOProvider, SSOProviderType } from './entities/ssoProvider.entity';
@@ -30,7 +31,7 @@ export {
   ResourceIntroduction,
   ResourceIntroductionHistoryItem,
   IntroductionHistoryAction,
-  ResourceIntroductionUser,
+  ResourceIntroducer,
   ResourceUsage,
   RevokedToken,
   SSOProvider,
@@ -42,6 +43,7 @@ export {
   WebhookConfig,
   NFCCard,
   FabReader,
+  EmailTemplate,
 };
 
 // Export the entities object
@@ -54,7 +56,7 @@ export const entities = {
   ResourceGroup,
   ResourceUsage,
   ResourceIntroduction,
-  ResourceIntroductionUser,
+  ResourceIntroducer,
   ResourceIntroductionHistoryItem,
   MqttServer,
   MqttResourceConfig,
@@ -63,4 +65,5 @@ export const entities = {
   SSOProviderOIDCConfiguration,
   NFCCard,
   FabReader,
+  EmailTemplate,
 };

@@ -117,22 +117,33 @@
     },
     "migration-generate": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
-        "commands": ["typeorm -d dist/apps/migrations/main.js migration:generate"]
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:generate {args.name}"]
       }
     },
     "migrations-run": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build-migration-datasource"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "cwd": ".",
         "commands": ["typeorm -d dist/apps/migrations/main.js migration:run"]
+      }
+    },
+
+    "migration-revert": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": ".",
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:revert"]
       }
     },
     "lint": {

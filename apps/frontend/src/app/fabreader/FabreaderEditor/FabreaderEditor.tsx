@@ -1,15 +1,14 @@
-import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { useTranslations, ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import de from './fabreader-editor.de.json';
 import en from './fabreader-editor.en.json';
 import { Button, Form, ModalBody, Modal, ModalContent, ModalHeader, ModalFooter } from '@heroui/react';
 import { Input } from '@heroui/input';
 import { useCallback, useState, useEffect } from 'react';
-import { ResourceSelector } from '@attraccess/plugins-frontend-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  useFabReaderReadersServiceGetReaderById,
-  useFabReaderReadersServiceGetReadersKey,
-  useFabReaderReadersServiceUpdateReader,
+  useFabReaderServiceGetReaderById,
+  useFabReaderServiceGetReadersKey,
+  useFabReaderServiceUpdateReader,
 } from '@attraccess/react-query-client';
 import { useToastMessage } from '../../../components/toastProvider';
 
@@ -28,7 +27,7 @@ export function FabreaderEditor(props: Readonly<Props>) {
 
   const queryClient = useQueryClient();
 
-  const { data: reader } = useFabReaderReadersServiceGetReaderById({ readerId: props.readerId as number }, undefined, {
+  const { data: reader } = useFabReaderServiceGetReaderById({ readerId: props.readerId as number }, undefined, {
     enabled: props.readerId !== undefined,
   });
 
@@ -36,9 +35,9 @@ export function FabreaderEditor(props: Readonly<Props>) {
 
   const [name, setName] = useState('');
   const [connectedResources, setConnectedResources] = useState<number[]>([]);
-  const updateReaderMutation = useFabReaderReadersServiceUpdateReader({
+  const updateReaderMutation = useFabReaderServiceUpdateReader({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [useFabReaderReadersServiceGetReadersKey] });
+      queryClient.invalidateQueries({ queryKey: [useFabReaderServiceGetReadersKey] });
       toast.success({
         title: t('readerUpdated'),
         description: t('readerUpdatedDescription'),
@@ -55,7 +54,7 @@ export function FabreaderEditor(props: Readonly<Props>) {
   });
 
   useEffect(() => {
-    setName(reader?.name || '');
+    setName(reader?.name ?? '');
     setConnectedResources(reader?.hasAccessToResourceIds ?? []);
   }, [reader]);
 
@@ -83,7 +82,13 @@ export function FabreaderEditor(props: Readonly<Props>) {
 
   return (
     <Form onSubmit={onSubmit} data-cy="fabreader-editor-form">
-      <Modal isOpen={props.isOpen} placement="top-center" onOpenChange={props.onCancel} scrollBehavior="inside" data-cy="fabreader-editor-modal">
+      <Modal
+        isOpen={props.isOpen}
+        placement="top-center"
+        onOpenChange={props.onCancel}
+        scrollBehavior="inside"
+        data-cy="fabreader-editor-modal"
+      >
         <ModalContent>
           {() => (
             <>
@@ -115,7 +120,12 @@ export function FabreaderEditor(props: Readonly<Props>) {
                 >
                   {t('cancel')}
                 </Button>
-                <Button type="submit" isLoading={updateReaderMutation.isPending} onPress={save} data-cy="fabreader-editor-save-button">
+                <Button
+                  type="submit"
+                  isLoading={updateReaderMutation.isPending}
+                  onPress={save}
+                  data-cy="fabreader-editor-save-button"
+                >
                   {t('save')}
                 </Button>
               </ModalFooter>

@@ -19,7 +19,11 @@ const AppEnvSchema = z.object({
       message: 'Invalid log level(s). Allowed: log, error, warn, debug, verbose.',
     }),
   AUTH_SESSION_SECRET: z.string().min(1, { message: 'AUTH_SESSION_SECRET is required' }),
-  FRONTEND_URL: z.string().url({ message: 'FRONTEND_URL must be a valid URL' }).default('http://localhost:5173'),
+  VITE_ATTRACCESS_URL: z.string().url({ message: 'VITE_ATTRACCESS_URL must be a valid URL' }),
+  FRONTEND_URL: z
+    .string()
+    .url({ message: 'FRONTEND_URL must be a valid URL' })
+    .default(process.env.VITE_ATTRACCESS_URL),
   GLOBAL_PREFIX: z.string().default('api'),
   VERSION: z.string().default(process.env.npm_package_version || '1.0.0'),
   AUTH_JWT_SECRET: z.string(),

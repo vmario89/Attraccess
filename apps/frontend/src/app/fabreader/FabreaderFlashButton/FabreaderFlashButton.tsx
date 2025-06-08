@@ -25,7 +25,7 @@ interface Props extends Omit<ButtonProps, 'slot' | 'onPress' | 'children'> {
   firmware: Firmware;
 }
 
-export function FabreaderFlashButton(props: Props) {
+export function FabreaderFlashButton(props: Readonly<Props>) {
   const { t } = useTranslations('fabreader-flash-button', {
     de,
     en,

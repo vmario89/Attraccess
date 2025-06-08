@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
-import { LoginFormData } from '../types';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { useLogin } from '../services/queries';
@@ -12,22 +10,22 @@ export const LoginForm: React.FC = () => {
 
   const login = useLogin();
 
-  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
-    await login.mutateAsync({
-      password: data.password,
-    });
-  };
+  const [password, setPassword] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>();
+  const onSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await login.mutateAsync({
+        password: password,
+      });
+    },
+    [login, password]
+  );
 
   return (
     <motion.form
       className="space-y-6 w-full max-w-md"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -39,8 +37,8 @@ export const LoginForm: React.FC = () => {
             type={showPassword ? 'text' : 'password'}
             placeholder="Enter admin password"
             fullWidth
-            {...register('password', { required: 'Password is required' })}
-            error={errors.password?.message}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
             type="button"

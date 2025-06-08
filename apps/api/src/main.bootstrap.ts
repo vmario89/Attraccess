@@ -23,6 +23,13 @@ export async function bootstrap() {
     logger: initialLogLevels,
   });
   bootstrapLogger.log('Main application instance created.');
+
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+  });
+
   const configService = app.get(ConfigService);
   const appConfig = configService.get<AppConfigType>('app');
 
@@ -71,7 +78,6 @@ export async function bootstrap() {
 
   const globalPrefix = appConfig.GLOBAL_PREFIX;
   app.setGlobalPrefix(globalPrefix);
-  app.enableCors();
 
   app.useWebSocketAdapter(new WsAdapter(app));
 

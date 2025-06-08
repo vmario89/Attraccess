@@ -1,6 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { ResourceList } from '../resources/list.group';
-import { ResourceDetails } from '../resources/resourceDetails';
+import { ResourceDetails } from '../resources/details/resourceDetails';
 import { IoTSettings } from '../resources/iot-settings/iotSettings';
 import {
   Database,
@@ -11,6 +10,7 @@ import {
   NfcIcon,
   ComputerIcon,
   FileChartColumnIncreasingIcon,
+  Mail,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MqttServersPage, CreateMqttServerPage, EditMqttServerPage } from '../mqtt';
@@ -19,13 +19,16 @@ import { UserManagementPage } from '../users/UserManagementPage';
 import { usePluginStore } from 'react-pluggable';
 import { RouteConfig } from '@attraccess/plugins-frontend-sdk';
 import { PluginsList } from '../plugins/PluginsList';
-import { PluginManifestWithPlugin } from '../plugins/plugin.state';
-import usePluginState from '../plugins/plugin.state';
+import usePluginState, { PluginManifestWithPlugin } from '../plugins/plugin.state';
 import { FabreaderList } from '../fabreader/FabreaderList/FabreaderList';
 import { NfcCardList } from '../fabreader/NfcCardList/NfcCardList';
 import { CsvExport } from '../csv-export/csv-export';
 import { CreateMqttConfig, EditMqttConfig, TestMqttConfig } from '../resources/iot-settings/mqtt';
 import { DocumentationEditor, DocumentationView } from '../resources/documentation';
+import { EmailTemplatesPage } from '../email-templates/EmailTemplatesPage'; // Placeholder - to be created
+import { EditEmailTemplatePage } from '../email-templates/EditEmailTemplatePage'; // Placeholder - to be created
+import { ResourceGroupEditPage } from '../resource-groups';
+import { ResourceOverview } from '../resourceOverview';
 
 const coreRoutes: RouteConfig[] = [
   {
@@ -35,7 +38,7 @@ const coreRoutes: RouteConfig[] = [
   },
   {
     path: '/resources',
-    element: <ResourceList />,
+    element: <ResourceOverview />,
     sidebar: {
       translationKey: 'resources',
       icon: <Database className="h-5 w-5" />,
@@ -59,7 +62,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
-    path: '/resources/:resourceId/iot/mqtt/edit/:configId',
+    path: '/resources/:resourceId/iot/mqtt/:configId',
     element: <EditMqttConfig />,
     authRequired: 'canManageResources',
   },
@@ -79,6 +82,11 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
+    path: '/resource-groups/:groupId',
+    element: <ResourceGroupEditPage />,
+    authRequired: true,
+  },
+  {
     path: '/mqtt/servers',
     element: <MqttServersPage />,
     sidebar: {
@@ -94,7 +102,7 @@ const coreRoutes: RouteConfig[] = [
     authRequired: 'canManageResources',
   },
   {
-    path: '/mqtt/servers/:serverId/edit',
+    path: '/mqtt/servers/:serverId',
     element: <EditMqttServerPage />,
     authRequired: 'canManageResources',
   },
@@ -157,6 +165,21 @@ const coreRoutes: RouteConfig[] = [
       icon: <Package className="h-5 w-5" />,
       order: 8,
     },
+  },
+  {
+    path: '/email-templates',
+    element: <EmailTemplatesPage />,
+    sidebar: {
+      translationKey: 'emailTemplates',
+      icon: <Mail className="h-5 w-5" />,
+      order: 9,
+    },
+    authRequired: 'canManageSystemConfiguration',
+  },
+  {
+    path: '/email-templates/:type',
+    element: <EditEmailTemplatePage />,
+    authRequired: 'canManageSystemConfiguration',
   },
 ];
 
