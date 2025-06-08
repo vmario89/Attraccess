@@ -1447,6 +1447,11 @@ export interface ResourceIntroducer {
   user: User;
 }
 
+export interface IsResourceGroupIntroducerResponseDto {
+  /** Whether the user is an introducer for the resource */
+  isIntroducer: boolean;
+}
+
 export interface StartUsageSessionDto {
   /**
    * Optional notes about the usage session
@@ -1536,11 +1541,13 @@ export interface GetActiveUsageSessionDto {
   usage: ResourceUsage | null;
 }
 
-export interface GetIntroducerStatusResponseDto {
-  /**
-   * Whether the user is an introducer for the resource
-   * @example true
-   */
+export interface CanControlResponseDto {
+  /** Whether the user can control the resource */
+  canControl: boolean;
+}
+
+export interface IsResourceIntroducerResponseDto {
+  /** Whether the user is an introducer for the resource */
   isIntroducer: boolean;
 }
 
@@ -1550,14 +1557,6 @@ export interface UpdateResourceIntroductionDto {
    * @example "This is a comment"
    */
   comment?: string;
-}
-
-export interface GetIntroductionStatusResponseDto {
-  /**
-   * Whether the user has a valid introduction for the resource
-   * @example true
-   */
-  hasValidIntroduction: boolean;
 }
 
 export interface PluginMainFrontend {
@@ -1981,6 +1980,9 @@ export type ResourceGroupIntroductionsRevokeData =
 
 export type ResourceGroupIntroducersGetManyData = ResourceIntroducer[];
 
+export type ResourceGroupIntroducersIsIntroducerData =
+  IsResourceGroupIntroducerResponseDto;
+
 export type ResourceGroupIntroducersGrantData = any;
 
 export type ResourceGroupIntroducersRevokeData = any;
@@ -2012,22 +2014,22 @@ export type ResourceUsageGetHistoryData = GetResourceHistoryResponseDto;
 
 export type ResourceUsageGetActiveSessionData = GetActiveUsageSessionDto;
 
+export type ResourceUsageCanControlData = CanControlResponseDto;
+
+export type ResourceIntroducersIsIntroducerData =
+  IsResourceIntroducerResponseDto;
+
 export type ResourceIntroducersGetManyData = ResourceIntroducer[];
 
 export type ResourceIntroducersGrantData = ResourceIntroducer;
 
-export type ResourceIntroducersRevokeData = ResourceIntroducer;
-
-export type ResourceIntroducersGetStatusData = GetIntroducerStatusResponseDto;
+export type ResourceIntroducersRevokeData = any;
 
 export type ResourceIntroductionsGetManyData = ResourceIntroduction[];
 
 export type ResourceIntroductionsGrantData = ResourceIntroductionHistoryItem;
 
 export type ResourceIntroductionsRevokeData = ResourceIntroductionHistoryItem;
-
-export type ResourceIntroductionsGetStatusData =
-  GetIntroductionStatusResponseDto;
 
 export type ResourceIntroductionsGetHistoryData =
   ResourceIntroductionHistoryItem[];
@@ -2864,6 +2866,24 @@ export namespace Resources {
     export type RequestHeaders = {};
     export type ResponseBody = ResourceUsageGetActiveSessionData;
   }
+
+  /**
+   * No description
+   * @tags Resources
+   * @name ResourceUsageCanControl
+   * @summary Check if the current user can control a resource
+   * @request GET:/api/resources/{resourceId}/usage/can-control
+   * @secure
+   */
+  export namespace ResourceUsageCanControl {
+    export type RequestParams = {
+      resourceId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceUsageCanControlData;
+  }
 }
 
 export namespace Mqtt {
@@ -3388,6 +3408,26 @@ export namespace AccessControl {
   /**
    * No description
    * @tags Access Control
+   * @name ResourceGroupIntroducersIsIntroducer
+   * @summary Check if a user is an introducer for a resource group
+   * @request GET:/api/resource-groups/{groupId}/introducers/{userId}/is-introducer
+   */
+  export namespace ResourceGroupIntroducersIsIntroducer {
+    export type RequestParams = {
+      /** The ID of the user */
+      userId: number;
+      /** The ID of the resource group */
+      groupId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceGroupIntroducersIsIntroducerData;
+  }
+
+  /**
+   * No description
+   * @tags Access Control
    * @name ResourceGroupIntroducersGrant
    * @summary Grant a user introduction permission for a resource group
    * @request POST:/api/resource-groups/{groupId}/introducers/{userId}/grant
@@ -3425,6 +3465,24 @@ export namespace AccessControl {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ResourceGroupIntroducersRevokeData;
+  }
+
+  /**
+   * No description
+   * @tags Access Control
+   * @name ResourceIntroducersIsIntroducer
+   * @summary Check if a user is an introducer for a resource
+   * @request GET:/api/resources/{resourceId}/introducers/{userId}/is-introducer
+   */
+  export namespace ResourceIntroducersIsIntroducer {
+    export type RequestParams = {
+      resourceId: number;
+      userId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResourceIntroducersIsIntroducerData;
   }
 
   /**
@@ -3485,24 +3543,6 @@ export namespace AccessControl {
   /**
    * No description
    * @tags Access Control
-   * @name ResourceIntroducersGetStatus
-   * @summary Get the status of an introducer for a user
-   * @request GET:/api/resources/{resourceId}/introducers/{userId}/status
-   */
-  export namespace ResourceIntroducersGetStatus {
-    export type RequestParams = {
-      resourceId: number;
-      userId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroducersGetStatusData;
-  }
-
-  /**
-   * No description
-   * @tags Access Control
    * @name ResourceIntroductionsGetMany
    * @summary Get all introductions for a resource
    * @request GET:/api/resources/{resourceId}/introductions
@@ -3553,24 +3593,6 @@ export namespace AccessControl {
     export type RequestBody = UpdateResourceIntroductionDto;
     export type RequestHeaders = {};
     export type ResponseBody = ResourceIntroductionsRevokeData;
-  }
-
-  /**
-   * No description
-   * @tags Access Control
-   * @name ResourceIntroductionsGetStatus
-   * @summary Get the status of an introduction for a user
-   * @request GET:/api/resources/{resourceId}/introductions/{userId}/status
-   */
-  export namespace ResourceIntroductionsGetStatus {
-    export type RequestParams = {
-      resourceId: number;
-      userId: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ResourceIntroductionsGetStatusData;
   }
 
   /**
@@ -4920,6 +4942,24 @@ export class Api<
         format: "json",
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name ResourceUsageCanControl
+     * @summary Check if the current user can control a resource
+     * @request GET:/api/resources/{resourceId}/usage/can-control
+     * @secure
+     */
+    resourceUsageCanControl: (resourceId: number, params: RequestParams = {}) =>
+      this.request<ResourceUsageCanControlData, void>({
+        path: `/api/resources/${resourceId}/usage/can-control`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
   };
   mqtt = {
     /**
@@ -5508,6 +5548,26 @@ export class Api<
      * No description
      *
      * @tags Access Control
+     * @name ResourceGroupIntroducersIsIntroducer
+     * @summary Check if a user is an introducer for a resource group
+     * @request GET:/api/resource-groups/{groupId}/introducers/{userId}/is-introducer
+     */
+    resourceGroupIntroducersIsIntroducer: (
+      userId: number,
+      groupId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceGroupIntroducersIsIntroducerData, any>({
+        path: `/api/resource-groups/${groupId}/introducers/${userId}/is-introducer`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Access Control
      * @name ResourceGroupIntroducersGrant
      * @summary Grant a user introduction permission for a resource group
      * @request POST:/api/resource-groups/{groupId}/introducers/{userId}/grant
@@ -5543,6 +5603,26 @@ export class Api<
         path: `/api/resource-groups/${groupId}/introducers/${userId}/revoke`,
         method: "POST",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Access Control
+     * @name ResourceIntroducersIsIntroducer
+     * @summary Check if a user is an introducer for a resource
+     * @request GET:/api/resources/{resourceId}/introducers/{userId}/is-introducer
+     */
+    resourceIntroducersIsIntroducer: (
+      resourceId: number,
+      userId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ResourceIntroducersIsIntroducerData, any>({
+        path: `/api/resources/${resourceId}/introducers/${userId}/is-introducer`,
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -5605,27 +5685,6 @@ export class Api<
         path: `/api/resources/${resourceId}/introducers/${userId}/revoke`,
         method: "DELETE",
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Access Control
-     * @name ResourceIntroducersGetStatus
-     * @summary Get the status of an introducer for a user
-     * @request GET:/api/resources/{resourceId}/introducers/{userId}/status
-     */
-    resourceIntroducersGetStatus: (
-      resourceId: number,
-      userId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroducersGetStatusData, any>({
-        path: `/api/resources/${resourceId}/introducers/${userId}/status`,
-        method: "GET",
-        format: "json",
         ...params,
       }),
 
@@ -5694,26 +5753,6 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Access Control
-     * @name ResourceIntroductionsGetStatus
-     * @summary Get the status of an introduction for a user
-     * @request GET:/api/resources/{resourceId}/introductions/{userId}/status
-     */
-    resourceIntroductionsGetStatus: (
-      resourceId: number,
-      userId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ResourceIntroductionsGetStatusData, any>({
-        path: `/api/resources/${resourceId}/introductions/${userId}/status`,
-        method: "GET",
         format: "json",
         ...params,
       }),

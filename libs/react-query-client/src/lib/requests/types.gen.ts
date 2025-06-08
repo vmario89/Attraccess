@@ -2264,7 +2264,7 @@ export type ResourceIntroducersRevokeData = {
     userId: number;
 };
 
-export type ResourceIntroducersRevokeResponse = ResourceIntroducer;
+export type ResourceIntroducersRevokeResponse = unknown;
 
 export type ResourceIntroductionsGetManyData = {
     resourceId: number;
@@ -3668,7 +3668,7 @@ export type $OpenApiTs = {
                 /**
                  * Introduction permissions revoked
                  */
-                200: ResourceIntroducer;
+                200: unknown;
                 /**
                  * Unauthorized
                  */
