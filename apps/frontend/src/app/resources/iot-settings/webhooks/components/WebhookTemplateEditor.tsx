@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Textarea, Accordion, AccordionItem, Snippet } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useWebhookForm } from '../context/WebhookFormContext';
@@ -9,21 +9,12 @@ import { useTemplatePreview } from '../hooks/useTemplatePreview';
 import * as enTemplate from '../translations/components/template-editor/en';
 import * as deTemplate from '../translations/components/template-editor/de';
 
-const WebhookTemplateEditor: React.FC = () => {
-  const { values, setValues, resourceId } = useWebhookForm();
-  const { t } = useTranslations('webhooks.templateEditor', {
-    en: enTemplate,
-    de: deTemplate,
-  });
+const TemplatePreview: React.FC<{
+  template: string;
+  resourceId: number;
+  dataCy?: string;
+}> = ({ template, dataCy, resourceId }) => {
   const { previewTemplate } = useTemplatePreview(resourceId);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const previewTemplateJson = useCallback(
     (template: string) => {
@@ -33,6 +24,34 @@ const WebhookTemplateEditor: React.FC = () => {
     },
     [previewTemplate]
   );
+
+  const previewLines = useMemo(() => previewTemplateJson(template).split('\n'), [template, previewTemplateJson]);
+
+  return (
+    <Snippet hideSymbol data-cy={dataCy}>
+      {previewLines.map((line, index) => (
+        <span key={index} className="whitespace-pre-wrap">
+          {line}
+        </span>
+      ))}
+    </Snippet>
+  );
+};
+
+const WebhookTemplateEditor: React.FC = () => {
+  const { values, setValues, resourceId } = useWebhookForm();
+  const { t } = useTranslations('webhooks.templateEditor', {
+    en: enTemplate,
+    de: deTemplate,
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <Accordion>
@@ -50,15 +69,11 @@ const WebhookTemplateEditor: React.FC = () => {
           />
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
-            <Snippet hideSymbol data-cy="webhook-form-in-use-template-preview-snippet">
-              {previewTemplateJson(values.inUseTemplate)
-                .split('\n')
-                .map((line, index) => (
-                  <span key={index} className="whitespace-pre-wrap">
-                    {line}
-                  </span>
-                ))}
-            </Snippet>
+            <TemplatePreview
+              template={values.inUseTemplate}
+              resourceId={resourceId}
+              dataCy="webhook-form-in-use-template-preview-snippet"
+            />
           </div>
         </div>
       </AccordionItem>
@@ -81,15 +96,11 @@ const WebhookTemplateEditor: React.FC = () => {
           />
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
-            <Snippet hideSymbol data-cy="webhook-form-not-in-use-template-preview-snippet">
-              {previewTemplateJson(values.notInUseTemplate)
-                .split('\n')
-                .map((line, index) => (
-                  <span key={index} className="whitespace-pre-wrap">
-                    {line}
-                  </span>
-                ))}
-            </Snippet>
+            <TemplatePreview
+              template={values.notInUseTemplate}
+              resourceId={resourceId}
+              dataCy="webhook-form-not-in-use-template-preview-snippet"
+            />
           </div>
         </div>
       </AccordionItem>
@@ -107,15 +118,7 @@ const WebhookTemplateEditor: React.FC = () => {
           />
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('previewLabel')}</p>
-            <Snippet hideSymbol>
-              {previewTemplateJson(values.takeoverTemplate)
-                .split('\n')
-                .map((line, index) => (
-                  <span key={index} className="whitespace-pre-wrap">
-                    {line}
-                  </span>
-                ))}
-            </Snippet>
+            <TemplatePreview template={values.takeoverTemplate} resourceId={resourceId} />
           </div>
         </div>
       </AccordionItem>

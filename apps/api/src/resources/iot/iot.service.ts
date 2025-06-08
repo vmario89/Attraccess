@@ -36,7 +36,7 @@ export class IotService {
             id: context.previousUser.id,
             username: context.previousUser.username,
           }
-        : undefined, // Pass previousUser if it exists
+        : undefined,
     });
   }
 }
