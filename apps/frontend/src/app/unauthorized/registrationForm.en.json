@@ -19,7 +19,5 @@
     "message": "We have sent an activation email to {email}. Please check your inbox and click the activation link to complete your registration.",
     "closeButton": "Got it"
   },
-  "passwordConfirmationError": "The passwords do not match",
-  "showPassword": "Show password",
-  "hidePassword": "Hide password"
+  "passwordConfirmationError": "The passwords do not match"
 }

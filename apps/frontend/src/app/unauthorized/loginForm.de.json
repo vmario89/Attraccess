@@ -11,7 +11,5 @@
   "error": {
     "title": "Hoppla! Kleines Anmeldeproblem",
     "generic": "Bitte überprüfe deine Anmeldedaten und versuche es erneut"
-  },
-  "showPassword": "Passwort anzeigen",
-  "hidePassword": "Passwort verbergen"
+  }
 }

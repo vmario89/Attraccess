@@ -17,7 +17,5 @@
             "title": "Passwort zurücksetzen",
             "description": "Passwörter stimmen nicht überein"
         }
-    },
-    "showPassword": "Passwort anzeigen",
-    "hidePassword": "Passwort verbergen"
+    }
 }

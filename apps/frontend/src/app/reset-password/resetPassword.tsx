@@ -2,9 +2,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useUrlQuery } from '@attraccess/plugins-frontend-ui';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from '../loading';
-import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input, Tooltip } from '@heroui/react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Button, Card, CardBody, CardFooter, CardHeader, Form } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { PasswordInput } from '../../components/PasswordInput';
 import * as en from './en.json';
 import * as de from './de.json';
 import { useUsersServiceChangePasswordViaResetToken } from '@attraccess/react-query-client';
@@ -16,8 +16,6 @@ export function ResetPassword() {
   const { t } = useTranslations('resetPassword', { en, de });
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const token = useMemo(() => query.get('token'), [query]);
   const userId = useMemo(() => query.get('userId'), [query]);
@@ -82,32 +80,17 @@ export function ResetPassword() {
       >
         <CardHeader>{t('title')}</CardHeader>
         <CardBody>
-          <Input
+          <PasswordInput
             label={t('inputs.password')}
-            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mb-4"
             minLength={8}
             required
             data-cy="reset-password-password-input"
-            endContent={
-              <Tooltip content={showPassword ? t('hidePassword') : t('showPassword')}>
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  onPress={() => setShowPassword(!showPassword)}
-                  data-cy="reset-password-password-toggle-button"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </Button>
-              </Tooltip>
-            }
           />
-          <Input
+          <PasswordInput
             label={t('inputs.confirmPassword')}
-            type={showConfirmPassword ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -118,19 +101,6 @@ export function ResetPassword() {
               return true;
             }}
             data-cy="reset-password-confirm-password-input"
-            endContent={
-              <Tooltip content={showConfirmPassword ? t('hidePassword') : t('showPassword')}>
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  data-cy="reset-password-confirm-password-toggle-button"
-                >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </Button>
-              </Tooltip>
-            }
           />
         </CardBody>
         <CardFooter>

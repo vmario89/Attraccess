@@ -19,7 +19,5 @@
     "message": "Wir haben eine Aktivierungs-E-Mail an {email} gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Aktivierungslink, um deine Registrierung abzuschließen.",
     "closeButton": "Verstanden"
   },
-  "passwordConfirmationError": "Die Passwörter stimmen nicht überein",
-  "showPassword": "Passwort anzeigen",
-  "hidePassword": "Passwort verbergen"
+  "passwordConfirmationError": "Die Passwörter stimmen nicht überein"
 }

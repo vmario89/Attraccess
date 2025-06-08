@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Input } from '@heroui/input';
 import { Checkbox } from '@heroui/checkbox';
 import { Button } from '@heroui/button';
 import { Alert } from '@heroui/alert';
-import { Tooltip } from '@heroui/tooltip';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
+import { PasswordInput } from '../../components/PasswordInput';
 import { useAuth } from '../../hooks/useAuth';
 import * as en from './loginForm.en.json';
 import * as de from './loginForm.de.json';
@@ -24,7 +24,6 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
   const { login } = useAuth();
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit: React.FormEventHandler = useCallback(
     async (event) => {
@@ -79,28 +78,14 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           isDisabled={login.isPending}
           data-cy="login-form-username-input"
         />
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type={showPassword ? 'text' : 'password'}
           label={t('password')}
           variant="underlined"
           required
           isDisabled={login.isPending}
           data-cy="login-form-password-input"
-          endContent={
-            <Tooltip content={showPassword ? t('hidePassword') : t('showPassword')}>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                onPress={() => setShowPassword(!showPassword)}
-                data-cy="login-form-password-toggle-button"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </Button>
-            </Tooltip>
-          }
         />
         <div className="flex items-center justify-between">
           <div className="flex items-center">
