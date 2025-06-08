@@ -182,7 +182,7 @@ export class MqttPublisherService {
     const context: TemplateContext = {
       id: resource.id,
       name: resource.name,
-      timestamp: new Date().toISOString(),
+      timestamp: data.time.toISOString(),
       user: {
         id: data.user.id,
         username: data.user.username,
@@ -280,7 +280,7 @@ export class MqttPublisherService {
     const context = {
       id: resource.id,
       name: resource.name,
-      timestamp: new Date().toISOString(),
+      timestamp: data.time.toISOString(),
       user: data.user,
     };
 
