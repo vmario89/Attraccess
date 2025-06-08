@@ -151,10 +151,10 @@ export function MqttConfigForm({ resourceId, configId, isEdit = false }: Readonl
         name: existingConfig.name,
         serverId: existingConfig.serverId,
         onTakeoverSendStart:
-          existingConfig.onTakeoverSendStart === undefined ? true : existingConfig.onTakeoverSendStart,
-        onTakeoverSendStop: existingConfig.onTakeoverSendStop === undefined ? true : existingConfig.onTakeoverSendStop,
+          existingConfig.onTakeoverSendStart === undefined ? false : existingConfig.onTakeoverSendStart,
+        onTakeoverSendStop: existingConfig.onTakeoverSendStop === undefined ? false : existingConfig.onTakeoverSendStop,
         onTakeoverSendTakeover:
-          existingConfig.onTakeoverSendTakeover === undefined ? false : existingConfig.onTakeoverSendTakeover,
+          existingConfig.onTakeoverSendTakeover === undefined ? true : existingConfig.onTakeoverSendTakeover,
         inUseTopic: existingConfig.inUseTopic,
         inUseMessage: existingConfig.inUseMessage,
         notInUseTopic: existingConfig.notInUseTopic,
