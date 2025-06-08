@@ -17,5 +17,7 @@
             "title": "Reset Password",
             "description": "Passwords do not match"
         }
-    }
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
 }

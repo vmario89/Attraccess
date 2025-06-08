@@ -11,5 +11,7 @@
   "error": {
     "title": "Oops! Sign-in hiccup",
     "generic": "Please check your credentials and try again"
-  }
+  },
+  "showPassword": "Show password",
+  "hidePassword": "Hide password"
 }

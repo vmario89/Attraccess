@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { ArrowRight, Mail } from 'lucide-react';
+import { ArrowRight, Mail, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Alert } from '@heroui/alert';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/modal';
+import { Tooltip } from '@heroui/tooltip';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import * as en from './registrationForm.en.json';
 import * as de from './registrationForm.de.json';
@@ -30,6 +31,8 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const handleSubmit: React.FormEventHandler = useCallback(
@@ -132,23 +135,49 @@ export function RegistrationForm({ onHasAccount }: RegisterFormProps) {
         <Input
           id="password"
           name="password"
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           label={t('password')}
           required
           variant="underlined"
           isDisabled={createUser.isPending}
           data-cy="registration-form-password-input"
+          endContent={
+            <Tooltip content={showPassword ? t('hidePassword') : t('showPassword')}>
+              <Button
+                isIconOnly
+                size="sm"
+                variant="light"
+                onPress={() => setShowPassword(!showPassword)}
+                data-cy="registration-form-password-toggle-button"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </Button>
+            </Tooltip>
+          }
         />
 
         <Input
           id="password_confirmation"
           name="password_confirmation"
-          type="password"
+          type={showPasswordConfirmation ? 'text' : 'password'}
           label={t('passwordConfirmation')}
           required
           variant="underlined"
           isDisabled={createUser.isPending}
           data-cy="registration-form-password-confirmation-input"
+          endContent={
+            <Tooltip content={showPasswordConfirmation ? t('hidePassword') : t('showPassword')}>
+              <Button
+                isIconOnly
+                size="sm"
+                variant="light"
+                onPress={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                data-cy="registration-form-password-confirmation-toggle-button"
+              >
+                {showPasswordConfirmation ? <EyeOff size={16} /> : <Eye size={16} />}
+              </Button>
+            </Tooltip>
+          }
         />
 
         <Button
