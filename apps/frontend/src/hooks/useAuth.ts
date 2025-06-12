@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   CreateSessionResponse,
@@ -64,14 +64,21 @@ export function useAuth() {
     },
   });
 
+  const { data: authFromSharedData } = useQuery({
+    queryKey: ['sw-cache', 'auth'],
+    queryFn: () => {
+      console.log('refetching auth from shared data');
+      return swCacheGetByKey('auth');
+    },
+    refetchOnWindowFocus: true,
+  });
+
   const loadExistingAuth = useCallback(async () => {
     let auth: CreateSessionResponse | null = null;
 
     try {
       const authFromLocalStorage = localStorage.getItem('auth');
       const authFromSessionStorage = sessionStorage.getItem('auth');
-
-      const authFromSharedData = await swCacheGetByKey('auth');
 
       const authFromAnySource = authFromLocalStorage ?? authFromSessionStorage ?? authFromSharedData;
 
@@ -94,7 +101,7 @@ export function useAuth() {
     } catch (e) {
       console.error('Error parsing persisted auth:', e);
     }
-  }, [jwtTokenLoginMutate, swCacheGetByKey]);
+  }, [jwtTokenLoginMutate, authFromSharedData]);
 
   useEffect(() => {
     loadExistingAuth();
