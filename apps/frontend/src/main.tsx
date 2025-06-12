@@ -8,6 +8,18 @@ import { queryClient } from './api/queryClient';
 import setupApiParameters from './api';
 import { PluginProvider } from './app/plugins/plugin-provider';
 import { PWAInstall } from './components/pwaInstall';
+import { registerSW } from 'virtual:pwa-register';
+
+const intervalMS = 60 * 60 * 1000;
+
+registerSW({
+  onRegistered(r) {
+    r &&
+      setInterval(() => {
+        r.update();
+      }, intervalMS);
+  },
+});
 
 setupApiParameters();
 
