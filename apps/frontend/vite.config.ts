@@ -6,7 +6,8 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import federation from '@originjs/vite-plugin-federation';
 import { VitePWA } from 'vite-plugin-pwa';
 import replace from '@rollup/plugin-replace';
-import siteWebManifest from './site.webmanifest.json';
+// @ts-expect-error - site.webmanifest.json is not a module
+import siteWebManifest from './src/service-worker/site.webmanifest.json';
 // import MillionLint from '@million/lint';
 
 export default defineConfig({
@@ -60,7 +61,7 @@ export default defineConfig({
       },
       registerType: 'prompt',
       srcDir: 'src',
-      filename: 'sw.ts',
+      filename: 'service-worker.ts',
       strategies: 'injectManifest',
       injectManifest: {
         minify: false,

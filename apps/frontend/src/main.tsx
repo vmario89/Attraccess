@@ -12,12 +12,39 @@ import { registerSW } from 'virtual:pwa-register';
 
 const intervalMS = 60 * 60 * 1000;
 
+let updateInterval: NodeJS.Timeout;
 registerSW({
   onRegistered(r) {
-    r &&
-      setInterval(() => {
-        r.update();
-      }, intervalMS);
+    if (!r) {
+      return;
+    }
+
+    const startUpdateCheck = () => {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+
+      updateInterval = setInterval(() => r.update(), intervalMS);
+    };
+
+    const stopUpdateCheck = () => {
+      clearInterval(updateInterval);
+    };
+
+    // Start/stop checks based on page visibility
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopUpdateCheck();
+      } else {
+        r.update(); // Check once immediately
+        startUpdateCheck();
+      }
+    });
+
+    // Initial start if page is visible
+    if (!document.hidden) {
+      startUpdateCheck();
+    }
   },
 });
 

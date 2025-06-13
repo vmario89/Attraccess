@@ -66,54 +66,56 @@ async function deleteData(request: Request) {
   await cache.delete(SHARED_DATA_ENDPOINT);
 }
 
-swSelf.addEventListener('fetch', function (event) {
-  const {
-    request,
-    request: { url, method },
-  } = event;
-  const parsedUrl = new URL(url);
-  if (parsedUrl.pathname !== SHARED_DATA_ENDPOINT) {
-    return;
-  }
+export function setupSharedData() {
+  swSelf.addEventListener('fetch', function (event) {
+    const {
+      request,
+      request: { url, method },
+    } = event;
+    const parsedUrl = new URL(url);
+    if (parsedUrl.pathname !== SHARED_DATA_ENDPOINT) {
+      return;
+    }
 
-  if (!['GET', 'POST', 'DELETE'].includes(method)) {
-    return;
-  }
+    if (!['GET', 'POST', 'DELETE'].includes(method)) {
+      return;
+    }
 
-  if (method === 'POST') {
+    if (method === 'POST') {
+      event.respondWith(
+        persistData(request.clone()).then(() => {
+          return new Response(
+            JSON.stringify({
+              status: 'OK',
+            })
+          );
+        })
+      );
+      return;
+    }
+
+    if (method === 'DELETE') {
+      event.respondWith(
+        deleteData(request.clone()).then(() => {
+          return new Response(JSON.stringify({ status: 'OK' }));
+        })
+      );
+      return;
+    }
+
     event.respondWith(
-      persistData(request.clone()).then(() => {
+      retrieveData(request.clone()).then((response) => {
+        if (response.found) {
+          return response.data as Response;
+        }
+
         return new Response(
           JSON.stringify({
-            status: 'OK',
-          })
+            status: 'NOT_FOUND',
+          }),
+          { status: 400 }
         );
       })
     );
-    return;
-  }
-
-  if (method === 'DELETE') {
-    event.respondWith(
-      deleteData(request.clone()).then(() => {
-        return new Response(JSON.stringify({ status: 'OK' }));
-      })
-    );
-    return;
-  }
-
-  event.respondWith(
-    retrieveData(request.clone()).then((response) => {
-      if (response.found) {
-        return response.data as Response;
-      }
-
-      return new Response(
-        JSON.stringify({
-          status: 'NOT_FOUND',
-        }),
-        { status: 400 }
-      );
-    })
-  );
-});
+  });
+}
