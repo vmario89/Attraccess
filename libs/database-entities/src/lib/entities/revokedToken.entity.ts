@@ -12,7 +12,7 @@ export class RevokedToken {
 
   @Column({ type: 'text' })
   @ApiProperty({
-    description: 'The JWT tokens ID that was revoked',
+    description: "The JWT token's ID that was revoked",
   })
   tokenId!: string;
 

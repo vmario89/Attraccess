@@ -24,7 +24,6 @@ function useRoutesWithAuthElements(routes: RouteConfig[]) {
   const { user } = useAuth();
 
   const routesWithAuthElements = useMemo(() => {
-    console.log('routesWithAuthElements', user);
     return routes.map((route) => {
       if (!route.authRequired) {
         return route;

@@ -112,7 +112,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
   }, [groupId, group, t]);
 
   return (
-    <Card {...cardProps}>
+    <Card aria-label={title ?? 'Resource Group Card'} {...cardProps}>
       <CardHeader className="flex flex-row justify-between">
         <PageHeader title={title} subtitle={subtitle} noMargin />
         {groupId !== 'none' && hasAccessToGroupSettings && (
@@ -121,7 +121,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
       </CardHeader>
 
       <CardBody>
-        <Table shadow="none" removeWrapper>
+        <Table shadow="none" removeWrapper aria-label={title ?? 'Resource Group Table'}>
           <TableHeader>
             <TableColumn width="48">{t('columns.image')}</TableColumn>
             <TableColumn>{t('columns.name')}</TableColumn>

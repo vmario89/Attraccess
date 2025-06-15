@@ -32,15 +32,15 @@ export function PWAUpdatePrompt() {
       if (reloadSW === 'true') {
         registration &&
           setInterval(() => {
-            console.log('Checking for sw update');
+            console.debug('Checking for sw update');
             registration.update();
           }, minutesToWait * 60 * 1000);
       } else {
-        console.log('SW Registered: ' + registration);
+        console.debug('SW Registered: ' + registration);
       }
     },
     onRegisterError(error) {
-      console.log('SW registration error', error);
+      console.error('SW registration error', error);
     },
   });
 

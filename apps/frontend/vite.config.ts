@@ -45,8 +45,7 @@ export default defineConfig({
     }),
     replace({ __DATE__: new Date().toISOString(), __RELOAD_SW__: 'true', preventAssignment: true }),
     VitePWA({
-      // mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-      mode: 'production',
+      mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
@@ -54,11 +53,6 @@ export default defineConfig({
       },
       includeAssets: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,bin,json}'],
       manifest: siteWebManifest,
-      devOptions: {
-        enabled: true,
-        type: 'module',
-        navigateFallback: 'index.html',
-      },
       registerType: 'prompt',
       srcDir: 'src',
       filename: 'service-worker.ts',

@@ -25,11 +25,11 @@ export function useAuth() {
 
   const { data: currentUser, error: currentUserError } = useUsersServiceGetCurrent(undefined, {
     refetchInterval: 1000 * 60 * 20, // 20 minutes
+    retry: false,
   });
 
   useEffect(() => {
     if (currentUser || currentUserError) {
-      console.log('setting isInitialized to true', currentUser);
       setIsInitialized(true);
     }
   }, [currentUser, currentUserError]);
