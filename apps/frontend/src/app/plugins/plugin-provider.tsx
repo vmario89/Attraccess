@@ -13,12 +13,6 @@ import { ToastType, useToastMessage } from '../../components/toastProvider';
 import { useAuth } from '../../hooks/useAuth';
 import { getBaseUrl } from '../../api';
 
-export class PluginLoadedEvent extends Event {
-  constructor(public readonly pluginManifest: LoadedPluginManifest) {
-    super('pluginLoaded');
-  }
-}
-
 const pluginStore = createPluginStore();
 export function PluginProvider(props: PropsWithChildren) {
   const { refetch: refetchPlugins } = usePluginsServiceGetPlugins();
@@ -34,13 +28,13 @@ export function PluginProvider(props: PropsWithChildren) {
     if (isPluginSystemInitialized.current) return;
     isPluginSystemInitialized.current = true;
 
-    console.log('Attraccess Plugin System: initializing');
+    console.debug('Attraccess Plugin System: initializing');
 
-    console.log('Attraccess Plugin System: installing renderer plugin');
+    console.debug('Attraccess Plugin System: installing renderer plugin');
     const rendererPlugin = new RendererPlugin();
     pluginStore.install(rendererPlugin);
 
-    console.log('Attraccess Plugin System: adding notificationToast function');
+    console.debug('Attraccess Plugin System: adding notificationToast function');
     pluginStore.addFunction(
       'notificationToast',
       (params: { title: string; description: string; type: ToastType; duration?: number }) => {
@@ -54,10 +48,10 @@ export function PluginProvider(props: PropsWithChildren) {
     );
 
     return () => {
-      console.log('Attraccess Plugin System: uninstalling renderer plugin');
+      console.debug('Attraccess Plugin System: uninstalling renderer plugin');
       pluginStore.uninstall(rendererPlugin.getPluginName());
 
-      console.log('Attraccess Plugin System: removing notificationToast function');
+      console.debug('Attraccess Plugin System: removing notificationToast function');
       pluginStore.removeFunction('notificationToast');
 
       // Reset the initialization state on unmount
@@ -69,11 +63,11 @@ export function PluginProvider(props: PropsWithChildren) {
     async (pluginManifest: LoadedPluginManifest, plugin?: AttraccessFrontendPlugin) => {
       try {
         if (!plugin) {
-          console.log(`Attraccess Plugin System: loading plugin ${pluginManifest.name}`);
+          console.debug(`Attraccess Plugin System: loading plugin ${pluginManifest.name}`);
           const entryPointFile = pluginManifest.main.frontend?.entryPoint;
 
           if (!entryPointFile) {
-            console.log(
+            console.debug(
               `Attraccess Plugin System: Plugin ${pluginManifest.name} has no entry point file for frontend, skipping`
             );
             return;
@@ -99,9 +93,9 @@ export function PluginProvider(props: PropsWithChildren) {
         }
 
         const pluginName = plugin.getPluginName();
-        console.log(`Attraccess Plugin System: Checking if plugin ${pluginName} is installed`);
+        console.debug(`Attraccess Plugin System: Checking if plugin ${pluginName} is installed`);
         if (isInstalled(pluginName)) {
-          console.log(`Attraccess Plugin System: Plugin ${pluginName} is already installed, uninstalling first`);
+          console.debug(`Attraccess Plugin System: Plugin ${pluginName} is already installed, uninstalling first`);
           pluginStore.uninstall(pluginName);
         }
 
@@ -114,7 +108,7 @@ export function PluginProvider(props: PropsWithChildren) {
         };
         addPlugin(fullPlugin);
 
-        console.log(`Attraccess Plugin System: Plugin ${pluginName} loaded`);
+        console.debug(`Attraccess Plugin System: Plugin ${pluginName} loaded`);
         return fullPlugin;
       } catch (error) {
         console.error(`Attraccess Plugin System: Failed to load plugin: ${pluginManifest.name}`, error);
@@ -135,19 +129,19 @@ export function PluginProvider(props: PropsWithChildren) {
 
   const loadAllPlugins = useCallback(async () => {
     if (arePluginsLoaded.current) return;
-    console.log('Attraccess Plugin System: Loading all plugins');
+    console.debug('Attraccess Plugin System: Loading all plugins');
 
     const plugins = await refetchPlugins();
     const pluginsArray = plugins.data ?? [];
     await Promise.all(pluginsArray.map((manifest) => loadPlugin(manifest)));
 
     arePluginsLoaded.current = true;
-    console.log('Attraccess Plugin System: All plugins loaded');
+    console.debug('Attraccess Plugin System: All plugins loaded');
   }, [loadPlugin, refetchPlugins]);
 
   useEffect(() => {
     if (arePluginsLoaded.current) return;
-    console.log('Attraccess Plugin System: Refetching plugins');
+    console.debug('Attraccess Plugin System: Refetching plugins');
     loadAllPlugins();
 
     // We're using the ref as our control mechanism, so the dependency array can be empty

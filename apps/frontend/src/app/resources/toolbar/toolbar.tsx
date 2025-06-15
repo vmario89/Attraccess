@@ -5,10 +5,11 @@ import { Search, Plus } from 'lucide-react';
 import { ResourceGroupUpsertModal } from '../../resource-groups/upsertModal/resourceGroupUpsertModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from '../toolbar/toolbar.en.json';
-import * as de from '../toolbar/toolbar.de.json';
 import { ResourceEditModal } from '../../resources/editModal/resourceEditModal';
 import { useNavigate } from 'react-router-dom';
+
+import * as en from './toolbar.en.json';
+import * as de from './toolbar.de.json';
 
 interface ToolbarProps {
   onSearch: (value: string) => void;

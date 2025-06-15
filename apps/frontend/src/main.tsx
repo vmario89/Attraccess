@@ -8,6 +8,46 @@ import { queryClient } from './api/queryClient';
 import setupApiParameters from './api';
 import { PluginProvider } from './app/plugins/plugin-provider';
 import { PWAInstall } from './components/pwaInstall';
+import { registerSW } from 'virtual:pwa-register';
+
+const oneMinute = 60 * 1000;
+const intervalMS = 15 * oneMinute;
+
+let updateInterval: NodeJS.Timeout;
+registerSW({
+  onRegistered(r) {
+    if (!r) {
+      return;
+    }
+
+    const startUpdateCheck = () => {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+
+      updateInterval = setInterval(() => r.update(), intervalMS);
+    };
+
+    const stopUpdateCheck = () => {
+      clearInterval(updateInterval);
+    };
+
+    // Start/stop checks based on page visibility
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopUpdateCheck();
+      } else {
+        r.update(); // Check once immediately
+        startUpdateCheck();
+      }
+    });
+
+    // Initial start if page is visible
+    if (!document.hidden) {
+      startUpdateCheck();
+    }
+  },
+});
 
 setupApiParameters();
 
