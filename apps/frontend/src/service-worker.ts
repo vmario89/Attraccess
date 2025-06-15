@@ -14,5 +14,9 @@ setupPrecaching(wb_manifest);
 
 setupSharedData();
 
-// to allow work offline
-registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
+// Only handle navigation requests that aren't for API routes
+registerRoute(
+  new NavigationRoute(createHandlerBoundToURL('index.html'), {
+    denylist: [/^\/api\/.*$/, /^\/docs\/.*$/, /^\/cdn\/.*$/],
+  })
+);

@@ -9,6 +9,7 @@ dist/
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 *.sqlite
+.DS_Store
 
 storage/
 storage-docker/
