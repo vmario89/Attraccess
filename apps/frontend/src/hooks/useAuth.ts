@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   CreateSessionResponse,
@@ -11,7 +11,6 @@ import {
   useUsersServiceGetCurrentKey,
 } from '@attraccess/react-query-client';
 import { useCallback, useEffect, useState } from 'react';
-import { useServiceWorkerCacheStore } from './useServiceWorkerCacheStore';
 
 interface LoginCredentials {
   username: string;
@@ -23,12 +22,6 @@ export function useAuth() {
   const navigate = useNavigate();
 
   const [isInitialized, setIsInitialized] = useState(false);
-
-  const {
-    getByKey: swCacheGetByKey,
-    setByKey: swCacheSetByKey,
-    deleteKey: swCacheDeleteKey,
-  } = useServiceWorkerCacheStore();
 
   const { data: currentUser, error: currentUserError } = useUsersServiceGetCurrent(undefined, {
     refetchInterval: 1000 * 60 * 20, // 20 minutes
@@ -48,13 +41,11 @@ export function useAuth() {
       if (!auth) {
         localStorage.removeItem('auth');
         sessionStorage.removeItem('auth');
-        await swCacheDeleteKey('auth');
         OpenAPI.TOKEN = '';
         return null;
       }
 
       localStorage.setItem('auth', JSON.stringify(auth));
-      await swCacheSetByKey('auth', JSON.stringify(auth));
 
       OpenAPI.TOKEN = auth.authToken;
       return auth;
@@ -64,15 +55,6 @@ export function useAuth() {
     },
   });
 
-  const { data: authFromSharedData } = useQuery({
-    queryKey: ['sw-cache', 'auth'],
-    queryFn: () => {
-      console.log('refetching auth from shared data');
-      return swCacheGetByKey('auth');
-    },
-    refetchOnWindowFocus: true,
-  });
-
   const loadExistingAuth = useCallback(async () => {
     let auth: CreateSessionResponse | null = null;
 
@@ -80,13 +62,12 @@ export function useAuth() {
       const authFromLocalStorage = localStorage.getItem('auth');
       const authFromSessionStorage = sessionStorage.getItem('auth');
 
-      const authFromAnySource = authFromLocalStorage ?? authFromSessionStorage ?? authFromSharedData;
+      const authFromAnySource = authFromLocalStorage ?? authFromSessionStorage;
 
       if (!authFromAnySource) {
         console.warn('No auth found in any source', {
           authFromLocalStorage,
           authFromSessionStorage,
-          authFromSharedData,
         });
         return;
       }
@@ -101,7 +82,7 @@ export function useAuth() {
     } catch (e) {
       console.error('Error parsing persisted auth:', e);
     }
-  }, [jwtTokenLoginMutate, authFromSharedData]);
+  }, [jwtTokenLoginMutate]);
 
   useEffect(() => {
     loadExistingAuth();
@@ -123,7 +104,6 @@ export function useAuth() {
     onSuccess: async () => {
       localStorage.removeItem('auth');
       sessionStorage.removeItem('auth');
-      await swCacheDeleteKey('auth');
 
       OpenAPI.TOKEN = '';
 
