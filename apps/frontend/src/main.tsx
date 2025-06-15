@@ -10,7 +10,8 @@ import { PluginProvider } from './app/plugins/plugin-provider';
 import { PWAInstall } from './components/pwaInstall';
 import { registerSW } from 'virtual:pwa-register';
 
-const intervalMS = 60 * 60 * 1000;
+const oneMinute = 60 * 1000;
+const intervalMS = 15 * oneMinute;
 
 let updateInterval: NodeJS.Timeout;
 registerSW({
