@@ -25,6 +25,8 @@ import en from './resourceDetails.en.json';
 import { ResourceEditModal } from '../editModal/resourceEditModal';
 import { ResoureIntroducerManagement } from '../IntroducerManagement';
 import { ResourceIntroductionsManagement } from '../IntroductionsManagement';
+import { ResourceQrCode } from './qrcode';
+import { useQrCodeAction } from './useQrCodeAction';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +39,7 @@ function ResourceDetailsComponent() {
 
   const { hasPermission, user } = useAuth();
   const { success, error: showError } = useToastMessage();
+  useQrCodeAction({ resourceId });
 
   const { t } = useTranslations('resourceDetails', {
     en,
@@ -114,7 +117,7 @@ function ResourceDetailsComponent() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
+    <div>
       <PageHeader
         title={resource.name}
         icon={<ShapesIcon className="w-6 h-6" />}
@@ -177,7 +180,15 @@ function ResourceDetailsComponent() {
 
       {/* Full width Usage section for all devices */}
       <div className="w-full space-y-6 mb-6">
-        <ResourceUsageSession resourceId={resourceId} resource={resource} data-cy="resource-usage-session" />
+        <div className="flex flex-row gap-6 flex-wrap w-full items-stretch">
+          <ResourceUsageSession
+            resourceId={resourceId}
+            resource={resource}
+            data-cy="resource-usage-session"
+            className="flex-1 min-w-80"
+          />
+          {canManageResources && <ResourceQrCode resourceId={resourceId} className="flex-1 md:flex-none" />}
+        </div>
         <ResourceUsageHistory resourceId={resourceId} data-cy="resource-usage-history" />
       </div>
 
