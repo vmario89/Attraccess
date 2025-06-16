@@ -152,7 +152,13 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
                   <StatusChip resourceId={resource.id} />
                 </TableCell>
                 <TableCell>
-                  <Button as={Link} href={`/resources/${resource.id}`} isIconOnly startContent={<ChevronRightIcon />} />
+                  <Button
+                    className="md:inline hidden"
+                    as={Link}
+                    href={`/resources/${resource.id}`}
+                    isIconOnly
+                    startContent={<ChevronRightIcon />}
+                  />
                 </TableCell>
               </TableRow>
             )}

@@ -1,5 +1,5 @@
 import { useResourcesServiceResourceGroupsGetMany } from '@attraccess/react-query-client';
-import { Toolbar } from '../resources/toolbar/toolbar';
+import { Toolbar } from './toolbar/toolbar';
 import { ResourceGroupCard } from './resourceGroupCard';
 import { useMemo, useState } from 'react';
 

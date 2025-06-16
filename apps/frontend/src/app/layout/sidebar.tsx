@@ -10,6 +10,7 @@ import de from './sidebar.de.json';
 import en from './sidebar.en.json';
 import deRoutes from '../routes/translations/de.json';
 import enRoutes from '../routes/translations/en.json';
+import { Logo } from '../../components/logo';
 
 function NavLink(
   props: Omit<PropsOf<typeof Link>, 'children'> & {
@@ -124,15 +125,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-          <Link
-            href="/"
-            className="text-xl font-semibold"
-            color="foreground"
-            underline="none"
-            data-cy="sidebar-home-link"
-          >
-            Attraccess
-          </Link>
+          <Logo data-cy="sidebar-home-link" />
+
           <Button
             variant="light"
             aria-label="Close sidebar"
