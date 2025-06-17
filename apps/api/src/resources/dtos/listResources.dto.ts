@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsInt, Min, IsString } from 'class-validator';
+import { IsOptional, IsInt, Min, IsString, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ToBoolean } from '../../common/request-transformers';
 
 export class ListResourcesDto {
   @ApiProperty({
@@ -54,4 +55,22 @@ export class ListResourcesDto {
   @IsOptional()
   @Type(() => Number)
   ids?: number[];
+
+  @ApiProperty({
+    description: 'Only resources in use by me',
+    required: false,
+  })
+  @IsBoolean()
+  @ToBoolean()
+  @IsOptional()
+  onlyInUseByMe?: boolean;
+
+  @ApiProperty({
+    description: 'Only resources with permissions',
+    required: false,
+  })
+  @IsBoolean()
+  @ToBoolean()
+  @IsOptional()
+  onlyWithPermissions?: boolean;
 }

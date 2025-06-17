@@ -1,13 +1,8 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsBoolean,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { ToBoolean } from '../../../common/request-transformers';
 
 /**
  * DTO for creating a new MQTT server
@@ -53,6 +48,7 @@ export class CreateMqttServerDto {
   clientId?: string;
 
   @IsBoolean()
+  @ToBoolean()
   @IsOptional()
   @ApiProperty({
     description: 'Whether to use TLS/SSL for the connection',

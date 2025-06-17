@@ -43,13 +43,15 @@ export const ensureUseEmailTemplatesServiceEmailTemplateControllerFindAllData = 
 export const ensureUseEmailTemplatesServiceEmailTemplateControllerFindOneData = (queryClient: QueryClient, { type }: {
   type: "verify-email" | "reset-password";
 }) => queryClient.ensureQueryData({ queryKey: Common.UseEmailTemplatesServiceEmailTemplateControllerFindOneKeyFn({ type }), queryFn: () => EmailTemplatesService.emailTemplateControllerFindOne({ type }) });
-export const ensureUseResourcesServiceGetAllResourcesData = (queryClient: QueryClient, { groupId, ids, limit, page, search }: {
+export const ensureUseResourcesServiceGetAllResourcesData = (queryClient: QueryClient, { groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }: {
   groupId?: number;
   ids?: number[];
   limit?: number;
+  onlyInUseByMe?: boolean;
+  onlyWithPermissions?: boolean;
   page?: number;
   search?: string;
-} = {}) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, ids, limit, page, search }) });
+} = {}) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }) });
 export const ensureUseResourcesServiceGetOneResourceByIdData = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.ensureQueryData({ queryKey: Common.UseResourcesServiceGetOneResourceByIdKeyFn({ id }), queryFn: () => ResourcesService.getOneResourceById({ id }) });

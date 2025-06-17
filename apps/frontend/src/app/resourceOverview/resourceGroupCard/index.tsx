@@ -31,19 +31,20 @@ import en from './en.json';
 import de from './de.json';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDebounce } from '../../../hooks/useDebounce';
+import { FilterProps } from '../filterProps';
 
 interface Props {
   groupId: number | 'none';
-  searchValue?: string;
+  filter: Pick<FilterProps, 'search' | 'onlyInUseByMe' | 'onlyWithPermissions'>;
 }
 
 export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'children'>>) {
-  const { groupId, searchValue, ...cardProps } = props;
+  const { groupId, filter, ...cardProps } = props;
 
   const { t } = useTranslations('resourceGroupCard', { de, en });
   const { hasPermission, user } = useAuth();
 
-  const debouncedSearchValue = useDebounce(searchValue, 250);
+  const debouncedSearchValue = useDebounce(filter.search, 250);
   const perPage = 10;
   const [page, setPage] = useState(1);
 
@@ -59,6 +60,8 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
     {
       groupId: groupId === 'none' ? -1 : groupId,
       search: debouncedSearchValue?.trim() || undefined,
+      onlyInUseByMe: filter.onlyInUseByMe,
+      onlyWithPermissions: filter.onlyWithPermissions,
       page,
       limit: perPage,
     },
@@ -110,6 +113,10 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
 
     return group?.description ?? '';
   }, [groupId, group, t]);
+
+  if (!isLoading && resources?.data.length === 0) {
+    return null;
+  }
 
   return (
     <Card aria-label={title ?? 'Resource Group Card'} {...cardProps}>

@@ -577,6 +577,8 @@ export class ResourcesService {
      * @param data.search Search term to filter resources
      * @param data.groupId Group ID to filter resources. Send -1 to find ungrouped resources.
      * @param data.ids Resource IDs to filter resources
+     * @param data.onlyInUseByMe Only resources in use by me
+     * @param data.onlyWithPermissions Only resources with permissions
      * @returns PaginatedResourceResponseDto List of resources with pagination.
      * @throws ApiError
      */
@@ -589,7 +591,9 @@ export class ResourcesService {
                 limit: data.limit,
                 search: data.search,
                 groupId: data.groupId,
-                ids: data.ids
+                ids: data.ids,
+                onlyInUseByMe: data.onlyInUseByMe,
+                onlyWithPermissions: data.onlyWithPermissions
             },
             errors: {
                 401: 'Unauthorized'

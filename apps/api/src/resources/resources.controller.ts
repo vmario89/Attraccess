@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
@@ -18,7 +19,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { ListResourcesDto } from './dtos/listResources.dto';
 import { Resource } from '@attraccess/database-entities';
-import { Auth } from '@attraccess/plugins-backend-sdk';
+import { Auth, AuthenticatedRequest } from '@attraccess/plugins-backend-sdk';
 import { PaginatedResponse } from '../types/response';
 import { FileUpload } from '../common/types/file-upload.types';
 import { PaginatedResourceResponseDto } from './dtos/paginatedResourceResponse.dto';
@@ -68,8 +69,27 @@ export class ResourcesController {
     status: 401,
     description: 'Unauthorized - User is not authenticated',
   })
-  async getAll(@Query() query: ListResourcesDto): Promise<PaginatedResponse<Resource>> {
-    const resources = (await this.resourcesService.listResources(query)) as PaginatedResourceResponseDto;
+  async getAll(
+    @Query() query: ListResourcesDto,
+    @Req() req: AuthenticatedRequest
+  ): Promise<PaginatedResponse<Resource>> {
+    let onlyWithPermissionForUserId: number | undefined;
+
+    if (!req.user.systemPermissions.canManageResources) {
+      if (query.onlyWithPermissions !== undefined) {
+        onlyWithPermissionForUserId = req.user.id;
+      }
+    }
+    const resources = await this.resourcesService.listResources({
+      page: query.page,
+      limit: query.limit,
+      search: query.search,
+      groupId: query.groupId,
+      onlyInUseByUserId: query.onlyInUseByMe ? req.user.id : undefined,
+      onlyWithPermissionForUserId,
+    });
+
+    // TODO: hide empty resource group cards
 
     resources.data = resources.data.map((resource) => {
       return this.transformResource(resource);
