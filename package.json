@@ -68,6 +68,7 @@
     "lucide-react": "^0.475.0",
     "mjml": "^4.15.3",
     "mjml-react": "^2.0.8",
+    "mkcert": "^3.2.0",
     "mqtt": "^5.12.1",
     "nanoid": "^3.3.11",
     "new-github-issue-url": "^1.0.0",
