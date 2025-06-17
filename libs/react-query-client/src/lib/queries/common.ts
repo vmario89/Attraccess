@@ -84,13 +84,15 @@ export const UseEmailTemplatesServiceEmailTemplateControllerFindOneKeyFn = ({ ty
 export type ResourcesServiceGetAllResourcesDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getAllResources>>;
 export type ResourcesServiceGetAllResourcesQueryResult<TData = ResourcesServiceGetAllResourcesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetAllResourcesKey = "ResourcesServiceGetAllResources";
-export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, ids, limit, page, search }: {
+export const UseResourcesServiceGetAllResourcesKeyFn = ({ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }: {
   groupId?: number;
   ids?: number[];
   limit?: number;
+  onlyInUseByMe?: boolean;
+  onlyWithPermissions?: boolean;
   page?: number;
   search?: string;
-} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, ids, limit, page, search }])];
+} = {}, queryKey?: Array<unknown>) => [useResourcesServiceGetAllResourcesKey, ...(queryKey ?? [{ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }])];
 export type ResourcesServiceGetOneResourceByIdDefaultResponse = Awaited<ReturnType<typeof ResourcesService.getOneResourceById>>;
 export type ResourcesServiceGetOneResourceByIdQueryResult<TData = ResourcesServiceGetOneResourceByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useResourcesServiceGetOneResourceByIdKey = "ResourcesServiceGetOneResourceById";

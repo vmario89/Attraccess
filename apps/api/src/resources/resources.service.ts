@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, Brackets } from 'typeorm';
 import { Resource } from '@attraccess/database-entities';
 import { CreateResourceDto } from './dtos/createResource.dto';
 import { UpdateResourceDto } from './dtos/updateResource.dto';
@@ -124,12 +124,14 @@ export class ResourcesService {
     search?: string;
     groupId?: number;
     ids?: number[] | number;
+    onlyInUseByUserId?: number;
+    onlyWithPermissionForUserId?: number;
   }): Promise<PaginatedResponse<Resource>> {
     if (!options) {
       options = {};
     }
 
-    const { page = 1, limit = 10, search, groupId } = options;
+    const { page = 1, limit = 10, search, groupId, onlyInUseByUserId, onlyWithPermissionForUserId } = options;
 
     let ids = options.ids;
     if (typeof ids === 'number') {
@@ -141,6 +143,42 @@ export class ResourcesService {
       .createQueryBuilder('resource')
       .leftJoinAndSelect('resource.groups', 'groups')
       .orderBy('resource.createdAt', 'DESC');
+
+    if (onlyInUseByUserId !== undefined) {
+      queryBuilder.leftJoin('resource.usages', 'usage');
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('usage.userId = :userId', { userId: onlyInUseByUserId });
+          qb.andWhere('usage.endTime IS NULL');
+        })
+      );
+    }
+
+    if (onlyWithPermissionForUserId !== undefined) {
+      queryBuilder.leftJoin('resource.introducers', 'introducer');
+      queryBuilder.leftJoin('resource.introductions', 'introduction');
+      queryBuilder.leftJoin('introduction.history', 'introductionHistory');
+      queryBuilder.leftJoin(
+        'introduction.history',
+        'laterHistory',
+        'laterHistory.introductionId = introductionHistory.introductionId \
+         AND laterHistory.createdAt > introductionHistory.createdAt'
+      );
+
+      queryBuilder.andWhere(
+        new Brackets((resourceQb) => {
+          resourceQb.where('introducer.userId = :userId', { userId: onlyWithPermissionForUserId });
+          resourceQb.orWhere(
+            new Brackets((introductionQb) => {
+              introductionQb
+                .where('introduction.receiverUserId = :userId', { userId: onlyWithPermissionForUserId })
+                .andWhere('introductionHistory.action = :action', { action: 'grant' })
+                .andWhere('laterHistory.id IS NULL');
+            })
+          );
+        })
+      );
+    }
 
     // Handle IDs filtering
     if (ids && ids.length > 0) {
@@ -167,8 +205,6 @@ export class ResourcesService {
         }
       );
     }
-
-    this.logger.debug('Listing resources with query:', queryBuilder.getSql());
 
     // Execute query with pagination
     const [resources, total] = await queryBuilder

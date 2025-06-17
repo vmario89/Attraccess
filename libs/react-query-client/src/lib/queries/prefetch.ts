@@ -43,13 +43,15 @@ export const prefetchUseEmailTemplatesServiceEmailTemplateControllerFindAll = (q
 export const prefetchUseEmailTemplatesServiceEmailTemplateControllerFindOne = (queryClient: QueryClient, { type }: {
   type: "verify-email" | "reset-password";
 }) => queryClient.prefetchQuery({ queryKey: Common.UseEmailTemplatesServiceEmailTemplateControllerFindOneKeyFn({ type }), queryFn: () => EmailTemplatesService.emailTemplateControllerFindOne({ type }) });
-export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { groupId, ids, limit, page, search }: {
+export const prefetchUseResourcesServiceGetAllResources = (queryClient: QueryClient, { groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }: {
   groupId?: number;
   ids?: number[];
   limit?: number;
+  onlyInUseByMe?: boolean;
+  onlyWithPermissions?: boolean;
   page?: number;
   search?: string;
-} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, ids, limit, page, search }) });
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetAllResourcesKeyFn({ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }), queryFn: () => ResourcesService.getAllResources({ groupId, ids, limit, onlyInUseByMe, onlyWithPermissions, page, search }) });
 export const prefetchUseResourcesServiceGetOneResourceById = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseResourcesServiceGetOneResourceByIdKeyFn({ id }), queryFn: () => ResourcesService.getOneResourceById({ id }) });

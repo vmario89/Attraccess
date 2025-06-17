@@ -1,0 +1,29 @@
+services:
+  attraccess:
+    image: fabaccess/attraccess:nightly-latest
+    platform: linux/amd64
+    container_name: attraccess
+    restart: unless-stopped
+    ports:
+      - '80:3000'
+    environment:
+      # Authentication & Security
+      - AUTH_SESSION_SECRET=secret-session
+
+      - AUTH_JWT_ORIGIN=FILE
+      - AUTH_JWT_SECRET=/app/secrets/secret.txt
+      - VITE_ATTRACCESS_URL=http://localhost:3000
+
+      # Email Configuration
+      - SMTP_SERVICE=SMTP
+      - SMTP_FROM=no-reply@attraccess.de
+      - SMTP_HOST=localhost
+      - SMTP_PORT=1028
+
+      # Logging level
+      - LOG_LEVELS=error,warn,log,debug
+    volumes:
+      - ./storage:/app/storage
+      - ./plugins:/app/plugins
+      - ./secret:/app/secrets
+

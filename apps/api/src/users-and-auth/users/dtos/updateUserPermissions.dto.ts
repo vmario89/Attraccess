@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ToBoolean } from '../../../common/request-transformers';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateUserPermissionsDto {
@@ -9,6 +10,7 @@ export class UpdateUserPermissionsDto {
   })
   @IsBoolean()
   @IsOptional()
+  @ToBoolean()
   canManageResources?: boolean;
 
   @ApiProperty({

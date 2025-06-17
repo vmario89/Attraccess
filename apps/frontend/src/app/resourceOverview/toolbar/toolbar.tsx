@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
-import { SearchIcon, PlusIcon, ScanQrCodeIcon } from 'lucide-react';
+import { SearchIcon, PlusIcon, ScanQrCodeIcon, ListFilterIcon } from 'lucide-react';
 import { ResourceGroupUpsertModal } from '../../resource-groups/upsertModal/resourceGroupUpsertModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
@@ -11,16 +10,16 @@ import { useNavigate } from 'react-router-dom';
 import * as en from './toolbar.en.json';
 import * as de from './toolbar.de.json';
 import { ResourceScanner } from './scanner';
+import { ResourceFilter } from './filter';
+import { FilterProps } from '../filterProps';
 
 interface ToolbarProps {
-  onSearch: (value: string) => void;
   searchIsLoading?: boolean;
 }
 
-export function Toolbar({ onSearch, searchIsLoading }: Readonly<ToolbarProps>) {
+export function Toolbar({ searchIsLoading, ...filterProps }: Readonly<ToolbarProps & FilterProps>) {
   const { hasPermission } = useAuth();
   const canManageResources = hasPermission('canManageResources');
-  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
   const { t } = useTranslations('toolbar', {
@@ -28,21 +27,37 @@ export function Toolbar({ onSearch, searchIsLoading }: Readonly<ToolbarProps>) {
     de,
   });
 
-  useEffect(() => {
-    onSearch(searchValue);
-  }, [searchValue, onSearch]);
-
   return (
     <div>
       <div className="mb-6 flex flex-row w-full items-center justify-between gap-4 rounded-full bg-white p-2 shadow-sm dark:bg-zinc-800">
         <div className="relative flex-grow">
           <Input
             radius="full"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            value={filterProps.search}
+            onChange={(e) => filterProps.onSearchChanged(e.target.value)}
             placeholder={t('searchPlaceholder')}
             className={` ${searchIsLoading ? 'animate-pulse' : ''}`}
-            startContent={<SearchIcon size={18} />}
+            startContent={
+              <>
+                <ResourceFilter
+                  onlyInUseByMe={filterProps.onlyInUseByMe}
+                  onOnlyInUseByMeChanged={filterProps.onOnlyInUseByMeChanged}
+                  onlyWithPermissions={filterProps.onlyWithPermissions}
+                  onOnlyWithPermissionsChanged={filterProps.onOnlyWithPermissionsChanged}
+                >
+                  {({ onOpen }) => (
+                    <Button
+                      size="sm"
+                      variant="light"
+                      startContent={<ListFilterIcon size={18} />}
+                      isIconOnly
+                      onPress={onOpen}
+                    />
+                  )}
+                </ResourceFilter>
+                <SearchIcon size={18} />
+              </>
+            }
             classNames={{
               inputWrapper: 'bg-transparent border-none shadow-none focus-within:ring-0 pl-2',
               input: 'text-sm',

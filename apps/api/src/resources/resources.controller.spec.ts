@@ -7,6 +7,7 @@ import { UpdateResourceDto } from './dtos/updateResource.dto';
 import { NotFoundException } from '@nestjs/common';
 import { PaginatedResponse } from '../types/response';
 import { ResourceImageService } from './resourceImage.service';
+import { AuthenticatedRequest } from '@attraccess/plugins-backend-sdk';
 
 describe('ResourcesController', () => {
   let controller: ResourcesController;
@@ -77,7 +78,9 @@ describe('ResourcesController', () => {
 
       jest.spyOn(service, 'listResources').mockResolvedValue(paginatedResponse);
 
-      const result = await controller.getAll({ page: 1, limit: 10 });
+      const result = await controller.getAll({ page: 1, limit: 10 }, {
+        user: { id: 1, systemPermissions: { canManageResources: true } },
+      } as AuthenticatedRequest);
 
       expect(result).toEqual({
         ...paginatedResponse,

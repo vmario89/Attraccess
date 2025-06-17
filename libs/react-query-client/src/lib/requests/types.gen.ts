@@ -1819,6 +1819,14 @@ export type GetAllResourcesData = {
      */
     limit?: number;
     /**
+     * Only resources in use by me
+     */
+    onlyInUseByMe?: boolean;
+    /**
+     * Only resources with permissions
+     */
+    onlyWithPermissions?: boolean;
+    /**
      * Page number (1-based)
      */
     page?: number;
