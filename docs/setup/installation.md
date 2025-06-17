@@ -53,6 +53,15 @@ Attraccess requires several environment variables to function properly:
 | `SMTP_TLS_REJECT_UNAUTHORIZED` | Reject unauthorized TLS ("true"/"false")    | Optional             | "true"  |
 | `SMTP_TLS_CIPHERS`             | TLS cipher configuration                    | Optional             | -       |
 
+#### SSL Configuration
+
+| Variable                                | Description                                         | Required | Default |
+| --------------------------------------- | --------------------------------------------------- | -------- | ------- |
+| `SSL_GENERATE_SELF_SIGNED_CERTIFICATES` | Automatically generate self-signed SSL certificates | No       | "false" |
+
+> [!TIP]
+> Enable SSL for secure connections by setting `SSL_GENERATE_SELF_SIGNED_CERTIFICATES=true`. For detailed SSL configuration, custom certificates, and device trust instructions, see our [SSL Configuration Guide](setup/ssl-configuration.md).
+
 #### Storage & File Management
 
 | Variable       | Description                                | Required | Default        |
@@ -103,6 +112,7 @@ This directory contains:
 - `/app/storage/uploads`: Stores all uploaded files, including resource images
 - `/app/storage/cache`: Stores cached files for performance optimization
 - `/app/storage/resources`: Stores resource-related files
+- `/app/storage/*.pem` and `/app/storage/*.key`: SSL certificates (when using SSL features)
 
 > [!ATTENTION]
 > Mounting the storage volume is **essential** to ensure data persistence across container restarts and updates. Failure to mount this volume will result in data loss when the container is updated or restarted.

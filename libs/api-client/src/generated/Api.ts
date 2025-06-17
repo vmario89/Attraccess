@@ -1899,6 +1899,10 @@ export interface GetAllResourcesParams {
   groupId?: number;
   /** Resource IDs to filter resources */
   ids?: number[];
+  /** Only resources in use by me */
+  onlyInUseByMe?: boolean;
+  /** Only resources with permissions */
+  onlyWithPermissions?: boolean;
 }
 
 export type GetAllResourcesData = PaginatedResourceResponseDto;
@@ -2592,6 +2596,10 @@ export namespace Resources {
       groupId?: number;
       /** Resource IDs to filter resources */
       ids?: number[];
+      /** Only resources in use by me */
+      onlyInUseByMe?: boolean;
+      /** Only resources with permissions */
+      onlyWithPermissions?: boolean;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};

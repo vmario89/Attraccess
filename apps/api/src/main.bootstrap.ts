@@ -10,6 +10,31 @@ import { AppConfigType } from './config/app.config';
 import { DataSource } from 'typeorm';
 import { PluginService } from './plugin-system/plugin.service';
 import { PluginModule } from './plugin-system/plugin.module';
+import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface';
+import { readFile, writeFile } from 'fs/promises';
+import { existsSync } from 'fs';
+import { createCA, createCert } from 'mkcert';
+import { join } from 'path';
+import { StorageConfigType } from './config/storage.config';
+
+async function generateSelfSignedCertificates(storageDir: string, domain: string) {
+  const ca = await createCA({
+    organization: 'Attraccess',
+    countryCode: 'DE',
+    state: 'Hamburg',
+    locality: 'Hamburg',
+    validity: 365,
+  });
+
+  const cert = await createCert({
+    ca: { key: ca.key, cert: ca.cert },
+    domains: ['127.0.0.1', 'localhost', domain],
+    validity: 365,
+  });
+
+  await writeFile(join(storageDir, `${domain}.pem`), cert.cert, { mode: 0o644 });
+  await writeFile(join(storageDir, `${domain}.key`), cert.key, { mode: 0o644 });
+}
 
 export async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -19,8 +44,45 @@ export async function bootstrap() {
     .split(',')
     .filter((level): level is LogLevel => ['error', 'warn', 'log', 'debug', 'verbose'].includes(level));
 
+  const appForConfig = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: initialLogLevels,
+  });
+
+  const appConfig = appForConfig.get(ConfigService).get<AppConfigType>('app');
+  const storageConfig = appForConfig.get(ConfigService).get<StorageConfigType>('storage');
+  await appForConfig.close();
+
+  let httpsOptions: undefined | HttpsOptions = undefined;
+
+  let sslCertFile: string | undefined;
+  let sslKeyFile: string | undefined;
+
+  if (appConfig.SSL_GENERATE_SELF_SIGNED_CERTIFICATES) {
+    const storageDir = storageConfig.root;
+
+    const host = appConfig.VITE_ATTRACCESS_URL;
+    const hostUrl = new URL(host);
+    const domain = hostUrl.hostname;
+
+    if (!existsSync(`${domain}.pem`) || !existsSync(`${domain}.key`)) {
+      bootstrapLogger.log('Generating self-signed certificates...');
+      await generateSelfSignedCertificates(storageDir, domain);
+    }
+
+    sslCertFile = join(storageDir, `${domain}.pem`);
+    sslKeyFile = join(storageDir, `${domain}.key`);
+  }
+
+  if (sslCertFile && sslKeyFile) {
+    httpsOptions = {
+      cert: await readFile(sslCertFile),
+      key: await readFile(sslKeyFile),
+    };
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: initialLogLevels,
+    httpsOptions,
   });
   bootstrapLogger.log('Main application instance created.');
 
@@ -29,9 +91,6 @@ export async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   });
-
-  const configService = app.get(ConfigService);
-  const appConfig = configService.get<AppConfigType>('app');
 
   if (!appConfig) {
     bootstrapLogger.error("Application configuration ('app') not loaded. Exiting.");
