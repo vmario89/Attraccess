@@ -230,7 +230,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                 <User className="h-4 w-4 mr-2" />
                 <span>{user.username}</span>
               </div>
-              <Dropdown data-cy="sidebar-settings-dropdown">
+              <Dropdown data-cy="sidebar-settings-dropdown" placement="top-end">
                 <DropdownTrigger>
                   <Button variant="light" aria-label="Settings" isIconOnly data-cy="sidebar-settings-button">
                     <Settings className="h-5 w-5" />

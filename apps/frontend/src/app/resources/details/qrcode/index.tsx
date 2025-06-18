@@ -1,8 +1,6 @@
 import {
   Button,
-  Card,
-  CardBody,
-  CardProps,
+  ButtonProps,
   Link,
   Modal,
   ModalBody,
@@ -25,10 +23,11 @@ import { nanoid } from 'nanoid';
 
 interface Props {
   resourceId: number;
+  buttonIconSize?: number;
 }
 
-export function ResourceQrCode(props: Props & Omit<CardProps, 'children'>) {
-  const { resourceId, ...rest } = props;
+export function ResourceQrCode(props: Props & Omit<ButtonProps, 'children' | 'startContent' | 'onPress'>) {
+  const { resourceId, buttonIconSize, ...buttonProps } = props;
 
   const { t } = useTranslations('ResourceQrCode', { de, en });
 
@@ -60,13 +59,9 @@ export function ResourceQrCode(props: Props & Omit<CardProps, 'children'>) {
 
   return (
     <>
-      <Card {...rest}>
-        <CardBody className="flex flex-col items-center justify-center">
-          <Button onPress={onOpen} startContent={<QrCodeIcon />}>
-            {t('button.label')}
-          </Button>
-        </CardBody>
-      </Card>
+      <Button {...buttonProps} onPress={onOpen} startContent={<QrCodeIcon size={buttonIconSize} />}>
+        {t('button.label')}
+      </Button>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>

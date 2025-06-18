@@ -140,6 +140,8 @@ function ResourceDetailsComponent() {
 
             {canManageResources && (
               <>
+                <ResourceQrCode resourceId={resourceId} variant="light" buttonIconSize={16} />
+
                 <Button
                   as={Link}
                   href={`/resources/${resourceId}/iot`}
@@ -180,15 +182,13 @@ function ResourceDetailsComponent() {
 
       {/* Full width Usage section for all devices */}
       <div className="w-full space-y-6 mb-6">
-        <div className="flex flex-row gap-6 flex-wrap w-full items-stretch">
-          <ResourceUsageSession
-            resourceId={resourceId}
-            resource={resource}
-            data-cy="resource-usage-session"
-            className="flex-1 min-w-80"
-          />
-          {canManageResources && <ResourceQrCode resourceId={resourceId} className="flex-1 md:flex-none" />}
-        </div>
+        <ResourceUsageSession
+          resourceId={resourceId}
+          resource={resource}
+          data-cy="resource-usage-session"
+          className="flex-1 min-w-80"
+        />
+
         <ResourceUsageHistory resourceId={resourceId} data-cy="resource-usage-history" />
       </div>
 
