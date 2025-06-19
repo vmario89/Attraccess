@@ -156,24 +156,52 @@ export class ResourcesService {
 
     if (onlyWithPermissionForUserId !== undefined) {
       queryBuilder.leftJoin('resource.introducers', 'introducer');
+
       queryBuilder.leftJoin('resource.introductions', 'introduction');
-      queryBuilder.leftJoin('introduction.history', 'introductionHistory');
+      queryBuilder.leftJoin('introduction.history', 'resourceIntroductionHistory');
       queryBuilder.leftJoin(
         'introduction.history',
-        'laterHistory',
-        'laterHistory.introductionId = introductionHistory.introductionId \
-         AND laterHistory.createdAt > introductionHistory.createdAt'
+        'laterResourceIntroductionHistory',
+        'laterResourceIntroductionHistory.introductionId = resourceIntroductionHistory.introductionId \
+         AND laterResourceIntroductionHistory.createdAt > resourceIntroductionHistory.createdAt'
+      );
+
+      queryBuilder.leftJoin('resource.groups', 'resourceGroup');
+      queryBuilder.leftJoin('resourceGroup.introducers', 'groupIntroducer');
+      queryBuilder.leftJoin('resourceGroup.introductions', 'groupIntroduction');
+      queryBuilder.leftJoin('groupIntroduction.history', 'groupIntroductionHistory');
+      queryBuilder.leftJoin(
+        'groupIntroduction.history',
+        'laterGroupIntroductionHistory',
+        'laterGroupIntroductionHistory.introductionId = groupIntroductionHistory.introductionId \
+         AND laterGroupIntroductionHistory.createdAt > groupIntroductionHistory.createdAt'
       );
 
       queryBuilder.andWhere(
         new Brackets((resourceQb) => {
+          // Direct resource introducers
           resourceQb.where('introducer.userId = :userId', { userId: onlyWithPermissionForUserId });
+
+          // Group introducers
+          resourceQb.orWhere('groupIntroducer.userId = :userId', { userId: onlyWithPermissionForUserId });
+
+          // Direct resource introductions (users who received introduction to specific resource)
           resourceQb.orWhere(
             new Brackets((introductionQb) => {
               introductionQb
                 .where('introduction.receiverUserId = :userId', { userId: onlyWithPermissionForUserId })
-                .andWhere('introductionHistory.action = :action', { action: 'grant' })
-                .andWhere('laterHistory.id IS NULL');
+                .andWhere('resourceIntroductionHistory.action = :action', { action: 'grant' })
+                .andWhere('laterResourceIntroductionHistory.id IS NULL');
+            })
+          );
+
+          // Group introductions (users who received introduction to resource group)
+          resourceQb.orWhere(
+            new Brackets((groupIntroductionQb) => {
+              groupIntroductionQb
+                .where('groupIntroduction.receiverUserId = :userId', { userId: onlyWithPermissionForUserId })
+                .andWhere('groupIntroductionHistory.action = :action', { action: 'grant' })
+                .andWhere('laterGroupIntroductionHistory.id IS NULL');
             })
           );
         })
