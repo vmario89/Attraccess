@@ -51,8 +51,6 @@ export function SSOLinkingRequiredModal(props: Props) {
 
   const { mutate: linkMutation, isPending: linkingIsLoading } = useAuthenticationServiceLinkUserToExternalAccount({
     onSuccess: () => {
-      console.log('redirecting to', callbackURL);
-      alert('redirecting');
       window.location.href = callbackURL;
     },
   });
