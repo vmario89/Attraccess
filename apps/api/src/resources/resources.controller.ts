@@ -98,6 +98,21 @@ export class ResourcesController {
     return resources;
   }
 
+  @Get('in-use')
+  @ApiOperation({ summary: 'Get all resources in use', operationId: 'getAllResourcesInUse' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of resources in use.',
+    type: [Resource],
+  })
+  async getAllInUse(): Promise<Resource[]> {
+    const resources = await this.resourcesService.listResources({
+      onlyInUse: true,
+      returnUsingUser: true,
+    });
+    return resources.data.map((resource) => this.transformResource(resource));
+  }
+
   @Get(':id')
   @Auth()
   @ApiOperation({ summary: 'Get a resource by ID', operationId: 'getOneResourceById' })

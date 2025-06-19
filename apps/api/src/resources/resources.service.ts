@@ -126,12 +126,23 @@ export class ResourcesService {
     ids?: number[] | number;
     onlyInUseByUserId?: number;
     onlyWithPermissionForUserId?: number;
+    onlyInUse?: boolean;
+    returnUsingUser?: boolean;
   }): Promise<PaginatedResponse<Resource>> {
     if (!options) {
       options = {};
     }
 
-    const { page = 1, limit = 10, search, groupId, onlyInUseByUserId, onlyWithPermissionForUserId } = options;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      groupId,
+      onlyInUseByUserId,
+      onlyWithPermissionForUserId,
+      onlyInUse,
+      returnUsingUser,
+    } = options;
 
     let ids = options.ids;
     if (typeof ids === 'number') {
@@ -144,8 +155,23 @@ export class ResourcesService {
       .leftJoinAndSelect('resource.groups', 'groups')
       .orderBy('resource.createdAt', 'DESC');
 
+    if (onlyInUse || onlyInUseByUserId !== undefined || returnUsingUser) {
+      if (returnUsingUser) {
+        queryBuilder.leftJoinAndSelect('resource.usages', 'usage');
+      } else {
+        queryBuilder.leftJoin('resource.usages', 'usage', 'usage.endTime IS NULL');
+      }
+    }
+
+    if (returnUsingUser) {
+      queryBuilder.leftJoinAndSelect('usage.user', 'usingUser');
+    }
+
+    if (onlyInUse) {
+      queryBuilder.andWhere('usage.endTime IS NULL').andWhere('usage.startTime IS NOT NULL');
+    }
+
     if (onlyInUseByUserId !== undefined) {
-      queryBuilder.leftJoin('resource.usages', 'usage');
       queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('usage.userId = :userId', { userId: onlyInUseByUserId });
