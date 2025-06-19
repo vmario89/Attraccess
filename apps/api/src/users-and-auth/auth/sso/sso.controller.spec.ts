@@ -7,6 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
+import { UsersService } from '../../users/users.service';
 
 describe('SsoController', () => {
   let controller: SSOController;
@@ -37,20 +38,22 @@ describe('SsoController', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
+          provide: AuthService,
+          useValue: {},
+        },
+        {
           provide: SSOService,
           useValue: {
             getAllProviders: jest.fn().mockResolvedValue([mockSSOProvider]),
             getProviderById: jest.fn().mockResolvedValue(mockSSOProvider),
-            getProviderByTypeAndIdWithConfiguration: jest
-              .fn()
-              .mockResolvedValue(mockSSOProvider),
+            getProviderByTypeAndIdWithConfiguration: jest.fn().mockResolvedValue(mockSSOProvider),
             createProvider: jest.fn().mockResolvedValue(mockSSOProvider),
             updateProvider: jest.fn().mockResolvedValue(mockSSOProvider),
             deleteProvider: jest.fn().mockResolvedValue(undefined),
           },
         },
         {
-          provide: AuthService,
+          provide: UsersService,
           useValue: {},
         },
         {
@@ -94,12 +97,8 @@ describe('SsoController', () => {
     });
 
     it('should throw NotFoundException if provider not found', async () => {
-      jest
-        .spyOn(ssoService, 'getProviderById')
-        .mockRejectedValueOnce(new NotFoundException());
-      await expect(controller.getOneById('999')).rejects.toThrow(
-        NotFoundException
-      );
+      jest.spyOn(ssoService, 'getProviderById').mockRejectedValueOnce(new NotFoundException());
+      await expect(controller.getOneById('999')).rejects.toThrow(NotFoundException);
     });
   });
 

@@ -2,19 +2,12 @@ import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { Button, Divider, Link } from '@heroui/react';
 import * as de from './ssoLogin.de.json';
 import * as en from './ssoLogin.en.json';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuthenticationServiceGetAllSsoProviders, SSOProvider } from '@attraccess/react-query-client';
-import { getBaseUrl } from '../../api';
 import { useAuth } from '../../hooks/useAuth';
-
-function useCallbackURL(providerId: number, providerType: SSOProvider['type']) {
-  return useMemo(() => {
-    const apiBaseUrl = getBaseUrl();
-    const encodedCallbackURL = encodeURIComponent(window.location.href);
-    return `${apiBaseUrl}/api/auth/sso/${providerType}/${providerId}/login?redirectTo=${encodedCallbackURL}`;
-  }, [providerId, providerType]);
-}
+import { SSOLinkingRequiredModal } from './ssoLinkingRequiredModal';
+import { useCallbackURL } from './use-sso-callback-url';
 
 interface SSOLoginButtonProps {
   provider: SSOProvider;
@@ -41,32 +34,40 @@ export function SSOLogin() {
   const location = useLocation();
   const { jwtTokenLoginMutate } = useAuth();
 
-  const [didExecuteSSOCallback, setDidExecuteSSOCallback] = useState(false);
+  const didExecuteSSOCallback = useRef(false);
 
   const query = useMemo(() => {
     return new URLSearchParams(location.search);
   }, [location]);
 
-  const callSSOCallback = useCallback(async () => {
-    if (didExecuteSSOCallback) {
-      return;
-    }
-
-    setDidExecuteSSOCallback(true);
-
+  const authFromQuery = useMemo(() => {
     const authString = query.get('auth');
+
     if (!authString) {
+      return null;
+    }
+
+    return JSON.parse(authString);
+  }, [query]);
+
+  const handleSSOAuthSuccessCallback = useCallback(async () => {
+    if (didExecuteSSOCallback.current || !authFromQuery) {
       return;
     }
 
-    const auth = JSON.parse(authString);
+    didExecuteSSOCallback.current = true;
 
-    jwtTokenLoginMutate(auth);
-  }, [didExecuteSSOCallback, jwtTokenLoginMutate, query]);
+    console.log('jwt from sso login', authFromQuery);
+    jwtTokenLoginMutate(authFromQuery);
+  }, [jwtTokenLoginMutate, authFromQuery]);
+
+  const ssoLinkingIsRequired = useMemo(() => {
+    return query.get('accountLinking') === 'required';
+  }, [query]);
 
   useEffect(() => {
-    callSSOCallback();
-  }, [callSSOCallback]);
+    handleSSOAuthSuccessCallback();
+  }, [handleSSOAuthSuccessCallback]);
 
   if (providers?.length === 0 || isLoading) {
     return null;
@@ -79,6 +80,7 @@ export function SSOLogin() {
   return (
     <>
       <Divider />
+      <SSOLinkingRequiredModal show={ssoLinkingIsRequired} />
       {providers?.map((provider) => (
         <SSOLoginButton key={provider.id} provider={provider} />
       ))}

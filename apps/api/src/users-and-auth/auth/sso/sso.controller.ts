@@ -11,10 +11,13 @@ import {
   Req,
   UseGuards,
   Res,
+  UnauthorizedException,
+  UseFilters,
+  Logger,
 } from '@nestjs/common';
 import { SSOOIDCGuard } from './oidc/oidc.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { SSOProvider, SSOProviderType } from '@attraccess/database-entities';
+import { AuthenticationType, SSOProvider, SSOProviderType } from '@attraccess/database-entities';
 import { AuthenticatedRequest, Auth } from '@attraccess/plugins-backend-sdk';
 import { CreateSessionResponse } from '../auth.types';
 import { AuthService } from '../auth.service';
@@ -23,11 +26,20 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from 
 import { CreateSSOProviderDto } from './dto/create-sso-provider.dto';
 import { UpdateSSOProviderDto } from './dto/update-sso-provider.dto';
 import { Response } from 'express';
+import { LinkUserToExternalAccountRequestDto } from './dto/link-user-to-external-account-request.dto';
+import { UsersService } from '../../users/users.service';
+import { AccountLinkingExceptionFilter } from './oidc/account-linking.exception-filter';
 
 @ApiTags('Authentication')
 @Controller('auth/sso')
 export class SSOController {
-  constructor(private readonly authService: AuthService, private readonly ssoService: SSOService) {}
+  private readonly logger = new Logger(SSOController.name);
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly ssoService: SSOService
+  ) {}
 
   @Get('providers')
   @ApiOperation({ summary: 'Get all SSO providers', operationId: 'getAllSSOProviders' })
@@ -39,6 +51,44 @@ export class SSOController {
   })
   async getAll(): Promise<SSOProvider[]> {
     return this.ssoService.getAllProviders();
+  }
+
+  @Post('/link-account')
+  @ApiOperation({ summary: 'Link an account to an external identifier', operationId: 'linkUserToExternalAccount' })
+  @ApiResponse({
+    status: 200,
+    description: 'The account has been linked to the external identifier',
+    schema: {
+      type: 'object',
+      properties: {
+        OK: {
+          type: 'boolean',
+          description: 'Whether the account has been linked to the external identifier',
+        },
+      },
+    },
+  })
+  public async linkUserToExternalAccount(@Body() body: LinkUserToExternalAccountRequestDto): Promise<{ OK: boolean }> {
+    const user = await this.usersService.findOne({ email: body.email });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const isAuthenticated = await this.authService.validateAuthenticationDetails(user.id, {
+      type: AuthenticationType.LOCAL_PASSWORD,
+      details: {
+        password: body.password,
+      },
+    });
+
+    if (!isAuthenticated) {
+      throw new UnauthorizedException();
+    }
+
+    await this.usersService.updateOne(user.id, { externalIdentifier: body.externalId });
+
+    return { OK: true };
   }
 
   @Get('providers/:id')
@@ -195,6 +245,7 @@ export class SSOController {
     required: true,
   })
   @UseGuards(SSOOIDCGuard, AuthGuard('sso-oidc'))
+  @UseFilters(AccountLinkingExceptionFilter)
   async oidcLoginCallback(
     @Req() request: AuthenticatedRequest,
     @Query('redirectTo') redirectTo: string,
@@ -208,7 +259,13 @@ export class SSOController {
 
     if (redirectTo) {
       const urlWithAuth = new URL(redirectTo);
+      urlWithAuth.searchParams.delete('accountLinking');
+      urlWithAuth.searchParams.delete('email');
+      urlWithAuth.searchParams.delete('externalId');
+      urlWithAuth.searchParams.delete('ssoProviderId');
+      urlWithAuth.searchParams.delete('ssoProviderType');
       urlWithAuth.searchParams.set('auth', JSON.stringify(auth));
+      this.logger.debug('Redirecting to', urlWithAuth.toString());
       return response.redirect(urlWithAuth.toString());
     }
 

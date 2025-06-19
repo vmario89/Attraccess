@@ -67,6 +67,10 @@ export type User = {
      * When the user was last updated
      */
     updatedAt: string;
+    /**
+     * The external (origin) identifier of the user, if the user is authenticated via SSO
+     */
+    externalIdentifier?: string | null;
 };
 
 export type VerifyEmailDto = {
@@ -230,6 +234,21 @@ export type SSOProvider = {
      * The OIDC configuration of the provider
      */
     oidcConfiguration: SSOProviderOIDCConfiguration;
+};
+
+export type LinkUserToExternalAccountRequestDto = {
+    /**
+     * The email of the user
+     */
+    email: string;
+    /**
+     * The password of the user
+     */
+    password: string;
+    /**
+     * The external identifier of the user
+     */
+    externalId: string;
 };
 
 export type CreateOIDCConfigurationDto = {
@@ -1717,6 +1736,17 @@ export type CreateOneSsoProviderData = {
 
 export type CreateOneSsoProviderResponse = SSOProvider;
 
+export type LinkUserToExternalAccountData = {
+    requestBody: LinkUserToExternalAccountRequestDto;
+};
+
+export type LinkUserToExternalAccountResponse = {
+    /**
+     * Whether the account has been linked to the external identifier
+     */
+    OK?: boolean;
+};
+
 export type GetOneSsoProviderByIdData = {
     /**
      * The ID of the SSO provider
@@ -2677,6 +2707,22 @@ export type $OpenApiTs = {
                  * Forbidden - Insufficient permissions
                  */
                 403: unknown;
+            };
+        };
+    };
+    '/api/auth/sso/link-account': {
+        post: {
+            req: LinkUserToExternalAccountData;
+            res: {
+                /**
+                 * The account has been linked to the external identifier
+                 */
+                200: {
+                    /**
+                     * Whether the account has been linked to the external identifier
+                     */
+                    OK?: boolean;
+                };
             };
         };
     };

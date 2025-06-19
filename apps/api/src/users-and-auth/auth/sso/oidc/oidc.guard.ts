@@ -15,10 +15,14 @@ import {
 export class SSOOIDCGuard implements CanActivate {
   private readonly logger = new Logger(SSOOIDCGuard.name);
 
-  public constructor(private ssoService: SSOService, private moduleRef: ModuleRef, private configService: ConfigService) {}
+  public constructor(
+    private ssoService: SSOService,
+    private moduleRef: ModuleRef,
+    private configService: ConfigService
+  ) {}
 
   async canActivate(context: ExecutionContext) {
-    this.logger.log('OIDC Guard activation attempted');
+    this.logger.debug('OIDC Guard activation attempted');
     const req = context.switchToHttp().getRequest();
 
     this.logger.debug(`Request URL: ${req.url}`);
@@ -26,7 +30,7 @@ export class SSOOIDCGuard implements CanActivate {
     if (!appConfig) {
       this.logger.error("App configuration ('app') not found. Cannot construct URLs.");
       // Consider throwing an InternalServerErrorException for clearer error handling upstream
-      return false; 
+      return false;
     }
     const requestURL = new URL(appConfig.FRONTEND_URL + req.url);
 
@@ -68,7 +72,7 @@ export class SSOOIDCGuard implements CanActivate {
 
     const redirectTo = requestURL.searchParams.get('redirectTo');
 
-    const callbackURL = new URL(appConfig.FRONTEND_URL);
+    const callbackURL = new URL(appConfig.VITE_ATTRACCESS_URL);
     callbackURL.pathname = `/api/auth/sso/${ssoType}/${providerId}/callback`;
     callbackURL.searchParams.set('redirectTo', redirectTo);
 
@@ -78,7 +82,7 @@ export class SSOOIDCGuard implements CanActivate {
       `Initializing SSOOIDCStrategy for ${routeAction} with provider id: ${providerId} and callbackURL: ${callbackURL}`
     );
     new SSOOIDCStrategy(this.moduleRef, oidcConfig, callbackURL.toString());
-    this.logger.log(`OIDC Guard activation for ${routeAction} successful`);
+    this.logger.debug(`OIDC Guard activation for ${routeAction} successful`);
     return true;
   }
 }

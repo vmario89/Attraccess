@@ -7,53 +7,18 @@ import {
   useAuthenticationServiceCreateSession,
   useAuthenticationServiceEndSession,
   useAuthenticationServiceRefreshSession,
+  useAuthenticationServiceRefreshSessionKey,
   useUsersServiceGetCurrent,
-  useUsersServiceGetCurrentKey,
 } from '@attraccess/react-query-client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface LoginCredentials {
   username: string;
   password: string;
 }
 
-export function useAuth() {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  const { data: currentUser, error: currentUserError } = useUsersServiceGetCurrent(undefined, {
-    refetchInterval: 1000 * 60 * 20, // 20 minutes
-    retry: false,
-  });
-
-  useEffect(() => {
-    if (currentUser || currentUserError) {
-      setIsInitialized(true);
-    }
-  }, [currentUser, currentUserError]);
-
-  const { mutate: jwtTokenLoginMutate } = useMutation({
-    mutationFn: async (data: { auth: CreateSessionResponse | null }) => {
-      const { auth } = data;
-      // Store the auth data in the appropriate storage
-      if (!auth) {
-        localStorage.removeItem('auth');
-        sessionStorage.removeItem('auth');
-        OpenAPI.TOKEN = '';
-        return null;
-      }
-
-      localStorage.setItem('auth', JSON.stringify(auth));
-
-      OpenAPI.TOKEN = auth.authToken;
-      return auth;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [useUsersServiceGetCurrentKey] });
-    },
-  });
+export function usePersistedAuth() {
+  const { jwtTokenLoginMutate } = useAuth();
 
   const loadExistingAuth = useCallback(async () => {
     let auth: CreateSessionResponse | null = null;
@@ -78,25 +43,119 @@ export function useAuth() {
         auth = authFromAnySource;
       }
 
-      jwtTokenLoginMutate({ auth });
+      console.log('jwt from persisted auth', auth);
+      jwtTokenLoginMutate(auth);
     } catch (e) {
       console.error('Error parsing persisted auth:', e);
     }
   }, [jwtTokenLoginMutate]);
 
+  const didLoadExistingAuth = useRef(false);
+
   useEffect(() => {
+    if (didLoadExistingAuth.current) {
+      return;
+    }
+
+    didLoadExistingAuth.current = true;
+    console.log('loading existing auth');
     loadExistingAuth();
   }, [loadExistingAuth]);
+}
 
-  const { mutate: createSessionMutate, data: session } = useAuthenticationServiceCreateSession({
+export function useRefreshSession() {
+  const { isInitialized, jwtTokenLoginMutate } = useAuth();
+  const { data: refreshedSession } = useAuthenticationServiceRefreshSession(undefined, {
+    refetchInterval: 1000 * 60 * 20, // 20 minutes,
+    enabled: isInitialized,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const lastRefreshedSessionToken = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!refreshedSession) {
+      return;
+    }
+
+    if (lastRefreshedSessionToken.current === refreshedSession.authToken) {
+      return;
+    }
+    lastRefreshedSessionToken.current = refreshedSession.authToken;
+
+    console.log('jwt from refreshed session', refreshedSession);
+    jwtTokenLoginMutate(refreshedSession);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshedSession]);
+}
+
+export function useLogin() {
+  const { jwtTokenLoginMutate } = useAuth();
+
+  const login = useAuthenticationServiceCreateSession({
     onSuccess: (data) => {
-      jwtTokenLoginMutate({ auth: data });
+      jwtTokenLoginMutate(data);
     },
   });
 
-  const login = useMutation({
-    mutationFn: async ({ username, password }: LoginCredentials) => {
-      createSessionMutate({ requestBody: { username, password } });
+  return {
+    ...login,
+    mutate: async (data: LoginCredentials) => {
+      return login.mutate({ requestBody: { username: data.username, password: data.password } });
+    },
+    mutateAsync: async (data: { username: string; password: string }) => {
+      return login.mutateAsync({ requestBody: { username: data.username, password: data.password } });
+    },
+  };
+}
+
+export function useAuth() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const { data: currentUser, error: currentUserError } = useUsersServiceGetCurrent(undefined, {
+    refetchInterval: 1000 * 60 * 20, // 20 minutes
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (currentUser || currentUserError) {
+      setIsInitialized(true);
+    }
+  }, [currentUser, currentUserError]);
+
+  const { mutate: jwtTokenLoginMutate } = useMutation({
+    mutationFn: async (auth: CreateSessionResponse) => {
+      // Store the auth data in the appropriate storage
+      if (!auth) {
+        console.error('[jwtTokenLoginMutate] auth is null');
+        throw new Error('Auth is null');
+      }
+
+      console.log('[jwtTokenLoginMutate] setting auth', auth);
+      localStorage.setItem('auth', JSON.stringify(auth));
+
+      console.log('[jwtTokenLoginMutate] setting token for api', auth.authToken);
+      OpenAPI.TOKEN = auth.authToken;
+
+      setIsInitialized(true);
+
+      return auth;
+    },
+    onSuccess: () => {
+      setTimeout(() => {
+        console.log('[jwtTokenLoginMutate] invalidating queries');
+        // Invalidate all queries except the refresh session query to prevent infinite loop
+        queryClient.invalidateQueries({
+          predicate: (query) => {
+            // Don't invalidate the refresh session query
+            return !query.queryKey.includes(useAuthenticationServiceRefreshSessionKey);
+          },
+        });
+      }, 1000);
     },
   });
 
@@ -116,25 +175,10 @@ export function useAuth() {
     deleteSession();
   }, [deleteSession]);
 
-  const { data: refreshedSession } = useAuthenticationServiceRefreshSession(undefined, {
-    refetchInterval: 1000 * 60 * 20, // 20 minutes,
-    enabled: !!currentUser && isInitialized,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    if (refreshedSession) {
-      jwtTokenLoginMutate({ auth: refreshedSession });
-    }
-  }, [refreshedSession, jwtTokenLoginMutate]);
-
   return {
-    session,
     user: currentUser ?? null,
     isAuthenticated: !!currentUser,
     isInitialized,
-    login,
     jwtTokenLoginMutate,
     logout,
     hasPermission: (permission: keyof SystemPermissions) => {

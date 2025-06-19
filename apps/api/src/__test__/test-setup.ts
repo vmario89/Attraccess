@@ -50,13 +50,14 @@ export class TestSetup {
   }
 
   async createUser(username: string, permissions?: User['systemPermissions']) {
-    let user = await TestSetup.usersService.createOne(
-      `${username}-${this.testInstanceIdentifier}`,
-      `${username}-${this.testInstanceIdentifier}@attraccess.org`
-    );
+    let user = await TestSetup.usersService.createOne({
+      username: `${username}-${this.testInstanceIdentifier}`,
+      email: `${username}-${this.testInstanceIdentifier}@attraccess.org`,
+      externalIdentifier: null,
+    });
 
     if (permissions) {
-      user = await TestSetup.usersService.updateUser(user.id, {
+      user = await TestSetup.usersService.updateOne(user.id, {
         systemPermissions: permissions,
       });
     }
