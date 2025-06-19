@@ -76,10 +76,11 @@ export class ResourcesController {
     let onlyWithPermissionForUserId: number | undefined;
 
     if (!req.user.systemPermissions.canManageResources) {
-      if (query.onlyWithPermissions !== undefined) {
+      if (query.onlyWithPermissions === true) {
         onlyWithPermissionForUserId = req.user.id;
       }
     }
+
     const resources = await this.resourcesService.listResources({
       page: query.page,
       limit: query.limit,
