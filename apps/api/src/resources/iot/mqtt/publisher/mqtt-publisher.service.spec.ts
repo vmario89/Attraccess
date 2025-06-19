@@ -588,8 +588,8 @@ describe('MqttPublisherService', () => {
         expect.objectContaining({
           id: 1,
           name: 'Test Resource',
-          user: { id: 1, username: 'testuser' },
-          previousUser: { id: 2, username: 'previoususer' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
+          previousUser: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
 

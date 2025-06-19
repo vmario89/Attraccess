@@ -77,6 +77,7 @@ export function MqttConfigList({ resourceId }: MqttConfigListProps) {
         name: resource?.name ?? '--name of the resource--',
         'user.username': user?.username ?? '--username of the user--',
         'user.id': user?.id ?? 0,
+        'user.externalIdentifier': user?.externalIdentifier ?? '--external identifier--',
         timestamp: new Date().toISOString(),
       };
 

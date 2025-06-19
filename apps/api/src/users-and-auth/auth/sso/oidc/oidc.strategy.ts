@@ -53,8 +53,6 @@ export class SSOOIDCStrategy extends PassportStrategy(Strategy, 'sso-oidc') {
       return user;
     }
 
-    // TODO: handle edge case where user exists but has no auth details (was created with sso before we implemented this linking feature)
-
     // Step 2: No user found by external ID, check by email
     const email = emails[0].value;
     this.logger.debug(`Checking if user exists with email: ${email}`);

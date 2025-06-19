@@ -37,12 +37,12 @@ const defaultTemplates = {
   inUse: {
     topic: 'resources/{{id}}/status',
     message:
-      '{"status": "in-use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": "{{user.username}}"}',
+      '{"status": "in-use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": {"username": "{{user.username}}", "externalIdentifier": "{{user.externalIdentifier}}"}}',
   },
   notInUse: {
     topic: 'resources/{{id}}/status',
     message:
-      '{"status": "available", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": "{{user.username}}"}',
+      '{"status": "available", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": {"username": "{{user.username}}", "externalIdentifier": "{{user.externalIdentifier}}"}}',
   },
 };
 type MqttConfigFormValues = Omit<MqttResourceConfig, 'id' | 'createdAt' | 'updatedAt' | 'resourceId'>;
@@ -59,7 +59,7 @@ const initialFormValues: MqttConfigFormValues = {
   notInUseMessage: defaultTemplates.notInUse.message,
   takeoverTopic: 'resources/{{id}}/status',
   takeoverMessage:
-    '{"status": "taken_over", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "newUser": "{{user.username}}", "previousUser": "{{previousUser.username}}"}',
+    '{"status": "taken_over", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "newUser": {"username": "{{user.username}}", "externalIdentifier": "{{user.externalIdentifier}}"}, "previousUser": {"username": "{{previousUser.username}}", "externalIdentifier": "{{previousUser.externalIdentifier}}"}}',
 };
 
 interface MqttConfigFormProps {
@@ -97,6 +97,10 @@ function TemplateVariablesHelp() {
             <li>
               <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{'{{user.id}}'}</code> - {t('userIdDesc')}
             </li>
+            <li>
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{'{{user.externalIdentifier}}'}</code> -{' '}
+              {t('userExternalIdentifierDesc')}
+            </li>
           </ul>
         </div>
         <div>
@@ -109,6 +113,10 @@ function TemplateVariablesHelp() {
             <li>
               <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{'{{previousUser.id}}'}</code> -{' '}
               {t('previousUserIdDesc')}
+            </li>
+            <li>
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{'{{previousUser.externalIdentifier}}'}</code>{' '}
+              - {t('previousUserExternalIdentifierDesc')}
             </li>
           </ul>
         </div>

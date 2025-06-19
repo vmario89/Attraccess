@@ -6,8 +6,8 @@ export interface TemplateContext {
   id: Resource['id'];
   name: Resource['name'];
   timestamp: string;
-  user: Pick<User, 'id' | 'username'>;
-  previousUser?: Pick<User, 'id' | 'username'>; // Added for takeover events
+  user: Pick<User, 'id' | 'username' | 'externalIdentifier'>;
+  previousUser?: Pick<User, 'id' | 'username' | 'externalIdentifier'>; // Added for takeover events
 }
 
 @Injectable()
@@ -30,11 +30,13 @@ export class IotService {
       user: {
         id: context.user.id,
         username: context.user.username,
+        externalIdentifier: context.user.externalIdentifier,
       },
       previousUser: context.previousUser
         ? {
             id: context.previousUser.id,
             username: context.previousUser.username,
+            externalIdentifier: context.previousUser.externalIdentifier,
           }
         : undefined,
     });

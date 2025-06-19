@@ -24,6 +24,7 @@ describe('IotService', () => {
       user: {
         id: 456,
         username: 'testuser',
+        externalIdentifier: null,
       },
     };
 
@@ -119,6 +120,7 @@ describe('IotService', () => {
         user: {
           id: 456,
           username: 'test@user.com',
+          externalIdentifier: null,
         },
       };
       const template = 'User: {{user.username}}';
@@ -153,14 +155,14 @@ describe('IotService', () => {
         id: 1,
         name: 'First Resource',
         timestamp: '2023-12-01T10:00:00.000Z',
-        user: { id: 100, username: 'user1' },
+        user: { id: 100, username: 'user1', externalIdentifier: null },
       };
 
       const context2: TemplateContext = {
         id: 2,
         name: 'Second Resource',
         timestamp: '2023-12-01T11:00:00.000Z',
-        user: { id: 200, username: 'user2' },
+        user: { id: 200, username: 'user2', externalIdentifier: null },
       };
 
       const result1 = service.processTemplate(template, context1);

@@ -31,9 +31,8 @@ export interface WebhookFormValues {
 // Example templates
 export const exampleTemplates = {
   inUse:
-    '{"status": "in_use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": "{{user.username}}"}',
-  notInUse:
-    '{"status": "not_in_use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}"}',
+    '{"status": "in_use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "user": {"username": "{{user.username}}", "externalIdentifier": "{{user.externalIdentifier}}"}}',
+  notInUse: '{"status": "not_in_use", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}"}',
 };
 
 // Default form values
@@ -44,7 +43,8 @@ export const defaultFormValues: WebhookFormValues = {
   headers: '{}',
   inUseTemplate: exampleTemplates.inUse,
   notInUseTemplate: exampleTemplates.notInUse,
-  takeoverTemplate: '{"status": "taken_over", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "newUser": "{{user.username}}", "previousUser": "{{previousUser.username}}"}', // Added
+  takeoverTemplate:
+    '{"status": "taken_over", "resourceId": {{id}}, "resourceName": "{{name}}", "timestamp": "{{timestamp}}", "newUser": {"username": "{{user.username}}", "externalIdentifier": "{{user.externalIdentifier}}"}, "previousUser": {"username": "{{previousUser.username}}", "externalIdentifier": "{{previousUser.externalIdentifier}}"}}', // Added
   active: true,
   sendOnStart: true, // Added
   sendOnStop: true, // Added
@@ -70,20 +70,28 @@ export const templateVariables = [
     description: 'Username (if available)',
     example: 'johndoe',
   },
+  {
+    name: 'user.externalIdentifier',
+    description: 'User external identifier (if available)',
+    example: 'john.doe@company.com',
+  },
   { name: 'previousUser.id', description: 'Previous User ID (if available, on takeover)', example: '456' },
   {
     name: 'previousUser.username',
     description: 'Previous Username (if available, on takeover)',
     example: 'janedoe',
   },
+  {
+    name: 'previousUser.externalIdentifier',
+    description: 'Previous User external identifier (if available, on takeover)',
+    example: 'jane.doe@company.com',
+  },
 ];
 
 /**
  * Helper to convert a webhook response to form values
  */
-export const webhookToFormValues = (
-  webhook: WebhookConfigResponseDto
-): WebhookFormValues => {
+export const webhookToFormValues = (webhook: WebhookConfigResponseDto): WebhookFormValues => {
   // Parse headers if it's a string
   let parsedHeaders = '{}';
   if (webhook.headers) {
