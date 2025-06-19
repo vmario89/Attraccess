@@ -12,9 +12,10 @@ const FindOneOptionsSchema = z
     id: z.number(),
     username: z.string().min(1),
     email: z.string().email(),
+    externalIdentifier: z.string().optional(),
   })
   .partial()
-  .refine(({ id, username, email }) => id !== undefined || username !== undefined || email !== undefined, {
+  .refine((data) => Object.values(data).filter((val) => val !== undefined).length > 0, {
     message: 'At least one search criteria must be provided',
   });
 
@@ -41,7 +42,7 @@ export class UsersService {
     private userRepository: Repository<User>
   ) {}
 
-  async findOne(options: FindOneOptions): Promise<User | null> {
+  async findOne(options: FindOneOptions, relations?: string[]): Promise<User | null> {
     const validatedOptions = FindOneOptionsSchema.parse(options);
 
     // Build a where condition that uses case-insensitive comparison for username
@@ -59,35 +60,41 @@ export class UsersService {
       whereCondition.email = validatedOptions.email;
     }
 
+    if (validatedOptions.externalIdentifier !== undefined) {
+      whereCondition.externalIdentifier = validatedOptions.externalIdentifier;
+    }
+
     const user = await this.userRepository.findOne({
       where: whereCondition,
+      relations,
     });
 
     return user || null;
   }
 
-  async createOne(username: string, email: string): Promise<User> {
-    this.logger.debug(`Creating new user - username: ${username}, email: ${email}`);
+  async createOne(data: { username: string; email: string; externalIdentifier: string | null }): Promise<User> {
+    this.logger.debug(`Creating new user - username: ${data.username}, email: ${data.email}`);
 
     // Check for existing email
-    this.logger.debug(`Checking if email already exists: ${email}`);
-    const existingEmail = await this.findOne({ email });
+    this.logger.debug(`Checking if email already exists: ${data.email}`);
+    const existingEmail = await this.findOne({ email: data.email });
     if (existingEmail) {
-      this.logger.debug(`Email already exists: ${email}`);
+      this.logger.debug(`Email already exists: ${data.email}`);
       throw new BadRequestException('Email already exists');
     }
 
     // Check for existing username
-    this.logger.debug(`Checking if username already exists: ${username}`);
-    const existingUsername = await this.findOne({ username });
+    this.logger.debug(`Checking if username already exists: ${data.username}`);
+    const existingUsername = await this.findOne({ username: data.username });
     if (existingUsername) {
-      this.logger.debug(`Username already exists: ${username}`);
+      this.logger.debug(`Username already exists: ${data.username}`);
       throw new BadRequestException('Username already exists');
     }
 
     const user = new User();
-    user.username = username;
-    user.email = email;
+    user.username = data.username;
+    user.email = data.email;
+    user.externalIdentifier = data.externalIdentifier;
 
     // Check if this is the first user in the system
     this.logger.debug('Checking if this is the first user in the system');
@@ -118,7 +125,7 @@ export class UsersService {
     this.logger.debug(`User deleted with ID: ${id}`);
   }
 
-  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+  async updateOne(id: number, updates: Partial<User>): Promise<User> {
     this.logger.debug(`Updating user with ID: ${id}, updates: ${JSON.stringify(updates)}`);
 
     // If email is being updated, check for uniqueness

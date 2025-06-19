@@ -1,11 +1,11 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Alert } from '@heroui/alert';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { PasswordInput } from '../../components/PasswordInput';
-import { useAuth } from '../../hooks/useAuth';
+import { useLogin } from '../../hooks/useAuth';
 import * as en from './loginForm.en.json';
 import * as de from './loginForm.de.json';
 
@@ -20,8 +20,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
     de,
   });
 
-  const { login } = useAuth();
-  const [error, setError] = useState<string | null>(null);
+  const { mutate: login, isPending, error } = useLogin();
 
   const handleSubmit: React.FormEventHandler = useCallback(
     async (event) => {
@@ -34,15 +33,10 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
         return;
       }
 
-      try {
-        await login.mutateAsync({
-          username,
-          password,
-        });
-      } catch (err) {
-        const error = err as { error?: { message?: string }; message?: string };
-        setError(error.error?.message || error.message || 'An unexpected error occurred');
-      }
+      login({
+        username,
+        password,
+      });
     },
     [login]
   );
@@ -62,7 +56,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
             onPress={onNeedsAccount}
             variant="light"
             color="secondary"
-            isDisabled={login.isPending}
+            isDisabled={isPending}
             data-cy="login-form-sign-up-button"
           >
             {t('signUpButton')}
@@ -78,7 +72,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           label={t('username')}
           variant="underlined"
           required
-          isDisabled={login.isPending}
+          isDisabled={isPending}
           data-cy="login-form-username-input"
         />
         <PasswordInput
@@ -87,7 +81,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           label={t('password')}
           variant="underlined"
           required
-          isDisabled={login.isPending}
+          isDisabled={isPending}
           data-cy="login-form-password-input"
         />
         <div className="flex items-center justify-between">
@@ -95,7 +89,7 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
             onPress={onForgotPassword}
             variant="light"
             color="secondary"
-            isDisabled={login.isPending}
+            isDisabled={isPending}
             data-cy="login-form-forgot-password-button"
           >
             {t('forgotPassword')}
@@ -106,15 +100,20 @@ export function LoginForm({ onNeedsAccount, onForgotPassword }: LoginFormProps) 
           fullWidth
           color="primary"
           endContent={memoizedArrowRight}
-          isLoading={login.isPending}
-          isDisabled={login.isPending}
+          isLoading={isPending}
+          isDisabled={isPending}
           data-cy="login-form-sign-in-button"
         >
-          {login.isPending ? t('signingIn') : t('signInButton')}
+          {isPending ? t('signingIn') : t('signInButton')}
         </Button>
 
-        {error && (
-          <Alert color="danger" title={t('error.title')} description={error} data-cy="login-form-error-alert" />
+        {(error as Error) && (
+          <Alert
+            color="danger"
+            title={t('error.title')}
+            description={(error as Error).message}
+            data-cy="login-form-error-alert"
+          />
         )}
       </form>
     </>

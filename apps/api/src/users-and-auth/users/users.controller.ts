@@ -72,7 +72,11 @@ export class UsersController {
   async createOne(@Body() body: CreateUserDto): Promise<User> {
     this.logger.debug(`Creating new user with username: ${body.username} and email: ${body.email}`);
 
-    const user = await this.usersService.createOne(body.username, body.email);
+    const user = await this.usersService.createOne({
+      username: body.username,
+      email: body.email,
+      externalIdentifier: null,
+    });
     this.logger.debug(`User created with ID: ${user.id}`);
 
     let authenticationDetails: AuthenticationDetail | null = null;
@@ -192,7 +196,7 @@ export class UsersController {
 
     await this.authService.changePassword(user, body.password);
 
-    await this.usersService.updateUser(userId, {
+    await this.usersService.updateOne(userId, {
       passwordResetToken: null,
       passwordResetTokenExpiresAt: null,
     });
@@ -342,7 +346,7 @@ export class UsersController {
     this.logger.debug(`Applying permission updates for user ID: ${id}: ${JSON.stringify(updates.systemPermissions)}`);
 
     // Update the user
-    const updatedUser = await this.usersService.updateUser(id, updates);
+    const updatedUser = await this.usersService.updateOne(id, updates);
     this.logger.debug(`Successfully updated permissions for user ID: ${id}`);
 
     return updatedUser;
@@ -417,7 +421,7 @@ export class UsersController {
         );
 
         // Update the user
-        const updatedUser = await this.usersService.updateUser(update.userId, updates);
+        const updatedUser = await this.usersService.updateOne(update.userId, updates);
         this.logger.debug(`Successfully updated permissions for user ID: ${update.userId}`);
 
         updatedUsers.push(updatedUser);

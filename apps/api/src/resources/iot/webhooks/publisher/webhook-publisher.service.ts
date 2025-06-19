@@ -274,7 +274,7 @@ export class WebhookPublisherService {
         id: resource.id,
         name: resource.name,
         timestamp: new Date().toISOString(),
-        user: { id: 0, username: 'webhook-test' },
+        user: { id: 0, username: 'webhook-test', externalIdentifier: null },
       };
 
       // Process template
@@ -377,11 +377,13 @@ export class WebhookPublisherService {
       user: {
         id: data.newUser.id,
         username: data.newUser.username,
+        externalIdentifier: data.newUser.externalIdentifier,
       },
       previousUser: data.oldUser
         ? {
             id: data.oldUser.id,
             username: data.oldUser.username,
+            externalIdentifier: data.oldUser.externalIdentifier,
           }
         : null,
     };
@@ -462,6 +464,7 @@ export class WebhookPublisherService {
       user: {
         id: data.user.id,
         username: data.user.username,
+        externalIdentifier: data.user.externalIdentifier,
       },
     };
 
@@ -544,6 +547,7 @@ export class WebhookPublisherService {
       user: {
         id: data.user.id,
         username: data.user.username,
+        externalIdentifier: data.user.externalIdentifier,
       },
     };
 

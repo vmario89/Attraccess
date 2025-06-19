@@ -119,4 +119,13 @@ export class User {
     onDelete: 'CASCADE',
   })
   resourceIntroducerPermissions!: ResourceIntroducer[];
+
+  @Column({ type: 'text', nullable: true })
+  @ApiProperty({
+    description: 'The external (origin) identifier of the user, if the user is authenticated via SSO',
+    example: '1234567890',
+    nullable: true,
+    required: false,
+  })
+  externalIdentifier!: string | null;
 }

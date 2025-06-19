@@ -26,6 +26,7 @@ describe('MqttPublisherService', () => {
     id: 1,
     username: 'testuser',
     email: 'test@example.com',
+    externalIdentifier: null,
     isEmailVerified: true,
     emailVerificationToken: null,
     emailVerificationTokenExpiresAt: null,
@@ -48,6 +49,7 @@ describe('MqttPublisherService', () => {
     id: 2,
     username: 'previoususer',
     email: 'previous@example.com',
+    externalIdentifier: null,
     isEmailVerified: true,
     emailVerificationToken: null,
     emailVerificationTokenExpiresAt: null,
@@ -586,8 +588,8 @@ describe('MqttPublisherService', () => {
         expect.objectContaining({
           id: 1,
           name: 'Test Resource',
-          user: { id: 1, username: 'testuser' },
-          previousUser: { id: 2, username: 'previoususer' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
+          previousUser: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
 

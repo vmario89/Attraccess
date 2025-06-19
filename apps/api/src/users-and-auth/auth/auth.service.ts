@@ -177,7 +177,7 @@ export class AuthService {
   async generateEmailVerificationToken(user: User): Promise<string> {
     const token = nanoid();
 
-    await this.usersService.updateUser(user.id, {
+    await this.usersService.updateOne(user.id, {
       emailVerificationToken: token,
       emailVerificationTokenExpiresAt: addDays(new Date(), 3),
     });
@@ -205,7 +205,7 @@ export class AuthService {
     }
 
     this.logger.debug(`Marking email as verified for user ID: ${user.id}`);
-    await this.usersService.updateUser(user.id, {
+    await this.usersService.updateOne(user.id, {
       isEmailVerified: true,
       emailVerificationToken: null,
       emailVerificationTokenExpiresAt: null,
@@ -221,7 +221,7 @@ export class AuthService {
     }
 
     const token = nanoid();
-    await this.usersService.updateUser(user.id, {
+    await this.usersService.updateOne(user.id, {
       passwordResetToken: token,
       passwordResetTokenExpiresAt: addDays(new Date(), 1),
     });

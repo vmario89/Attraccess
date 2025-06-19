@@ -90,6 +90,12 @@ export const $User = {
             format: 'date-time',
             type: 'string',
             description: 'When the user was last updated'
+        },
+        externalIdentifier: {
+            type: 'string',
+            description: 'The external (origin) identifier of the user, if the user is authenticated via SSO',
+            example: '1234567890',
+            nullable: true
         }
     },
     required: ['id', 'username', 'isEmailVerified', 'systemPermissions', 'createdAt', 'updatedAt']
@@ -358,6 +364,28 @@ export const $SSOProvider = {
         }
     },
     required: ['id', 'name', 'type', 'createdAt', 'updatedAt', 'oidcConfiguration']
+} as const;
+
+export const $LinkUserToExternalAccountRequestDto = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+            description: 'The email of the user',
+            example: 'john.doe@example.com'
+        },
+        password: {
+            type: 'string',
+            description: 'The password of the user',
+            example: 'password'
+        },
+        externalId: {
+            type: 'string',
+            description: 'The external identifier of the user',
+            example: '1234567890'
+        }
+    },
+    required: ['email', 'password', 'externalId']
 } as const;
 
 export const $CreateOIDCConfigurationDto = {

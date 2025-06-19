@@ -27,6 +27,7 @@ describe('WebhookPublisherService', () => {
     id: 1,
     username: 'testuser',
     email: 'test@example.com',
+    externalIdentifier: null,
     isEmailVerified: true,
     emailVerificationToken: null,
     emailVerificationTokenExpiresAt: null,
@@ -49,6 +50,7 @@ describe('WebhookPublisherService', () => {
     id: 2,
     username: 'previoususer',
     email: 'previous@example.com',
+    externalIdentifier: null,
     isEmailVerified: true,
     emailVerificationToken: null,
     emailVerificationTokenExpiresAt: null,
@@ -181,7 +183,7 @@ describe('WebhookPublisherService', () => {
         expect.objectContaining({
           id: 1,
           name: 'Test Resource',
-          user: { id: 1, username: 'testuser' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
         })
       );
     });
@@ -225,7 +227,7 @@ describe('WebhookPublisherService', () => {
         expect.objectContaining({
           id: 1,
           name: 'Test Resource',
-          user: { id: 1, username: 'testuser' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
         })
       );
     });
@@ -257,22 +259,22 @@ describe('WebhookPublisherService', () => {
         1,
         webhook.notInUseTemplate,
         expect.objectContaining({
-          user: { id: 2, username: 'previoususer' },
+          user: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
       expect(iotService.processTemplate).toHaveBeenNthCalledWith(
         2,
         webhook.takeoverTemplate,
         expect.objectContaining({
-          user: { id: 1, username: 'testuser' },
-          previousUser: { id: 2, username: 'previoususer' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
+          previousUser: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
       expect(iotService.processTemplate).toHaveBeenNthCalledWith(
         3,
         webhook.inUseTemplate,
         expect.objectContaining({
-          user: { id: 1, username: 'testuser' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
         })
       );
     });
@@ -298,8 +300,8 @@ describe('WebhookPublisherService', () => {
       expect(iotService.processTemplate).toHaveBeenCalledWith(
         webhook.takeoverTemplate,
         expect.objectContaining({
-          user: { id: 1, username: 'testuser' },
-          previousUser: { id: 2, username: 'previoususer' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
+          previousUser: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
     });
@@ -325,7 +327,7 @@ describe('WebhookPublisherService', () => {
       expect(iotService.processTemplate).toHaveBeenCalledWith(
         webhook.notInUseTemplate,
         expect.objectContaining({
-          user: { id: 2, username: 'previoususer' },
+          user: { id: 2, username: 'previoususer', externalIdentifier: null },
         })
       );
     });
@@ -351,7 +353,7 @@ describe('WebhookPublisherService', () => {
       expect(iotService.processTemplate).toHaveBeenCalledWith(
         webhook.inUseTemplate,
         expect.objectContaining({
-          user: { id: 1, username: 'testuser' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
         })
       );
     });
@@ -443,7 +445,7 @@ describe('WebhookPublisherService', () => {
       expect(iotService.processTemplate).toHaveBeenCalledWith(
         '{{user.username}}',
         expect.objectContaining({
-          user: { id: 1, username: 'testuser' },
+          user: { id: 1, username: 'testuser', externalIdentifier: null },
         })
       );
     });

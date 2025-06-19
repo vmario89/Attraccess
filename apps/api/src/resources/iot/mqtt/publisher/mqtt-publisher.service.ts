@@ -186,6 +186,7 @@ export class MqttPublisherService {
       user: {
         id: data.user.id,
         username: data.user.username,
+        externalIdentifier: data.user.externalIdentifier,
       },
     };
 
@@ -233,11 +234,13 @@ export class MqttPublisherService {
       user: {
         id: data.nextUser.id,
         username: data.nextUser.username,
+        externalIdentifier: data.nextUser.externalIdentifier,
       },
       previousUser: data.previousUser
         ? {
             id: data.previousUser.id,
             username: data.previousUser.username,
+            externalIdentifier: data.previousUser.externalIdentifier,
           }
         : null,
     };

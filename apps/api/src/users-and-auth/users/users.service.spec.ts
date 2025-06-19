@@ -87,11 +87,12 @@ describe('UsersService', () => {
       });
       jest.spyOn(userRepository, 'count').mockResolvedValue(0);
 
-      const result = await service.createOne('test', 'test@example.com');
+      const result = await service.createOne({ username: 'test', email: 'test@example.com', externalIdentifier: null });
       expect(result).toEqual({
         id: 1,
         username: 'test',
         email: 'test@example.com',
+        externalIdentifier: null,
         systemPermissions: {
           canManageResources: true,
           canManageSystemConfiguration: true,
@@ -115,11 +116,12 @@ describe('UsersService', () => {
       });
       jest.spyOn(userRepository, 'count').mockResolvedValue(1);
 
-      const result = await service.createOne('test', 'test@example.com');
+      const result = await service.createOne({ username: 'test', email: 'test@example.com', externalIdentifier: null });
       expect(result).toEqual({
         id: 1,
         username: 'test',
         email: 'test@example.com',
+        externalIdentifier: null,
         systemPermissions: {
           canManageResources: false,
           canManageSystemConfiguration: false,
@@ -130,7 +132,9 @@ describe('UsersService', () => {
     it('should throw if email already exists', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce({ id: 1 } as User);
 
-      await expect(service.createOne('test', 'existing@example.com')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createOne({ username: 'test', email: 'existing@example.com', externalIdentifier: null })
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if username already exists', async () => {
@@ -139,7 +143,9 @@ describe('UsersService', () => {
         .mockResolvedValueOnce(null) // email check
         .mockResolvedValueOnce({ id: 1 } as User); // username check
 
-      await expect(service.createOne('existing', 'test@example.com')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createOne({ username: 'existing', email: 'test@example.com', externalIdentifier: null })
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -153,7 +159,7 @@ describe('UsersService', () => {
       jest.spyOn(userRepository, 'update').mockResolvedValue({ affected: 1 } as UpdateResult);
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(user);
 
-      const result = await service.updateUser(1, { username: 'updated' });
+      const result = await service.updateOne(1, { username: 'updated' });
       expect(result).toEqual(user);
     });
 
@@ -161,7 +167,7 @@ describe('UsersService', () => {
       const existingUsers = [{ id: 2, email: 'existing@example.com' } as User];
       jest.spyOn(userRepository, 'find').mockResolvedValue(existingUsers);
 
-      await expect(service.updateUser(1, { email: 'existing@example.com' })).rejects.toThrow(BadRequestException);
+      await expect(service.updateOne(1, { email: 'existing@example.com' })).rejects.toThrow(BadRequestException);
     });
 
     it('should allow updating to same email', async () => {
@@ -171,7 +177,7 @@ describe('UsersService', () => {
       jest.spyOn(userRepository, 'update').mockResolvedValue({ affected: 1 } as UpdateResult);
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(user);
 
-      const result = await service.updateUser(1, { email: 'test@example.com' });
+      const result = await service.updateOne(1, { email: 'test@example.com' });
       expect(result).toEqual(user);
     });
 
@@ -179,7 +185,7 @@ describe('UsersService', () => {
       jest.spyOn(userRepository, 'update').mockResolvedValue({ affected: 1 } as UpdateResult);
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.updateUser(1, { username: 'test' })).rejects.toThrow(UserNotFoundException);
+      await expect(service.updateOne(1, { username: 'test' })).rejects.toThrow(UserNotFoundException);
     });
   });
 
@@ -209,6 +215,7 @@ describe('UsersService', () => {
           nfcCards: [],
           authenticationDetails: [],
           resourceIntroducerPermissions: [],
+          externalIdentifier: null,
         } as User,
         {
           id: 2,
@@ -233,6 +240,7 @@ describe('UsersService', () => {
           nfcCards: [],
           authenticationDetails: [],
           resourceIntroducerPermissions: [],
+          externalIdentifier: null,
         } as User,
       ];
 
