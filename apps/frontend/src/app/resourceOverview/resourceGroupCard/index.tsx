@@ -20,18 +20,20 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/react';
+import { TableDataLoadingIndicator, TableEmptyState } from '../../../components/tableComponents';
 import { PageHeader } from '../../../components/pageHeader';
 import { useMemo, useState } from 'react';
 import { filenameToUrl } from '../../../api';
 import { StatusChip } from './statusChip';
 import { ChevronRightIcon, Settings2Icon } from 'lucide-react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-
-import en from './en.json';
-import de from './de.json';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { FilterProps } from '../filterProps';
+import { useReactQueryStatusToHeroUiTableLoadingState } from '../../../hooks/useReactQueryStatusToHeroUiTableLoadingState';
+
+import en from './en.json';
+import de from './de.json';
 
 interface Props {
   groupId: number | 'none';
@@ -48,7 +50,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
   const perPage = 10;
   const [page, setPage] = useState(1);
 
-  const { data: group, isLoading: isLoadingGroup } = useResourcesServiceResourceGroupsGetOne(
+  const { data: group, status: fetchStatusGroup } = useResourcesServiceResourceGroupsGetOne(
     { id: groupId as number },
     undefined,
     {
@@ -56,7 +58,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
     }
   );
 
-  const { data: resources, isLoading: isLoadingResources } = useResourcesServiceGetAllResources(
+  const { data: resources, status: fetchStatus } = useResourcesServiceGetAllResources(
     {
       groupId: groupId === 'none' ? -1 : groupId,
       search: debouncedSearchValue?.trim() || undefined,
@@ -71,6 +73,8 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
     }
   );
 
+  const loadingState = useReactQueryStatusToHeroUiTableLoadingState(fetchStatus);
+
   const totalPages = useMemo(() => {
     if (!resources?.total) {
       return 1;
@@ -78,8 +82,6 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
 
     return Math.ceil(resources.total / perPage);
   }, [resources, perPage]);
-
-  const isLoading = useMemo(() => isLoadingGroup || isLoadingResources, [isLoadingGroup, isLoadingResources]);
 
   const canManageResources = hasPermission('canManageResources');
 
@@ -114,7 +116,7 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
     return group?.description ?? '';
   }, [groupId, group, t]);
 
-  if (!isLoading && resources?.data.length === 0) {
+  if (fetchStatus === 'success' && fetchStatusGroup === 'success' && resources?.data.length === 0) {
     return null;
   }
 
@@ -137,7 +139,12 @@ export function ResourceGroupCard(props: Readonly<Props & Omit<CardProps, 'child
             </TableColumn>
             <TableColumn width="4">{''}</TableColumn>
           </TableHeader>
-          <TableBody items={resources?.data ?? []} isLoading={isLoading}>
+          <TableBody
+            items={resources?.data ?? []}
+            loadingState={loadingState}
+            loadingContent={<TableDataLoadingIndicator />}
+            emptyContent={<TableEmptyState />}
+          >
             {(resource) => (
               <TableRow
                 key={resource.id}

@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react';
 import { Cloud, CloudOff, CpuIcon } from 'lucide-react';
+import { TableDataLoadingIndicator, TableEmptyState } from '../../../components/tableComponents';
 import { useDateTimeFormatter, useTranslations } from '@attraccess/plugins-frontend-ui';
 import { FabreaderEditor } from '../FabreaderEditor/FabreaderEditor';
-import de from './FabreaderList.de.json';
-import en from './FabreaderList.en.json';
 import { useFabReaderServiceGetReaders } from '@attraccess/react-query-client';
 import { useToastMessage } from '../../../components/toastProvider';
 import { PageHeader } from '../../../components/pageHeader';
 import { FabreaderFlasher } from '../FabreaderFlasher/FabreaderFlasher';
+import { useReactQueryStatusToHeroUiTableLoadingState } from '../../../hooks/useReactQueryStatusToHeroUiTableLoadingState';
+
+import de from './FabreaderList.de.json';
+import en from './FabreaderList.en.json';
 
 export const FabreaderList = () => {
   const { t } = useTranslations('fabreader-list', {
@@ -19,10 +22,12 @@ export const FabreaderList = () => {
   const {
     data: readers,
     error: readersError,
-    isLoading,
+    status: fetchStatus,
   } = useFabReaderServiceGetReaders(undefined, {
     refetchInterval: 5000,
   });
+
+  const loadingState = useReactQueryStatusToHeroUiTableLoadingState(fetchStatus);
 
   const toast = useToastMessage();
 
@@ -77,7 +82,12 @@ export const FabreaderList = () => {
           <TableColumn>{t('table.columns.connected')}</TableColumn>
           <TableColumn>{t('table.columns.actions')}</TableColumn>
         </TableHeader>
-        <TableBody items={readers ?? []} isLoading={isLoading} emptyContent={t('table.noData')}>
+        <TableBody
+          items={readers ?? []}
+          loadingState={loadingState}
+          loadingContent={<TableDataLoadingIndicator />}
+          emptyContent={<TableEmptyState />}
+        >
           {(reader) => (
             <TableRow key={reader.id}>
               <TableCell>{reader.name}</TableCell>

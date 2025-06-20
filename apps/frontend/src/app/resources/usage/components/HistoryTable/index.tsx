@@ -1,13 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Table, TableHeader, TableBody, TableRow, Pagination, Spinner } from '@heroui/react';
+import { Table, TableHeader, TableBody, TableRow, Pagination } from '@heroui/react';
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
-import * as en from './utils/translations/en';
-import * as de from './utils/translations/de';
 import { generateHeaderColumns } from './utils/tableHeaders';
 import { generateRowCells } from './utils/tableRows';
 import { useResourcesServiceResourceUsageGetHistory, ResourceUsage } from '@attraccess/react-query-client';
 import { useAuth } from '../../../../../hooks/useAuth';
 import { Select } from '../../../../../components/select';
+import { TableDataLoadingIndicator, TableEmptyState } from '../../../../../components/tableComponents';
+import { useReactQueryStatusToHeroUiTableLoadingState } from '../../../../../hooks/useReactQueryStatusToHeroUiTableLoadingState';
+
+import * as en from './utils/translations/en';
+import * as de from './utils/translations/de';
 
 interface HistoryTableProps {
   resourceId: number;
@@ -16,7 +19,6 @@ interface HistoryTableProps {
   onSessionClick: (session: ResourceUsage) => void;
 }
 
-// Main History Table component
 export const HistoryTable = ({
   resourceId,
   showAllUsers = false,
@@ -26,18 +28,16 @@ export const HistoryTable = ({
   const { t } = useTranslations('historyTable', { en, de });
   const { user } = useAuth();
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Handlers
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
   }, []);
 
   const handleRowsPerPageChange = useCallback((newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage);
-    setPage(1); // Reset to first page when changing rows per page
+    setPage(1);
   }, []);
 
   const handleSelectionChange = useCallback(
@@ -47,11 +47,10 @@ export const HistoryTable = ({
     [handleRowsPerPageChange]
   );
 
-  // Data fetching with the hook
   const {
     data: usageHistory,
-    isLoading,
     error,
+    status: fetchStatus,
   } = useResourcesServiceResourceUsageGetHistory(
     {
       resourceId,
@@ -65,15 +64,12 @@ export const HistoryTable = ({
     }
   );
 
-  // Generate header columns
   const headerColumns = useMemo(
     () => generateHeaderColumns(t, showAllUsers, canManageResources),
     [t, showAllUsers, canManageResources]
   );
 
-  const loadingState = useMemo(() => {
-    return isLoading ? 'loading' : 'idle';
-  }, [isLoading]);
+  const loadingState = useReactQueryStatusToHeroUiTableLoadingState(fetchStatus);
 
   if (error) {
     return <div className="text-center py-4 text-red-500">{t('errorLoadingHistory')}</div>;
@@ -103,10 +99,9 @@ export const HistoryTable = ({
     >
       <TableHeader>{headerColumns}</TableHeader>
       <TableBody
-        isLoading={isLoading}
-        emptyContent={t('noUsageHistory')}
-        loadingContent={<Spinner />}
         loadingState={loadingState}
+        loadingContent={<TableDataLoadingIndicator />}
+        emptyContent={<TableEmptyState />}
       >
         {(usageHistory?.data ?? []).map((session: ResourceUsage) => (
           <TableRow
