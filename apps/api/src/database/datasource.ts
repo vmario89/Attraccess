@@ -5,7 +5,6 @@ import { loadEnv } from '@fabaccess/env';
 import { join, resolve } from 'path';
 import { entities } from '@fabaccess/database-entities';
 import * as migrations from './migrations';
-import { existsSync } from 'fs';
 
 const envType = loadEnv((z) => ({
   DB_TYPE: z.enum(['postgres', 'sqlite']).default('sqlite'),
