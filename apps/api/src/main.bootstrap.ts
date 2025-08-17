@@ -19,7 +19,7 @@ import { StorageConfigType } from './config/storage.config';
 
 async function generateSelfSignedCertificates(storageDir: string, domain: string) {
   const ca = await createCA({
-    organization: 'Attraccess',
+    organization: 'FabAccess',
     countryCode: 'DE',
     state: 'Hamburg',
     locality: 'Hamburg',
@@ -60,7 +60,7 @@ export async function bootstrap() {
   if (appConfig.SSL_GENERATE_SELF_SIGNED_CERTIFICATES) {
     const storageDir = storageConfig.root;
 
-    const host = appConfig.VITE_ATTRACCESS_URL;
+    const host = appConfig.VITE_FABACCESS_URL;
     const hostUrl = new URL(host);
     const domain = hostUrl.hostname;
 
@@ -164,8 +164,8 @@ export async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get('Reflector')));
 
   const config = new DocumentBuilder()
-    .setTitle('Attraccess API')
-    .setDescription('The Attraccess API used to manage machine and tool access in a Makerspace or FabLab')
+    .setTitle('FabAccess API')
+    .setDescription('The FabAccess API used to manage machine and tool access in a Makerspace or FabLab')
     .setVersion(appConfig.VERSION)
     .addBearerAuth()
     .addApiKey({

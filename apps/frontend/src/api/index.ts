@@ -1,4 +1,4 @@
-import { OpenAPI, CreateSessionResponse } from '@attraccess/react-query-client';
+import { OpenAPI, CreateSessionResponse } from '@fabaccess/react-query-client';
 
 function getInferredApiUrl() {
   const frontendUrl = new URL(window.location.href);
@@ -12,7 +12,7 @@ function getInferredApiUrl() {
 }
 
 export function getBaseUrl() {
-  return import.meta.env.VITE_ATTRACCESS_URL || getInferredApiUrl();
+  return import.meta.env.VITE_FABACCESS_URL || getInferredApiUrl();
 }
 
 const setupApiParameters = () => {

@@ -4,7 +4,7 @@ import { AppConfigType } from '../../../../config/app.config';
 import { SSOOIDCStrategy } from './oidc.strategy';
 import { ModuleRef } from '@nestjs/core';
 import { SSOService } from '../sso.service';
-import { SSOProviderType } from '@attraccess/database-entities';
+import { SSOProviderType } from '@fabaccess/database-entities';
 import {
   InvalidSSOProviderIdException,
   InvalidSSOProviderTypeException,
@@ -72,7 +72,7 @@ export class SSOOIDCGuard implements CanActivate {
 
     const redirectTo = requestURL.searchParams.get('redirectTo');
 
-    const callbackURL = new URL(appConfig.VITE_ATTRACCESS_URL);
+    const callbackURL = new URL(appConfig.VITE_FABACCESS_URL);
     callbackURL.pathname = `/api/auth/sso/${ssoType}/${providerId}/callback`;
     callbackURL.searchParams.set('redirectTo', redirectTo);
 

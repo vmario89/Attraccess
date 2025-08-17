@@ -3,7 +3,7 @@ import { GatewayServices } from '../websocket.gateway';
 import { AuthenticatedWebSocket, FabreaderEventType, FabreaderResponse } from '../websocket.types';
 import { FabreaderEvent } from '../websocket.types';
 import { ReaderState } from './reader-state.interface';
-import { NFCCard } from '@attraccess/database-entities';
+import { NFCCard } from '@fabaccess/database-entities';
 
 export class WaitForNFCTapState implements ReaderState {
   private readonly logger = new Logger(WaitForNFCTapState.name);
@@ -161,13 +161,13 @@ export class WaitForNFCTapState implements ReaderState {
       responseMessage = 'Resource stopped';
       this.logger.debug(`Stopping resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.resourceUsageService.endSession(this.selectedResourceId, userOfNFCCard, {
-        notes: `-- by FabReader (ID: ${this.socket.reader.id}) with NFC Card (ID: ${this.card.id}) --`,
+        notes: `-- by Fabreader (ID: ${this.socket.reader.id}) with NFC Card (ID: ${this.card.id}) --`,
       });
     } else {
       responseMessage = 'Resource started';
       this.logger.debug(`Starting resource usage for user ${userOfNFCCard.id} on resource ${this.selectedResourceId}`);
       await this.services.resourceUsageService.startSession(this.selectedResourceId, userOfNFCCard, {
-        notes: `-- by FabReader (ID: ${this.socket.reader.id}) with NFC Card (ID: ${this.card.id}) --`,
+        notes: `-- by Fabreader (ID: ${this.socket.reader.id}) with NFC Card (ID: ${this.card.id}) --`,
       });
     }
 

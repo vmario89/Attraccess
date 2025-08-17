@@ -1,13 +1,13 @@
 {
   "page": {
-    "title": "FabReaders",
+    "title": "FABreaders",
     "actions": {
-      "openFlasher": "FabReader flasher"
+      "openFlasher": "FABreader flasher"
     }
   },
   "workInProgress": "This feature is still in development, use at your own risk!",
   "error": {
-    "fetchReaders": "Could not fetch FabReaders"
+    "fetchReaders": "Could not fetch FABreaders"
   },
   "table": {
     "columns": {
@@ -16,7 +16,7 @@
       "connected": "Status",
       "actions": "Actions"
     },
-    "noData": "No FabReaders found",
+    "noData": "No FABreaders found",
     "actions": {
       "editReader": "Edit"
     }
