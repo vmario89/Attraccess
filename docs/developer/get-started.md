@@ -91,7 +91,7 @@ FabAccess follows an Nx monorepo structure, organized into apps and libs:
 
 4. Run database migrations:
    ```bash
-   nx run api:run-migrations
+   nx migrations-run api
    ```
 
 ### Development
