@@ -32,7 +32,7 @@ docker run -d \
   -e AUTH_JWT_ORIGIN=ENV \
   -e AUTH_JWT_SECRET=your_secure_jwt_secret \
   -e AUTH_SESSION_SECRET=your_secure_session_secret \
-  -e VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com \
+  -e VITE_FABACCESS_URL=https://fabaccess.yourdomain.com \
   -v /path/to/storage:/app/storage \
   fabaccess/fabaccess:latest
 ```
@@ -72,7 +72,7 @@ docker run -d \
   -e AUTH_JWT_ORIGIN=ENV \
   -e AUTH_JWT_SECRET=your_secure_jwt_secret \
   -e AUTH_SESSION_SECRET=your_secure_session_secret \
-  -e VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com \
+  -e VITE_FABACCESS_URL=https://fabaccess.yourdomain.com \
   -v /path/to/storage:/app/storage \
   fabaccess/fabaccess:latest
 ```
@@ -165,7 +165,7 @@ Since self-signed certificates are not issued by a trusted Certificate Authority
 1. **Use Custom Certificates for Production**: Always use proper CA-signed certificates for production environments
 2. **Regular Renewal**: Monitor certificate expiration dates and renew before expiry
 3. **Secure Storage**: Keep private keys secure and limit access to certificate files
-4. **Strong Domains**: Use proper domain names in your `VITE_ATTRACCESS_URL` configuration
+4. **Strong Domains**: Use proper domain names in your `VITE_FABACCESS_URL` configuration
 
 ## 🔧 Troubleshooting
 
@@ -199,7 +199,7 @@ For custom certificates:
 
 When using SSL, make sure to:
 
-- Use HTTPS URLs in your `VITE_ATTRACCESS_URL`
+- Use HTTPS URLs in your `VITE_FABACCESS_URL`
 - Map port 443 (standard HTTPS port) to container port 3000: `-p 443:3000`
 - Update any firewall rules to allow HTTPS traffic on port 443
 

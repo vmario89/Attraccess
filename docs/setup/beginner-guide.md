@@ -70,7 +70,7 @@ Now, open the `.env` file with a text editor and add the following configuration
 AUTH_JWT_ORIGIN=ENV
 AUTH_JWT_SECRET=replace_with_a_long_random_string
 AUTH_SESSION_SECRET=replace_with_another_long_random_string
-VITE_ATTRACCESS_URL=http://localhost:3000
+VITE_FABACCESS_URL=http://localhost:3000
 
 # Email Configuration
 SMTP_SERVICE=SMTP
@@ -121,16 +121,16 @@ If you've installed FabAccess on a remote server (not your local computer):
 3. Go to `http://your-server-ip:3000` (replace `your-server-ip` with your actual server's IP address)
 4. If you have a domain name pointing to your server, you can use `http://your-domain.com:3000`
 
-> 💡 **Important:** When installing on a remote server, you should update the `VITE_ATTRACCESS_URL` in your `.env` file to match how you'll access the application:
+> 💡 **Important:** When installing on a remote server, you should update the `VITE_FABACCESS_URL` in your `.env` file to match how you'll access the application:
 >
 > ```
-> VITE_ATTRACCESS_URL=http://your-server-ip:3000
+> VITE_FABACCESS_URL=http://your-server-ip:3000
 > ```
 >
 > or
 >
 > ```
-> VITE_ATTRACCESS_URL=http://your-domain.com:3000
+> VITE_FABACCESS_URL=http://your-domain.com:3000
 > ```
 
 ##### Firewall Considerations
@@ -146,7 +146,7 @@ For production environments, it's recommended to:
 
 1. Set up a reverse proxy (like Nginx or Apache) in front of FabAccess
 2. Configure SSL/TLS certificates (using Let's Encrypt)
-3. Update your `VITE_ATTRACCESS_URL` to use `https://` instead of `http://`
+3. Update your `VITE_FABACCESS_URL` to use `https://` instead of `http://`
 
 Detailed instructions for setting up a secure proxy are beyond the scope of this beginner guide, but we recommend researching this for any production deployment.
 

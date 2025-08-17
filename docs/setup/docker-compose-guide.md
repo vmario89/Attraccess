@@ -53,7 +53,7 @@ services:
       - AUTH_JWT_ORIGIN=ENV
       - AUTH_JWT_SECRET=replace_with_a_long_random_string
       - AUTH_SESSION_SECRET=replace_with_another_long_random_string
-      - VITE_ATTRACCESS_URL=http://localhost:3000
+      - VITE_FABACCESS_URL=http://localhost:3000
 
       # Email Configuration
       - SMTP_SERVICE=SMTP
@@ -129,16 +129,16 @@ Update the email settings in your `docker-compose.yml` file with your actual SMT
 
 #### URL Configuration
 
-If you're deploying FabAccess to be accessible from other computers, update the `VITE_ATTRACCESS_URL` with your actual domain or IP address:
+If you're deploying FabAccess to be accessible from other computers, update the `VITE_FABACCESS_URL` with your actual domain or IP address:
 
 ```yaml
-- VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com
+- VITE_FABACCESS_URL=https://fabaccess.yourdomain.com
 ```
 
 or
 
 ```yaml
-- VITE_ATTRACCESS_URL=http://your-server-ip:3000
+- VITE_FABACCESS_URL=http://your-server-ip:3000
 ```
 
 ### Step 5: Start FabAccess
@@ -231,7 +231,7 @@ touch .env
 AUTH_JWT_ORIGIN=ENV
 AUTH_JWT_SECRET=your_secure_jwt_secret
 AUTH_SESSION_SECRET=your_secure_session_secret
-VITE_ATTRACCESS_URL=http://localhost:3000
+VITE_FABACCESS_URL=http://localhost:3000
 
 # Email Configuration
 SMTP_SERVICE=SMTP

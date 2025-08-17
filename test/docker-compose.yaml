@@ -12,7 +12,7 @@ services:
 
       - AUTH_JWT_ORIGIN=FILE
       - AUTH_JWT_SECRET=/app/secrets/secret.txt
-      - VITE_ATTRACCESS_URL=http://localhost:3000
+      - VITE_FABACCESS_URL=http://localhost:3000
 
       # Email Configuration
       - SMTP_SERVICE=SMTP

@@ -45,13 +45,9 @@ function loadPostgresConfig() {
 
 function loadSqliteConfig() {
   const storageEnv = loadEnv((z) => ({ STORAGE_ROOT: z.string().default(join(process.cwd(), 'storage')) }));
-  const fabaccessDbFile = resolve(join(storageEnv.STORAGE_ROOT, 'attraccess.sqlite'));
-  const attraccessDbFile = resolve(join(storageEnv.STORAGE_ROOT, 'attraccess.sqlite'));
+  const fabaccessDbFile = resolve(join(storageEnv.STORAGE_ROOT, 'fabaccess.sqlite'));
 
   let dbFile = fabaccessDbFile;
-  if (existsSync(attraccessDbFile)) {
-    dbFile = attraccessDbFile;
-  }
 
   console.log('dbFile', dbFile);
 

@@ -18,7 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@fabaccess/api-client": ["libs/api-client/src/index.ts"],
-      "@fabaccess/attracces": ["tools/attracces/src/index.ts"],
+      "@fabaccess/fabaccess": ["tools/fabaccess/src/index.ts"],
       "@fabaccess/database-entities": ["libs/database-entities/src/index.ts"],
       "@fabaccess/env": ["libs/env/src/index.ts"],
       "@fabaccess/plugins-backend-sdk": ["libs/plugins-backend-sdk/src/index.ts"],

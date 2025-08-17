@@ -24,7 +24,7 @@ export class EmailService {
     const appConfig = this.configService.get<AppConfigType>('app');
 
     this.frontendUrl = appConfig.FRONTEND_URL;
-    this.backendUrl = appConfig.VITE_ATTRACCESS_URL;
+    this.backendUrl = appConfig.VITE_FABACCESS_URL;
 
     this.logger.debug(`EmailService initialized with FRONTEND_URL: ${this.frontendUrl}`);
   }

@@ -72,7 +72,7 @@ export class SSOOIDCGuard implements CanActivate {
 
     const redirectTo = requestURL.searchParams.get('redirectTo');
 
-    const callbackURL = new URL(appConfig.VITE_ATTRACCESS_URL);
+    const callbackURL = new URL(appConfig.VITE_FABACCESS_URL);
     callbackURL.pathname = `/api/auth/sso/${ssoType}/${providerId}/callback`;
     callbackURL.searchParams.set('redirectTo', redirectTo);
 

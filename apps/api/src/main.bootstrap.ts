@@ -60,7 +60,7 @@ export async function bootstrap() {
   if (appConfig.SSL_GENERATE_SELF_SIGNED_CERTIFICATES) {
     const storageDir = storageConfig.root;
 
-    const host = appConfig.VITE_ATTRACCESS_URL;
+    const host = appConfig.VITE_FABACCESS_URL;
     const hostUrl = new URL(host);
     const domain = hostUrl.hostname;
 

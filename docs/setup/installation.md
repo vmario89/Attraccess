@@ -32,7 +32,7 @@ FabAccess requires several environment variables to function properly:
 | `AUTH_JWT_ORIGIN`     | JWT secret source, either "ENV" or "FILE" | Yes                    | -       |
 | `AUTH_JWT_SECRET`     | JWT secret when using ENV origin          | If AUTH_JWT_ORIGIN=ENV | -       |
 | `AUTH_SESSION_SECRET` | Secret for encrypting sessions            | Yes                    | -       |
-| `VITE_ATTRACCESS_URL` | URL/hostname of your FabAccess instance   | Yes                    | -       |
+| `VITE_FABACCESS_URL`  | URL/hostname of your FabAccess instance   | Yes                    | -       |
 
 > [!WARNING]
 > Always use strong, unique secrets for `AUTH_JWT_SECRET` and `AUTH_SESSION_SECRET`. These are critical for your application's security.
@@ -86,7 +86,7 @@ docker run -d \
   -e AUTH_JWT_ORIGIN=ENV \
   -e AUTH_JWT_SECRET=your_secure_jwt_secret \
   -e AUTH_SESSION_SECRET=your_secure_session_secret \
-  -e VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com \
+  -e VITE_FABACCESS_URL=https://fabaccess.yourdomain.com \
   -e SMTP_SERVICE=SMTP \
   -e SMTP_FROM=no-reply@yourdomain.com \
   -e SMTP_HOST=smtp.yourdomain.com \
@@ -138,7 +138,7 @@ docker run -d \
   -p 3000:3000 \
   -e AUTH_JWT_ORIGIN=FILE \
   -e AUTH_SESSION_SECRET=your_secure_session_secret \
-  -e VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com \
+  -e VITE_FABACCESS_URL=https://fabaccess.yourdomain.com \
   -v /path/to/jwt/secret:/app/secrets \
   -v /path/to/storage:/app/storage \
   fabaccess/fabaccess:latest
@@ -171,7 +171,7 @@ docker run -d \
   -e AUTH_JWT_ORIGIN=ENV \
   -e AUTH_JWT_SECRET=your_secure_jwt_secret \
   -e AUTH_SESSION_SECRET=your_secure_session_secret \
-  -e VITE_ATTRACCESS_URL=https://fabaccess.yourdomain.com \
+  -e VITE_FABACCESS_URL=https://fabaccess.yourdomain.com \
   -v /path/to/plugins:/app/plugins \
   -v /path/to/storage:/app/storage \
   fabaccess/fabaccess:latest
