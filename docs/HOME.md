@@ -24,7 +24,7 @@ FabAccess is a powerful platform designed to simplify and secure access manageme
 
 ## Support
 
-Need help? Open an issue on our [GitHub repository](https://github.com/FabInfra/FabAccess).
+Need help? Open an issue on our [GitHub repository](https://github.com/FabInfra/FabAccess-V2).
 
 > [!NOTE]
 > This documentation is also accessible directly from your running FabAccess instance at `<your-fabaccess-url>/docs`.

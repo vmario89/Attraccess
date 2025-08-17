@@ -4293,7 +4293,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title FabAccess API
- * @version 1.0.0
+ * @version 0.0.16
  * @contact
  *
  * The FabAccess API used to manage machine and tool access in a Makerspace or FabLab

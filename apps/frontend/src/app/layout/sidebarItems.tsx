@@ -108,7 +108,7 @@ export const useSidebarEndItems = () => {
 
   const reportBugUrl = newGithubIssueUrl({
     user: 'FabInfra',
-    repo: 'FabAccess',
+    repo: 'FabAccess-V2',
     title: '[Bug] ',
     labels: ['bug'],
     body: `
@@ -129,7 +129,7 @@ export const useSidebarEndItems = () => {
 
   const requestFeatureUrl = newGithubIssueUrl({
     user: 'FabInfra',
-    repo: 'FabAccess',
+    repo: 'FabAccess-V2',
     title: '[Feature Request] ',
     labels: ['enhancement'],
     body: `
@@ -167,7 +167,7 @@ export const useSidebarEndItems = () => {
       translationKey: 'dependencies',
     },
     {
-      path: getBaseUrl() + '/docs',
+      path: getBaseUrl() + '/docs/#/',
       icon: BookOpenIcon,
       translationKey: 'docs',
       isExternal: true,
